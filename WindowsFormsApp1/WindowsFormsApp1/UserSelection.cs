@@ -22,7 +22,7 @@ namespace WindowsFormsApp1
         {
             InitializeComponent();
 
-            this.WindowState = FormWindowState.Maximized;
+            //this.WindowState = FormWindowState.Maximized;
 
             dataGridView1.Rows.Clear();
 

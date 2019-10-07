@@ -57,9 +57,10 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(16, 11);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(90, 24);
+            this.label1.Size = new System.Drawing.Size(113, 30);
             this.label1.TabIndex = 0;
             this.label1.Text = "作業者検索";
             // 
@@ -78,9 +79,10 @@
             this.panel1.Controls.Add(this.lblSearchさ);
             this.panel1.Controls.Add(this.lblSearchか);
             this.panel1.Controls.Add(this.lblSearchあ);
-            this.panel1.Location = new System.Drawing.Point(16, 36);
+            this.panel1.Location = new System.Drawing.Point(21, 45);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(760, 132);
+            this.panel1.Size = new System.Drawing.Size(1013, 164);
             this.panel1.TabIndex = 1;
             // 
             // lblSearchわ
@@ -91,9 +93,10 @@
             this.lblSearchわ.BackColor = System.Drawing.Color.Transparent;
             this.lblSearchわ.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchわ.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchわ.Location = new System.Drawing.Point(646, 84);
+            this.lblSearchわ.Location = new System.Drawing.Point(861, 105);
+            this.lblSearchわ.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchわ.Name = "lblSearchわ";
-            this.lblSearchわ.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchわ.Size = new System.Drawing.Size(39, 36);
             this.lblSearchわ.TabIndex = 0;
             this.lblSearchわ.Text = "わ";
             this.lblSearchわ.Click += new System.EventHandler(this.lblSearchわ_Click);
@@ -106,9 +109,10 @@
             this.lblSearchら.BackColor = System.Drawing.Color.Transparent;
             this.lblSearchら.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchら.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchら.Location = new System.Drawing.Point(502, 84);
+            this.lblSearchら.Location = new System.Drawing.Point(669, 105);
+            this.lblSearchら.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchら.Name = "lblSearchら";
-            this.lblSearchら.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchら.Size = new System.Drawing.Size(39, 36);
             this.lblSearchら.TabIndex = 0;
             this.lblSearchら.Text = "ら";
             this.lblSearchら.Click += new System.EventHandler(this.lblSearchら_Click);
@@ -121,9 +125,10 @@
             this.lblSearchや.BackColor = System.Drawing.Color.Transparent;
             this.lblSearchや.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchや.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchや.Location = new System.Drawing.Point(355, 84);
+            this.lblSearchや.Location = new System.Drawing.Point(473, 105);
+            this.lblSearchや.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchや.Name = "lblSearchや";
-            this.lblSearchや.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchや.Size = new System.Drawing.Size(39, 36);
             this.lblSearchや.TabIndex = 0;
             this.lblSearchや.Text = "や";
             this.lblSearchや.Click += new System.EventHandler(this.lblSearchや_Click);
@@ -136,9 +141,10 @@
             this.lblSearchま.BackColor = System.Drawing.Color.Transparent;
             this.lblSearchま.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchま.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchま.Location = new System.Drawing.Point(210, 84);
+            this.lblSearchま.Location = new System.Drawing.Point(280, 105);
+            this.lblSearchま.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchま.Name = "lblSearchま";
-            this.lblSearchま.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchま.Size = new System.Drawing.Size(39, 36);
             this.lblSearchま.TabIndex = 0;
             this.lblSearchま.Text = "ま";
             this.lblSearchま.Click += new System.EventHandler(this.lblSearchま_Click);
@@ -151,9 +157,10 @@
             this.lblSearchは.BackColor = System.Drawing.Color.Transparent;
             this.lblSearchは.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchは.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchは.Location = new System.Drawing.Point(65, 84);
+            this.lblSearchは.Location = new System.Drawing.Point(87, 105);
+            this.lblSearchは.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchは.Name = "lblSearchは";
-            this.lblSearchは.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchは.Size = new System.Drawing.Size(39, 36);
             this.lblSearchは.TabIndex = 0;
             this.lblSearchは.Text = "は";
             this.lblSearchは.Click += new System.EventHandler(this.lblSearchは_Click);
@@ -166,9 +173,10 @@
             this.lblSearchな.BackColor = System.Drawing.Color.Transparent;
             this.lblSearchな.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchな.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchな.Location = new System.Drawing.Point(646, 15);
+            this.lblSearchな.Location = new System.Drawing.Point(861, 19);
+            this.lblSearchな.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchな.Name = "lblSearchな";
-            this.lblSearchな.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchな.Size = new System.Drawing.Size(39, 36);
             this.lblSearchな.TabIndex = 0;
             this.lblSearchな.Text = "な";
             this.lblSearchな.Click += new System.EventHandler(this.lblSearchな_Click);
@@ -181,9 +189,10 @@
             this.lblSearchた.BackColor = System.Drawing.Color.Transparent;
             this.lblSearchた.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchた.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchた.Location = new System.Drawing.Point(502, 15);
+            this.lblSearchた.Location = new System.Drawing.Point(669, 19);
+            this.lblSearchた.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchた.Name = "lblSearchた";
-            this.lblSearchた.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchた.Size = new System.Drawing.Size(39, 36);
             this.lblSearchた.TabIndex = 0;
             this.lblSearchた.Text = "た";
             this.lblSearchた.Click += new System.EventHandler(this.lblSearchた_Click);
@@ -196,9 +205,10 @@
             this.lblSearchさ.BackColor = System.Drawing.Color.Transparent;
             this.lblSearchさ.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchさ.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchさ.Location = new System.Drawing.Point(355, 15);
+            this.lblSearchさ.Location = new System.Drawing.Point(473, 19);
+            this.lblSearchさ.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchさ.Name = "lblSearchさ";
-            this.lblSearchさ.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchさ.Size = new System.Drawing.Size(39, 36);
             this.lblSearchさ.TabIndex = 0;
             this.lblSearchさ.Text = "さ";
             this.lblSearchさ.Click += new System.EventHandler(this.lblSearchさ_Click);
@@ -212,9 +222,10 @@
             this.lblSearchか.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.lblSearchか.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchか.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchか.Location = new System.Drawing.Point(210, 15);
+            this.lblSearchか.Location = new System.Drawing.Point(280, 19);
+            this.lblSearchか.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchか.Name = "lblSearchか";
-            this.lblSearchか.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchか.Size = new System.Drawing.Size(39, 36);
             this.lblSearchか.TabIndex = 0;
             this.lblSearchか.Text = "か";
             this.lblSearchか.Click += new System.EventHandler(this.lblSearchか_Click);
@@ -227,9 +238,10 @@
             this.lblSearchあ.BackColor = System.Drawing.Color.Transparent;
             this.lblSearchあ.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblSearchあ.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchあ.Location = new System.Drawing.Point(65, 15);
+            this.lblSearchあ.Location = new System.Drawing.Point(87, 19);
+            this.lblSearchあ.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSearchあ.Name = "lblSearchあ";
-            this.lblSearchあ.Size = new System.Drawing.Size(31, 28);
+            this.lblSearchあ.Size = new System.Drawing.Size(39, 36);
             this.lblSearchあ.TabIndex = 0;
             this.lblSearchあ.Text = "あ";
             this.lblSearchあ.Click += new System.EventHandler(this.lblSearchあ_Click);
@@ -261,7 +273,8 @@
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.EnableHeadersVisualStyles = false;
-            this.dataGridView1.Location = new System.Drawing.Point(16, 188);
+            this.dataGridView1.Location = new System.Drawing.Point(21, 235);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
@@ -275,12 +288,13 @@
             dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 30;
             this.dataGridView1.RowTemplate.ReadOnly = true;
             this.dataGridView1.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(760, 250);
+            this.dataGridView1.Size = new System.Drawing.Size(1013, 593);
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
@@ -289,9 +303,11 @@
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.Transparent;
             this.UserNo.DefaultCellStyle = dataGridViewCellStyle2;
             this.UserNo.HeaderText = "社員番号";
+            this.UserNo.MinimumWidth = 6;
             this.UserNo.Name = "UserNo";
             this.UserNo.ReadOnly = true;
             this.UserNo.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.UserNo.Width = 125;
             // 
             // UserNm
             // 
@@ -299,19 +315,21 @@
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.Transparent;
             this.UserNm.DefaultCellStyle = dataGridViewCellStyle3;
             this.UserNm.HeaderText = "作業者名";
+            this.UserNm.MinimumWidth = 6;
             this.UserNm.Name = "UserNm";
             this.UserNm.ReadOnly = true;
             this.UserNm.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // UserSelection
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1067, 843);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "UserSelection";
             this.Text = "作業者検索";
             this.panel1.ResumeLayout(false);
