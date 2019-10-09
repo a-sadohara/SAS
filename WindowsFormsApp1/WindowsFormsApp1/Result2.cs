@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using WindowsFormsApp1.DTO;
+using static WindowsFormsApp1.Common;
 
 namespace WindowsFormsApp1
 {
@@ -32,17 +33,17 @@ namespace WindowsFormsApp1
 
         private void Result_Load(object sender, EventArgs e)
         {
-
             this.WindowState = FormWindowState.Maximized;
 
+            lblUser.Text = "作業者名：" + parUserNm;
 
-            dataGridView1.Rows.Clear();
+            dgvData.Rows.Clear();
 
-            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridView1.MultiSelect = false;
+            dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvData.MultiSelect = false;
             // 新規行を追加させない
-            this.dataGridView1.AllowUserToAddRows = false;
-            dataGridView1.ReadOnly = true;
+            this.dgvData.AllowUserToAddRows = false;
+            dgvData.ReadOnly = true;
 
 
             foreach (string line in File.ReadLines("判定登録.tsv", Encoding.Default))
@@ -54,7 +55,7 @@ namespace WindowsFormsApp1
                 string[] csv = strLine.Split('\t');
                 string[] data = new string[csv.Length];
                 Array.Copy(csv, 0, data, 0, data.Length);
-                this.dataGridView1.Rows.Add(data);
+                this.dgvData.Rows.Add(data);
 
             }
 
@@ -92,5 +93,122 @@ namespace WindowsFormsApp1
             ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"));
             frmViewEnlargedimage.ShowDialog(this);
         }
+
+        private void btnLogOut_Click(object sender, EventArgs e)
+        {
+            LogOut();
+        }
+
+        private void btnPrint_Click(object sender, EventArgs e)
+        {
+            var result = "";
+            var error = "";
+            dynamic excel = null;
+            dynamic workbooks = null;
+            dynamic book = null;
+            dynamic sheets = null;
+            string strPrintReportName = "PrintReport.xlsm";
+            string strPrintReportPath = @"..\..\" + strPrintReportName;
+            string strCsvFilePath = @".\判定登録.tsv";
+            string strSaveDirPath = @".\OutPrint";
+            string strSaveFileNm = "検査結果照会_" + DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            // ファイルチェック
+            System.Environment.CurrentDirectory = Application.StartupPath;
+            if (!File.Exists(strPrintReportPath))
+            {
+                MessageBox.Show("[" + strPrintReportPath + "]ファイルが存在しません");
+                return;
+            }
+            if (!File.Exists(strCsvFilePath))
+            {
+                MessageBox.Show("[" + strCsvFilePath + "]ファイルが存在しません");
+                return;
+            }
+            if (!Directory.Exists(strSaveDirPath))
+            {
+                MessageBox.Show("[" + strSaveDirPath + "]ディレクトリが存在しません");
+                return;
+            }
+
+            // 絶対パスを取得
+            strPrintReportPath = System.IO.Path.GetFullPath(strPrintReportPath);
+            strCsvFilePath = System.IO.Path.GetFullPath(strCsvFilePath);
+            strSaveDirPath = System.IO.Path.GetFullPath(strSaveDirPath);
+
+            Type type = Type.GetTypeFromProgID("Excel.Application");
+            excel = Activator.CreateInstance(type);
+            if (excel != null)
+            {
+                try
+                {
+                    // 非表示
+                    excel.DisplayAlerts = false;
+
+                    // ワークブック保持
+                    workbooks = excel.Workbooks;
+
+                    // ブックを生成
+                    book = excel.Workbooks.Open(strPrintReportPath);
+
+                    // シートを保持
+                    sheets = book.Sheets;
+                    
+                    // マクロ実行
+                    result = (string)excel.Run(strPrintReportName + "!" + "RunForApp", strCsvFilePath, strSaveDirPath, strSaveFileNm);
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
+                }
+
+
+                //// 後処理
+                //dispose(sheets);
+                //if (book != null)
+                //{
+                //    book.Close(Type.Missing, Type.Missing, Type.Missing);
+                //    dispose(book);
+                //}
+                //dispose(workbooks);
+                //if (excel != null)
+                //{
+                //    excel.Quit();
+                //    dispose(excel);
+                //}
+
+                //if (!string.IsNullOrEmpty(error))
+                //{
+                //    throw new Exception(error);
+                //}
+            }
+            else
+            {
+                throw new Exception("Excelアプリケーションがインストールされていません。");
+            }
+
+            // 表示　※デバッグ用
+            excel.Visible = true;
+        }
+
+        /// <summary>
+        /// COMオブジェクト破棄
+        /// </summary>
+        /// <param name="comObject"></param>
+        private static void dispose(dynamic comObject)
+        {
+            try
+            {
+                if (comObject != null)
+                {
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(comObject);
+                    comObject = null;
+                }
+            }
+            catch
+            {
+            }
+        }
     }
+
 }

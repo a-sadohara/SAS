@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using WindowsFormsApp1.DTO;
+using static WindowsFormsApp1.Common;
 
 namespace WindowsFormsApp1
 {
@@ -30,15 +31,15 @@ namespace WindowsFormsApp1
         private void SelectErrorReason_Load(object sender, EventArgs e)
         {
             // 行選択モードに変更
-            this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             // 新規行を追加させない
-            this.dataGridView1.AllowUserToAddRows = false;
+            this.dgvData.AllowUserToAddRows = false;
             // 読み取り専用
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.MultiSelect = false;
+            this.dgvData.ReadOnly = true;
+            this.dgvData.MultiSelect = false;
 
 
-            dataGridView1.Rows.Clear();
+            dgvData.Rows.Clear();
 
 
             foreach (string line in File.ReadLines("エラー理由一覧.TSV", Encoding.Default))
@@ -50,7 +51,7 @@ namespace WindowsFormsApp1
                 string[] csv = strLine.Split('\t');
                 string[] data = new string[csv.Length];
                 Array.Copy(csv, 0, data, 0, data.Length);
-                this.dataGridView1.Rows.Add(data);
+                this.dgvData.Rows.Add(data);
                 
 
             }
@@ -59,7 +60,7 @@ namespace WindowsFormsApp1
         private void BtnOK_Click(object sender, EventArgs e)
         {
 
-            foreach(DataGridViewRow row in dataGridView1.Rows)
+            foreach(DataGridViewRow row in dgvData.Rows)
             {
 
                 if(row.Cells[0].Value == null)
@@ -80,15 +81,15 @@ namespace WindowsFormsApp1
         private void DataGridView1_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
 
-            dataGridView1.Rows[e.RowIndex].Cells[0].Value = true;
-            dataGridView1.Rows[e.RowIndex].Cells[0].ReadOnly = true;
+            dgvData.Rows[e.RowIndex].Cells[0].Value = true;
+            dgvData.Rows[e.RowIndex].Cells[0].ReadOnly = true;
 
-            for (int rowIndex = 0; rowIndex < dataGridView1.Rows.Count; rowIndex++)
+            for (int rowIndex = 0; rowIndex < dgvData.Rows.Count; rowIndex++)
             {
                 if (rowIndex != e.RowIndex)
                 {
-                    dataGridView1.Rows[rowIndex].Cells[0].Value = false;
-                    dataGridView1.Rows[rowIndex].Cells[0].ReadOnly = false;
+                    dgvData.Rows[rowIndex].Cells[0].Value = false;
+                    dgvData.Rows[rowIndex].Cells[0].ReadOnly = false;
                 }
             }
 

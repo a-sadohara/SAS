@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Data.OleDb;
 using WindowsFormsApp1.DTO;
+using static WindowsFormsApp1.Common;
 
 namespace WindowsFormsApp1
 {
@@ -124,6 +125,8 @@ namespace WindowsFormsApp1
         {
             this.WindowState = FormWindowState.Maximized;
 
+            lblUser.Text = "作業者名：" + parUserNm;
+
             // 行選択モードに変更
             this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
@@ -198,6 +201,7 @@ namespace WindowsFormsApp1
                     if (! btnResultCheck.Enabled)
                     {
                         dtRow.Cells[intTarget].Style.BackColor = Color.MediumSeaGreen;
+                        dtRow.Cells[intTarget].Style.SelectionBackColor = Color.MediumSeaGreen;
                         btnResult.Enabled = true;
                     }
                     return;
@@ -235,6 +239,10 @@ namespace WindowsFormsApp1
 
         }
 
+        private void btnLogOut_Click(object sender, EventArgs e)
+        {
+            LogOut();
+        }
     }
 
     public class DataGridViewDisableButtonColumn : DataGridViewButtonColumn

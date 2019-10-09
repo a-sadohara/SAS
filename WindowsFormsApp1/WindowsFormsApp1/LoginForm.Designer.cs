@@ -29,54 +29,54 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.lblTtleUserId = new System.Windows.Forms.Label();
+            this.txtUser = new System.Windows.Forms.TextBox();
+            this.btnLogin = new System.Windows.Forms.Button();
             this.rdbDispNum2 = new System.Windows.Forms.RadioButton();
             this.rdbDispNum4 = new System.Windows.Forms.RadioButton();
             this.rdbDispNum9 = new System.Windows.Forms.RadioButton();
             this.picDispNum2 = new System.Windows.Forms.PictureBox();
             this.picDispNum4 = new System.Windows.Forms.PictureBox();
             this.picDispNum9 = new System.Windows.Forms.PictureBox();
-            this.過検知除外レイアウト選択 = new System.Windows.Forms.Label();
+            this.lblTitleDispNum = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picDispNum2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picDispNum4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picDispNum9)).BeginInit();
             this.SuspendLayout();
             // 
-            // label1
+            // lblTtleUserId
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.label1.Location = new System.Drawing.Point(17, 13);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(87, 23);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "ユーザID：";
+            this.lblTtleUserId.AutoSize = true;
+            this.lblTtleUserId.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblTtleUserId.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.lblTtleUserId.Location = new System.Drawing.Point(17, 13);
+            this.lblTtleUserId.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTtleUserId.Name = "lblTtleUserId";
+            this.lblTtleUserId.Size = new System.Drawing.Size(87, 23);
+            this.lblTtleUserId.TabIndex = 0;
+            this.lblTtleUserId.Text = "ユーザID：";
             // 
-            // textBox2
+            // txtUser
             // 
-            this.textBox2.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox2.Location = new System.Drawing.Point(108, 12);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(199, 23);
-            this.textBox2.TabIndex = 1;
-            this.textBox2.Click += new System.EventHandler(this.textBox2_Click);
+            this.txtUser.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtUser.Location = new System.Drawing.Point(108, 12);
+            this.txtUser.Margin = new System.Windows.Forms.Padding(2);
+            this.txtUser.Name = "txtUser";
+            this.txtUser.Size = new System.Drawing.Size(199, 23);
+            this.txtUser.TabIndex = 1;
+            this.txtUser.Click += new System.EventHandler(this.textBox2_Click);
             // 
-            // button1
+            // btnLogin
             // 
-            this.button1.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button1.Location = new System.Drawing.Point(82, 200);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(188, 70);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "ログイン";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            this.btnLogin.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnLogin.Location = new System.Drawing.Point(82, 200);
+            this.btnLogin.Margin = new System.Windows.Forms.Padding(2);
+            this.btnLogin.Name = "btnLogin";
+            this.btnLogin.Size = new System.Drawing.Size(188, 70);
+            this.btnLogin.TabIndex = 3;
+            this.btnLogin.Text = "ログイン";
+            this.btnLogin.UseVisualStyleBackColor = true;
+            this.btnLogin.Click += new System.EventHandler(this.Button1_Click);
             // 
             // rdbDispNum2
             // 
@@ -150,17 +150,17 @@
             this.picDispNum9.TabStop = false;
             this.picDispNum9.Click += new System.EventHandler(this.picDispNum9_Click);
             // 
-            // 過検知除外レイアウト選択
+            // lblTitleDispNum
             // 
-            this.過検知除外レイアウト選択.AutoSize = true;
-            this.過検知除外レイアウト選択.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.過検知除外レイアウト選択.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.過検知除外レイアウト選択.Location = new System.Drawing.Point(17, 58);
-            this.過検知除外レイアウト選択.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.過検知除外レイアウト選択.Name = "過検知除外レイアウト選択";
-            this.過検知除外レイアウト選択.Size = new System.Drawing.Size(295, 23);
-            this.過検知除外レイアウト選択.TabIndex = 0;
-            this.過検知除外レイアウト選択.Text = "過検知除外レイアウト選択（表示枚数）：";
+            this.lblTitleDispNum.AutoSize = true;
+            this.lblTitleDispNum.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblTitleDispNum.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.lblTitleDispNum.Location = new System.Drawing.Point(17, 58);
+            this.lblTitleDispNum.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTitleDispNum.Name = "lblTitleDispNum";
+            this.lblTitleDispNum.Size = new System.Drawing.Size(295, 23);
+            this.lblTitleDispNum.TabIndex = 0;
+            this.lblTitleDispNum.Text = "過検知除外レイアウト選択（表示枚数）：";
             // 
             // LoginForm
             // 
@@ -174,10 +174,10 @@
             this.Controls.Add(this.rdbDispNum9);
             this.Controls.Add(this.rdbDispNum4);
             this.Controls.Add(this.rdbDispNum2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.過検知除外レイアウト選択);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.btnLogin);
+            this.Controls.Add(this.txtUser);
+            this.Controls.Add(this.lblTitleDispNum);
+            this.Controls.Add(this.lblTtleUserId);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "LoginForm";
@@ -192,15 +192,15 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label lblTtleUserId;
+        private System.Windows.Forms.TextBox txtUser;
+        private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.RadioButton rdbDispNum2;
         private System.Windows.Forms.RadioButton rdbDispNum4;
         private System.Windows.Forms.RadioButton rdbDispNum9;
         private System.Windows.Forms.PictureBox picDispNum2;
         private System.Windows.Forms.PictureBox picDispNum4;
         private System.Windows.Forms.PictureBox picDispNum9;
-        private System.Windows.Forms.Label 過検知除外レイアウト選択;
+        private System.Windows.Forms.Label lblTitleDispNum;
     }
 }

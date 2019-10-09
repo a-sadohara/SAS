@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ResultCheck));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnLogOut = new System.Windows.Forms.Button();
+            this.lblUser = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button7 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -59,13 +61,13 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -77,12 +79,42 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnLogOut);
+            this.panel1.Controls.Add(this.lblUser);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1007, 15);
+            this.panel1.Size = new System.Drawing.Size(1007, 53);
             this.panel1.TabIndex = 0;
+            // 
+            // btnLogOut
+            // 
+            this.btnLogOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLogOut.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnLogOut.Location = new System.Drawing.Point(880, 9);
+            this.btnLogOut.Margin = new System.Windows.Forms.Padding(2);
+            this.btnLogOut.Name = "btnLogOut";
+            this.btnLogOut.Size = new System.Drawing.Size(116, 38);
+            this.btnLogOut.TabIndex = 25;
+            this.btnLogOut.Text = "ログアウト";
+            this.btnLogOut.UseVisualStyleBackColor = true;
+            this.btnLogOut.Click += new System.EventHandler(this.btnLogOut_Click);
+            // 
+            // lblUser
+            // 
+            this.lblUser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblUser.AutoSize = true;
+            this.lblUser.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblUser.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblUser.Location = new System.Drawing.Point(576, 20);
+            this.lblUser.Margin = new System.Windows.Forms.Padding(2);
+            this.lblUser.MaximumSize = new System.Drawing.Size(300, 0);
+            this.lblUser.MinimumSize = new System.Drawing.Size(300, 0);
+            this.lblUser.Name = "lblUser";
+            this.lblUser.Size = new System.Drawing.Size(300, 17);
+            this.lblUser.TabIndex = 11;
+            this.lblUser.Text = "作業者名：XXXXXXXX";
+            this.lblUser.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // panel2
             // 
@@ -94,10 +126,10 @@
             this.panel2.Controls.Add(this.label2);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel2.Location = new System.Drawing.Point(0, 15);
+            this.panel2.Location = new System.Drawing.Point(0, 53);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(173, 584);
+            this.panel2.Size = new System.Drawing.Size(173, 579);
             this.panel2.TabIndex = 1;
             // 
             // button7
@@ -120,10 +152,9 @@
             // 
             // button1
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button1.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button1.Location = new System.Drawing.Point(22, 511);
+            this.button1.Location = new System.Drawing.Point(22, 506);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(116, 47);
@@ -209,7 +240,7 @@
             this.panel3.Controls.Add(this.label14);
             this.panel3.Controls.Add(this.label13);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(173, 472);
+            this.panel3.Location = new System.Drawing.Point(173, 505);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(834, 127);
@@ -217,10 +248,11 @@
             // 
             // lblReason
             // 
+            this.lblReason.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblReason.AutoSize = true;
             this.lblReason.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblReason.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblReason.Location = new System.Drawing.Point(518, 14);
+            this.lblReason.Location = new System.Drawing.Point(518, 9);
             this.lblReason.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblReason.Name = "lblReason";
             this.lblReason.Size = new System.Drawing.Size(90, 24);
@@ -229,10 +261,11 @@
             // 
             // label20
             // 
+            this.label20.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("メイリオ", 12F);
             this.label20.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label20.Location = new System.Drawing.Point(400, 14);
+            this.label20.Location = new System.Drawing.Point(400, 9);
             this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(114, 24);
@@ -241,10 +274,11 @@
             // 
             // label19
             // 
+            this.label19.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label19.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label19.Location = new System.Drawing.Point(253, 14);
+            this.label19.Location = new System.Drawing.Point(253, 9);
             this.label19.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(81, 24);
@@ -253,9 +287,9 @@
             // 
             // btnOther
             // 
-            this.btnOther.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnOther.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOther.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnOther.Location = new System.Drawing.Point(404, 82);
+            this.btnOther.Location = new System.Drawing.Point(404, 77);
             this.btnOther.Margin = new System.Windows.Forms.Padding(2);
             this.btnOther.Name = "btnOther";
             this.btnOther.Size = new System.Drawing.Size(185, 38);
@@ -266,9 +300,9 @@
             // 
             // btnJudgeNG
             // 
-            this.btnJudgeNG.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnJudgeNG.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnJudgeNG.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnJudgeNG.Location = new System.Drawing.Point(602, 82);
+            this.btnJudgeNG.Location = new System.Drawing.Point(602, 77);
             this.btnJudgeNG.Margin = new System.Windows.Forms.Padding(2);
             this.btnJudgeNG.Name = "btnJudgeNG";
             this.btnJudgeNG.Size = new System.Drawing.Size(168, 38);
@@ -279,9 +313,9 @@
             // 
             // btnRenzoku
             // 
-            this.btnRenzoku.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnRenzoku.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRenzoku.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnRenzoku.Location = new System.Drawing.Point(602, 39);
+            this.btnRenzoku.Location = new System.Drawing.Point(602, 34);
             this.btnRenzoku.Margin = new System.Windows.Forms.Padding(2);
             this.btnRenzoku.Name = "btnRenzoku";
             this.btnRenzoku.Size = new System.Drawing.Size(168, 38);
@@ -292,9 +326,9 @@
             // 
             // btnTanpatu
             // 
-            this.btnTanpatu.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnTanpatu.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnTanpatu.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnTanpatu.Location = new System.Drawing.Point(404, 39);
+            this.btnTanpatu.Location = new System.Drawing.Point(404, 34);
             this.btnTanpatu.Margin = new System.Windows.Forms.Padding(2);
             this.btnTanpatu.Name = "btnTanpatu";
             this.btnTanpatu.Size = new System.Drawing.Size(185, 38);
@@ -305,9 +339,9 @@
             // 
             // btnOk
             // 
-            this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOk.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnOk.Location = new System.Drawing.Point(256, 39);
+            this.btnOk.Location = new System.Drawing.Point(256, 34);
             this.btnOk.Margin = new System.Windows.Forms.Padding(2);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(116, 38);
@@ -318,10 +352,11 @@
             // 
             // label17
             // 
+            this.label17.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("メイリオ", 8F);
             this.label17.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label17.Location = new System.Drawing.Point(14, 102);
+            this.label17.Location = new System.Drawing.Point(14, 97);
             this.label17.Margin = new System.Windows.Forms.Padding(0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(136, 17);
@@ -330,10 +365,11 @@
             // 
             // label18
             // 
+            this.label18.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("メイリオ", 8F);
             this.label18.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label18.Location = new System.Drawing.Point(14, 89);
+            this.label18.Location = new System.Drawing.Point(14, 84);
             this.label18.Margin = new System.Windows.Forms.Padding(0);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(64, 17);
@@ -342,10 +378,11 @@
             // 
             // label16
             // 
+            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("メイリオ", 12F);
             this.label16.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label16.Location = new System.Drawing.Point(152, 54);
+            this.label16.Location = new System.Drawing.Point(152, 49);
             this.label16.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(21, 24);
@@ -354,10 +391,11 @@
             // 
             // label15
             // 
+            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("メイリオ", 12F);
             this.label15.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label15.Location = new System.Drawing.Point(54, 54);
+            this.label15.Location = new System.Drawing.Point(54, 49);
             this.label15.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(30, 24);
@@ -366,10 +404,11 @@
             // 
             // label14
             // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("メイリオ", 12F);
             this.label14.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label14.Location = new System.Drawing.Point(107, 19);
+            this.label14.Location = new System.Drawing.Point(107, 14);
             this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(42, 24);
@@ -378,10 +417,11 @@
             // 
             // label13
             // 
+            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label13.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label13.Location = new System.Drawing.Point(23, 19);
+            this.label13.Location = new System.Drawing.Point(23, 14);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(42, 24);
@@ -392,10 +432,10 @@
             // 
             this.panel4.Controls.Add(this.button6);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel4.Location = new System.Drawing.Point(857, 15);
+            this.panel4.Location = new System.Drawing.Point(857, 53);
             this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(150, 457);
+            this.panel4.Size = new System.Drawing.Size(150, 452);
             this.panel4.TabIndex = 3;
             // 
             // button6
@@ -421,12 +461,11 @@
             this.panel5.Controls.Add(this.label11);
             this.panel5.Controls.Add(this.label12);
             this.panel5.Controls.Add(this.label6);
-            this.panel5.Controls.Add(this.label10);
             this.panel5.Controls.Add(this.label7);
             this.panel5.Controls.Add(this.label8);
             this.panel5.Controls.Add(this.label9);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel5.Location = new System.Drawing.Point(173, 15);
+            this.panel5.Location = new System.Drawing.Point(173, 53);
             this.panel5.Margin = new System.Windows.Forms.Padding(2);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(684, 95);
@@ -468,20 +507,6 @@
             this.label6.TabIndex = 16;
             this.label6.Text = "検査範囲行　検反部№2：1～351";
             // 
-            // label10
-            // 
-            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.label10.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label10.Location = new System.Drawing.Point(558, 17);
-            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(119, 17);
-            this.label10.TabIndex = 15;
-            this.label10.Text = "作業者名：XXXXXXXX";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -520,26 +545,26 @@
             // 
             // pictureBox5
             // 
-            this.pictureBox5.BackColor = System.Drawing.Color.White;
+            this.pictureBox5.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox5.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox5.Image")));
             this.pictureBox5.Location = new System.Drawing.Point(2, 2);
             this.pictureBox5.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox5.Name = "pictureBox5";
-            this.pictureBox5.Size = new System.Drawing.Size(338, 358);
+            this.pictureBox5.Size = new System.Drawing.Size(338, 353);
             this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox5.TabIndex = 4;
             this.pictureBox5.TabStop = false;
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.White;
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(342, 0);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(342, 362);
+            this.pictureBox1.Size = new System.Drawing.Size(342, 357);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
@@ -552,12 +577,12 @@
             this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.pictureBox5, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(173, 110);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(173, 148);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(684, 362);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(684, 357);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // ResultCheck
@@ -565,7 +590,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.ClientSize = new System.Drawing.Size(1007, 599);
+            this.ClientSize = new System.Drawing.Size(1007, 632);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
@@ -577,6 +602,8 @@
             this.Name = "ResultCheck";
             this.Text = "合否確認画面";
             this.Load += new System.EventHandler(this.ResultCheck_Load);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.panel3.ResumeLayout(false);
@@ -604,7 +631,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
@@ -631,5 +657,7 @@
         private System.Windows.Forms.Label lblReason;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btnJudgeNG;
+        private System.Windows.Forms.Button btnLogOut;
+        private System.Windows.Forms.Label lblUser;
     }
 }

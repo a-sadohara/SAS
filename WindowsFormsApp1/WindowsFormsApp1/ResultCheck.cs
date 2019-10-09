@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsFormsApp1.DTO;
-
+using static WindowsFormsApp1.Common;
 
 namespace WindowsFormsApp1
 {
@@ -17,6 +17,26 @@ namespace WindowsFormsApp1
 
         TargetInfoDto objTargetInfoDto;
         int intRow;
+
+        // 実際の座標（Input値）
+        private Int16 intPctWidthFact = 1000;
+        private Int16 intPctHeightFact = 1000;
+        private Int16 intPointWidthFact = 100;
+        private Int16 intPointHeightFact = 100;
+        private Int16 intPointXFact = 0;    // 取得
+        private Int16 intPointYFact = 0;    // 取得
+
+        // 画面（モニタ）上の座標
+        private Int16 intPctWidthDisp = 0;
+        private Int16 intPctHeightDisp = 0;
+        private Int16 intPointWidthDisp = 0;
+        private Int16 intPointHeightDisp = 0;
+        private Int16 intPointXDisp = 0;
+        private Int16 intPointYDisp = 0;
+
+        // 比率
+        private Double dblPctWidthRatio = 0.0;
+        private Double dblPctHeightRatio = 0.0;
 
         public ResultCheck(TargetInfoDto objTargetInfo,int intRowIndex)
         {
@@ -90,6 +110,47 @@ namespace WindowsFormsApp1
             this.WindowState = FormWindowState.Maximized;
             button6.Enabled = false;
             lblReason.Text = "";
+
+            lblUser.Text = "作業者名：" + parUserNm;
+
+            // 実際の座標位置を取得
+            intPointXFact = 800;
+            intPointYFact = 800;
+
+            // 実際の座標とモニタに表示されるコントロールの長さから、比率を算出する
+            dblPctWidthRatio = (double)pictureBox5.Width / (double)intPctWidthFact;
+            dblPctHeightRatio = (double)pictureBox5.Height / (double)intPctHeightFact;
+
+            // 画面（モニタ）上の座標の算出
+            intPctWidthDisp = (short)((double)intPctWidthFact * dblPctWidthRatio);
+            intPctHeightDisp = (short)((double)intPctHeightFact * dblPctHeightRatio);
+            intPointWidthDisp = (short)((double)intPointWidthFact * dblPctWidthRatio);
+            intPointHeightDisp = (short)((double)intPointHeightFact * dblPctHeightRatio);
+            intPointXDisp = (short)(((double)intPointXFact * dblPctWidthRatio) - ((double)(intPointWidthDisp / 2)));
+            intPointYDisp = (short)(((double)intPointYFact * dblPctHeightRatio) - ((double)(intPointHeightDisp / 2)));
+
+            // 枠線用コントロールの追加
+            tableLayoutPanel1.Controls[1].Controls.Add(new System.Windows.Forms.PictureBox());
+
+            // 枠線用コントロールの設定変更
+            var pctPointCtrl = (PictureBox)tableLayoutPanel1.Controls[1].Controls[0];
+            pctPointCtrl.Location = new Point(intPointXDisp, intPointYDisp);
+            pctPointCtrl.Size = new Size(intPointWidthDisp, intPointHeightDisp);
+            pctPointCtrl.BackColor = Color.Transparent;
+
+            // 赤線を引いたGraphicsオブジェクトを生成
+            Bitmap btmObj = new Bitmap(pctPointCtrl.Width, pctPointCtrl.Height);
+            Graphics graObj = Graphics.FromImage(btmObj);
+            graObj.DrawLine(Pens.Red, 1, 1, pctPointCtrl.Width, 1);                                                 // 上横
+            graObj.DrawLine(Pens.Red, 1, 1, 1, pctPointCtrl.Height);                                                // 左縦
+            graObj.DrawLine(Pens.Red, pctPointCtrl.Width - 1, 1, pctPointCtrl.Width - 1, pctPointCtrl.Height - 1);  // 右縦
+            graObj.DrawLine(Pens.Red, 1, pctPointCtrl.Height - 1, pctPointCtrl.Width - 1, pctPointCtrl.Height - 1); // 下横
+
+            // リソースを解放する
+            graObj.Dispose();
+
+            // 赤線を枠線コントロールに表示する
+            pctPointCtrl.Image = btmObj;
         }
 
         private void Button6_Click(object sender, EventArgs e)
@@ -108,6 +169,11 @@ namespace WindowsFormsApp1
             btnJudgeNG.Text = "■他画像でＮＧ判定済み";
             button6.Enabled = true;
             lblReason.Text = btnJudgeNG.Text;
+        }
+
+        private void btnLogOut_Click(object sender, EventArgs e)
+        {
+            LogOut();
         }
     }
 }

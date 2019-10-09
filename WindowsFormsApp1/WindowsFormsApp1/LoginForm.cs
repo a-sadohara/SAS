@@ -7,24 +7,47 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static WindowsFormsApp1.Common;
 
 namespace WindowsFormsApp1
 {
     public partial class LoginForm : Form
     {
-        public static String parUserNo;
-        public static String parUserNm;
-        public static short parDispNum;
-
         public LoginForm()
         {
             InitializeComponent();
 
-            rdbDispNum9.Checked = true;
+            this.StartPosition = FormStartPosition.CenterScreen;
+
+            if (!String.IsNullOrEmpty(parUserNo)) 
+            {
+                txtUser.Text = parUserNo + " " + parUserNm;
+            }
+            switch (parDispNum)
+            {
+                case 2:
+                    rdbDispNum2.Checked = true;
+                    break;
+                case 4:
+                    rdbDispNum4.Checked = true;
+                    break;
+                case 9:
+                    rdbDispNum9.Checked = true;
+                    break;
+                default:
+                    rdbDispNum9.Checked = true;
+                    break;
+            }
         }
         
         private void Button1_Click(object sender, EventArgs e)
         {
+            if (String.IsNullOrEmpty(parUserNo))
+            {
+                MessageBox.Show("職員を選択してください。");
+                return;
+            }
+
             if (this.rdbDispNum2.Checked == true) { parDispNum = 2; }
             if (this.rdbDispNum4.Checked == true) { parDispNum = 4; }
             if (this.rdbDispNum9.Checked == true) { parDispNum = 9; }
@@ -33,7 +56,6 @@ namespace WindowsFormsApp1
             TargetSelection frmTargetSelection = new TargetSelection();
 
             frmTargetSelection.ShowDialog(this);
-            this.Close();
             
         }
 
@@ -60,7 +82,7 @@ namespace WindowsFormsApp1
             parUserNo = frmTargetSelection.parUserNo;
             parUserNm = frmTargetSelection.parUserNm;
 
-            textBox2.Text = parUserNo + " " + parUserNm;
+            txtUser.Text = parUserNo + " " + parUserNm;
         }
     }
 }

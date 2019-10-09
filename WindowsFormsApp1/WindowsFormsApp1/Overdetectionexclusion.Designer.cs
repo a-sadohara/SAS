@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Overdetectionexclusion));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnLogOut = new System.Windows.Forms.Button();
+            this.lblUser = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button7 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -52,6 +54,7 @@
             this.pictureBox12 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
@@ -74,7 +77,7 @@
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.pictureBox1.Size = new System.Drawing.Size(224, 182);
+            this.pictureBox1.Size = new System.Drawing.Size(224, 169);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
@@ -83,12 +86,43 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnLogOut);
+            this.panel1.Controls.Add(this.lblUser);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(984, 14);
+            this.panel1.Size = new System.Drawing.Size(984, 53);
             this.panel1.TabIndex = 2;
+            // 
+            // btnLogOut
+            // 
+            this.btnLogOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLogOut.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnLogOut.Location = new System.Drawing.Point(867, 9);
+            this.btnLogOut.Margin = new System.Windows.Forms.Padding(2);
+            this.btnLogOut.Name = "btnLogOut";
+            this.btnLogOut.Size = new System.Drawing.Size(107, 36);
+            this.btnLogOut.TabIndex = 5;
+            this.btnLogOut.Text = "ログアウト";
+            this.btnLogOut.UseVisualStyleBackColor = true;
+            this.btnLogOut.Click += new System.EventHandler(this.btnLogOut_Click);
+            // 
+            // lblUser
+            // 
+            this.lblUser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblUser.AutoSize = true;
+            this.lblUser.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblUser.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblUser.Location = new System.Drawing.Point(563, 19);
+            this.lblUser.Margin = new System.Windows.Forms.Padding(2);
+            this.lblUser.MaximumSize = new System.Drawing.Size(300, 0);
+            this.lblUser.MinimumSize = new System.Drawing.Size(300, 0);
+            this.lblUser.Name = "lblUser";
+            this.lblUser.Size = new System.Drawing.Size(300, 17);
+            this.lblUser.TabIndex = 0;
+            this.lblUser.Text = "作業者名：XXXXXXXX";
+            this.lblUser.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // panel2
             // 
@@ -100,10 +134,10 @@
             this.panel2.Controls.Add(this.label2);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel2.Location = new System.Drawing.Point(0, 14);
+            this.panel2.Location = new System.Drawing.Point(0, 53);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(141, 572);
+            this.panel2.Size = new System.Drawing.Size(141, 533);
             this.panel2.TabIndex = 3;
             // 
             // button7
@@ -139,7 +173,7 @@
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.button1.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button1.Location = new System.Drawing.Point(9, 519);
+            this.button1.Location = new System.Drawing.Point(9, 480);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(116, 44);
@@ -200,10 +234,10 @@
             // 
             this.panel3.Controls.Add(this.button6);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(826, 14);
+            this.panel3.Location = new System.Drawing.Point(826, 53);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(158, 572);
+            this.panel3.Size = new System.Drawing.Size(158, 533);
             this.panel3.TabIndex = 4;
             // 
             // button6
@@ -230,7 +264,7 @@
             this.pictureBox4.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Padding = new System.Windows.Forms.Padding(4);
-            this.pictureBox4.Size = new System.Drawing.Size(225, 182);
+            this.pictureBox4.Size = new System.Drawing.Size(225, 169);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox4.TabIndex = 2;
             this.pictureBox4.TabStop = false;
@@ -245,7 +279,7 @@
             this.pictureBox5.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox5.Name = "pictureBox5";
             this.pictureBox5.Padding = new System.Windows.Forms.Padding(4);
-            this.pictureBox5.Size = new System.Drawing.Size(224, 182);
+            this.pictureBox5.Size = new System.Drawing.Size(224, 169);
             this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox5.TabIndex = 3;
             this.pictureBox5.TabStop = false;
@@ -265,11 +299,11 @@
             // 
             this.pictureBox6.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox6.Location = new System.Drawing.Point(2, 374);
+            this.pictureBox6.Location = new System.Drawing.Point(2, 348);
             this.pictureBox6.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox6.Name = "pictureBox6";
             this.pictureBox6.Padding = new System.Windows.Forms.Padding(4);
-            this.pictureBox6.Size = new System.Drawing.Size(224, 184);
+            this.pictureBox6.Size = new System.Drawing.Size(224, 171);
             this.pictureBox6.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox6.TabIndex = 2;
             this.pictureBox6.TabStop = false;
@@ -280,11 +314,11 @@
             // 
             this.pictureBox7.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox7.Location = new System.Drawing.Point(458, 374);
+            this.pictureBox7.Location = new System.Drawing.Point(458, 348);
             this.pictureBox7.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox7.Name = "pictureBox7";
             this.pictureBox7.Padding = new System.Windows.Forms.Padding(4);
-            this.pictureBox7.Size = new System.Drawing.Size(225, 184);
+            this.pictureBox7.Size = new System.Drawing.Size(225, 171);
             this.pictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox7.TabIndex = 3;
             this.pictureBox7.TabStop = false;
@@ -295,11 +329,11 @@
             // 
             this.pictureBox8.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox8.Location = new System.Drawing.Point(230, 374);
+            this.pictureBox8.Location = new System.Drawing.Point(230, 348);
             this.pictureBox8.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox8.Name = "pictureBox8";
             this.pictureBox8.Padding = new System.Windows.Forms.Padding(4);
-            this.pictureBox8.Size = new System.Drawing.Size(224, 184);
+            this.pictureBox8.Size = new System.Drawing.Size(224, 171);
             this.pictureBox8.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox8.TabIndex = 10;
             this.pictureBox8.TabStop = false;
@@ -310,11 +344,11 @@
             // 
             this.pictureBox9.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox9.Location = new System.Drawing.Point(2, 188);
+            this.pictureBox9.Location = new System.Drawing.Point(2, 175);
             this.pictureBox9.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox9.Name = "pictureBox9";
             this.pictureBox9.Padding = new System.Windows.Forms.Padding(4);
-            this.pictureBox9.Size = new System.Drawing.Size(224, 182);
+            this.pictureBox9.Size = new System.Drawing.Size(224, 169);
             this.pictureBox9.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox9.TabIndex = 2;
             this.pictureBox9.TabStop = false;
@@ -325,11 +359,11 @@
             // 
             this.pictureBox11.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox11.Location = new System.Drawing.Point(458, 188);
+            this.pictureBox11.Location = new System.Drawing.Point(458, 175);
             this.pictureBox11.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox11.Name = "pictureBox11";
             this.pictureBox11.Padding = new System.Windows.Forms.Padding(4);
-            this.pictureBox11.Size = new System.Drawing.Size(225, 182);
+            this.pictureBox11.Size = new System.Drawing.Size(225, 169);
             this.pictureBox11.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox11.TabIndex = 4;
             this.pictureBox11.TabStop = false;
@@ -340,11 +374,11 @@
             // 
             this.pictureBox12.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox12.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox12.Location = new System.Drawing.Point(230, 188);
+            this.pictureBox12.Location = new System.Drawing.Point(230, 175);
             this.pictureBox12.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox12.Name = "pictureBox12";
             this.pictureBox12.Padding = new System.Windows.Forms.Padding(4);
-            this.pictureBox12.Size = new System.Drawing.Size(224, 182);
+            this.pictureBox12.Size = new System.Drawing.Size(224, 169);
             this.pictureBox12.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox12.TabIndex = 10;
             this.pictureBox12.TabStop = false;
@@ -368,14 +402,14 @@
             this.tableLayoutPanel1.Controls.Add(this.pictureBox5, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(141, 14);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(141, 53);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(685, 560);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(685, 521);
             this.tableLayoutPanel1.TabIndex = 9;
             // 
             // Overdetectionexclusion
@@ -395,6 +429,8 @@
             this.Text = "過検知除外";
             this.Load += new System.EventHandler(this.Overdetectionexclusion_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.panel3.ResumeLayout(false);
@@ -434,6 +470,8 @@
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button btnLogOut;
+        private System.Windows.Forms.Label lblUser;
     }
 }
 

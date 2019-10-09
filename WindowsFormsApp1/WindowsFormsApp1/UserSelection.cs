@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.IO;
 using WindowsFormsApp1.DTO;
+using static WindowsFormsApp1.Common;
 
 namespace WindowsFormsApp1
 {
@@ -22,15 +23,15 @@ namespace WindowsFormsApp1
         {
             InitializeComponent();
 
-            //this.WindowState = FormWindowState.Maximized;
+            this.StartPosition = FormStartPosition.CenterScreen;
 
-            dataGridView1.Rows.Clear();
+            dgvData.Rows.Clear();
 
-            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridView1.MultiSelect = false;
+            dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvData.MultiSelect = false;
             // 新規行を追加させない
-            this.dataGridView1.AllowUserToAddRows = false;
-            dataGridView1.ReadOnly = true;
+            this.dgvData.AllowUserToAddRows = false;
+            dgvData.ReadOnly = true;
 
 
             foreach (string line in File.ReadLines("作業者.tsv", Encoding.Default))
@@ -42,7 +43,7 @@ namespace WindowsFormsApp1
                 string[] csv = strLine.Split('\t');
                 string[] data = new string[csv.Length];
                 Array.Copy(csv, 0, data, 0, data.Length);
-                this.dataGridView1.Rows.Add(data);
+                this.dgvData.Rows.Add(data);
 
             }
 
@@ -181,8 +182,8 @@ namespace WindowsFormsApp1
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            parUserNo = dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
-            parUserNm = dataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
+            parUserNo = dgvData.Rows[e.RowIndex].Cells[0].Value.ToString();
+            parUserNm = dgvData.Rows[e.RowIndex].Cells[1].Value.ToString();
             this.Close();
         }
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using WindowsFormsApp1.DTO;
+using static WindowsFormsApp1.Common;
 
 namespace WindowsFormsApp1
 {
@@ -32,17 +33,17 @@ namespace WindowsFormsApp1
 
         private void Result_Load(object sender, EventArgs e)
         {
-
             this.WindowState = FormWindowState.Maximized;
 
+            lblUser.Text = "作業者名：" + parUserNm;
 
-            dataGridView1.Rows.Clear();
+            dgvData.Rows.Clear();
 
-            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridView1.MultiSelect = false;
+            dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvData.MultiSelect = false;
             // 新規行を追加させない
-            this.dataGridView1.AllowUserToAddRows = false;
-            dataGridView1.ReadOnly = true;
+            this.dgvData.AllowUserToAddRows = false;
+            dgvData.ReadOnly = true;
 
 
             foreach (string line in File.ReadLines("判定登録.tsv", Encoding.Default))
@@ -54,7 +55,7 @@ namespace WindowsFormsApp1
                 string[] csv = strLine.Split('\t');
                 string[] data = new string[csv.Length];
                 Array.Copy(csv, 0, data, 0, data.Length);
-                this.dataGridView1.Rows.Add(data);
+                this.dgvData.Rows.Add(data);
 
             }
 
@@ -91,6 +92,11 @@ namespace WindowsFormsApp1
         {
             ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"));
             frmViewEnlargedimage.ShowDialog(this);
+        }
+
+        private void btnLogOut_Click(object sender, EventArgs e)
+        {
+            LogOut();
         }
     }
 }

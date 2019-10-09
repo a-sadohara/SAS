@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using WindowsFormsApp1.DTO;
+using static WindowsFormsApp1.Common;
 
 namespace WindowsFormsApp1
 {
@@ -32,7 +33,7 @@ namespace WindowsFormsApp1
             intRow = intRowIndex;
 
             // パラメータ：表示数から表示数を調整
-            switch (LoginForm.parDispNum)
+            switch (Common.parDispNum)
             {
                 case 2:
                     tableLayoutPanel1.Controls.RemoveAt(6);
@@ -379,8 +380,9 @@ namespace WindowsFormsApp1
 
         private void Overdetectionexclusion_Load(object sender, EventArgs e)
         {
-
             this.WindowState = FormWindowState.Maximized;
+
+            lblUser.Text = "作業者名：" + Common.parUserNm;
 
             List<PictureBox> lstPicBox = new List<PictureBox>();
             lstPicBox.Add(pictureBox1);
@@ -412,6 +414,11 @@ namespace WindowsFormsApp1
         private void pictureBox3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnLogOut_Click(object sender, EventArgs e)
+        {
+            LogOut();
         }
     }
 }
