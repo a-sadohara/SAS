@@ -154,6 +154,10 @@ namespace WindowsFormsApp1
                 case 4:
                     Overdetectionexclusion frmOverdetectionexclusion = new Overdetectionexclusion(dtTagetInfo,e.RowIndex);
                     frmOverdetectionexclusion.ShowDialog(this);
+                    if (frmOverdetectionexclusion.intRet == 2)
+                    {
+
+                    }
                     break;
                 case 5:
                     ResultCheck frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);

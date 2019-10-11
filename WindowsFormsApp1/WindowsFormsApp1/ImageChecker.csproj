@@ -181,9 +181,6 @@
       <DependentUpon>LoginForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Summary.resx">
-      <DependentUpon>Summary.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Overdetectionexclusion.resx">
       <DependentUpon>Overdetectionexclusion.cs</DependentUpon>
     </EmbeddedResource>
@@ -196,6 +193,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Summary.resx">
+      <DependentUpon>Summary.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Result2.resx">
       <DependentUpon>Result2.cs</DependentUpon>
     </EmbeddedResource>

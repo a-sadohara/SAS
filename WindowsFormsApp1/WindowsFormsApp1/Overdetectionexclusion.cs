@@ -15,6 +15,7 @@ namespace WindowsFormsApp1
 {
     public partial class Overdetectionexclusion : Form
     {
+        public int intRet = 0;
 
         private readonly SemaphoreSlim _clickSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _doubleClickSemaphore = new SemaphoreSlim(0);
@@ -302,22 +303,15 @@ namespace WindowsFormsApp1
             Summary frmSummary = new Summary();
 
             frmSummary.ShowDialog(this);
+            intRet = frmSummary.intRet;
 
-            if (frmSummary.parRet == 1)
-            {
-                DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
-                dtTargetInfo.Rows[intRow]["Status"] = "1";
-                dtTargetInfo.Rows[intRow]["Process"] = "合否確認・判定登録";
+            DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
+            dtTargetInfo.Rows[intRow]["Status"] = "1";
+            dtTargetInfo.Rows[intRow]["Process"] = "合否確認・判定登録";
 
-                objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
+            objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
 
-            }
-            if (frmSummary.parRet == -1 || frmSummary.parRet == 1){
-                this.Close();
-            } else
-            {
-                this.Visible = true;
-            }
+            this.Close();
         }
 
         private async void PictureBox4_Click(object sender, EventArgs e)
