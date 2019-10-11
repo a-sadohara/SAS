@@ -298,14 +298,26 @@ namespace WindowsFormsApp1
 
         private void Button6_Click(object sender, EventArgs e)
         {
+            this.Visible = false;
+            Summary frmSummary = new Summary();
 
-            DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
-            dtTargetInfo.Rows[intRow]["Status"] = "1";
-            dtTargetInfo.Rows[intRow]["Process"] = "合否確認・判定登録";
+            frmSummary.ShowDialog(this);
 
-            objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
+            if (frmSummary.parRet == 1)
+            {
+                DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
+                dtTargetInfo.Rows[intRow]["Status"] = "1";
+                dtTargetInfo.Rows[intRow]["Process"] = "合否確認・判定登録";
 
-            this.Close();
+                objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
+
+            }
+            if (frmSummary.parRet == -1 || frmSummary.parRet == 1){
+                this.Close();
+            } else
+            {
+                this.Visible = true;
+            }
         }
 
         private async void PictureBox4_Click(object sender, EventArgs e)

@@ -51,8 +51,6 @@
             this.btnOk = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -67,6 +65,8 @@
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -225,6 +225,8 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.button3);
+            this.panel3.Controls.Add(this.button2);
             this.panel3.Controls.Add(this.lblReason);
             this.panel3.Controls.Add(this.label20);
             this.panel3.Controls.Add(this.label19);
@@ -235,8 +237,6 @@
             this.panel3.Controls.Add(this.btnOk);
             this.panel3.Controls.Add(this.label17);
             this.panel3.Controls.Add(this.label18);
-            this.panel3.Controls.Add(this.label16);
-            this.panel3.Controls.Add(this.label15);
             this.panel3.Controls.Add(this.label14);
             this.panel3.Controls.Add(this.label13);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -375,32 +375,6 @@
             this.label18.Size = new System.Drawing.Size(64, 17);
             this.label18.TabIndex = 23;
             this.label18.Text = "NG面：＃2";
-            // 
-            // label16
-            // 
-            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.label16.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label16.Location = new System.Drawing.Point(152, 49);
-            this.label16.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(21, 24);
-            this.label16.TabIndex = 22;
-            this.label16.Text = "C";
-            // 
-            // label15
-            // 
-            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.label15.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label15.Location = new System.Drawing.Point(54, 49);
-            this.label15.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(30, 24);
-            this.label15.TabIndex = 21;
-            this.label15.Text = "34";
             // 
             // label14
             // 
@@ -585,6 +559,30 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(684, 357);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.button2.Location = new System.Drawing.Point(37, 33);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(55, 32);
+            this.button2.TabIndex = 33;
+            this.button2.Text = "34";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click_1);
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.button3.Location = new System.Drawing.Point(119, 33);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(55, 32);
+            this.button3.TabIndex = 33;
+            this.button3.Text = "C";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // ResultCheck
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -638,8 +636,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label11;
@@ -659,5 +655,7 @@
         private System.Windows.Forms.Button btnJudgeNG;
         private System.Windows.Forms.Button btnLogOut;
         private System.Windows.Forms.Label lblUser;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button2;
     }
 }

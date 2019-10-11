@@ -162,7 +162,6 @@ namespace WindowsFormsApp1
                     error = ex.Message;
                 }
 
-
                 //// 後処理
                 //dispose(sheets);
                 //if (book != null)
@@ -191,24 +190,6 @@ namespace WindowsFormsApp1
             excel.Visible = true;
         }
 
-        /// <summary>
-        /// COMオブジェクト破棄
-        /// </summary>
-        /// <param name="comObject"></param>
-        private static void dispose(dynamic comObject)
-        {
-            try
-            {
-                if (comObject != null)
-                {
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(comObject);
-                    comObject = null;
-                }
-            }
-            catch
-            {
-            }
-        }
     }
 
 }
