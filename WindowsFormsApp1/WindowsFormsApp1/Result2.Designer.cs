@@ -58,7 +58,6 @@
             this.lblShinaNm = new System.Windows.Forms.Label();
             this.lblGoki = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.btnPrint = new System.Windows.Forms.Button();
             this.btnBackTargetSelection = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -98,7 +97,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1363, 123);
+            this.panel1.Size = new System.Drawing.Size(1363, 129);
             this.panel1.TabIndex = 0;
             // 
             // btnLogOut
@@ -239,7 +238,7 @@
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button4.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button4.Location = new System.Drawing.Point(841, 82);
+            this.button4.Location = new System.Drawing.Point(852, 84);
             this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(107, 36);
@@ -386,27 +385,13 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.panel4.Controls.Add(this.btnPrint);
             this.panel4.Controls.Add(this.btnBackTargetSelection);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 508);
+            this.panel4.Location = new System.Drawing.Point(0, 521);
             this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1363, 91);
+            this.panel4.Size = new System.Drawing.Size(1363, 78);
             this.panel4.TabIndex = 3;
-            // 
-            // btnPrint
-            // 
-            this.btnPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPrint.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnPrint.Location = new System.Drawing.Point(1223, 31);
-            this.btnPrint.Margin = new System.Windows.Forms.Padding(2);
-            this.btnPrint.Name = "btnPrint";
-            this.btnPrint.Size = new System.Drawing.Size(107, 36);
-            this.btnPrint.TabIndex = 0;
-            this.btnPrint.Text = "印刷";
-            this.btnPrint.UseVisualStyleBackColor = true;
-            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
             // 
             // btnBackTargetSelection
             // 
@@ -424,20 +409,20 @@
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel2.Location = new System.Drawing.Point(0, 123);
+            this.panel2.Location = new System.Drawing.Point(0, 129);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(40, 385);
+            this.panel2.Size = new System.Drawing.Size(60, 392);
             this.panel2.TabIndex = 4;
             // 
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(1306, 123);
+            this.panel3.Location = new System.Drawing.Point(1277, 129);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(57, 385);
+            this.panel3.Size = new System.Drawing.Size(86, 392);
             this.panel3.TabIndex = 5;
             // 
             // panel6
@@ -445,10 +430,10 @@
             this.panel6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel6.Controls.Add(this.dgvData);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(40, 123);
+            this.panel6.Location = new System.Drawing.Point(60, 129);
             this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1266, 385);
+            this.panel6.Size = new System.Drawing.Size(1217, 392);
             this.panel6.TabIndex = 6;
             // 
             // dgvData
@@ -497,7 +482,7 @@
             this.dgvData.RowTemplate.Height = 30;
             this.dgvData.RowTemplate.ReadOnly = true;
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvData.Size = new System.Drawing.Size(1266, 385);
+            this.dgvData.Size = new System.Drawing.Size(1217, 392);
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
@@ -584,7 +569,6 @@
         private System.Windows.Forms.Label lblHansoStaDate;
         private System.Windows.Forms.Label lblUser;
         private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Button btnPrint;
         private System.Windows.Forms.Button btnBackTargetSelection;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
