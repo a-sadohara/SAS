@@ -20,7 +20,7 @@ namespace WindowsFormsApp1
         public String parUserNo;
         public String parUserNm;
         public NpgsqlConnection NpgsqlCon;
-        public const string  strConnect = "Server=localhost;Port=5432;User ID=postgres;Database=postgres;Password=manager;Enlist=true";
+        public const string  strConnect = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
         public DataTable dtData;
 
         public UserSelection()

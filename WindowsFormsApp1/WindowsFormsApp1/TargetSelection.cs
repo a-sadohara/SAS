@@ -134,6 +134,8 @@ namespace WindowsFormsApp1
 
         private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            ResultCheck frmResultCheck;
+
             DataGridView dgv = (DataGridView)sender;
 
 
@@ -156,11 +158,12 @@ namespace WindowsFormsApp1
                     frmOverdetectionexclusion.ShowDialog(this);
                     if (frmOverdetectionexclusion.intRet == 2)
                     {
-
+                        frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
+                        frmResultCheck.ShowDialog(this);
                     }
                     break;
                 case 5:
-                    ResultCheck frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
+                    frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
                     frmResultCheck.ShowDialog(this);
                     break;
                 case 6:

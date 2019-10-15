@@ -54,3 +54,4 @@ C:\WORK\nec_201907～住商エアバック\WindowsFormsApp1\WindowsFormsApp1\bin
 C:\WORK\nec_201907～住商エアバック\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.csproj.CopyComplete
 C:\WORK\nec_201907～住商エアバック\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Summary.resources
 C:\WORK\nec_201907～住商エアバック\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Form1.resources
+C:\WORK\nec_201907～住商エアバック\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.csprojAssemblyReference.cache
