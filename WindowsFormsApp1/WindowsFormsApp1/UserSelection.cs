@@ -210,7 +210,7 @@ namespace WindowsFormsApp1
                         NpgsqlCommand NpgsqlCom = null;
                         NpgsqlDataAdapter NpgsqlDtAd = null;
                         dtData = new DataTable();
-                        strSQL += "SELECT * FROM public.USER ";
+                        strSQL += "SELECT * FROM SAGYOSYA ";
                         strSQL += "WHERE SUBSTRING(USERYOMIGANA,1,1) BETWEEN '" + strKanaSta + "' AND '" + strKanaEnd + "'";
                         strSQL += "ORDER BY USERNO ASC ";
                         NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
