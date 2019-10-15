@@ -90,6 +90,7 @@ namespace WindowsFormsApp1
             string strPrintReportPath = @"..\..\" + strPrintReportName;
             string strCsvFilePath = @".\判定登録.tsv";
             string strSaveDirPath = @".\OutPrint";
+
             string strSaveFileNm = "検査結果照会_" + DateTime.Now.ToString("yyyyMMddHHmmss");
 
             // ファイルチェック
@@ -142,24 +143,25 @@ namespace WindowsFormsApp1
                 }
 
 
-                //// 後処理
-                //dispose(sheets);
-                //if (book != null)
-                //{
-                //    book.Close(Type.Missing, Type.Missing, Type.Missing);
-                //    dispose(book);
-                //}
-                //dispose(workbooks);
-                //if (excel != null)
-                //{
-                //    excel.Quit();
-                //    dispose(excel);
-                //}
 
-                //if (!string.IsNullOrEmpty(error))
-                //{
-                //    throw new Exception(error);
-                //}
+                // 後処理
+                dispose(sheets);
+                if (book != null)
+                {
+                    book.Close(Type.Missing, Type.Missing, Type.Missing);
+                    dispose(book);
+                }
+                dispose(workbooks);
+                if (excel != null)
+                {
+                    excel.Quit();
+                    dispose(excel);
+                }
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    throw new Exception(error);
+                }
             }
             else
             {
@@ -169,8 +171,26 @@ namespace WindowsFormsApp1
             // 表示　※デバッグ用
             excel.Visible = true;
 
-
             this.Close();
+        }
+
+        /// <summary>
+        /// COMオブジェクト破棄
+        /// </summary>
+        /// <param name="comObject"></param>
+        private static void dispose(dynamic comObject)
+        {
+            try
+            {
+                if (comObject != null)
+                {
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(comObject);
+                    comObject = null;
+                }
+            }
+            catch
+            {
+            }
         }
 
         private void Button2_Click(object sender, EventArgs e)

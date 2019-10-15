@@ -1,5 +1,24 @@
-﻿namespace WindowsFormsApp1
+﻿using System;
+using System.Reflection;
+using System.Windows.Forms;
+
+namespace WindowsFormsApp1
 {
+    //class DBDataGridView : DataGridView
+    //{
+    //    public DBDataGridView() { DoubleBuffered = true; }
+    //}
+
+    //public static class ExtensionMethods
+    //{
+    //    public static void DoubleBuffered(this DataGridView dgv, bool setting)
+    //    {
+    //        Type dgvType = dgv.GetType();
+    //        PropertyInfo pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+    //        pi.SetValue(dgv, setting, null);
+    //    }
+    //}
+
     partial class TargetSelection
     {
         /// <summary>
@@ -19,6 +38,33 @@
             }
             base.Dispose(disposing);
         }
+
+        //private const int WM_VSCROLL = 0x0115;
+        //private const int SB_THUMBPOSITION = 0x0004;
+        //private const int SB_THUMBTRACK = 0x0005;
+        //[System.Runtime.InteropServices.DllImport("user32")]
+        //private static extern int PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+        //public class MyDataGridView : DataGridView
+        //{
+        //    // メッセージを処理します。
+        //    protected override void WndProc(ref Message m)
+        //    {
+        //        base.WndProc(ref m);
+        //        if (m.Msg == WM_VSCROLL)
+        //        {
+        //            if (((long)m.WParam) == (long)SB_THUMBPOSITION)
+        //            {
+        //                BeginInvoke((Action<IntPtr, IntPtr>)((WParam, LParam) =>
+        //                {
+        //                    // SB_THUMBPOSITION を SB_THUMBTRACK に変更します。
+        //                    IntPtr testWParam = new IntPtr(SB_THUMBTRACK);
+        //                    // WM_VSCROLL メッセージを再送します。
+        //                    PostMessage(this.Handle, WM_VSCROLL, testWParam, LParam);
+        //                }), m.WParam, m.LParam);
+        //            }
+        //        }
+        //    }
+        //}
 
         #region Windows Form Designer generated code
 
@@ -50,6 +96,7 @@
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -78,13 +125,16 @@
             this.dataGridView1.EnableHeadersVisualStyles = false;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 51;
+            this.dataGridView1.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.dataGridView1.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.dataGridView1.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridView1.RowTemplate.Height = 24;
+            this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dataGridView1.Size = new System.Drawing.Size(1361, 546);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);

@@ -14,6 +14,7 @@ using static WindowsFormsApp1.Common;
 
 namespace WindowsFormsApp1
 {
+
     public partial class TargetSelection : Form
     {
 
@@ -28,7 +29,6 @@ namespace WindowsFormsApp1
 
             dtTagetInfo = new TargetInfoDto();
             DataTable dtWkInfo = dtTagetInfo.getTargetInfoDTO();
-
 
             foreach (string line in File.ReadLines("検査対象選択.TSV", Encoding.Default))
             {
@@ -53,7 +53,6 @@ namespace WindowsFormsApp1
 
             dtTagetInfo.setTargetInfoDTO(dtWkInfo);
 
-
             // グリッドビューにボタンを追加
             DataGridViewDisableButtonColumn btnOverdetectionexclusion = new DataGridViewDisableButtonColumn();
             btnOverdetectionexclusion.FlatStyle = FlatStyle.Flat;
@@ -71,14 +70,13 @@ namespace WindowsFormsApp1
 
             this.dataGridView1.MultiSelect = false;
 
-
         }
 
         private void TargetSelection_Activated(object sender, EventArgs e)
         {
             // グリッドを初期化
-            dataGridView1.Rows.Clear();         
-            
+            dataGridView1.Rows.Clear();
+
             // ターゲットデータ読み込み
             DataTable dtWkInfo = dtTagetInfo.getTargetInfoDTO();
 
@@ -96,9 +94,7 @@ namespace WindowsFormsApp1
                 lstDataGrid[5] = "合否確認・判定登録";
                 lstDataGrid[6] = "検査結果";
 
-
-
-               this.dataGridView1.Rows.Add(lstDataGrid);
+                this.dataGridView1.Rows.Add(lstDataGrid);
 
                 switch (drTargetInfo["Process"].ToString())
                 {
@@ -112,7 +108,6 @@ namespace WindowsFormsApp1
                         changeStatus(this.dataGridView1.Rows[dataGridView1.Rows.Count - 2], 6, int.Parse(drTargetInfo["Status"].ToString()));
                         break;
                 }
-
 
             }
 
@@ -139,6 +134,8 @@ namespace WindowsFormsApp1
 
         private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            ResultCheck frmResultCheck;
+
             DataGridView dgv = (DataGridView)sender;
 
 
@@ -159,9 +156,14 @@ namespace WindowsFormsApp1
                 case 4:
                     Overdetectionexclusion frmOverdetectionexclusion = new Overdetectionexclusion(dtTagetInfo,e.RowIndex);
                     frmOverdetectionexclusion.ShowDialog(this);
+                    if (frmOverdetectionexclusion.intRet == 2)
+                    {
+                        frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
+                        frmResultCheck.ShowDialog(this);
+                    }
                     break;
                 case 5:
-                    ResultCheck frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
+                    frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
                     frmResultCheck.ShowDialog(this);
                     break;
                 case 6:
@@ -243,6 +245,10 @@ namespace WindowsFormsApp1
         {
             LogOut();
         }
+
+        private void TargetSelection_LocationChanged(object sender, EventArgs e)
+        {
+        }
     }
 
     public class DataGridViewDisableButtonColumn : DataGridViewButtonColumn
@@ -252,7 +258,6 @@ namespace WindowsFormsApp1
             this.CellTemplate = new DataGridViewDisableButtonCell();
         }
     }
-
 
     public class DataGridViewDisableButtonCell : DataGridViewButtonCell
     {

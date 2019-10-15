@@ -53,12 +53,12 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.dgvData = new System.Windows.Forms.DataGridView();
-            this.no = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.line = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ng = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.position = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.position = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ng = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.line = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.no = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -320,6 +320,7 @@
             // 
             // dgvData
             // 
+            this.dgvData.AllowUserToAddRows = false;
             this.dgvData.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
@@ -368,33 +369,12 @@
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
-            // no
+            // reason
             // 
-            this.no.HeaderText = "№";
-            this.no.MinimumWidth = 6;
-            this.no.Name = "no";
-            this.no.Width = 60;
-            // 
-            // line
-            // 
-            this.line.HeaderText = "行";
-            this.line.MinimumWidth = 6;
-            this.line.Name = "line";
-            this.line.Width = 60;
-            // 
-            // Column
-            // 
-            this.Column.HeaderText = "列";
-            this.Column.MinimumWidth = 6;
-            this.Column.Name = "Column";
-            this.Column.Width = 60;
-            // 
-            // ng
-            // 
-            this.ng.HeaderText = "NG面";
-            this.ng.MinimumWidth = 6;
-            this.ng.Name = "ng";
-            this.ng.Width = 150;
+            this.reason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.reason.HeaderText = "NG理由";
+            this.reason.MinimumWidth = 6;
+            this.reason.Name = "reason";
             // 
             // position
             // 
@@ -403,12 +383,33 @@
             this.position.Name = "position";
             this.position.Width = 130;
             // 
-            // reason
+            // ng
             // 
-            this.reason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.reason.HeaderText = "NG理由";
-            this.reason.MinimumWidth = 6;
-            this.reason.Name = "reason";
+            this.ng.HeaderText = "NG面";
+            this.ng.MinimumWidth = 6;
+            this.ng.Name = "ng";
+            // 
+            // Column
+            // 
+            this.Column.HeaderText = "列";
+            this.Column.MinimumWidth = 6;
+            this.Column.Name = "Column";
+            this.Column.Width = 60;
+            // 
+            // line
+            // 
+            this.line.HeaderText = "行";
+            this.line.MinimumWidth = 6;
+            this.line.Name = "line";
+            this.line.Width = 60;
+            this.ng.Width = 150;
+            // 
+            // no
+            // 
+            this.no.HeaderText = "№";
+            this.no.MinimumWidth = 6;
+            this.no.Name = "no";
+            this.no.Width = 60;
             // 
             // Result
             // 
@@ -456,12 +457,12 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.DataGridView dgvData;
+        private System.Windows.Forms.Button btnLogOut;
         private System.Windows.Forms.DataGridViewTextBoxColumn no;
         private System.Windows.Forms.DataGridViewTextBoxColumn line;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column;
         private System.Windows.Forms.DataGridViewTextBoxColumn ng;
         private System.Windows.Forms.DataGridViewTextBoxColumn position;
         private System.Windows.Forms.DataGridViewTextBoxColumn reason;
-        private System.Windows.Forms.Button btnLogOut;
     }
 }

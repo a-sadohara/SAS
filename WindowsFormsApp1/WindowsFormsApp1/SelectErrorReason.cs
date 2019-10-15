@@ -53,7 +53,6 @@ namespace WindowsFormsApp1
                 Array.Copy(csv, 0, data, 0, data.Length);
                 this.dgvData.Rows.Add(data);
                 
-
             }
         }
 

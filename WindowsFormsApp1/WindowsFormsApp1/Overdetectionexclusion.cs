@@ -15,6 +15,7 @@ namespace WindowsFormsApp1
 {
     public partial class Overdetectionexclusion : Form
     {
+        public int intRet = 0;
 
         private readonly SemaphoreSlim _clickSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _doubleClickSemaphore = new SemaphoreSlim(0);
@@ -298,6 +299,11 @@ namespace WindowsFormsApp1
 
         private void Button6_Click(object sender, EventArgs e)
         {
+            this.Visible = false;
+            Summary frmSummary = new Summary();
+
+            frmSummary.ShowDialog(this);
+            intRet = frmSummary.intRet;
 
             DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
             dtTargetInfo.Rows[intRow]["Status"] = "1";

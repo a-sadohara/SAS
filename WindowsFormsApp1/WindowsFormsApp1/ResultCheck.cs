@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -151,6 +152,7 @@ namespace WindowsFormsApp1
 
             // 赤線を枠線コントロールに表示する
             pctPointCtrl.Image = btmObj;
+
         }
 
         private void Button6_Click(object sender, EventArgs e)
@@ -174,6 +176,28 @@ namespace WindowsFormsApp1
         private void btnLogOut_Click(object sender, EventArgs e)
         {
             LogOut();
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            Int16 i;
+
+            DataTable dtData = new DataTable();
+            dtData.Columns.Add(new DataColumn("val"));
+            dtData.Columns.Add(new DataColumn("val2"));
+
+            for (i = 1; i < 20; ++i)
+            {
+                dtData.Rows.Add(new Object[] { i, i });
+            }
+
+            Form1 frmUserControl1 = new Form1(dtData, 1);
+            frmUserControl1.ShowDialog();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
