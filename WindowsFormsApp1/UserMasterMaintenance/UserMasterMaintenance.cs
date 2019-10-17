@@ -15,9 +15,7 @@ namespace UserMasterMaintenance
 {
     public partial class UserMasterMaintenance : Form
     {
-        #region 定数・変数
-        private NpgsqlConnection NpgsqlCon;
-        
+        #region 定数・変数       
         private DataTable dtData;
 
         private string strKanaSta = "";
@@ -26,6 +24,8 @@ namespace UserMasterMaintenance
         private string strYomiGanaEnd = "";
 
         private int intSelRow = 0;
+
+        private const Int32 COL_USERNO = 0;
         #endregion
 
         #region イベント
@@ -70,17 +70,44 @@ namespace UserMasterMaintenance
             }
             else
             {
-                foreach (DataGridViewRow r in dgvUser.SelectedRows)
+                if (MessageBox.Show("選択されている行（データ）を削除しますか？"
+                                  , "確認"
+                                  , MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    if (MessageBox.Show("選択されている行（データ）を削除しますか？", "確認", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    try
                     {
-                        MessageBox.Show("削除しました");
+                        // PostgreSQLへ接続
+                        using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                        {
+                            NpgsqlCon.Open();
 
-                        dispDataGridView();
+                            using (var transaction = NpgsqlCon.BeginTransaction())
+                            {
+                                if (DelUser(NpgsqlCon, transaction) == true)
+                                {
+                                    transaction.Commit();
+                                    MessageBox.Show("削除しました");
+                                }
+                                else 
+                                {
+                                    MessageBox.Show("削除に失敗したためロールバックします");
+                                }
+                            }
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("削除時にエラーが発生しました。"
+                                       + Environment.NewLine
+                                       + ex.Message);
+                    }
+
+                    // 再表示
+                    dispDataGridView();
                 }
             }
         }
+
         /// <summary>
         /// csvインポートボタンクリック
         /// </summary>
@@ -270,17 +297,52 @@ namespace UserMasterMaintenance
                 }
             }
 
+            dgvUser.CurrentCell = null;
+
             // 選択行設定
-            if (intSelRow <= dgvUser.Rows.Count - 1)
+            //if (intSelRow <= dgvUser.Rows.Count - 1)
+            //{
+            //    dgvUser.Rows[intSelRow].Selected = true;
+            //}
+            //else if (dgvUser.Rows.Count > 0)
+            //{
+            //    dgvUser.Rows[dgvUser.Rows.Count - 1].Selected = true;
+            //}
+            if (dgvUser.Rows.Count > 0) 
             {
-                dgvUser.Rows[intSelRow].Selected = true;
+                dgvUser.Rows[0].Selected = true;
             }
-            else if (dgvUser.Rows.Count > 0)
+        }
+
+        /// <summary>
+        /// ユーザ削除処理
+        /// </summary>
+        /// <param name="NpgsqlCon">接続子</param>
+        /// <param name="transaction">トランザクション</param>
+        /// <returns></returns>
+        private Boolean DelUser(NpgsqlConnection NpgsqlCon
+                              , NpgsqlTransaction transaction)
+        {
+            foreach (DataGridViewRow r in dgvUser.SelectedRows)
             {
-                dgvUser.Rows[dgvUser.Rows.Count - 1].Selected = true;
+                string strSelUserNo = NulltoString(r.Cells[COL_USERNO].Value);
+                // SQL文を作成する
+                string strCreateSql = @"DELETE FROM SAGYOSYA WHERE USERNO = :UserNo";
+
+                // SQLコマンドに各パラメータを設定する
+                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+
+                command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = strSelUserNo });
+
+                // sqlを実行する
+                if (ExecTranSQL(command, transaction) == false)
+                {
+                    return false;
+                }
             }
 
+            return true;
         }
-        #endregion
+        #endregion    
     }
 }

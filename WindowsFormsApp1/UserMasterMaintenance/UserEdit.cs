@@ -105,10 +105,10 @@ namespace UserMasterMaintenance
                 txtUserNo.Text = parUserNo;
                 txtUserNo.Enabled = false;
                 // 作業者名
-                if (parUserNm.Split('　').Count() == 2)
+                if (parUserNm.Split(Convert.ToChar(NAME_SEPARATE)).Count() == 2)
                 {
-                    txtUserNm_Sei.Text = parUserNm.Split('　')[0];
-                    txtUserNm_Mei.Text = parUserNm.Split('　')[1];
+                    txtUserNm_Sei.Text = parUserNm.Split(Convert.ToChar(NAME_SEPARATE))[0];
+                    txtUserNm_Mei.Text = parUserNm.Split(Convert.ToChar(NAME_SEPARATE))[1];
                 }
                 else
                 {
@@ -119,10 +119,10 @@ namespace UserMasterMaintenance
                     txtUserNm_Sei.Text = parUserNm;
                 }
                 // 読み仮名
-                if (parUserYomiGana.Split('　').Count() == 2)
+                if (parUserYomiGana.Split(Convert.ToChar(NAME_SEPARATE)).Count() == 2)
                 {
-                    txtUserYomiGana_Sei.Text = parUserYomiGana.Split('　')[0];
-                    txtUserYomiGana_Mei.Text = parUserYomiGana.Split('　')[1];
+                    txtUserYomiGana_Sei.Text = parUserYomiGana.Split(Convert.ToChar(NAME_SEPARATE))[0];
+                    txtUserYomiGana_Mei.Text = parUserYomiGana.Split(Convert.ToChar(NAME_SEPARATE))[1];
                 }
                 else
                 {
@@ -177,7 +177,6 @@ namespace UserMasterMaintenance
 
             return true;
         }
-
 
         /// <summary>
         /// 必須入力チェック
@@ -237,15 +236,14 @@ namespace UserMasterMaintenance
                             var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
 
                             command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = txtUserNo.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Sei.Text + "　" + txtUserNm_Mei.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = txtUserYomiGana_Sei.Text + "　" + txtUserYomiGana_Mei.Text });
+                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Sei.Text + NAME_SEPARATE + txtUserNm_Mei.Text });
+                            command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = txtUserYomiGana_Sei.Text + NAME_SEPARATE + txtUserYomiGana_Mei.Text });
 
                             // sqlを実行する
                             if (ExecTranSQL(command, transaction) == false)
                             {
                                 return false;
                             }
-
 
                             transaction.Commit();
                         }
@@ -290,10 +288,10 @@ namespace UserMasterMaintenance
 
                         command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = txtUserNo.Text });
                         command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Sei.Text 
-                                                                                                      + "　" 
+                                                                                                      + NAME_SEPARATE
                                                                                                       + txtUserNm_Mei.Text });
                         command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = txtUserYomiGana_Sei.Text 
-                                                                                                          + "　" 
+                                                                                                          + NAME_SEPARATE
                                                                                                           + txtUserYomiGana_Mei.Text });
 
                         // sqlを実行する
@@ -317,30 +315,6 @@ namespace UserMasterMaintenance
             }
         }
 
-        /// <summary>
-        /// 登録・更新処理実行
-        /// </summary>
-        /// <param name="nscCommand">実行SQLコマンド</param>
-        /// <param name="transaction">トランザクション情報</param>
-        /// <returns></returns>
-        public static Boolean ExecTranSQL(NpgsqlCommand nscCommand
-                                        , NpgsqlTransaction transaction)
-        {
-            
-            try
-            {
-                nscCommand.ExecuteNonQuery();
-                return true;
-            }
-            catch (NpgsqlException ex)
-            {
-                transaction.Rollback();
-                MessageBox.Show("登録時にエラーが発生しました。" 
-                              + Environment.NewLine 
-                              + ex.Message);
-                return false;
-            }
-        }
 
         /// <summary>
         /// キー重複チェック
