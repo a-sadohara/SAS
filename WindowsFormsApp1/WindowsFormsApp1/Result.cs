@@ -80,98 +80,6 @@ namespace WindowsFormsApp1
 
             objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
 
-<<<<<<< HEAD
-            var result = "";
-            var error = "";
-            dynamic excel = null;
-            dynamic workbooks = null;
-            dynamic book = null;
-            dynamic sheets = null;
-            string strPrintReportName = "PrintReport.xlsm";
-            string strPrintReportPath = @"..\..\" + strPrintReportName;
-            string strCsvFilePath = @".\判定登録.tsv";
-            string strSaveDirPath = @".\OutPrint";
-
-            string strSaveFileNm = "検査結果照会_" + DateTime.Now.ToString("yyyyMMddHHmmss");
-
-            // ファイルチェック
-            System.Environment.CurrentDirectory = Application.StartupPath;
-            if (!File.Exists(strPrintReportPath))
-            {
-                MessageBox.Show("[" + strPrintReportPath + "]ファイルが存在しません");
-                return;
-            }
-            if (!File.Exists(strCsvFilePath))
-            {
-                MessageBox.Show("[" + strCsvFilePath + "]ファイルが存在しません");
-                return;
-            }
-            if (!Directory.Exists(strSaveDirPath))
-            {
-                MessageBox.Show("[" + strSaveDirPath + "]ディレクトリが存在しません");
-                return;
-            }
-
-            // 絶対パスを取得
-            strPrintReportPath = System.IO.Path.GetFullPath(strPrintReportPath);
-            strCsvFilePath = System.IO.Path.GetFullPath(strCsvFilePath);
-            strSaveDirPath = System.IO.Path.GetFullPath(strSaveDirPath);
-
-            Type type = Type.GetTypeFromProgID("Excel.Application");
-            excel = Activator.CreateInstance(type);
-            if (excel != null)
-            {
-                try
-                {
-                    // 非表示
-                    excel.DisplayAlerts = false;
-
-                    // ワークブック保持
-                    workbooks = excel.Workbooks;
-
-                    // ブックを生成
-                    book = excel.Workbooks.Open(strPrintReportPath);
-
-                    // シートを保持
-                    sheets = book.Sheets;
-
-                    // マクロ実行
-                    result = (string)excel.Run(strPrintReportName + "!" + "RunForApp", strCsvFilePath, strSaveDirPath, strSaveFileNm);
-                }
-                catch (Exception ex)
-                {
-                    error = ex.Message;
-                }
-
-
-
-                // 後処理
-                dispose(sheets);
-                if (book != null)
-                {
-                    book.Close(Type.Missing, Type.Missing, Type.Missing);
-                    dispose(book);
-                }
-                dispose(workbooks);
-                if (excel != null)
-                {
-                    excel.Quit();
-                    dispose(excel);
-                }
-
-                if (!string.IsNullOrEmpty(error))
-                {
-                    throw new Exception(error);
-                }
-            }
-            else
-            {
-                throw new Exception("Excelアプリケーションがインストールされていません。");
-            }
-
-            // 表示　※デバッグ用
-            excel.Visible = true;
-=======
             //var result = "";
             //var error = "";
             //dynamic excel = null;
@@ -261,7 +169,6 @@ namespace WindowsFormsApp1
 
             //// 表示　※デバッグ用
             //excel.Visible = true;
->>>>>>> remotes/origin/develope(kadoguchi)
 
             this.Close();
         }
