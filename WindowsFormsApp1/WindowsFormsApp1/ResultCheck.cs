@@ -49,6 +49,8 @@ namespace WindowsFormsApp1
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
 
+            comboBox1.SelectedIndex = 33;
+            comboBox2.SelectedIndex = 2;
         }
 
 
