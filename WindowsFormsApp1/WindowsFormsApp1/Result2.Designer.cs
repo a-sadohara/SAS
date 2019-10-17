@@ -236,7 +236,10 @@
             // 
             // button4
             // 
+<<<<<<< HEAD
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+=======
+>>>>>>> remotes/origin/develope(kadoguchi)
             this.button4.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.button4.Location = new System.Drawing.Point(852, 84);
             this.button4.Margin = new System.Windows.Forms.Padding(2);
@@ -393,6 +396,23 @@
             this.panel4.Size = new System.Drawing.Size(1363, 78);
             this.panel4.TabIndex = 3;
             // 
+<<<<<<< HEAD
+=======
+            // btnPrint
+            // 
+            this.btnPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPrint.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.btnPrint.Location = new System.Drawing.Point(1223, 31);
+            this.btnPrint.Margin = new System.Windows.Forms.Padding(2);
+            this.btnPrint.Name = "btnPrint";
+            this.btnPrint.Size = new System.Drawing.Size(107, 36);
+            this.btnPrint.TabIndex = 0;
+            this.btnPrint.Text = "印刷";
+            this.btnPrint.UseVisualStyleBackColor = true;
+            this.btnPrint.Visible = false;
+            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
+            // 
+>>>>>>> remotes/origin/develope(kadoguchi)
             // btnBackTargetSelection
             // 
             this.btnBackTargetSelection.Font = new System.Drawing.Font("メイリオ", 9F);

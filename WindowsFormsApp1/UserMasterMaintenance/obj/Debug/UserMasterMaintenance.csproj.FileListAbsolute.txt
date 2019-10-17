@@ -19,6 +19,7 @@ C:\WORK\nec_201907～住商エアバック\WindowsFormsApp1\UserMasterMaintenanc
 C:\WORK\nec_201907～住商エアバック\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\System.ValueTuple.xml
 C:\WORK\nec_201907～住商エアバック\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.csproj.CopyComplete
 C:\WORK\nec_201907～住商エアバック\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.UserImportCsv.resources
+<<<<<<< HEAD
 D:\10.GIT\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\UserMasterMaintenance.exe.config
 D:\10.GIT\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\UserMasterMaintenance.exe
 D:\10.GIT\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\UserMasterMaintenance.pdb
@@ -40,3 +41,26 @@ D:\10.GIT\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMainten
 D:\10.GIT\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.csproj.CopyComplete
 D:\10.GIT\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.exe
 D:\10.GIT\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.pdb
+=======
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\UserMasterMaintenance.exe.config
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\UserMasterMaintenance.exe
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\UserMasterMaintenance.pdb
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\Npgsql.dll
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\System.Threading.Tasks.Extensions.dll
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\System.ValueTuple.dll
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\Npgsql.pdb
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\Npgsql.xml
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\System.Threading.Tasks.Extensions.xml
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\bin\Debug\System.ValueTuple.xml
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.csprojAssemblyReference.cache
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.Properties.Resources.resources
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.UserImportCsv.resources
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.UserMasterMaintenance.resources
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.UserEdit.resources
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.csproj.GenerateResource.cache
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.csproj.CopyComplete
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.exe
+D:\10.GIT_2\SAS\WindowsFormsApp1\UserMasterMaintenance\obj\Debug\UserMasterMaintenance.pdb
+>>>>>>> remotes/origin/develope(kadoguchi)
