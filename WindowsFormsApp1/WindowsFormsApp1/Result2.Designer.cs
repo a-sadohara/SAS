@@ -406,6 +406,7 @@
             this.btnPrint.TabIndex = 0;
             this.btnPrint.Text = "印刷";
             this.btnPrint.UseVisualStyleBackColor = true;
+            this.btnPrint.Visible = false;
             this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
             // 
             // btnBackTargetSelection
