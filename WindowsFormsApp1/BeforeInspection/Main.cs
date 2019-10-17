@@ -88,6 +88,7 @@ namespace BeforeInspection
             btnKensaWay_Y.BackColor = System.Drawing.SystemColors.Control;
             btnKensaWay_R.BackColor = System.Drawing.SystemColors.Control;
 
+            lblLastNum.Text = "";
             lblSlash.Text = "";
         }
 
