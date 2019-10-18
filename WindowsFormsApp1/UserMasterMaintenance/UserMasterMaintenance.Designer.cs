@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserMasterMaintenance));
             this.dgvUser = new System.Windows.Forms.DataGridView();
             this.UserNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -367,6 +368,7 @@
             this.Controls.Add(this.btnImportCsv);
             this.Controls.Add(this.btnReg);
             this.Controls.Add(this.dgvUser);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "UserMasterMaintenance";
             this.Text = "作業者マスタメンテナンス";
             ((System.ComponentModel.ISupportInitialize)(this.dgvUser)).EndInit();

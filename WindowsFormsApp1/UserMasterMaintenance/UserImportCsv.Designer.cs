@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserImportCsv));
             this.txtCsvFile = new System.Windows.Forms.TextBox();
             this.lblTitleCsvFile = new System.Windows.Forms.Label();
             this.btnCsvFile = new System.Windows.Forms.Button();
@@ -82,8 +83,9 @@
             this.Controls.Add(this.btnCsvFile);
             this.Controls.Add(this.lblTitleCsvFile);
             this.Controls.Add(this.txtCsvFile);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "UserImportCsv";
-            this.Text = "Form1";
+            this.Text = "作業者CSV取込";
             this.ResumeLayout(false);
             this.PerformLayout();
 

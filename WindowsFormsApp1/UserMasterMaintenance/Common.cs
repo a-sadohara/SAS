@@ -56,7 +56,7 @@ namespace UserMasterMaintenance
             catch (NpgsqlException ex)
             {
                 transaction.Rollback();
-                MessageBox.Show("登録時にエラーが発生しました。"
+                MessageBox.Show("DB更新時にエラーが発生しました。"
                               + Environment.NewLine
                               + ex.Message);
                 return false;

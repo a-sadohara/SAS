@@ -77,6 +77,30 @@ namespace UserMasterMaintenance
                 e.Handled = true;
             }
         }
+
+        /// <summary>
+        /// 社員番号フォーカス消失処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtUserNo_Leave(object sender, EventArgs e)
+        {
+            int intUserNo = 0;
+
+            if (txtUserNo.TextLength > 0)
+            {
+                if (Int32.TryParse(txtUserNo.Text, out intUserNo) == false)
+                {
+                    MessageBox.Show("数値のみ入力してください。");
+                    txtUserNo.Focus();
+                    return;
+                }
+                else
+                {
+                    txtUserNo.Text = String.Format("{0:D4}", intUserNo);
+                }
+            }
+        }
         #endregion
 
         #region メソッド
@@ -247,10 +271,11 @@ namespace UserMasterMaintenance
 
                             transaction.Commit();
                         }
-
-                        return true;
                     }
                 }
+
+                return true;
+
             }
             catch (Exception ex) 
             {
@@ -262,7 +287,7 @@ namespace UserMasterMaintenance
         }
 
         /// <summary>
-        /// 登録処理
+        /// 更新処理
         /// </summary>
         /// <returns></returns>
         private Boolean UpdateUser()
@@ -280,8 +305,7 @@ namespace UserMasterMaintenance
                         string strUpdateSql = @"UPDATE SAGYOSYA
                                                    SET USERNAME = :UserName
                                                      , USERYOMIGANA = :UserYomigana
-                                                 WHERE
-                                                       USERNO = :UserNo";
+                                                 WHERE USERNO = :UserNo";
 
                         // SQLコマンドに各パラメータを設定する
                         var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);
@@ -302,9 +326,9 @@ namespace UserMasterMaintenance
 
                         transaction.Commit();
                     }
-
-                    return true;
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -314,7 +338,6 @@ namespace UserMasterMaintenance
                 return false;
             }
         }
-
 
         /// <summary>
         /// キー重複チェック
@@ -356,6 +379,5 @@ namespace UserMasterMaintenance
 
         }
         #endregion
-
     }
 }

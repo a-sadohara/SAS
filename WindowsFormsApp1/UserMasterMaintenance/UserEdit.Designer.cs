@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserEdit));
             this.txtUserNo = new System.Windows.Forms.TextBox();
             this.txtUserNm_Sei = new System.Windows.Forms.TextBox();
             this.txtUserYomiGana_Sei = new System.Windows.Forms.TextBox();
@@ -51,6 +52,7 @@
             this.txtUserNo.Size = new System.Drawing.Size(36, 19);
             this.txtUserNo.TabIndex = 1;
             this.txtUserNo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_KeyPress);
+            this.txtUserNo.Leave += new System.EventHandler(this.txtUserNo_Leave);
             // 
             // txtUserNm_Sei
             // 
@@ -175,6 +177,7 @@
             this.Controls.Add(this.txtUserNm_Mei);
             this.Controls.Add(this.txtUserNm_Sei);
             this.Controls.Add(this.txtUserNo);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "UserEdit";
             this.Text = "登録/更新";
             this.ResumeLayout(false);

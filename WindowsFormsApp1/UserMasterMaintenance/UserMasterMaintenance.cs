@@ -116,7 +116,12 @@ namespace UserMasterMaintenance
         private void btnImportCsv_Click(object sender, EventArgs e)
         {
             UserImportCsv frmUserImportCsv = new UserImportCsv();
-            frmUserImportCsv.ShowDialog();
+
+            if (System.Windows.Forms.DialogResult.OK == frmUserImportCsv.ShowDialog())
+            {
+                //処理を記述する
+                dispDataGridView();
+            }
         }
 
         /// <summary>
