@@ -114,7 +114,7 @@
             this.btnReg.Location = new System.Drawing.Point(308, 453);
             this.btnReg.Name = "btnReg";
             this.btnReg.Size = new System.Drawing.Size(75, 23);
-            this.btnReg.TabIndex = 1;
+            this.btnReg.TabIndex = 3;
             this.btnReg.Text = "登録";
             this.btnReg.UseVisualStyleBackColor = true;
             this.btnReg.Click += new System.EventHandler(this.btnReg_Click);
@@ -125,7 +125,7 @@
             this.btnDel.Location = new System.Drawing.Point(389, 453);
             this.btnDel.Name = "btnDel";
             this.btnDel.Size = new System.Drawing.Size(75, 23);
-            this.btnDel.TabIndex = 1;
+            this.btnDel.TabIndex = 4;
             this.btnDel.Text = "削除";
             this.btnDel.UseVisualStyleBackColor = true;
             this.btnDel.Click += new System.EventHandler(this.btnDel_Click);
@@ -136,7 +136,7 @@
             this.btnImportCsv.Location = new System.Drawing.Point(12, 453);
             this.btnImportCsv.Name = "btnImportCsv";
             this.btnImportCsv.Size = new System.Drawing.Size(75, 23);
-            this.btnImportCsv.TabIndex = 1;
+            this.btnImportCsv.TabIndex = 5;
             this.btnImportCsv.Text = "CSV取込";
             this.btnImportCsv.UseVisualStyleBackColor = true;
             this.btnImportCsv.Click += new System.EventHandler(this.btnImportCsv_Click);
@@ -165,7 +165,7 @@
             this.gbxJoken.Location = new System.Drawing.Point(12, 12);
             this.gbxJoken.Name = "gbxJoken";
             this.gbxJoken.Size = new System.Drawing.Size(452, 126);
-            this.gbxJoken.TabIndex = 2;
+            this.gbxJoken.TabIndex = 1;
             this.gbxJoken.TabStop = false;
             this.gbxJoken.Text = "検索条件";
             // 
@@ -175,7 +175,8 @@
             this.txtUserNo_To.MaxLength = 4;
             this.txtUserNo_To.Name = "txtUserNo_To";
             this.txtUserNo_To.Size = new System.Drawing.Size(36, 19);
-            this.txtUserNo_To.TabIndex = 3;
+            this.txtUserNo_To.TabIndex = 16;
+            this.txtUserNo_To.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_To_KeyPress);
             // 
             // txtUserNo_From
             // 
@@ -183,7 +184,8 @@
             this.txtUserNo_From.MaxLength = 4;
             this.txtUserNo_From.Name = "txtUserNo_From";
             this.txtUserNo_From.Size = new System.Drawing.Size(36, 19);
-            this.txtUserNo_From.TabIndex = 3;
+            this.txtUserNo_From.TabIndex = 14;
+            this.txtUserNo_From.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_From_KeyPress);
             // 
             // llkわ
             // 
@@ -191,7 +193,7 @@
             this.llkわ.Location = new System.Drawing.Point(231, 69);
             this.llkわ.Name = "llkわ";
             this.llkわ.Size = new System.Drawing.Size(15, 12);
-            this.llkわ.TabIndex = 2;
+            this.llkわ.TabIndex = 10;
             this.llkわ.TabStop = true;
             this.llkわ.Text = "わ";
             this.llkわ.Click += new System.EventHandler(this.llk_Click);
@@ -202,7 +204,7 @@
             this.llkら.Location = new System.Drawing.Point(181, 69);
             this.llkら.Name = "llkら";
             this.llkら.Size = new System.Drawing.Size(13, 12);
-            this.llkら.TabIndex = 2;
+            this.llkら.TabIndex = 9;
             this.llkら.TabStop = true;
             this.llkら.Text = "ら";
             this.llkら.Click += new System.EventHandler(this.llk_Click);
@@ -213,7 +215,7 @@
             this.llkや.Location = new System.Drawing.Point(131, 69);
             this.llkや.Name = "llkや";
             this.llkや.Size = new System.Drawing.Size(15, 12);
-            this.llkや.TabIndex = 2;
+            this.llkや.TabIndex = 8;
             this.llkや.TabStop = true;
             this.llkや.Text = "や";
             this.llkや.Click += new System.EventHandler(this.llk_Click);
@@ -224,7 +226,7 @@
             this.llkま.Location = new System.Drawing.Point(81, 69);
             this.llkま.Name = "llkま";
             this.llkま.Size = new System.Drawing.Size(14, 12);
-            this.llkま.TabIndex = 2;
+            this.llkま.TabIndex = 7;
             this.llkま.TabStop = true;
             this.llkま.Text = "ま";
             this.llkま.Click += new System.EventHandler(this.llk_Click);
@@ -235,7 +237,7 @@
             this.llkは.Location = new System.Drawing.Point(31, 69);
             this.llkは.Name = "llkは";
             this.llkは.Size = new System.Drawing.Size(15, 12);
-            this.llkは.TabIndex = 2;
+            this.llkは.TabIndex = 6;
             this.llkは.TabStop = true;
             this.llkは.Text = "は";
             this.llkは.Click += new System.EventHandler(this.llk_Click);
@@ -246,7 +248,7 @@
             this.llkな.Location = new System.Drawing.Point(231, 43);
             this.llkな.Name = "llkな";
             this.llkな.Size = new System.Drawing.Size(15, 12);
-            this.llkな.TabIndex = 2;
+            this.llkな.TabIndex = 5;
             this.llkな.TabStop = true;
             this.llkな.Text = "な";
             this.llkな.Click += new System.EventHandler(this.llk_Click);
@@ -257,7 +259,7 @@
             this.llkた.Location = new System.Drawing.Point(181, 43);
             this.llkた.Name = "llkた";
             this.llkた.Size = new System.Drawing.Size(14, 12);
-            this.llkた.TabIndex = 2;
+            this.llkた.TabIndex = 4;
             this.llkた.TabStop = true;
             this.llkた.Text = "た";
             this.llkた.Click += new System.EventHandler(this.llk_Click);
@@ -268,7 +270,7 @@
             this.llkさ.Location = new System.Drawing.Point(131, 43);
             this.llkさ.Name = "llkさ";
             this.llkさ.Size = new System.Drawing.Size(13, 12);
-            this.llkさ.TabIndex = 2;
+            this.llkさ.TabIndex = 3;
             this.llkさ.TabStop = true;
             this.llkさ.Text = "さ";
             this.llkさ.Click += new System.EventHandler(this.llk_Click);
@@ -290,7 +292,7 @@
             this.llkNon.Location = new System.Drawing.Point(362, 57);
             this.llkNon.Name = "llkNon";
             this.llkNon.Size = new System.Drawing.Size(48, 12);
-            this.llkNon.TabIndex = 2;
+            this.llkNon.TabIndex = 12;
             this.llkNon.TabStop = true;
             this.llkNon.Text = "条件なし";
             this.llkNon.Click += new System.EventHandler(this.llk_Click);
@@ -301,7 +303,7 @@
             this.llkEtc.Location = new System.Drawing.Point(294, 57);
             this.llkEtc.Name = "llkEtc";
             this.llkEtc.Size = new System.Drawing.Size(36, 12);
-            this.llkEtc.TabIndex = 2;
+            this.llkEtc.TabIndex = 11;
             this.llkEtc.TabStop = true;
             this.llkEtc.Text = "その他";
             this.llkEtc.Click += new System.EventHandler(this.llk_Click);
@@ -312,7 +314,7 @@
             this.llkあ.Location = new System.Drawing.Point(31, 43);
             this.llkあ.Name = "llkあ";
             this.llkあ.Size = new System.Drawing.Size(15, 12);
-            this.llkあ.TabIndex = 2;
+            this.llkあ.TabIndex = 1;
             this.llkあ.TabStop = true;
             this.llkあ.Text = "あ";
             this.llkあ.Click += new System.EventHandler(this.llk_Click);
@@ -323,7 +325,7 @@
             this.lblUserNo_Between.Location = new System.Drawing.Point(124, 100);
             this.lblUserNo_Between.Name = "lblUserNo_Between";
             this.lblUserNo_Between.Size = new System.Drawing.Size(17, 12);
-            this.lblUserNo_Between.TabIndex = 1;
+            this.lblUserNo_Between.TabIndex = 15;
             this.lblUserNo_Between.Text = "～";
             // 
             // lblTitleUserNo
@@ -332,7 +334,7 @@
             this.lblTitleUserNo.Location = new System.Drawing.Point(17, 100);
             this.lblTitleUserNo.Name = "lblTitleUserNo";
             this.lblTitleUserNo.Size = new System.Drawing.Size(59, 12);
-            this.lblTitleUserNo.TabIndex = 1;
+            this.lblTitleUserNo.TabIndex = 13;
             this.lblTitleUserNo.Text = "社員番号：";
             // 
             // lblTitleUserYomiGana
@@ -341,7 +343,7 @@
             this.lblTitleUserYomiGana.Location = new System.Drawing.Point(17, 21);
             this.lblTitleUserYomiGana.Name = "lblTitleUserYomiGana";
             this.lblTitleUserYomiGana.Size = new System.Drawing.Size(118, 12);
-            this.lblTitleUserYomiGana.TabIndex = 1;
+            this.lblTitleUserYomiGana.TabIndex = 0;
             this.lblTitleUserYomiGana.Text = "作業者名（読み仮名）：";
             // 
             // btnSearch
@@ -350,7 +352,7 @@
             this.btnSearch.Location = new System.Drawing.Point(389, 144);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(75, 23);
-            this.btnSearch.TabIndex = 1;
+            this.btnSearch.TabIndex = 2;
             this.btnSearch.Text = "検索";
             this.btnSearch.UseVisualStyleBackColor = true;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
