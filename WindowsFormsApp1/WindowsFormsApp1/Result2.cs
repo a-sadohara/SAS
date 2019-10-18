@@ -10,11 +10,15 @@ using System.Windows.Forms;
 using System.IO;
 using WindowsFormsApp1.DTO;
 using static WindowsFormsApp1.Common;
+using Npgsql;
 
 namespace WindowsFormsApp1
 {
     public partial class Result2 : Form
     {
+        public NpgsqlConnection NpgsqlCon;
+        public const string strConnect = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
+        public DataTable dtData;
 
         TargetInfoDto objTargetInfoDto;
         int intRow;
@@ -115,6 +119,86 @@ namespace WindowsFormsApp1
             }
             catch
             {
+            }
+        }
+
+        private void txtUser_FocusIn(object sender, EventArgs e)
+        {
+            txtUserNm.ReadOnly = false;
+            txtUserNm.Text = "";
+            txtUserNm.MaxLength = 4;
+        }
+
+        private void txtUserNm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                ChkUserNo();
+            }
+        }
+
+        private void txtUserNm_DoubleClick(object sender, EventArgs e)
+        {
+            ChkUserNo(false);
+        }
+
+        private void ChkUserNo(bool parChk = true)
+        {
+            string strSQL = "";
+
+            if (parChk)
+            {
+                // PostgreSQLへ接続
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(strConnect))
+                {
+                    NpgsqlCon.Open();
+
+                    // SQL抽出
+                    NpgsqlCommand NpgsqlCom = null;
+                    NpgsqlDataAdapter NpgsqlDtAd = null;
+                    dtData = new DataTable();
+                    strSQL += "SELECT USERNAME FROM SAGYOSYA ";
+                    strSQL += "WHERE USERNO = '" + txtUserNm.Text + "'";
+                    NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
+                    NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
+                    NpgsqlDtAd.Fill(dtData);
+
+                    if (dtData.Rows.Count > 0)
+                    {
+                        txtUserNm.Text = dtData.Rows[0][0].ToString();
+                    }
+                    else
+                    {
+                        MessageBox.Show("入力された職員番号は存在しません");
+
+                        UserSelection frmTargetSelection = new UserSelection();
+                        frmTargetSelection.ShowDialog(this);
+
+                        txtUserNm.Text = frmTargetSelection.parUserNm;
+                    }
+                }
+            }
+            else
+            {
+                UserSelection frmTargetSelection = new UserSelection();
+                frmTargetSelection.ShowDialog(this);
+
+                txtUserNm.Text = frmTargetSelection.parUserNm;
+            }
+
+            // 値が入っている場合は入力不可にする
+            if (!String.IsNullOrEmpty(txtUserNm.Text))
+            {
+                txtUserNm.ReadOnly = true;
+            }
+
+        }
+
+        private void txtUserNm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar != '\r' && e.KeyChar != '\b' && e.KeyChar < '0' || '9' < e.KeyChar)
+            {
+                e.Handled = true;
             }
         }
     }

@@ -182,19 +182,17 @@ namespace WindowsFormsApp1
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            //Int16 i;
+            Int16 i;
 
-            //DataTable dtData = new DataTable();
-            //dtData.Columns.Add(new DataColumn("val"));
-            //dtData.Columns.Add(new DataColumn("val2"));
+            List<string> lstStr = new List<string>();
 
-            //for (i = 1; i < 20; ++i)
-            //{
-            //    dtData.Rows.Add(new Object[] { i, i });
-            //}
+            for (i = 1; i < 100; ++i)
+            {
+                lstStr.Add(i.ToString());
+            }
 
-            //Form1 frmUserControl1 = new Form1(dtData, 1);
-            //frmUserControl1.ShowDialog();
+            ListInWpf frmListInWpf = new ListInWpf(lstStr);
+            frmListInWpf.ShowDialog();
         }
 
         private void button3_Click(object sender, EventArgs e)

@@ -106,6 +106,12 @@
   <ItemGroup>
     <Compile Include="DTO\ErrorReasonDTO.cs" />
     <Compile Include="DTO\TargetInfoDto.cs" />
+    <Compile Include="ListInWpf.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ListInWpf.Designer.cs">
+      <DependentUpon>ListInWpf.cs</DependentUpon>
+    </Compile>
     <Compile Include="Summary.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -168,6 +174,9 @@
     <Compile Include="ViewEnlargedimage.Designer.cs">
       <DependentUpon>ViewEnlargedimage.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ListInWpf.resx">
+      <DependentUpon>ListInWpf.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
       <SubType>Designer</SubType>

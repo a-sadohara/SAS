@@ -59,12 +59,17 @@
             // txtUser
             // 
             this.txtUser.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtUser.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.txtUser.Location = new System.Drawing.Point(108, 12);
             this.txtUser.Margin = new System.Windows.Forms.Padding(2);
             this.txtUser.Name = "txtUser";
             this.txtUser.Size = new System.Drawing.Size(199, 23);
             this.txtUser.TabIndex = 1;
-            this.txtUser.Click += new System.EventHandler(this.textBox2_Click);
+            this.txtUser.Click += new System.EventHandler(this.txtUser_FocusIn);
+            this.txtUser.DoubleClick += new System.EventHandler(this.txtUser_DoubleClick);
+            this.txtUser.Enter += new System.EventHandler(this.txtUser_FocusIn);
+            this.txtUser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtUser_KeyDown);
+            this.txtUser.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUser_KeyPress);
             // 
             // btnLogin
             // 
