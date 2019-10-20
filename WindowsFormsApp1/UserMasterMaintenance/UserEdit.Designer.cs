@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserEdit));
             this.txtUserNo = new System.Windows.Forms.TextBox();
             this.txtUserNm_Sei = new System.Windows.Forms.TextBox();
             this.txtUserYomiGana_Sei = new System.Windows.Forms.TextBox();
@@ -49,8 +50,9 @@
             this.txtUserNo.MaxLength = 4;
             this.txtUserNo.Name = "txtUserNo";
             this.txtUserNo.Size = new System.Drawing.Size(36, 19);
-            this.txtUserNo.TabIndex = 0;
+            this.txtUserNo.TabIndex = 1;
             this.txtUserNo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_KeyPress);
+            this.txtUserNo.Leave += new System.EventHandler(this.txtUserNo_Leave);
             // 
             // txtUserNm_Sei
             // 
@@ -58,7 +60,7 @@
             this.txtUserNm_Sei.MaxLength = 10;
             this.txtUserNm_Sei.Name = "txtUserNm_Sei";
             this.txtUserNm_Sei.Size = new System.Drawing.Size(68, 19);
-            this.txtUserNm_Sei.TabIndex = 1;
+            this.txtUserNm_Sei.TabIndex = 3;
             // 
             // txtUserYomiGana_Sei
             // 
@@ -66,7 +68,7 @@
             this.txtUserYomiGana_Sei.MaxLength = 30;
             this.txtUserYomiGana_Sei.Name = "txtUserYomiGana_Sei";
             this.txtUserYomiGana_Sei.Size = new System.Drawing.Size(92, 19);
-            this.txtUserYomiGana_Sei.TabIndex = 3;
+            this.txtUserYomiGana_Sei.TabIndex = 8;
             // 
             // lblTitleUserNo
             // 
@@ -74,7 +76,7 @@
             this.lblTitleUserNo.Location = new System.Drawing.Point(36, 33);
             this.lblTitleUserNo.Name = "lblTitleUserNo";
             this.lblTitleUserNo.Size = new System.Drawing.Size(53, 12);
-            this.lblTitleUserNo.TabIndex = 1;
+            this.lblTitleUserNo.TabIndex = 0;
             this.lblTitleUserNo.Text = "社員番号";
             // 
             // lblTitleUserNm
@@ -92,7 +94,7 @@
             this.lblTitleYomiGana.Location = new System.Drawing.Point(35, 137);
             this.lblTitleYomiGana.Name = "lblTitleYomiGana";
             this.lblTitleYomiGana.Size = new System.Drawing.Size(52, 12);
-            this.lblTitleYomiGana.TabIndex = 1;
+            this.lblTitleYomiGana.TabIndex = 6;
             this.lblTitleYomiGana.Text = "読み仮名";
             // 
             // lblTitleUserNm_Sei
@@ -101,7 +103,7 @@
             this.lblTitleUserNm_Sei.Location = new System.Drawing.Point(120, 71);
             this.lblTitleUserNm_Sei.Name = "lblTitleUserNm_Sei";
             this.lblTitleUserNm_Sei.Size = new System.Drawing.Size(17, 12);
-            this.lblTitleUserNm_Sei.TabIndex = 1;
+            this.lblTitleUserNm_Sei.TabIndex = 2;
             this.lblTitleUserNm_Sei.Text = "姓";
             // 
             // lblTitleUserNm_Mei
@@ -110,7 +112,7 @@
             this.lblTitleUserNm_Mei.Location = new System.Drawing.Point(120, 103);
             this.lblTitleUserNm_Mei.Name = "lblTitleUserNm_Mei";
             this.lblTitleUserNm_Mei.Size = new System.Drawing.Size(17, 12);
-            this.lblTitleUserNm_Mei.TabIndex = 1;
+            this.lblTitleUserNm_Mei.TabIndex = 4;
             this.lblTitleUserNm_Mei.Text = "名";
             // 
             // txtUserNm_Mei
@@ -119,14 +121,14 @@
             this.txtUserNm_Mei.MaxLength = 10;
             this.txtUserNm_Mei.Name = "txtUserNm_Mei";
             this.txtUserNm_Mei.Size = new System.Drawing.Size(68, 19);
-            this.txtUserNm_Mei.TabIndex = 2;
+            this.txtUserNm_Mei.TabIndex = 5;
             // 
             // btnFix
             // 
             this.btnFix.Location = new System.Drawing.Point(160, 215);
             this.btnFix.Name = "btnFix";
             this.btnFix.Size = new System.Drawing.Size(75, 23);
-            this.btnFix.TabIndex = 5;
+            this.btnFix.TabIndex = 11;
             this.btnFix.Text = "確定";
             this.btnFix.UseVisualStyleBackColor = true;
             this.btnFix.Click += new System.EventHandler(this.btnFix_Click);
@@ -137,7 +139,7 @@
             this.txtUserYomiGana_Mei.MaxLength = 30;
             this.txtUserYomiGana_Mei.Name = "txtUserYomiGana_Mei";
             this.txtUserYomiGana_Mei.Size = new System.Drawing.Size(92, 19);
-            this.txtUserYomiGana_Mei.TabIndex = 4;
+            this.txtUserYomiGana_Mei.TabIndex = 10;
             // 
             // lblTitleYomiGana_Sei
             // 
@@ -145,7 +147,7 @@
             this.lblTitleYomiGana_Sei.Location = new System.Drawing.Point(120, 137);
             this.lblTitleYomiGana_Sei.Name = "lblTitleYomiGana_Sei";
             this.lblTitleYomiGana_Sei.Size = new System.Drawing.Size(17, 12);
-            this.lblTitleYomiGana_Sei.TabIndex = 1;
+            this.lblTitleYomiGana_Sei.TabIndex = 7;
             this.lblTitleYomiGana_Sei.Text = "姓";
             // 
             // lblTitleYomiGana_Mei
@@ -154,7 +156,7 @@
             this.lblTitleYomiGana_Mei.Location = new System.Drawing.Point(120, 171);
             this.lblTitleYomiGana_Mei.Name = "lblTitleYomiGana_Mei";
             this.lblTitleYomiGana_Mei.Size = new System.Drawing.Size(17, 12);
-            this.lblTitleYomiGana_Mei.TabIndex = 1;
+            this.lblTitleYomiGana_Mei.TabIndex = 9;
             this.lblTitleYomiGana_Mei.Text = "名";
             // 
             // UserEdit
@@ -175,6 +177,7 @@
             this.Controls.Add(this.txtUserNm_Mei);
             this.Controls.Add(this.txtUserNm_Sei);
             this.Controls.Add(this.txtUserNo);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "UserEdit";
             this.Text = "登録/更新";
             this.ResumeLayout(false);

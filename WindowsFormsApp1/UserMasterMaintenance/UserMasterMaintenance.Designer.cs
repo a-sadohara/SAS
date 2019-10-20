@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserMasterMaintenance));
             this.dgvUser = new System.Windows.Forms.DataGridView();
             this.UserNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -71,7 +72,6 @@
             this.UserNm,
             this.YomiGana});
             this.dgvUser.Location = new System.Drawing.Point(12, 173);
-            this.dgvUser.MultiSelect = false;
             this.dgvUser.Name = "dgvUser";
             this.dgvUser.ReadOnly = true;
             this.dgvUser.RowHeadersVisible = false;
@@ -80,7 +80,7 @@
             this.dgvUser.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dgvUser.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvUser.Size = new System.Drawing.Size(452, 274);
-            this.dgvUser.TabIndex = 0;
+            this.dgvUser.TabIndex = 2;
             this.dgvUser.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUser_CellDoubleClick);
             // 
             // UserNo
@@ -114,7 +114,7 @@
             this.btnReg.Location = new System.Drawing.Point(308, 453);
             this.btnReg.Name = "btnReg";
             this.btnReg.Size = new System.Drawing.Size(75, 23);
-            this.btnReg.TabIndex = 3;
+            this.btnReg.TabIndex = 4;
             this.btnReg.Text = "登録";
             this.btnReg.UseVisualStyleBackColor = true;
             this.btnReg.Click += new System.EventHandler(this.btnReg_Click);
@@ -125,7 +125,7 @@
             this.btnDel.Location = new System.Drawing.Point(389, 453);
             this.btnDel.Name = "btnDel";
             this.btnDel.Size = new System.Drawing.Size(75, 23);
-            this.btnDel.TabIndex = 4;
+            this.btnDel.TabIndex = 5;
             this.btnDel.Text = "削除";
             this.btnDel.UseVisualStyleBackColor = true;
             this.btnDel.Click += new System.EventHandler(this.btnDel_Click);
@@ -136,7 +136,7 @@
             this.btnImportCsv.Location = new System.Drawing.Point(12, 453);
             this.btnImportCsv.Name = "btnImportCsv";
             this.btnImportCsv.Size = new System.Drawing.Size(75, 23);
-            this.btnImportCsv.TabIndex = 5;
+            this.btnImportCsv.TabIndex = 3;
             this.btnImportCsv.Text = "CSV取込";
             this.btnImportCsv.UseVisualStyleBackColor = true;
             this.btnImportCsv.Click += new System.EventHandler(this.btnImportCsv_Click);
@@ -165,7 +165,7 @@
             this.gbxJoken.Location = new System.Drawing.Point(12, 12);
             this.gbxJoken.Name = "gbxJoken";
             this.gbxJoken.Size = new System.Drawing.Size(452, 126);
-            this.gbxJoken.TabIndex = 1;
+            this.gbxJoken.TabIndex = 0;
             this.gbxJoken.TabStop = false;
             this.gbxJoken.Text = "検索条件";
             // 
@@ -352,7 +352,7 @@
             this.btnSearch.Location = new System.Drawing.Point(389, 144);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(75, 23);
-            this.btnSearch.TabIndex = 2;
+            this.btnSearch.TabIndex = 1;
             this.btnSearch.Text = "検索";
             this.btnSearch.UseVisualStyleBackColor = true;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
@@ -368,6 +368,7 @@
             this.Controls.Add(this.btnImportCsv);
             this.Controls.Add(this.btnReg);
             this.Controls.Add(this.dgvUser);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "UserMasterMaintenance";
             this.Text = "作業者マスタメンテナンス";
             ((System.ComponentModel.ISupportInitialize)(this.dgvUser)).EndInit();

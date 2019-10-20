@@ -77,6 +77,30 @@ namespace UserMasterMaintenance
                 e.Handled = true;
             }
         }
+
+        /// <summary>
+        /// 社員番号フォーカス消失処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtUserNo_Leave(object sender, EventArgs e)
+        {
+            int intUserNo = 0;
+
+            if (txtUserNo.TextLength > 0)
+            {
+                if (Int32.TryParse(txtUserNo.Text, out intUserNo) == false)
+                {
+                    MessageBox.Show("数値のみ入力してください。");
+                    txtUserNo.Focus();
+                    return;
+                }
+                else
+                {
+                    txtUserNo.Text = String.Format("{0:D4}", intUserNo);
+                }
+            }
+        }
         #endregion
 
         #region メソッド
@@ -105,10 +129,10 @@ namespace UserMasterMaintenance
                 txtUserNo.Text = parUserNo;
                 txtUserNo.Enabled = false;
                 // 作業者名
-                if (parUserNm.Split('　').Count() == 2)
+                if (parUserNm.Split(Convert.ToChar(NAME_SEPARATE)).Count() == 2)
                 {
-                    txtUserNm_Sei.Text = parUserNm.Split('　')[0];
-                    txtUserNm_Mei.Text = parUserNm.Split('　')[1];
+                    txtUserNm_Sei.Text = parUserNm.Split(Convert.ToChar(NAME_SEPARATE))[0];
+                    txtUserNm_Mei.Text = parUserNm.Split(Convert.ToChar(NAME_SEPARATE))[1];
                 }
                 else
                 {
@@ -119,10 +143,10 @@ namespace UserMasterMaintenance
                     txtUserNm_Sei.Text = parUserNm;
                 }
                 // 読み仮名
-                if (parUserYomiGana.Split('　').Count() == 2)
+                if (parUserYomiGana.Split(Convert.ToChar(NAME_SEPARATE)).Count() == 2)
                 {
-                    txtUserYomiGana_Sei.Text = parUserYomiGana.Split('　')[0];
-                    txtUserYomiGana_Mei.Text = parUserYomiGana.Split('　')[1];
+                    txtUserYomiGana_Sei.Text = parUserYomiGana.Split(Convert.ToChar(NAME_SEPARATE))[0];
+                    txtUserYomiGana_Mei.Text = parUserYomiGana.Split(Convert.ToChar(NAME_SEPARATE))[1];
                 }
                 else
                 {
@@ -177,7 +201,6 @@ namespace UserMasterMaintenance
 
             return true;
         }
-
 
         /// <summary>
         /// 必須入力チェック
@@ -237,8 +260,8 @@ namespace UserMasterMaintenance
                             var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
 
                             command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = txtUserNo.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Sei.Text + "　" + txtUserNm_Mei.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = txtUserYomiGana_Sei.Text + "　" + txtUserYomiGana_Mei.Text });
+                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Sei.Text + NAME_SEPARATE + txtUserNm_Mei.Text });
+                            command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = txtUserYomiGana_Sei.Text + NAME_SEPARATE + txtUserYomiGana_Mei.Text });
 
                             // sqlを実行する
                             if (ExecTranSQL(command, transaction) == false)
@@ -246,13 +269,13 @@ namespace UserMasterMaintenance
                                 return false;
                             }
 
-
                             transaction.Commit();
                         }
-
-                        return true;
                     }
                 }
+
+                return true;
+
             }
             catch (Exception ex) 
             {
@@ -264,7 +287,7 @@ namespace UserMasterMaintenance
         }
 
         /// <summary>
-        /// 登録処理
+        /// 更新処理
         /// </summary>
         /// <returns></returns>
         private Boolean UpdateUser()
@@ -282,18 +305,17 @@ namespace UserMasterMaintenance
                         string strUpdateSql = @"UPDATE SAGYOSYA
                                                    SET USERNAME = :UserName
                                                      , USERYOMIGANA = :UserYomigana
-                                                 WHERE
-                                                       USERNO = :UserNo";
+                                                 WHERE USERNO = :UserNo";
 
                         // SQLコマンドに各パラメータを設定する
                         var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);
 
                         command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = txtUserNo.Text });
                         command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Sei.Text 
-                                                                                                      + "　" 
+                                                                                                      + NAME_SEPARATE
                                                                                                       + txtUserNm_Mei.Text });
                         command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = txtUserYomiGana_Sei.Text 
-                                                                                                          + "　" 
+                                                                                                          + NAME_SEPARATE
                                                                                                           + txtUserYomiGana_Mei.Text });
 
                         // sqlを実行する
@@ -304,40 +326,15 @@ namespace UserMasterMaintenance
 
                         transaction.Commit();
                     }
-
-                    return true;
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("更新時にエラーが発生しました。"
                                + Environment.NewLine
                                + ex.Message);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 登録・更新処理実行
-        /// </summary>
-        /// <param name="nscCommand">実行SQLコマンド</param>
-        /// <param name="transaction">トランザクション情報</param>
-        /// <returns></returns>
-        public static Boolean ExecTranSQL(NpgsqlCommand nscCommand
-                                        , NpgsqlTransaction transaction)
-        {
-            
-            try
-            {
-                nscCommand.ExecuteNonQuery();
-                return true;
-            }
-            catch (NpgsqlException ex)
-            {
-                transaction.Rollback();
-                MessageBox.Show("登録時にエラーが発生しました。" 
-                              + Environment.NewLine 
-                              + ex.Message);
                 return false;
             }
         }
@@ -382,6 +379,5 @@ namespace UserMasterMaintenance
 
         }
         #endregion
-
     }
 }

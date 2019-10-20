@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserImportCsv));
             this.txtCsvFile = new System.Windows.Forms.TextBox();
             this.lblTitleCsvFile = new System.Windows.Forms.Label();
             this.btnCsvFile = new System.Windows.Forms.Button();
@@ -40,7 +41,7 @@
             this.txtCsvFile.Name = "txtCsvFile";
             this.txtCsvFile.ReadOnly = true;
             this.txtCsvFile.Size = new System.Drawing.Size(446, 19);
-            this.txtCsvFile.TabIndex = 0;
+            this.txtCsvFile.TabIndex = 1;
             this.txtCsvFile.Click += new System.EventHandler(this.CsvFile_Click);
             // 
             // lblTitleCsvFile
@@ -49,7 +50,7 @@
             this.lblTitleCsvFile.Location = new System.Drawing.Point(12, 21);
             this.lblTitleCsvFile.Name = "lblTitleCsvFile";
             this.lblTitleCsvFile.Size = new System.Drawing.Size(98, 12);
-            this.lblTitleCsvFile.TabIndex = 1;
+            this.lblTitleCsvFile.TabIndex = 0;
             this.lblTitleCsvFile.Text = "選択ファイル（CSV）";
             // 
             // btnCsvFile
@@ -82,8 +83,9 @@
             this.Controls.Add(this.btnCsvFile);
             this.Controls.Add(this.lblTitleCsvFile);
             this.Controls.Add(this.txtCsvFile);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "UserImportCsv";
-            this.Text = "Form1";
+            this.Text = "作業者CSV取込";
             this.ResumeLayout(false);
             this.PerformLayout();
 
