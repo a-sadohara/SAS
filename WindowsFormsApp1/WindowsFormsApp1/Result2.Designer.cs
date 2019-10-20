@@ -43,7 +43,7 @@
             this.lblCol = new System.Windows.Forms.Label();
             this.txtNgSide = new System.Windows.Forms.TextBox();
             this.lblRow = new System.Windows.Forms.Label();
-            this.txtTitleUserNm = new System.Windows.Forms.TextBox();
+            this.txtUserNm = new System.Windows.Forms.TextBox();
             this.txtRow = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.lblUser = new System.Windows.Forms.Label();
@@ -67,6 +67,7 @@
             this.line = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ng = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.position = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
@@ -123,7 +124,7 @@
             this.grbWhere.Controls.Add(this.lblCol);
             this.grbWhere.Controls.Add(this.txtNgSide);
             this.grbWhere.Controls.Add(this.lblRow);
-            this.grbWhere.Controls.Add(this.txtTitleUserNm);
+            this.grbWhere.Controls.Add(this.txtUserNm);
             this.grbWhere.Controls.Add(this.txtRow);
             this.grbWhere.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.grbWhere.ForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -142,7 +143,7 @@
             this.lblTitleUserNm.Location = new System.Drawing.Point(21, 29);
             this.lblTitleUserNm.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleUserNm.Name = "lblTitleUserNm";
-            this.lblTitleUserNm.Size = new System.Drawing.Size(90, 24);
+            this.lblTitleUserNm.Size = new System.Drawing.Size(63, 17);
             this.lblTitleUserNm.TabIndex = 1;
             this.lblTitleUserNm.Text = "作業者名：";
             // 
@@ -154,7 +155,7 @@
             this.lblNgReason.Location = new System.Drawing.Point(220, 55);
             this.lblNgReason.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgReason.Name = "lblNgReason";
-            this.lblNgReason.Size = new System.Drawing.Size(82, 24);
+            this.lblNgReason.Size = new System.Drawing.Size(57, 17);
             this.lblNgReason.TabIndex = 1;
             this.lblNgReason.Text = "NG理由：";
             // 
@@ -163,7 +164,7 @@
             this.txtNgReason.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtNgReason.Location = new System.Drawing.Point(281, 52);
             this.txtNgReason.Name = "txtNgReason";
-            this.txtNgReason.Size = new System.Drawing.Size(100, 32);
+            this.txtNgReason.Size = new System.Drawing.Size(100, 24);
             this.txtNgReason.TabIndex = 26;
             // 
             // lblNgSide
@@ -174,7 +175,7 @@
             this.lblNgSide.Location = new System.Drawing.Point(220, 29);
             this.lblNgSide.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgSide.Name = "lblNgSide";
-            this.lblNgSide.Size = new System.Drawing.Size(66, 24);
+            this.lblNgSide.Size = new System.Drawing.Size(46, 17);
             this.lblNgSide.TabIndex = 1;
             this.lblNgSide.Text = "NG面：";
             // 
@@ -183,7 +184,7 @@
             this.txtCol.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtCol.Location = new System.Drawing.Point(89, 78);
             this.txtCol.Name = "txtCol";
-            this.txtCol.Size = new System.Drawing.Size(53, 32);
+            this.txtCol.Size = new System.Drawing.Size(53, 24);
             this.txtCol.TabIndex = 26;
             // 
             // lblCol
@@ -194,7 +195,7 @@
             this.lblCol.Location = new System.Drawing.Point(21, 81);
             this.lblCol.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCol.Name = "lblCol";
-            this.lblCol.Size = new System.Drawing.Size(42, 24);
+            this.lblCol.Size = new System.Drawing.Size(30, 17);
             this.lblCol.TabIndex = 1;
             this.lblCol.Text = "列：";
             // 
@@ -203,7 +204,7 @@
             this.txtNgSide.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtNgSide.Location = new System.Drawing.Point(281, 26);
             this.txtNgSide.Name = "txtNgSide";
-            this.txtNgSide.Size = new System.Drawing.Size(53, 32);
+            this.txtNgSide.Size = new System.Drawing.Size(53, 24);
             this.txtNgSide.TabIndex = 26;
             // 
             // lblRow
@@ -214,29 +215,34 @@
             this.lblRow.Location = new System.Drawing.Point(21, 55);
             this.lblRow.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblRow.Name = "lblRow";
-            this.lblRow.Size = new System.Drawing.Size(42, 24);
+            this.lblRow.Size = new System.Drawing.Size(30, 17);
             this.lblRow.TabIndex = 1;
             this.lblRow.Text = "行：";
             // 
-            // txtTitleUserNm
+            // txtUserNm
             // 
-            this.txtTitleUserNm.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtTitleUserNm.Location = new System.Drawing.Point(89, 26);
-            this.txtTitleUserNm.Name = "txtTitleUserNm";
-            this.txtTitleUserNm.Size = new System.Drawing.Size(100, 32);
-            this.txtTitleUserNm.TabIndex = 26;
+            this.txtUserNm.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtUserNm.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.txtUserNm.Location = new System.Drawing.Point(89, 26);
+            this.txtUserNm.Name = "txtUserNm";
+            this.txtUserNm.Size = new System.Drawing.Size(100, 24);
+            this.txtUserNm.TabIndex = 26;
+            this.txtUserNm.Click += new System.EventHandler(this.txtUser_FocusIn);
+            this.txtUserNm.DoubleClick += new System.EventHandler(this.txtUserNm_DoubleClick);
+            this.txtUserNm.Enter += new System.EventHandler(this.txtUser_FocusIn);
+            this.txtUserNm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtUserNm_KeyDown);
+            this.txtUserNm.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNm_KeyPress);
             // 
             // txtRow
             // 
             this.txtRow.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtRow.Location = new System.Drawing.Point(89, 52);
             this.txtRow.Name = "txtRow";
-            this.txtRow.Size = new System.Drawing.Size(53, 32);
+            this.txtRow.Size = new System.Drawing.Size(53, 24);
             this.txtRow.TabIndex = 26;
             // 
             // button4
             // 
-            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button4.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.button4.Location = new System.Drawing.Point(852, 84);
             this.button4.Margin = new System.Windows.Forms.Padding(2);
@@ -257,7 +263,7 @@
             this.lblUser.MaximumSize = new System.Drawing.Size(300, 0);
             this.lblUser.MinimumSize = new System.Drawing.Size(300, 0);
             this.lblUser.Name = "lblUser";
-            this.lblUser.Size = new System.Drawing.Size(300, 24);
+            this.lblUser.Size = new System.Drawing.Size(300, 17);
             this.lblUser.TabIndex = 25;
             this.lblUser.Text = "作業者名：XXXXXXXX";
             this.lblUser.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -270,7 +276,7 @@
             this.lblEndDate.Location = new System.Drawing.Point(157, 94);
             this.lblEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblEndDate.Name = "lblEndDate";
-            this.lblEndDate.Size = new System.Drawing.Size(295, 24);
+            this.lblEndDate.Size = new System.Drawing.Size(207, 17);
             this.lblEndDate.TabIndex = 24;
             this.lblEndDate.Text = "判定終了日時：2019/01/22 19:10:15";
             // 
@@ -282,7 +288,7 @@
             this.lblStaDate.Location = new System.Drawing.Point(157, 77);
             this.lblStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStaDate.Name = "lblStaDate";
-            this.lblStaDate.Size = new System.Drawing.Size(295, 24);
+            this.lblStaDate.Size = new System.Drawing.Size(207, 17);
             this.lblStaDate.TabIndex = 23;
             this.lblStaDate.Text = "判定開始日時：2019/01/22 16:30:15";
             // 
@@ -294,7 +300,7 @@
             this.label6.Location = new System.Drawing.Point(157, 60);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(252, 24);
+            this.label6.Size = new System.Drawing.Size(175, 17);
             this.label6.TabIndex = 22;
             this.label6.Text = "検査範囲行　検反部№2：1～351";
             // 
@@ -306,7 +312,7 @@
             this.label7.Location = new System.Drawing.Point(157, 43);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(252, 24);
+            this.label7.Size = new System.Drawing.Size(175, 17);
             this.label7.TabIndex = 21;
             this.label7.Text = "検査範囲行　検反部№1：1～351";
             // 
@@ -318,7 +324,7 @@
             this.lblHansoEndDate.Location = new System.Drawing.Point(157, 26);
             this.lblHansoEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblHansoEndDate.Name = "lblHansoEndDate";
-            this.lblHansoEndDate.Size = new System.Drawing.Size(295, 24);
+            this.lblHansoEndDate.Size = new System.Drawing.Size(207, 17);
             this.lblHansoEndDate.TabIndex = 20;
             this.lblHansoEndDate.Text = "搬送終了日時：2019/01/22 19:10:15";
             // 
@@ -330,7 +336,7 @@
             this.lblHansoStaDate.Location = new System.Drawing.Point(157, 9);
             this.lblHansoStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblHansoStaDate.Name = "lblHansoStaDate";
-            this.lblHansoStaDate.Size = new System.Drawing.Size(295, 24);
+            this.lblHansoStaDate.Size = new System.Drawing.Size(207, 17);
             this.lblHansoStaDate.TabIndex = 19;
             this.lblHansoStaDate.Text = "搬送開始日時：2019/01/22 16:30:15";
             // 
@@ -342,7 +348,7 @@
             this.lblHanNo.Location = new System.Drawing.Point(16, 60);
             this.lblHanNo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblHanNo.Name = "lblHanNo";
-            this.lblHanNo.Size = new System.Drawing.Size(163, 24);
+            this.lblHanNo.Size = new System.Drawing.Size(113, 17);
             this.lblHanNo.TabIndex = 1;
             this.lblHanNo.Text = "反番：470068-０AC";
             // 
@@ -354,7 +360,7 @@
             this.lblSashizu.Location = new System.Drawing.Point(16, 42);
             this.lblSashizu.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSashizu.Name = "lblSashizu";
-            this.lblSashizu.Size = new System.Drawing.Size(143, 27);
+            this.lblSashizu.Size = new System.Drawing.Size(93, 18);
             this.lblSashizu.TabIndex = 1;
             this.lblSashizu.Text = "指図：1070551";
             // 
@@ -366,7 +372,7 @@
             this.lblShinaNm.Location = new System.Drawing.Point(16, 26);
             this.lblShinaNm.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblShinaNm.Name = "lblShinaNm";
-            this.lblShinaNm.Size = new System.Drawing.Size(103, 24);
+            this.lblShinaNm.Size = new System.Drawing.Size(73, 17);
             this.lblShinaNm.TabIndex = 1;
             this.lblShinaNm.Text = "品名：S115 ";
             // 
@@ -378,7 +384,7 @@
             this.lblGoki.Location = new System.Drawing.Point(16, 9);
             this.lblGoki.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblGoki.Name = "lblGoki";
-            this.lblGoki.Size = new System.Drawing.Size(74, 24);
+            this.lblGoki.Size = new System.Drawing.Size(52, 17);
             this.lblGoki.TabIndex = 1;
             this.lblGoki.Text = "号機：１";
             // 
@@ -453,6 +459,7 @@
             this.line,
             this.Column,
             this.ng,
+            this.UserNm,
             this.position,
             this.reason});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -513,6 +520,12 @@
             this.ng.MinimumWidth = 6;
             this.ng.Name = "ng";
             this.ng.Width = 150;
+            // 
+            // UserNm
+            // 
+            this.UserNm.HeaderText = "作業者名";
+            this.UserNm.Name = "UserNm";
+            this.UserNm.Width = 150;
             // 
             // position
             // 
@@ -578,20 +591,21 @@
         private System.Windows.Forms.TextBox txtRow;
         private System.Windows.Forms.TextBox txtNgReason;
         private System.Windows.Forms.TextBox txtNgSide;
-        private System.Windows.Forms.TextBox txtTitleUserNm;
+        private System.Windows.Forms.TextBox txtUserNm;
         private System.Windows.Forms.Label lblNgReason;
         private System.Windows.Forms.Label lblNgSide;
         private System.Windows.Forms.Label lblCol;
         private System.Windows.Forms.Label lblRow;
         private System.Windows.Forms.Label lblTitleUserNm;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.GroupBox grbWhere;
+        private System.Windows.Forms.Button btnLogOut;
         private System.Windows.Forms.DataGridViewTextBoxColumn no;
         private System.Windows.Forms.DataGridViewTextBoxColumn line;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column;
         private System.Windows.Forms.DataGridViewTextBoxColumn ng;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UserNm;
         private System.Windows.Forms.DataGridViewTextBoxColumn position;
         private System.Windows.Forms.DataGridViewTextBoxColumn reason;
-        private System.Windows.Forms.GroupBox grbWhere;
-        private System.Windows.Forms.Button btnLogOut;
     }
 }

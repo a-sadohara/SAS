@@ -49,6 +49,8 @@ namespace WindowsFormsApp1
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
 
+            comboBox1.SelectedIndex = 33;
+            comboBox2.SelectedIndex = 2;
         }
 
 
@@ -182,17 +184,15 @@ namespace WindowsFormsApp1
         {
             Int16 i;
 
-            DataTable dtData = new DataTable();
-            dtData.Columns.Add(new DataColumn("val"));
-            dtData.Columns.Add(new DataColumn("val2"));
+            List<string> lstStr = new List<string>();
 
-            for (i = 1; i < 20; ++i)
+            for (i = 1; i < 100; ++i)
             {
-                dtData.Rows.Add(new Object[] { i, i });
+                lstStr.Add(i.ToString());
             }
 
-            Form1 frmUserControl1 = new Form1(dtData, 1);
-            frmUserControl1.ShowDialog();
+            ListInWpf frmListInWpf = new ListInWpf(lstStr);
+            frmListInWpf.ShowDialog();
         }
 
         private void button3_Click(object sender, EventArgs e)
