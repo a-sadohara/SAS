@@ -34,7 +34,7 @@ namespace WindowsFormsApp1
             intRow = intRowIndex;
 
             // パラメータ：表示数から表示数を調整
-            switch (Common.parDispNum)
+            switch (g_parDispNum)
             {
                 case 2:
                     tableLayoutPanel1.Controls.RemoveAt(6);
@@ -388,7 +388,7 @@ namespace WindowsFormsApp1
         {
             this.WindowState = FormWindowState.Maximized;
 
-            lblUser.Text = "作業者名：" + Common.parUserNm;
+            lblUser.Text = "作業者名：" + g_parUserNm;
 
             List<PictureBox> lstPicBox = new List<PictureBox>();
             lstPicBox.Add(pictureBox1);

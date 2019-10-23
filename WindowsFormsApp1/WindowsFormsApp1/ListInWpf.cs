@@ -43,6 +43,8 @@ namespace WindowsFormsApp1
             wpfDataGrid.MinColumnWidth = pnlMain.ClientSize.Width;
             wpfDataGrid.Width = pnlMain.ClientSize.Width;
 
+            //wpfDataGrid.CellPainting += new DataGridViewCellPaintingEventHandler(cellPainting);
+
             for (int idx = 0; idx <= lstStr.Count - 1; idx++)
             {
                 // 行追加
@@ -52,7 +54,12 @@ namespace WindowsFormsApp1
             wpfDataGrid.FontSize = 13;
             //wpfDataGrid.FontFamily = MaterialDesignFont;
             //    = System.Windows.HorizontalAlignment.Center;
-            wpfDataGrid.VerticalContentAlignment = System.Windows.VerticalAlignment.Center;
+
+            System.Windows.VerticalAlignment obj = new System.Windows.VerticalAlignment();
+            obj = System.Windows.VerticalAlignment.Center;
+            wpfDataGrid.VerticalContentAlignment = obj;
+
+            //wpfDataGrid.Style
 
             //ElementHostコントロールを作成する
             elementHost1 = new System.Windows.Forms.Integration.ElementHost();
@@ -64,6 +71,7 @@ namespace WindowsFormsApp1
 
             pnlMain.Controls.Add(elementHost1);
         }
+
     }
 
     public class Item
@@ -75,4 +83,5 @@ namespace WindowsFormsApp1
             Val = parVal;
         }
     }
+
 }

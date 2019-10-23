@@ -15,9 +15,7 @@ namespace UserMasterMaintenance
 {
     public partial class UserMasterMaintenance : Form
     {
-        #region 定数・変数
-        private NpgsqlConnection NpgsqlCon;
-        
+        #region 定数・変数        
         private DataTable dtData;
 
         private string strKanaSta = "";

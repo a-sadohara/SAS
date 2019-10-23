@@ -17,54 +17,9 @@ namespace WindowsFormsApp1
         public String parUserNo;
         public String parUserNm;
         public NpgsqlConnection NpgsqlCon;
-        public const string strConnect = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
         public DataTable dtData;
 
-        public LoginForm()
-        {
-            InitializeComponent();
-
-            this.StartPosition = FormStartPosition.CenterScreen;
-
-            if (!String.IsNullOrEmpty(parUserNo)) 
-            {
-                txtUser.Text = parUserNo + " " + parUserNm;
-            }
-            switch (parDispNum)
-            {
-                case 2:
-                    rdbDispNum2.Checked = true;
-                    break;
-                case 4:
-                    rdbDispNum4.Checked = true;
-                    break;
-                case 9:
-                    rdbDispNum9.Checked = true;
-                    break;
-                default:
-                    rdbDispNum9.Checked = true;
-                    break;
-            }
-        }
-        
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            if (String.IsNullOrEmpty(parUserNo))
-            {
-                MessageBox.Show("職員を選択してください。");
-                return;
-            }
-
-            if (this.rdbDispNum2.Checked == true) { parDispNum = 2; }
-            if (this.rdbDispNum4.Checked == true) { parDispNum = 4; }
-            if (this.rdbDispNum9.Checked == true) { parDispNum = 9; }
-
-            this.Visible = false;
-            TargetSelection frmTargetSelection = new TargetSelection();
-
-            frmTargetSelection.ShowDialog(this);
-            
-        }
+        #region イベント
 
         private void picDispNum2_Click(object sender, EventArgs e)
         {
@@ -83,8 +38,13 @@ namespace WindowsFormsApp1
 
         private void txtUser_FocusIn(object sender, EventArgs e)
         {
-            txtUser.ReadOnly = false;
+            // 選択情報を初期化
+            parUserNo = "";
+            parUserNm = "";
             txtUser.Text = "";
+
+            // 入力制限
+            txtUser.ReadOnly = false;
             txtUser.MaxLength = 4;
         }
 
@@ -92,23 +52,120 @@ namespace WindowsFormsApp1
         {
             if (e.KeyCode == Keys.Enter)
             {
-                ChkUserNo();
+                if (String.IsNullOrEmpty(txtUser.Text))
+                {
+                    // 入力されていない　⇒　チェックせずに選択画面に遷移
+                    SelectUser(false);
+                }
+                else
+                {
+                    // 入力されている　⇒　チェック
+                    SelectUser();
+                }
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                if (!String.IsNullOrEmpty(parUserNo))
+                {
+                    // フォーカスを当てた状態（初期化＆入力制限）にする
+                    txtUser_FocusIn(sender, e);
+                }
             }
         }
 
         private void txtUser_DoubleClick(object sender, EventArgs e)
         {
-            ChkUserNo(false);
+            SelectUser(false);
         }
 
-        private void ChkUserNo(bool parChk = true)
+        private void txtUser_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // 0～9、バックスペース、エンター以外の時は、イベントをキャンセルする
+            if (e.KeyChar != '\r' && e.KeyChar != '\b' && e.KeyChar < '0' || '9' < e.KeyChar)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            // 入力チェック
+            if (String.IsNullOrEmpty(parUserNo))
+            {
+                MessageBox.Show("職員を選択してください。");
+                return;
+            }
+
+            // 共通パラメータ設定
+            g_parUserNo = parUserNo;
+            g_parUserNm = parUserNm;
+            if (this.rdbDispNum2.Checked == true) { g_parDispNum = 2; }
+            if (this.rdbDispNum4.Checked == true) { g_parDispNum = 4; }
+            if (this.rdbDispNum9.Checked == true) { g_parDispNum = 9; }
+
+            // 検査対象選択画面に遷移
+            this.Visible = false;
+            TargetSelection frmTargetSelection = new TargetSelection();
+
+            frmTargetSelection.ShowDialog(this);
+
+        }
+
+        #endregion
+
+        #region メソッド
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public LoginForm()
+        {
+            InitializeComponent();
+
+            this.StartPosition = FormStartPosition.CenterScreen;
+
+            // 初期設定
+
+            // 1.ユーザID
+            if (!String.IsNullOrEmpty(parUserNo))
+            {
+                txtUser.Text = parUserNo + " " + parUserNm;
+            }
+            else
+            {
+                txtUser.Text = "";
+            }
+
+            // 2.表示枚数
+            switch (g_parDispNum)
+            {
+                case 2:
+                    rdbDispNum2.Checked = true;
+                    break;
+                case 4:
+                    rdbDispNum4.Checked = true;
+                    break;
+                case 9:
+                    rdbDispNum9.Checked = true;
+                    break;
+                default:
+                    rdbDispNum9.Checked = true;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 職員選択
+        /// </summary>
+        /// <param name="parChk">チェック有無</param>
+        private void SelectUser(bool parChk = true)
         {
             string strSQL = "";
 
             if (parChk)
             {
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(strConnect))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                 {
                     NpgsqlCon.Open();
 
@@ -137,36 +194,40 @@ namespace WindowsFormsApp1
                         parUserNo = frmTargetSelection.parUserNo;
                         parUserNm = frmTargetSelection.parUserNm;
                     }
-
-                    txtUser.Text = parUserNo + " " + parUserNm;
                 }
             }
-            else 
+            else
             {
                 UserSelection frmTargetSelection = new UserSelection();
                 frmTargetSelection.ShowDialog(this);
 
                 parUserNo = frmTargetSelection.parUserNo;
                 parUserNm = frmTargetSelection.parUserNm;
-
-                txtUser.Text = parUserNo + " " + parUserNm;
             }
 
-            // 値が入っている場合は入力不可にする
-            if (!String.IsNullOrEmpty(txtUser.Text))
+            if (!String.IsNullOrEmpty(parUserNo))
             {
+                txtUser.Text = parUserNo + " "  + parUserNm;
+
+                // 入力不可にする
                 txtUser.ReadOnly = true;
+                txtUser.BackColor = SystemColors.Window;
             }
-
-        }
-
-        private void txtUser_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar != '\r' && e.KeyChar != '\b' && e.KeyChar < '0' || '9' < e.KeyChar)
+            else
             {
-                e.Handled = true;
+                // 選択情報を初期化
+                parUserNo = "";
+                parUserNm = "";
+                txtUser.Text = "";
+
+                // 入力制限
+                txtUser.ReadOnly = false;
+                txtUser.MaxLength = 4;
             }
+
         }
+
+        #endregion
 
     }
 }

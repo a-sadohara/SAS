@@ -58,12 +58,12 @@
             // 
             // txtUser
             // 
-            this.txtUser.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtUser.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtUser.ImeMode = System.Windows.Forms.ImeMode.Disable;
-            this.txtUser.Location = new System.Drawing.Point(108, 12);
+            this.txtUser.Location = new System.Drawing.Point(108, 11);
             this.txtUser.Margin = new System.Windows.Forms.Padding(2);
             this.txtUser.Name = "txtUser";
-            this.txtUser.Size = new System.Drawing.Size(199, 23);
+            this.txtUser.Size = new System.Drawing.Size(199, 27);
             this.txtUser.TabIndex = 1;
             this.txtUser.Click += new System.EventHandler(this.txtUser_FocusIn);
             this.txtUser.DoubleClick += new System.EventHandler(this.txtUser_DoubleClick);
@@ -78,10 +78,10 @@
             this.btnLogin.Margin = new System.Windows.Forms.Padding(2);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(188, 70);
-            this.btnLogin.TabIndex = 3;
+            this.btnLogin.TabIndex = 5;
             this.btnLogin.Text = "ログイン";
             this.btnLogin.UseVisualStyleBackColor = true;
-            this.btnLogin.Click += new System.EventHandler(this.Button1_Click);
+            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
             // rdbDispNum2
             // 
@@ -91,7 +91,7 @@
             this.rdbDispNum2.Location = new System.Drawing.Point(21, 81);
             this.rdbDispNum2.Name = "rdbDispNum2";
             this.rdbDispNum2.Size = new System.Drawing.Size(35, 24);
-            this.rdbDispNum2.TabIndex = 4;
+            this.rdbDispNum2.TabIndex = 2;
             this.rdbDispNum2.TabStop = true;
             this.rdbDispNum2.Text = "2";
             this.rdbDispNum2.UseVisualStyleBackColor = true;
@@ -104,7 +104,7 @@
             this.rdbDispNum4.Location = new System.Drawing.Point(136, 81);
             this.rdbDispNum4.Name = "rdbDispNum4";
             this.rdbDispNum4.Size = new System.Drawing.Size(35, 24);
-            this.rdbDispNum4.TabIndex = 4;
+            this.rdbDispNum4.TabIndex = 3;
             this.rdbDispNum4.TabStop = true;
             this.rdbDispNum4.Text = "4";
             this.rdbDispNum4.UseVisualStyleBackColor = true;
@@ -129,7 +129,7 @@
             this.picDispNum2.Name = "picDispNum2";
             this.picDispNum2.Size = new System.Drawing.Size(88, 80);
             this.picDispNum2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.picDispNum2.TabIndex = 5;
+            this.picDispNum2.TabIndex = 0;
             this.picDispNum2.TabStop = false;
             this.picDispNum2.Click += new System.EventHandler(this.picDispNum2_Click);
             // 
@@ -140,7 +140,7 @@
             this.picDispNum4.Name = "picDispNum4";
             this.picDispNum4.Size = new System.Drawing.Size(80, 80);
             this.picDispNum4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.picDispNum4.TabIndex = 5;
+            this.picDispNum4.TabIndex = 0;
             this.picDispNum4.TabStop = false;
             this.picDispNum4.Click += new System.EventHandler(this.picDispNum4_Click);
             // 
@@ -151,7 +151,7 @@
             this.picDispNum9.Name = "picDispNum9";
             this.picDispNum9.Size = new System.Drawing.Size(80, 80);
             this.picDispNum9.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.picDispNum9.TabIndex = 5;
+            this.picDispNum9.TabIndex = 0;
             this.picDispNum9.TabStop = false;
             this.picDispNum9.Click += new System.EventHandler(this.picDispNum9_Click);
             // 

@@ -35,7 +35,7 @@ namespace WindowsFormsApp1
         {
             this.WindowState = FormWindowState.Maximized;
 
-            lblUser.Text = "作業者名：" + parUserNm;
+            lblUser.Text = "作業者名：" + g_parUserNm;
 
             dgvData.Rows.Clear();
 

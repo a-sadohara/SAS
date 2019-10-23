@@ -114,7 +114,7 @@ namespace WindowsFormsApp1
             button6.Enabled = false;
             lblReason.Text = "";
 
-            lblUser.Text = "作業者名：" + parUserNm;
+            lblUser.Text = "作業者名：" + g_parUserNm;
 
             // 実際の座標位置を取得
             intPointXFact = 800;

@@ -139,7 +139,6 @@ D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Overdetectionexclusion.resources
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Properties.Resources.resources
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Summary.resources
-D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Result2.resources
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Result.resources
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.ResultCheck.resources
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.SelectErrorReason.resources
@@ -152,3 +151,4 @@ D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.exe
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.pdb
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.ListInWpf.resources
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.csprojAssemblyReference.cache
+D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.DisplayResults.resources

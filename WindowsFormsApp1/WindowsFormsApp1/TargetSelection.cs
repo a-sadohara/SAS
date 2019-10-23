@@ -120,7 +120,7 @@ namespace WindowsFormsApp1
         {
             this.WindowState = FormWindowState.Maximized;
 
-            lblUser.Text = "作業者名：" + parUserNm;
+            lblUser.Text = "作業者名：" + g_parUserNm;
 
             // 行選択モードに変更
             this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -167,7 +167,7 @@ namespace WindowsFormsApp1
                     frmResultCheck.ShowDialog(this);
                     break;
                 case 6:
-                    Result2 frmResult = new Result2(dtTagetInfo, e.RowIndex);
+                    DisplayResults frmResult = new DisplayResults(dtTagetInfo, e.RowIndex);
                     frmResult.ShowDialog(this);
                     break;
                 

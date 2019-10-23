@@ -37,3 +37,13 @@ D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\obj\Debug\BeforeInspection.
 D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\obj\Debug\BeforeInspection.exe
 D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\obj\Debug\BeforeInspection.pdb
 D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\obj\Debug\BeforeInspection.csprojAssemblyReference.cache
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\bin\Debug\Npgsql.dll
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\bin\Debug\System.Threading.Tasks.Extensions.dll
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\bin\Debug\System.ValueTuple.dll
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\bin\Debug\Npgsql.pdb
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\bin\Debug\Npgsql.xml
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\bin\Debug\System.Threading.Tasks.Extensions.xml
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\bin\Debug\System.ValueTuple.xml
+D:\d.kadoguchi\SAS\WindowsFormsApp1\BeforeInspection\obj\Debug\BeforeInspection.csproj.CopyComplete
