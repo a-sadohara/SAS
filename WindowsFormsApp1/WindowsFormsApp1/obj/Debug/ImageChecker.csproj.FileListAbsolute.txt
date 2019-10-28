@@ -157,4 +157,3 @@ D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.g.re
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ListWpf_UserCtrl.g.cs
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ListWpf_UserCtrl.baml
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.ListWpf_WinForm.resources
-D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.csprojAssemblyReference.cache

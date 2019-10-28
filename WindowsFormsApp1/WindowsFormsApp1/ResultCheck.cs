@@ -40,10 +40,6 @@ namespace WindowsFormsApp1
         private Double dblPctWidthRatio = 0.0;
         private Double dblPctHeightRatio = 0.0;
 
-        // 座標計算補正
-        private int intMulX = 1;    //1:正数 -1:負数
-        private int intMulY = 1;    //1:正数 -1:負数
-
         // 画像向き
         private const string m_CON_FLIP_S = "S";
         private const string m_CON_FLIP_X = "X";
