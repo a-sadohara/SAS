@@ -52,8 +52,6 @@
             this.btnFlipS = new System.Windows.Forms.Button();
             this.btnFlipY = new System.Windows.Forms.Button();
             this.btnFlipR = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.lblReason = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
@@ -69,8 +67,10 @@
             this.label14 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.button6 = new System.Windows.Forms.Button();
             this.pictureBox5 = new System.Windows.Forms.PictureBox();
@@ -78,6 +78,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.btnCopyReg = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -93,6 +94,7 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.label11);
+            this.panel1.Controls.Add(this.btnCopyReg);
             this.panel1.Controls.Add(this.btnLogOut);
             this.panel1.Controls.Add(this.label12);
             this.panel1.Controls.Add(this.label4);
@@ -107,7 +109,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1720, 104);
+            this.panel1.Size = new System.Drawing.Size(1080, 104);
             this.panel1.TabIndex = 0;
             // 
             // label11
@@ -126,7 +128,7 @@
             // 
             this.btnLogOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLogOut.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnLogOut.Location = new System.Drawing.Point(1593, 9);
+            this.btnLogOut.Location = new System.Drawing.Point(953, 9);
             this.btnLogOut.Margin = new System.Windows.Forms.Padding(2);
             this.btnLogOut.Name = "btnLogOut";
             this.btnLogOut.Size = new System.Drawing.Size(116, 38);
@@ -165,7 +167,7 @@
             this.lblUser.AutoSize = true;
             this.lblUser.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblUser.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblUser.Location = new System.Drawing.Point(1289, 20);
+            this.lblUser.Location = new System.Drawing.Point(649, 20);
             this.lblUser.Margin = new System.Windows.Forms.Padding(2);
             this.lblUser.MaximumSize = new System.Drawing.Size(300, 0);
             this.lblUser.MinimumSize = new System.Drawing.Size(300, 0);
@@ -268,7 +270,7 @@
             this.panel2.Location = new System.Drawing.Point(0, 104);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(173, 528);
+            this.panel2.Size = new System.Drawing.Size(173, 510);
             this.panel2.TabIndex = 1;
             // 
             // button7
@@ -293,7 +295,7 @@
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button1.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button1.Location = new System.Drawing.Point(22, 455);
+            this.button1.Location = new System.Drawing.Point(22, 437);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(116, 47);
@@ -337,10 +339,10 @@
             this.panel3.Controls.Add(this.comboBox2);
             this.panel3.Controls.Add(this.button3);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(173, 504);
+            this.panel3.Location = new System.Drawing.Point(173, 486);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1547, 128);
+            this.panel3.Size = new System.Drawing.Size(907, 128);
             this.panel3.TabIndex = 2;
             // 
             // tableLayoutPanel2
@@ -413,39 +415,13 @@
             this.btnFlipR.UseVisualStyleBackColor = true;
             this.btnFlipR.Click += new System.EventHandler(this.btnFlipR_Click);
             // 
-            // button3
-            // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button3.Location = new System.Drawing.Point(753, 37);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(55, 33);
-            this.button3.TabIndex = 33;
-            this.button3.Text = "C";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Visible = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button2.Location = new System.Drawing.Point(671, 37);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(55, 33);
-            this.button2.TabIndex = 33;
-            this.button2.Text = "34";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Visible = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click_1);
-            // 
             // lblReason
             // 
             this.lblReason.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblReason.AutoSize = true;
             this.lblReason.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblReason.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblReason.Location = new System.Drawing.Point(1087, 13);
+            this.lblReason.Location = new System.Drawing.Point(447, 13);
             this.lblReason.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblReason.Name = "lblReason";
             this.lblReason.Size = new System.Drawing.Size(90, 24);
@@ -458,7 +434,7 @@
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("メイリオ", 12F);
             this.label20.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label20.Location = new System.Drawing.Point(969, 13);
+            this.label20.Location = new System.Drawing.Point(329, 13);
             this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(114, 24);
@@ -471,7 +447,7 @@
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label19.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label19.Location = new System.Drawing.Point(833, 11);
+            this.label19.Location = new System.Drawing.Point(193, 11);
             this.label19.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(81, 24);
@@ -482,7 +458,7 @@
             // 
             this.btnOther.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOther.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnOther.Location = new System.Drawing.Point(1351, 37);
+            this.btnOther.Location = new System.Drawing.Point(711, 37);
             this.btnOther.Margin = new System.Windows.Forms.Padding(2);
             this.btnOther.Name = "btnOther";
             this.btnOther.Size = new System.Drawing.Size(185, 38);
@@ -495,7 +471,7 @@
             // 
             this.btnJudgeNG.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnJudgeNG.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnJudgeNG.Location = new System.Drawing.Point(1351, 79);
+            this.btnJudgeNG.Location = new System.Drawing.Point(711, 79);
             this.btnJudgeNG.Margin = new System.Windows.Forms.Padding(2);
             this.btnJudgeNG.Name = "btnJudgeNG";
             this.btnJudgeNG.Size = new System.Drawing.Size(185, 38);
@@ -508,7 +484,7 @@
             // 
             this.btnRenzokuBlack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRenzokuBlack.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnRenzokuBlack.Location = new System.Drawing.Point(1162, 79);
+            this.btnRenzokuBlack.Location = new System.Drawing.Point(522, 79);
             this.btnRenzokuBlack.Margin = new System.Windows.Forms.Padding(2);
             this.btnRenzokuBlack.Name = "btnRenzokuBlack";
             this.btnRenzokuBlack.Size = new System.Drawing.Size(185, 38);
@@ -521,7 +497,7 @@
             // 
             this.btnRenzokuWhite.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRenzokuWhite.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnRenzokuWhite.Location = new System.Drawing.Point(973, 79);
+            this.btnRenzokuWhite.Location = new System.Drawing.Point(333, 79);
             this.btnRenzokuWhite.Margin = new System.Windows.Forms.Padding(2);
             this.btnRenzokuWhite.Name = "btnRenzokuWhite";
             this.btnRenzokuWhite.Size = new System.Drawing.Size(185, 38);
@@ -534,7 +510,7 @@
             // 
             this.btnTanpatuBlack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnTanpatuBlack.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnTanpatuBlack.Location = new System.Drawing.Point(1162, 37);
+            this.btnTanpatuBlack.Location = new System.Drawing.Point(522, 37);
             this.btnTanpatuBlack.Margin = new System.Windows.Forms.Padding(2);
             this.btnTanpatuBlack.Name = "btnTanpatuBlack";
             this.btnTanpatuBlack.Size = new System.Drawing.Size(185, 38);
@@ -547,7 +523,7 @@
             // 
             this.btnTanpatuWhite.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnTanpatuWhite.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnTanpatuWhite.Location = new System.Drawing.Point(973, 37);
+            this.btnTanpatuWhite.Location = new System.Drawing.Point(333, 37);
             this.btnTanpatuWhite.Margin = new System.Windows.Forms.Padding(2);
             this.btnTanpatuWhite.Name = "btnTanpatuWhite";
             this.btnTanpatuWhite.Size = new System.Drawing.Size(185, 38);
@@ -560,7 +536,7 @@
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOk.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnOk.Location = new System.Drawing.Point(837, 36);
+            this.btnOk.Location = new System.Drawing.Point(197, 36);
             this.btnOk.Margin = new System.Windows.Forms.Padding(2);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(116, 38);
@@ -575,7 +551,7 @@
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("メイリオ", 8F);
             this.label17.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label17.Location = new System.Drawing.Point(662, 92);
+            this.label17.Location = new System.Drawing.Point(22, 92);
             this.label17.Margin = new System.Windows.Forms.Padding(0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(136, 17);
@@ -588,7 +564,7 @@
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("メイリオ", 8F);
             this.label18.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label18.Location = new System.Drawing.Point(662, 79);
+            this.label18.Location = new System.Drawing.Point(22, 79);
             this.label18.Margin = new System.Windows.Forms.Padding(0);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(64, 17);
@@ -601,7 +577,7 @@
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("メイリオ", 12F);
             this.label14.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label14.Location = new System.Drawing.Point(741, 13);
+            this.label14.Location = new System.Drawing.Point(101, 13);
             this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(42, 24);
@@ -627,28 +603,12 @@
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label13.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label13.Location = new System.Drawing.Point(657, 13);
+            this.label13.Location = new System.Drawing.Point(17, 13);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(42, 24);
             this.label13.TabIndex = 19;
             this.label13.Text = "行：";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
-            "A",
-            "B",
-            "C",
-            "D"});
-            this.comboBox2.Location = new System.Drawing.Point(753, 37);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(55, 32);
-            this.comboBox2.TabIndex = 34;
             // 
             // comboBox1
             // 
@@ -756,19 +716,61 @@
             "97",
             "98",
             "99"});
-            this.comboBox1.Location = new System.Drawing.Point(671, 37);
+            this.comboBox1.Location = new System.Drawing.Point(31, 37);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(55, 32);
             this.comboBox1.TabIndex = 34;
+            // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.button2.Location = new System.Drawing.Point(31, 37);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(55, 33);
+            this.button2.TabIndex = 33;
+            this.button2.Text = "34";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click_1);
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "A",
+            "B",
+            "C",
+            "D"});
+            this.comboBox2.Location = new System.Drawing.Point(113, 37);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(55, 32);
+            this.comboBox2.TabIndex = 34;
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.button3.Location = new System.Drawing.Point(113, 37);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(55, 33);
+            this.button3.TabIndex = 33;
+            this.button3.Text = "C";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Visible = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // panel4
             // 
             this.panel4.Controls.Add(this.button6);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel4.Location = new System.Drawing.Point(1570, 104);
+            this.panel4.Location = new System.Drawing.Point(930, 104);
             this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(150, 400);
+            this.panel4.Size = new System.Drawing.Size(150, 382);
             this.panel4.TabIndex = 3;
             // 
             // button6
@@ -797,7 +799,7 @@
             this.pictureBox5.Location = new System.Drawing.Point(0, 0);
             this.pictureBox5.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox5.Name = "pictureBox5";
-            this.pictureBox5.Size = new System.Drawing.Size(692, 394);
+            this.pictureBox5.Size = new System.Drawing.Size(372, 376);
             this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox5.TabIndex = 4;
             this.pictureBox5.TabStop = false;
@@ -807,10 +809,10 @@
             this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(698, 0);
+            this.pictureBox1.Location = new System.Drawing.Point(378, 0);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(699, 400);
+            this.pictureBox1.Size = new System.Drawing.Size(379, 382);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
@@ -828,7 +830,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1397, 400);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(757, 382);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // panel6
@@ -837,7 +839,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(3, 3);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(692, 394);
+            this.panel6.Size = new System.Drawing.Size(372, 376);
             this.panel6.TabIndex = 5;
             // 
             // panel8
@@ -846,15 +848,27 @@
             this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel8.Location = new System.Drawing.Point(0, 0);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(692, 394);
+            this.panel8.Size = new System.Drawing.Size(372, 376);
             this.panel8.TabIndex = 6;
+            // 
+            // btnCopyReg
+            // 
+            this.btnCopyReg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCopyReg.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnCopyReg.Location = new System.Drawing.Point(814, 57);
+            this.btnCopyReg.Margin = new System.Windows.Forms.Padding(2);
+            this.btnCopyReg.Name = "btnCopyReg";
+            this.btnCopyReg.Size = new System.Drawing.Size(116, 38);
+            this.btnCopyReg.TabIndex = 25;
+            this.btnCopyReg.Text = "複写して登録";
+            this.btnCopyReg.UseVisualStyleBackColor = true;
             // 
             // ResultCheck
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.ClientSize = new System.Drawing.Size(1720, 632);
+            this.ClientSize = new System.Drawing.Size(1080, 614);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
@@ -934,5 +948,6 @@
         private System.Windows.Forms.Button btnFlipY;
         private System.Windows.Forms.Button btnFlipR;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button btnCopyReg;
     }
 }
