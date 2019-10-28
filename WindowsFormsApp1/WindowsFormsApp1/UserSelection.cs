@@ -16,8 +16,9 @@ namespace WindowsFormsApp1
 {
     public partial class UserSelection : Form
     {
-        public String parUserNo;
-        public String parUserNm;
+        public string strUserNo { get; set; }
+        public string strUserNm { get; set; }
+
         public DataTable dtData;
 
         #region イベント
@@ -28,15 +29,15 @@ namespace WindowsFormsApp1
             string strKanaEnd = "";
 
             if (sender == lblSearchあ) { strKanaSta = "ア"; strKanaEnd = "オ"; }
-            if (sender == lblSearchか) { strKanaSta = "カ"; strKanaEnd = "コ"; }
-            if (sender == lblSearchさ) { strKanaSta = "サ"; strKanaEnd = "ソ"; }
-            if (sender == lblSearchた) { strKanaSta = "タ"; strKanaEnd = "ト"; }
-            if (sender == lblSearchな) { strKanaSta = "ナ"; strKanaEnd = "ノ"; }
-            if (sender == lblSearchは) { strKanaSta = "ハ"; strKanaEnd = "ホ"; }
-            if (sender == lblSearchま) { strKanaSta = "マ"; strKanaEnd = "モ"; }
-            if (sender == lblSearchや) { strKanaSta = "ヤ"; strKanaEnd = "ヨ"; }
-            if (sender == lblSearchら) { strKanaSta = "ラ"; strKanaEnd = "ロ"; }
-            if (sender == lblSearchわ) { strKanaSta = "ワ"; strKanaEnd = "ン"; }
+            else if (sender == lblSearchか) { strKanaSta = "カ"; strKanaEnd = "コ"; }
+            else if (sender == lblSearchさ) { strKanaSta = "サ"; strKanaEnd = "ソ"; }
+            else if (sender == lblSearchた) { strKanaSta = "タ"; strKanaEnd = "ト"; }
+            else if (sender == lblSearchな) { strKanaSta = "ナ"; strKanaEnd = "ノ"; }
+            else if (sender == lblSearchは) { strKanaSta = "ハ"; strKanaEnd = "ホ"; }
+            else if (sender == lblSearchま) { strKanaSta = "マ"; strKanaEnd = "モ"; }
+            else if (sender == lblSearchや) { strKanaSta = "ヤ"; strKanaEnd = "ヨ"; }
+            else if (sender == lblSearchら) { strKanaSta = "ラ"; strKanaEnd = "ロ"; }
+            else if (sender == lblSearchわ) { strKanaSta = "ワ"; strKanaEnd = "ン"; }
 
             foreach (Label lbl in new Label[] { lblSearchあ, lblSearchか, lblSearchさ, lblSearchた, lblSearchな,
                                                 lblSearchは, lblSearchま, lblSearchや, lblSearchら, lblSearchわ})
@@ -59,8 +60,8 @@ namespace WindowsFormsApp1
             if (e.RowIndex < 0) { return; }
 
             // 選択行の情報をパラメータにセット
-            parUserNo = dgvUser.Rows[e.RowIndex].Cells[0].Value.ToString();
-            parUserNm = dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString();
+            strUserNo = dgvUser.Rows[e.RowIndex].Cells[0].Value.ToString();
+            strUserNm = dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString();
 
             this.Close();
         }
@@ -141,6 +142,5 @@ namespace WindowsFormsApp1
         }
 
         #endregion
-
     }
 }

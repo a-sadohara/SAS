@@ -149,6 +149,12 @@ D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.cspr
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.csproj.CopyComplete
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.exe
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.pdb
-D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.ListInWpf.resources
-D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.csprojAssemblyReference.cache
 D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.DisplayResults.resources
+D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker_Content.g.cs
+D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker_MarkupCompile.cache
+D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker_MarkupCompile.lref
+D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.g.resources
+D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ListWpf_UserCtrl.g.cs
+D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ListWpf_UserCtrl.baml
+D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.ListWpf_WinForm.resources
+D:\d.kadoguchi\SAS\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\ImageChecker.csprojAssemblyReference.cache

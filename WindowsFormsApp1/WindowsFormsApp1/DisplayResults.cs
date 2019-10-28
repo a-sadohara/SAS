@@ -200,7 +200,7 @@ namespace WindowsFormsApp1
                         UserSelection frmTargetSelection = new UserSelection();
                         frmTargetSelection.ShowDialog(this);
 
-                        parUserNo = frmTargetSelection.parUserNm;
+                        parUserNo = frmTargetSelection.strUserNm;
                     }
                 }
             }
@@ -209,7 +209,7 @@ namespace WindowsFormsApp1
                 UserSelection frmTargetSelection = new UserSelection();
                 frmTargetSelection.ShowDialog(this);
 
-                parUserNo = frmTargetSelection.parUserNm;
+                parUserNo = frmTargetSelection.strUserNm;
             }
 
             if (!String.IsNullOrEmpty(parUserNo))

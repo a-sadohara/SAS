@@ -38,9 +38,7 @@ namespace WindowsFormsApp1
             this.dgvData.ReadOnly = true;
             this.dgvData.MultiSelect = false;
 
-
             dgvData.Rows.Clear();
-
 
             foreach (string line in File.ReadLines("エラー理由一覧.TSV", Encoding.Default))
             {
@@ -72,8 +70,6 @@ namespace WindowsFormsApp1
                     eorrReasonDto.setStrErrorReason(row.Cells[1].Value.ToString());
                     this.Close();
                 }
-
-                
             }
         }
 

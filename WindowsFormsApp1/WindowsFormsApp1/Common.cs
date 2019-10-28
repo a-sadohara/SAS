@@ -23,26 +23,35 @@ namespace WindowsFormsApp1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TargetSelection());
+            Application.Run(new LoginForm());
         }
 
+        /// <summary>
+        /// ログイン処理
+        /// </summary>
         public static void LogIn()
         {
             g_parStatus = 1;
         }
 
+        /// <summary>
+        /// ログアウト処理
+        /// </summary>
         public static void LogOut()
         {
             g_parStatus = 0;
 
+            // 開いている画面ループ
             foreach (Form frm in Application.OpenForms)
             {
                 if (frm is LoginForm)
                 {
+                    // ログイン画面　⇒　再表示
                     frm.Visible = true;
                 }
                 else
                 {
+                    // ログイン画面以外　⇒　閉じる
                     frm.Close();
                 }
             }

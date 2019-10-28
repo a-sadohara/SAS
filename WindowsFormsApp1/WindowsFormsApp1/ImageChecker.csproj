@@ -106,17 +106,20 @@
   <ItemGroup>
     <Compile Include="DTO\ErrorReasonDTO.cs" />
     <Compile Include="DTO\TargetInfoDto.cs" />
-    <Compile Include="ListInWpf.cs">
+    <Compile Include="ListWpf_WinForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ListInWpf.Designer.cs">
-      <DependentUpon>ListInWpf.cs</DependentUpon>
+    <Compile Include="ListWpf_WinForm.Designer.cs">
+      <DependentUpon>ListWpf_WinForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Summary.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Summary.Designer.cs">
       <DependentUpon>Summary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ListWpf_UserCtrl.xaml.cs">
+      <DependentUpon>ListWpf_UserCtrl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserSelection.cs">
       <SubType>Form</SubType>
@@ -174,8 +177,8 @@
     <Compile Include="ViewEnlargedimage.Designer.cs">
       <DependentUpon>ViewEnlargedimage.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="ListInWpf.resx">
-      <DependentUpon>ListInWpf.cs</DependentUpon>
+    <EmbeddedResource Include="ListWpf_WinForm.resx">
+      <DependentUpon>ListWpf_WinForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
@@ -246,6 +249,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="ListWpf_UserCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

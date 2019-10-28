@@ -21,17 +21,22 @@ namespace WindowsFormsApp1
 
         #region イベント
 
-        private void picDispNum2_Click(object sender, EventArgs e)
+        private void picDispNum2_Click(dynamic sender, EventArgs e)
         {
             rdbDispNum2.Checked = true;
         }
 
-        private void picDispNum4_Click(object sender, EventArgs e)
+        private void picDispNum4_Click(dynamic sender, EventArgs e)
         {
             rdbDispNum4.Checked = true;
         }
 
-        private void picDispNum9_Click(object sender, EventArgs e)
+        private void picDispNum6_Click(dynamic sender, EventArgs e)
+        {
+            rdbDispNum6.Checked = true;
+        }
+
+        private void picDispNum9_Click(dynamic sender, EventArgs e)
         {
             rdbDispNum9.Checked = true;
         }
@@ -101,7 +106,10 @@ namespace WindowsFormsApp1
             g_parUserNm = parUserNm;
             if (this.rdbDispNum2.Checked == true) { g_parDispNum = 2; }
             if (this.rdbDispNum4.Checked == true) { g_parDispNum = 4; }
+            if (this.rdbDispNum6.Checked == true) { g_parDispNum = 6; }
             if (this.rdbDispNum9.Checked == true) { g_parDispNum = 9; }
+
+            LogIn();
 
             // 検査対象選択画面に遷移
             this.Visible = false;
@@ -191,8 +199,8 @@ namespace WindowsFormsApp1
                         UserSelection frmTargetSelection = new UserSelection();
                         frmTargetSelection.ShowDialog(this);
 
-                        parUserNo = frmTargetSelection.parUserNo;
-                        parUserNm = frmTargetSelection.parUserNm;
+                        parUserNo = frmTargetSelection.strUserNo;
+                        parUserNm = frmTargetSelection.strUserNm;
                     }
                 }
             }
@@ -201,8 +209,8 @@ namespace WindowsFormsApp1
                 UserSelection frmTargetSelection = new UserSelection();
                 frmTargetSelection.ShowDialog(this);
 
-                parUserNo = frmTargetSelection.parUserNo;
-                parUserNm = frmTargetSelection.parUserNm;
+                parUserNo = frmTargetSelection.strUserNo;
+                parUserNm = frmTargetSelection.strUserNm;
             }
 
             if (!String.IsNullOrEmpty(parUserNo))
