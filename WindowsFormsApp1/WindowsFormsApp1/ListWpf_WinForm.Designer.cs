@@ -1,6 +1,6 @@
 ﻿namespace WindowsFormsApp1
 {
-    partial class ListInWpf
+    partial class ListWpf_WinForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,21 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pnlMain = new System.Windows.Forms.Panel();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.SuspendLayout();
             // 
-            // pnlMain
+            // elementHost1
             // 
-            this.pnlMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlMain.AutoScroll = true;
-            this.pnlMain.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlMain.Location = new System.Drawing.Point(250, 0);
-            this.pnlMain.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlMain.Name = "pnlMain";
-            this.pnlMain.Size = new System.Drawing.Size(300, 100);
-            this.pnlMain.TabIndex = 0;
+            this.elementHost1.Location = new System.Drawing.Point(200, 0);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(400, 100);
+            this.elementHost1.TabIndex = 1;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = null;
             // 
             // ListInWpf
             // 
@@ -50,7 +46,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(800, 100);
-            this.Controls.Add(this.pnlMain);
+            this.Controls.Add(this.elementHost1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "ListInWpf";
             this.Text = "ListInWpf";
@@ -62,7 +58,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Panel pnlMain;
+        private System.Windows.Forms.Integration.ElementHost elementHost1;
     }
 }

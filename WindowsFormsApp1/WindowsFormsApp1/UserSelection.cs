@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data;
 using System.IO;
 using WindowsFormsApp1.DTO;
 using static WindowsFormsApp1.Common;
@@ -17,12 +16,63 @@ namespace WindowsFormsApp1
 {
     public partial class UserSelection : Form
     {
-        public String parUserNo;
-        public String parUserNm;
-        public NpgsqlConnection NpgsqlCon;
-        public const string  strConnect = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
+        public string strUserNo { get; set; }
+        public string strUserNm { get; set; }
+
         public DataTable dtData;
 
+        #region イベント
+
+        private void lblSearch_Click(dynamic sender, EventArgs e)
+        {
+            string strKanaSta = "";
+            string strKanaEnd = "";
+
+            if (sender == lblSearchあ) { strKanaSta = "ア"; strKanaEnd = "オ"; }
+            else if (sender == lblSearchか) { strKanaSta = "カ"; strKanaEnd = "コ"; }
+            else if (sender == lblSearchさ) { strKanaSta = "サ"; strKanaEnd = "ソ"; }
+            else if (sender == lblSearchた) { strKanaSta = "タ"; strKanaEnd = "ト"; }
+            else if (sender == lblSearchな) { strKanaSta = "ナ"; strKanaEnd = "ノ"; }
+            else if (sender == lblSearchは) { strKanaSta = "ハ"; strKanaEnd = "ホ"; }
+            else if (sender == lblSearchま) { strKanaSta = "マ"; strKanaEnd = "モ"; }
+            else if (sender == lblSearchや) { strKanaSta = "ヤ"; strKanaEnd = "ヨ"; }
+            else if (sender == lblSearchら) { strKanaSta = "ラ"; strKanaEnd = "ロ"; }
+            else if (sender == lblSearchわ) { strKanaSta = "ワ"; strKanaEnd = "ン"; }
+
+            foreach (Label lbl in new Label[] { lblSearchあ, lblSearchか, lblSearchさ, lblSearchた, lblSearchな,
+                                                lblSearchは, lblSearchま, lblSearchや, lblSearchら, lblSearchわ})
+            {
+                if (sender == lbl)
+                {
+                    lbl.BackColor = System.Drawing.SystemColors.Highlight;
+                }
+                else
+                {
+                    lbl.BackColor = System.Drawing.Color.Transparent;
+                }
+            }
+
+            dispDataGridView(strKanaSta, strKanaEnd);
+        }
+
+        private void dgvUser_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) { return; }
+
+            // 選択行の情報をパラメータにセット
+            strUserNo = dgvUser.Rows[e.RowIndex].Cells[0].Value.ToString();
+            strUserNm = dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString();
+
+            this.Close();
+        }
+
+        #endregion
+
+        #region メソッド
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public UserSelection()
         {
             InitializeComponent();
@@ -32,169 +82,16 @@ namespace WindowsFormsApp1
             dispDataGridView();
         }
 
-        private void lblSearchあ_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.SystemColors.Highlight;
-            lblSearchか.BackColor = System.Drawing.Color.Transparent;
-            lblSearchさ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchた.BackColor = System.Drawing.Color.Transparent;
-            lblSearchな.BackColor = System.Drawing.Color.Transparent;
-            lblSearchは.BackColor = System.Drawing.Color.Transparent;
-            lblSearchま.BackColor = System.Drawing.Color.Transparent;
-            lblSearchや.BackColor = System.Drawing.Color.Transparent;
-            lblSearchら.BackColor = System.Drawing.Color.Transparent;
-            lblSearchわ.BackColor = System.Drawing.Color.Transparent;
-
-            dispDataGridView("ア", "オ");
-        }
-        private void lblSearchか_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchか.BackColor = System.Drawing.SystemColors.Highlight;
-            lblSearchさ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchた.BackColor = System.Drawing.Color.Transparent;
-            lblSearchな.BackColor = System.Drawing.Color.Transparent;
-            lblSearchは.BackColor = System.Drawing.Color.Transparent;
-            lblSearchま.BackColor = System.Drawing.Color.Transparent;
-            lblSearchや.BackColor = System.Drawing.Color.Transparent;
-            lblSearchら.BackColor = System.Drawing.Color.Transparent;
-            lblSearchわ.BackColor = System.Drawing.Color.Transparent;
-
-            dispDataGridView("カ", "コ");
-        }
-        private void lblSearchさ_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchか.BackColor = System.Drawing.Color.Transparent;
-            lblSearchさ.BackColor = System.Drawing.SystemColors.Highlight;
-            lblSearchた.BackColor = System.Drawing.Color.Transparent;
-            lblSearchな.BackColor = System.Drawing.Color.Transparent;
-            lblSearchは.BackColor = System.Drawing.Color.Transparent;
-            lblSearchま.BackColor = System.Drawing.Color.Transparent;
-            lblSearchや.BackColor = System.Drawing.Color.Transparent;
-            lblSearchら.BackColor = System.Drawing.Color.Transparent;
-            lblSearchわ.BackColor = System.Drawing.Color.Transparent;
-
-            dispDataGridView("サ", "ソ");
-        }
-        private void lblSearchた_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchか.BackColor = System.Drawing.Color.Transparent;
-            lblSearchさ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchた.BackColor = System.Drawing.SystemColors.Highlight;
-            lblSearchな.BackColor = System.Drawing.Color.Transparent;
-            lblSearchは.BackColor = System.Drawing.Color.Transparent;
-            lblSearchま.BackColor = System.Drawing.Color.Transparent;
-            lblSearchや.BackColor = System.Drawing.Color.Transparent;
-            lblSearchら.BackColor = System.Drawing.Color.Transparent;
-            lblSearchわ.BackColor = System.Drawing.Color.Transparent;
-
-            dispDataGridView("タ", "ト");
-        }
-        private void lblSearchな_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchか.BackColor = System.Drawing.Color.Transparent;
-            lblSearchさ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchた.BackColor = System.Drawing.Color.Transparent;
-            lblSearchな.BackColor = System.Drawing.SystemColors.Highlight;
-            lblSearchは.BackColor = System.Drawing.Color.Transparent;
-            lblSearchま.BackColor = System.Drawing.Color.Transparent;
-            lblSearchや.BackColor = System.Drawing.Color.Transparent;
-            lblSearchら.BackColor = System.Drawing.Color.Transparent;
-            lblSearchわ.BackColor = System.Drawing.Color.Transparent;
-
-            dispDataGridView("ナ", "ノ");
-        }
-        private void lblSearchは_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchか.BackColor = System.Drawing.Color.Transparent;
-            lblSearchさ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchた.BackColor = System.Drawing.Color.Transparent;
-            lblSearchな.BackColor = System.Drawing.Color.Transparent;
-            lblSearchは.BackColor = System.Drawing.SystemColors.Highlight;
-            lblSearchま.BackColor = System.Drawing.Color.Transparent;
-            lblSearchや.BackColor = System.Drawing.Color.Transparent;
-            lblSearchら.BackColor = System.Drawing.Color.Transparent;
-            lblSearchわ.BackColor = System.Drawing.Color.Transparent;
-
-            dispDataGridView("ハ", "ホ");
-        }
-        private void lblSearchま_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchか.BackColor = System.Drawing.Color.Transparent;
-            lblSearchさ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchた.BackColor = System.Drawing.Color.Transparent;
-            lblSearchな.BackColor = System.Drawing.Color.Transparent;
-            lblSearchは.BackColor = System.Drawing.Color.Transparent;
-            lblSearchま.BackColor = System.Drawing.SystemColors.Highlight;
-            lblSearchや.BackColor = System.Drawing.Color.Transparent;
-            lblSearchら.BackColor = System.Drawing.Color.Transparent;
-            lblSearchわ.BackColor = System.Drawing.Color.Transparent;
-
-            dispDataGridView("マ", "モ");
-        }
-        private void lblSearchや_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchか.BackColor = System.Drawing.Color.Transparent;
-            lblSearchさ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchた.BackColor = System.Drawing.Color.Transparent;
-            lblSearchな.BackColor = System.Drawing.Color.Transparent;
-            lblSearchは.BackColor = System.Drawing.Color.Transparent;
-            lblSearchま.BackColor = System.Drawing.Color.Transparent;
-            lblSearchや.BackColor = System.Drawing.SystemColors.Highlight;
-            lblSearchら.BackColor = System.Drawing.Color.Transparent;
-            lblSearchわ.BackColor = System.Drawing.Color.Transparent;
-
-            dispDataGridView("ヤ", "ヨ");
-        }
-        private void lblSearchら_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchか.BackColor = System.Drawing.Color.Transparent;
-            lblSearchさ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchた.BackColor = System.Drawing.Color.Transparent;
-            lblSearchな.BackColor = System.Drawing.Color.Transparent;
-            lblSearchは.BackColor = System.Drawing.Color.Transparent;
-            lblSearchま.BackColor = System.Drawing.Color.Transparent;
-            lblSearchや.BackColor = System.Drawing.Color.Transparent;
-            lblSearchら.BackColor = System.Drawing.SystemColors.Highlight;
-            lblSearchわ.BackColor = System.Drawing.Color.Transparent;
-
-            dispDataGridView("ラ", "ロ");
-        }
-        private void lblSearchわ_Click(object sender, EventArgs e)
-        {
-            lblSearchあ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchか.BackColor = System.Drawing.Color.Transparent;
-            lblSearchさ.BackColor = System.Drawing.Color.Transparent;
-            lblSearchた.BackColor = System.Drawing.Color.Transparent;
-            lblSearchな.BackColor = System.Drawing.Color.Transparent;
-            lblSearchは.BackColor = System.Drawing.Color.Transparent;
-            lblSearchま.BackColor = System.Drawing.Color.Transparent;
-            lblSearchや.BackColor = System.Drawing.Color.Transparent;
-            lblSearchら.BackColor = System.Drawing.Color.Transparent;
-            lblSearchわ.BackColor = System.Drawing.SystemColors.Highlight;
-
-            dispDataGridView("ワ", "ン");
-        }
-
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            parUserNo = dgvData.Rows[e.RowIndex].Cells[0].Value.ToString();
-            parUserNm = dgvData.Rows[e.RowIndex].Cells[1].Value.ToString();
-            this.Close();
-        }
-
+        /// <summary>
+        /// データグリッドビュー表示
+        /// </summary>
+        /// <param name="strKanaSta">カナ（開始）</param>
+        /// <param name="strKanaEnd">カナ（終了）</param>
         private void dispDataGridView(string strKanaSta = "", string strKanaEnd = "")
         {
             string strSQL = "";
 
-            dgvData.Rows.Clear();
+            dgvUser.Rows.Clear();
 
             try
             {
@@ -202,7 +99,7 @@ namespace WindowsFormsApp1
                 if (!string.IsNullOrEmpty(strKanaSta) && !string.IsNullOrEmpty(strKanaEnd))
                 {
                     // PostgreSQLへ接続
-                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(strConnect))
+                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                     {
                         NpgsqlCon.Open();
 
@@ -220,13 +117,16 @@ namespace WindowsFormsApp1
                         // データグリッドビューに反映
                         foreach (DataRow row in dtData.Rows)
                         {
-                            this.dgvData.Rows.Add(row.ItemArray);
+                            this.dgvUser.Rows.Add(row.ItemArray);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
+                string strErrMsg = "";
+                strErrMsg = e.Message;
+
                 // 後々この処理は消す
                 foreach (string line in File.ReadLines("作業者.tsv", Encoding.Default))
                 {
@@ -236,9 +136,11 @@ namespace WindowsFormsApp1
                     string[] csv = strLine.Split('\t');
                     string[] data = new string[csv.Length];
                     Array.Copy(csv, 0, data, 0, data.Length);
-                    this.dgvData.Rows.Add(data);
+                    this.dgvUser.Rows.Add(data);
                 }
             }
         }
+
+        #endregion
     }
 }
