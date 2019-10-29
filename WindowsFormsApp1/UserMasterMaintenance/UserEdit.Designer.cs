@@ -93,9 +93,9 @@
             this.lblTitleYomiGana.AutoSize = true;
             this.lblTitleYomiGana.Location = new System.Drawing.Point(35, 137);
             this.lblTitleYomiGana.Name = "lblTitleYomiGana";
-            this.lblTitleYomiGana.Size = new System.Drawing.Size(52, 12);
+            this.lblTitleYomiGana.Size = new System.Drawing.Size(47, 12);
             this.lblTitleYomiGana.TabIndex = 6;
-            this.lblTitleYomiGana.Text = "読み仮名";
+            this.lblTitleYomiGana.Text = "読みカナ";
             // 
             // lblTitleUserNm_Sei
             // 
