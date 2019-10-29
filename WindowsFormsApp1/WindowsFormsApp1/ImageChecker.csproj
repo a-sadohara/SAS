@@ -104,6 +104,12 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DisplayResultsAgo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DisplayResultsAgo.Designer.cs">
+      <DependentUpon>DisplayResultsAgo.cs</DependentUpon>
+    </Compile>
     <Compile Include="DTO\ErrorReasonDTO.cs" />
     <Compile Include="DTO\TargetInfoDto.cs" />
     <Compile Include="ListWpf_WinForm.cs">
@@ -177,6 +183,9 @@
     <Compile Include="ViewEnlargedimage.Designer.cs">
       <DependentUpon>ViewEnlargedimage.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="DisplayResultsAgo.resx">
+      <DependentUpon>DisplayResultsAgo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ListWpf_WinForm.resx">
       <DependentUpon>ListWpf_WinForm.cs</DependentUpon>
     </EmbeddedResource>

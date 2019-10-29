@@ -246,8 +246,10 @@ namespace WindowsFormsApp1
             LogOut();
         }
 
-        private void TargetSelection_LocationChanged(object sender, EventArgs e)
+        private void btnDisplayResultsAgo_Click(object sender, EventArgs e)
         {
+            DisplayResultsAgo frmResult = new DisplayResultsAgo();
+            frmResult.ShowDialog(this);
         }
     }
 

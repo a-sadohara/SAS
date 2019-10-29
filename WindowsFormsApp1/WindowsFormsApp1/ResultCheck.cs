@@ -52,6 +52,24 @@ namespace WindowsFormsApp1
         {
             InitializeComponent();
 
+            //// Buttonのフォント調整
+            if ((int)System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width >= 1920)
+            {
+                // OFF
+                btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("　", "").Replace("\r\n", "");
+                btnRenzokuWhite.Text = btnRenzokuWhite.Text.Replace("　", "").Replace("\r\n", "");
+                btnTanpatuBlack.Text = btnTanpatuBlack.Text.Replace("　", "").Replace("\r\n", "");
+                btnRenzokuBlack.Text = btnRenzokuBlack.Text.Replace("　", "").Replace("\r\n", "");
+                btnOther.Text = btnOther.Text.Replace("　", "").Replace("\r\n", "");
+                btnJudgeNG.Text = btnJudgeNG.Text.Replace("　", "").Replace("\r\n", "");
+                btnTanpatuWhite.TextAlign = ContentAlignment.MiddleCenter;
+                btnRenzokuWhite.TextAlign = ContentAlignment.MiddleCenter;
+                btnTanpatuBlack.TextAlign = ContentAlignment.MiddleCenter;
+                btnRenzokuBlack.TextAlign = ContentAlignment.MiddleCenter;
+                btnOther.TextAlign = ContentAlignment.MiddleCenter;
+                btnJudgeNG.TextAlign = ContentAlignment.MiddleCenter;
+            }
+
             objTargetInfoDto = objTargetInfo;
             intRow = intRowIndex;
             
@@ -82,7 +100,7 @@ namespace WindowsFormsApp1
         {
             // ON
             btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("□","■");
-            lblReason.Text = btnTanpatuWhite.Text;
+            lblReason.Text = btnTanpatuWhite.Text.Replace("\r\n", "").Replace("　", "");
 
             // OFF
             btnRenzokuWhite.Text = btnRenzokuWhite.Text.Replace("■", "□");
@@ -98,7 +116,7 @@ namespace WindowsFormsApp1
         {
             // ON
             btnTanpatuBlack.Text = btnTanpatuBlack.Text.Replace("□", "■");
-            lblReason.Text = btnTanpatuBlack.Text;
+            lblReason.Text = btnTanpatuBlack.Text.Replace("\r\n", "").Replace("　", "");
 
             // OFF
             btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("■", "□");
@@ -114,7 +132,7 @@ namespace WindowsFormsApp1
         {
             // ON
             btnRenzokuWhite.Text = btnRenzokuWhite.Text.Replace("□", "■");
-            lblReason.Text = btnRenzokuWhite.Text;
+            lblReason.Text = btnRenzokuWhite.Text.Replace("\r\n", "").Replace("　", "");
 
             // OFF
             btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("■", "□");
@@ -130,7 +148,7 @@ namespace WindowsFormsApp1
         {
             // ON
             btnRenzokuBlack.Text = btnRenzokuBlack.Text.Replace("□", "■");
-            lblReason.Text = btnRenzokuBlack.Text;
+            lblReason.Text = btnRenzokuBlack.Text.Replace("\r\n", "").Replace("　", "");
 
             // OFF
             btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("■", "□");
@@ -169,7 +187,7 @@ namespace WindowsFormsApp1
         {
             // ON
             btnJudgeNG.Text = btnJudgeNG.Text.Replace("□", "■");
-            lblReason.Text = btnJudgeNG.Text;
+            lblReason.Text = btnJudgeNG.Text.Replace("\r\n", "").Replace("　", "");
 
             // OFF
             btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("■", "□");
@@ -231,7 +249,7 @@ namespace WindowsFormsApp1
             ListWpf_WinForm frmListInWpf = new ListWpf_WinForm(lstStr);
             frmListInWpf.ShowDialog();
 
-            button2.Text = frmListInWpf.strVal;
+            //button2.Text = frmListInWpf.strVal;
         }
 
         private void DrwFrame()
@@ -366,7 +384,7 @@ namespace WindowsFormsApp1
             ListWpf_WinForm frmListInWpf = new ListWpf_WinForm(lstStr);
             frmListInWpf.ShowDialog();
 
-            button3.Text = frmListInWpf.strVal;
+            //button3.Text = frmListInWpf.strVal;
         }
     }
 }

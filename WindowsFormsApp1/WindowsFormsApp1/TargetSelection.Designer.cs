@@ -87,11 +87,14 @@ namespace WindowsFormsApp1
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblUser = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnDisplayResultsAgo = new System.Windows.Forms.Button();
             this.btnLogOut = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -204,6 +207,18 @@ namespace WindowsFormsApp1
             this.panel1.Size = new System.Drawing.Size(1361, 53);
             this.panel1.TabIndex = 2;
             // 
+            // btnDisplayResultsAgo
+            // 
+            this.btnDisplayResultsAgo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDisplayResultsAgo.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.btnDisplayResultsAgo.Location = new System.Drawing.Point(1207, 7);
+            this.btnDisplayResultsAgo.Name = "btnDisplayResultsAgo";
+            this.btnDisplayResultsAgo.Size = new System.Drawing.Size(140, 36);
+            this.btnDisplayResultsAgo.TabIndex = 3;
+            this.btnDisplayResultsAgo.Text = "検査結果（過去分）";
+            this.btnDisplayResultsAgo.UseVisualStyleBackColor = true;
+            this.btnDisplayResultsAgo.Click += new System.EventHandler(this.btnDisplayResultsAgo_Click);
+            // 
             // btnLogOut
             // 
             this.btnLogOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -225,12 +240,23 @@ namespace WindowsFormsApp1
             this.panel2.Size = new System.Drawing.Size(1361, 546);
             this.panel2.TabIndex = 3;
             // 
+            // panel3
+            // 
+            this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel3.Controls.Add(this.btnDisplayResultsAgo);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel3.Location = new System.Drawing.Point(0, 547);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1361, 52);
+            this.panel3.TabIndex = 4;
+            // 
             // TargetSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.ClientSize = new System.Drawing.Size(1361, 599);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -243,6 +269,7 @@ namespace WindowsFormsApp1
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -258,5 +285,7 @@ namespace WindowsFormsApp1
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnLogOut;
         private System.Windows.Forms.Panel panel2;
+        private Button btnDisplayResultsAgo;
+        private Panel panel3;
     }
 }
