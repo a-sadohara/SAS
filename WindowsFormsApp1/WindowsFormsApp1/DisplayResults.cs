@@ -14,16 +14,17 @@ using Npgsql;
 
 namespace WindowsFormsApp1
 {
-    public partial class Result2 : Form
+    public partial class DisplayResults : Form
     {
         public NpgsqlConnection NpgsqlCon;
-        public const string strConnect = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
         public DataTable dtData;
+
+        public String parUserNo;
 
         TargetInfoDto objTargetInfoDto;
         int intRow;
 
-        public Result2(TargetInfoDto objTargetInfo,int intRowIndex)
+        public DisplayResults(TargetInfoDto objTargetInfo,int intRowIndex)
         {
             InitializeComponent();
 
@@ -39,7 +40,7 @@ namespace WindowsFormsApp1
         {
             this.WindowState = FormWindowState.Maximized;
 
-            lblUser.Text = "作業者名：" + parUserNm;
+            lblUser.Text = "作業者名：" + g_parUserNm;
 
             dgvData.Rows.Clear();
 
@@ -124,8 +125,12 @@ namespace WindowsFormsApp1
 
         private void txtUser_FocusIn(object sender, EventArgs e)
         {
-            txtUserNm.ReadOnly = false;
+            // 選択情報を初期化
+            parUserNo = "";
             txtUserNm.Text = "";
+
+            // 入力制限
+            txtUserNm.ReadOnly = false;
             txtUserNm.MaxLength = 4;
         }
 
@@ -133,23 +138,44 @@ namespace WindowsFormsApp1
         {
             if (e.KeyCode == Keys.Enter)
             {
-                ChkUserNo();
+                if (String.IsNullOrEmpty(txtUserNm.Text))
+                {
+                    // 入力されていない　⇒　チェックせずに選択画面に遷移
+                    SelectUser(false);
+                }
+                else
+                {
+                    // 入力されている　⇒　チェック
+                    SelectUser();
+                }
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                if (!String.IsNullOrEmpty(parUserNo))
+                {
+                    // フォーカスを当てた状態（初期化＆入力制限）にする
+                    txtUser_FocusIn(sender, e);
+                }
             }
         }
 
         private void txtUserNm_DoubleClick(object sender, EventArgs e)
         {
-            ChkUserNo(false);
+            SelectUser(false);
         }
 
-        private void ChkUserNo(bool parChk = true)
+        /// <summary>
+        /// 職員選択
+        /// </summary>
+        /// <param name="parChk">チェック有無</param>
+        private void SelectUser(bool parChk = true)
         {
             string strSQL = "";
 
             if (parChk)
             {
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(strConnect))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                 {
                     NpgsqlCon.Open();
 
@@ -165,7 +191,7 @@ namespace WindowsFormsApp1
 
                     if (dtData.Rows.Count > 0)
                     {
-                        txtUserNm.Text = dtData.Rows[0][0].ToString();
+                        parUserNo = dtData.Rows[0][0].ToString();
                     }
                     else
                     {
@@ -174,7 +200,7 @@ namespace WindowsFormsApp1
                         UserSelection frmTargetSelection = new UserSelection();
                         frmTargetSelection.ShowDialog(this);
 
-                        txtUserNm.Text = frmTargetSelection.parUserNm;
+                        parUserNo = frmTargetSelection.strUserNm;
                     }
                 }
             }
@@ -183,13 +209,26 @@ namespace WindowsFormsApp1
                 UserSelection frmTargetSelection = new UserSelection();
                 frmTargetSelection.ShowDialog(this);
 
-                txtUserNm.Text = frmTargetSelection.parUserNm;
+                parUserNo = frmTargetSelection.strUserNm;
             }
 
-            // 値が入っている場合は入力不可にする
-            if (!String.IsNullOrEmpty(txtUserNm.Text))
+            if (!String.IsNullOrEmpty(parUserNo))
             {
+                txtUserNm.Text = parUserNo;
+
+                // 入力不可にする
                 txtUserNm.ReadOnly = true;
+                txtUserNm.BackColor = SystemColors.Window;
+            }
+            else
+            {
+                // 選択情報を初期化
+                parUserNo = "";
+                txtUserNm.Text = "";
+
+                // 入力制限
+                txtUserNm.ReadOnly = false;
+                txtUserNm.MaxLength = 4;
             }
 
         }

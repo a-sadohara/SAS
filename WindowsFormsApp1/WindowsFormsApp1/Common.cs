@@ -8,10 +8,12 @@ namespace WindowsFormsApp1
 {
     static class Common
     {
-        public static String parUserNo;
-        public static String parUserNm;
-        public static short parDispNum;
-        public static short parStatus;  //0:ログアウト 1:ログイン
+        public const string CON_DB_INFO = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
+
+        public static String g_parUserNo = "";
+        public static String g_parUserNm = "";
+        public static short g_parDispNum;
+        public static short g_parStatus;  //0:ログアウト 1:ログイン
 
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
@@ -24,23 +26,32 @@ namespace WindowsFormsApp1
             Application.Run(new LoginForm());
         }
 
+        /// <summary>
+        /// ログイン処理
+        /// </summary>
         public static void LogIn()
         {
-            parStatus = 1;
+            g_parStatus = 1;
         }
 
+        /// <summary>
+        /// ログアウト処理
+        /// </summary>
         public static void LogOut()
         {
-            parStatus = 0;
+            g_parStatus = 0;
 
+            // 開いている画面ループ
             foreach (Form frm in Application.OpenForms)
             {
                 if (frm is LoginForm)
                 {
+                    // ログイン画面　⇒　再表示
                     frm.Visible = true;
                 }
                 else
                 {
+                    // ログイン画面以外　⇒　閉じる
                     frm.Close();
                 }
             }

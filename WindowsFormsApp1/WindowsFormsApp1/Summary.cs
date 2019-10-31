@@ -17,8 +17,8 @@ namespace WindowsFormsApp1
     {
         public int intRet = 0;
 
-        TargetInfoDto objTargetInfoDto;
-        int intRow;
+        TargetInfoDto objTargetInfoDto = null;
+        int intRow = -1;
 
         public Summary()
         {
@@ -32,7 +32,7 @@ namespace WindowsFormsApp1
         {
             this.WindowState = FormWindowState.Maximized;
 
-            lblUser.Text = "作業者名：" + parUserNm;
+            lblUser.Text = "作業者名：" + g_parUserNm;
 
             dgvData.Rows.Clear();
 

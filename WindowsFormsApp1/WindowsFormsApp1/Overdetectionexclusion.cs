@@ -34,7 +34,7 @@ namespace WindowsFormsApp1
             intRow = intRowIndex;
 
             // パラメータ：表示数から表示数を調整
-            switch (Common.parDispNum)
+            switch (g_parDispNum)
             {
                 case 2:
                     tableLayoutPanel1.Controls.RemoveAt(6);
@@ -73,6 +73,21 @@ namespace WindowsFormsApp1
                     tableLayoutPanel1.ColumnStyles[0] = new ColumnStyle(SizeType.Percent, 50F);
                     tableLayoutPanel1.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 50F);
                     tableLayoutPanel1.ColumnStyles[2] = new ColumnStyle(SizeType.Percent, 0F);
+
+                    break;
+                case 6:
+                    tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+
+                    tableLayoutPanel1.Controls.RemoveAt(2);
+                    tableLayoutPanel1.Controls.RemoveAt(1);
+                    tableLayoutPanel1.Controls.RemoveAt(0);
+
+                    tableLayoutPanel1.RowStyles[0] = new RowStyle(SizeType.Percent, 50F);
+                    tableLayoutPanel1.RowStyles[1] = new RowStyle(SizeType.Percent, 50F);
+                    tableLayoutPanel1.RowStyles[2] = new RowStyle(SizeType.Percent, 0F);
+                    //tableLayoutPanel1.ColumnStyles[0] = new ColumnStyle(SizeType.Percent, (Single)(1 / 3 * 100));
+                    //tableLayoutPanel1.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, (Single)(1 / 3 * 100));
+                    //tableLayoutPanel1.ColumnStyles[2] = new ColumnStyle(SizeType.Percent, (Single)(1 / 3 * 100));
 
                     break;
                 case 9:
@@ -388,7 +403,7 @@ namespace WindowsFormsApp1
         {
             this.WindowState = FormWindowState.Maximized;
 
-            lblUser.Text = "作業者名：" + Common.parUserNm;
+            lblUser.Text = "作業者名：" + g_parUserNm;
 
             List<PictureBox> lstPicBox = new List<PictureBox>();
             lstPicBox.Add(pictureBox1);
