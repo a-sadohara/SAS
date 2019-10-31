@@ -33,7 +33,6 @@ namespace WindowsFormsApp1
 
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
-
         }
 
         private void Result_Load(object sender, EventArgs e)
@@ -97,6 +96,7 @@ namespace WindowsFormsApp1
         {
             ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"));
             frmViewEnlargedimage.ShowDialog(this);
+            this.Visible = true;
         }
 
         private void btnLogOut_Click(object sender, EventArgs e)
@@ -199,6 +199,7 @@ namespace WindowsFormsApp1
 
                         UserSelection frmTargetSelection = new UserSelection();
                         frmTargetSelection.ShowDialog(this);
+                        this.Visible = true;
 
                         parUserNo = frmTargetSelection.strUserNm;
                     }
@@ -208,6 +209,7 @@ namespace WindowsFormsApp1
             {
                 UserSelection frmTargetSelection = new UserSelection();
                 frmTargetSelection.ShowDialog(this);
+                this.Visible = true;
 
                 parUserNo = frmTargetSelection.strUserNm;
             }

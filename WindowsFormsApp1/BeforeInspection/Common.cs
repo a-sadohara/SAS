@@ -6,8 +6,10 @@ using System.Windows.Forms;
 
 namespace BeforeInspection
 {
-    static class Program
+    static class Common
     {
+        public const string CON_DB_INFO = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
+        
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>

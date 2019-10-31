@@ -156,19 +156,23 @@ namespace WindowsFormsApp1
                 case 4:
                     Overdetectionexclusion frmOverdetectionexclusion = new Overdetectionexclusion(dtTagetInfo,e.RowIndex);
                     frmOverdetectionexclusion.ShowDialog(this);
+                    this.Visible = true;
                     if (frmOverdetectionexclusion.intRet == 2)
                     {
                         frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
                         frmResultCheck.ShowDialog(this);
+                        this.Visible = true;
                     }
                     break;
                 case 5:
                     frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
                     frmResultCheck.ShowDialog(this);
+                    this.Visible = true;
                     break;
                 case 6:
                     DisplayResults frmResult = new DisplayResults(dtTagetInfo, e.RowIndex);
                     frmResult.ShowDialog(this);
+                    this.Visible = true;
                     break;
                 
             }
@@ -250,6 +254,7 @@ namespace WindowsFormsApp1
         {
             DisplayResultsAgo frmResult = new DisplayResultsAgo();
             frmResult.ShowDialog(this);
+            this.Visible = true;
         }
     }
 

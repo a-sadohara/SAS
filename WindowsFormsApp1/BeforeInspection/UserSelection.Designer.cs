@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApp1
+﻿namespace BeforeInspection
 {
     partial class UserSelection
     {
@@ -58,7 +58,7 @@
             this.dgvUser = new System.Windows.Forms.DataGridView();
             this.UserNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUser)).BeginInit();
             this.SuspendLayout();
@@ -323,13 +323,13 @@
             // 
             // elementHost1
             // 
-            this.elementHost1.Location = new System.Drawing.Point(25, 199);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(471, 367);
-            this.elementHost1.TabIndex = 2;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Visible = false;
-            this.elementHost1.Child = null;
+            //this.elementHost1.Location = new System.Drawing.Point(25, 199);
+            //this.elementHost1.Name = "elementHost1";
+            //this.elementHost1.Size = new System.Drawing.Size(471, 367);
+            //this.elementHost1.TabIndex = 2;
+            //this.elementHost1.Text = "elementHost1";
+            //this.elementHost1.Visible = false;
+            //this.elementHost1.Child = null;
             // 
             // UserSelection
             // 
@@ -339,7 +339,7 @@
             this.ClientSize = new System.Drawing.Size(521, 587);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.lblTiitle);
-            this.Controls.Add(this.elementHost1);
+            //this.Controls.Add(this.elementHost1);
             this.Controls.Add(this.dgvUser);
             this.Name = "UserSelection";
             this.Text = "作業者検索";
@@ -368,7 +368,7 @@
         private System.Windows.Forms.Label lblSearchら;
         private System.Windows.Forms.Label lblSearchや;
         private System.Windows.Forms.DataGridView dgvUser;
-        private System.Windows.Forms.Integration.ElementHost elementHost1;
+
         private System.Windows.Forms.DataGridViewTextBoxColumn UserNo;
         private System.Windows.Forms.DataGridViewTextBoxColumn UserNm;
     }

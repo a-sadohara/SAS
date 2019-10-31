@@ -8,11 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using WindowsFormsApp1.DTO;
-using static WindowsFormsApp1.Common;
+using static BeforeInspection.Common;
 using Npgsql;
 
-namespace WindowsFormsApp1
+namespace BeforeInspection
 {
     public partial class UserSelection : Form
     {
@@ -20,7 +19,7 @@ namespace WindowsFormsApp1
         public string strUserNm { get; set; }
 
         public DataTable dtData;
-        public DataGridWpf_UserCtrl usrctlDataGridWpf;
+        //public DataGridWpf_UserCtrl usrctlDataGridWpf;
 
         #region イベント
 
@@ -92,7 +91,7 @@ namespace WindowsFormsApp1
 
             dgvUser.Rows.Clear();
 
-            usrctlDataGridWpf = new DataGridWpf_UserCtrl(this, elementHost1, DataGridWpf_UserCtrl.COLUM_TYPE.USER);
+            //usrctlDataGridWpf = new DataGridWpf_UserCtrl(this, elementHost1, DataGridWpf_UserCtrl.COLUM_TYPE.USER);
 
             try
             {
@@ -133,7 +132,7 @@ namespace WindowsFormsApp1
                     this.dgvUser.Rows.Add(new object[] { null, null });
                     dgvUser.Rows.RemoveAt(0);
                 }
-                elementHost1.Child = usrctlDataGridWpf;
+                //elementHost1.Child = usrctlDataGridWpf;
 
             }
             catch (Exception e)
@@ -164,11 +163,11 @@ namespace WindowsFormsApp1
 
         private void UserSelection_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (usrctlDataGridWpf.arrSelectData != null)
-            {
-                strUserNo = usrctlDataGridWpf.arrSelectData[0].ToString();
-                strUserNm = usrctlDataGridWpf.arrSelectData[1].ToString();
-            }
+            //if (usrctlDataGridWpf.arrSelectData != null)
+            //{
+            //    strUserNo = usrctlDataGridWpf.arrSelectData[0].ToString();
+            //    strUserNm = usrctlDataGridWpf.arrSelectData[1].ToString();
+            //}
         }
     }
 }

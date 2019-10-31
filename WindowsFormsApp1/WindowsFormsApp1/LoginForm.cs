@@ -116,6 +116,7 @@ namespace WindowsFormsApp1
             TargetSelection frmTargetSelection = new TargetSelection();
 
             frmTargetSelection.ShowDialog(this);
+            this.Visible = true;
 
         }
 
@@ -198,6 +199,7 @@ namespace WindowsFormsApp1
 
                         UserSelection frmTargetSelection = new UserSelection();
                         frmTargetSelection.ShowDialog(this);
+                        this.Visible = true;
 
                         parUserNo = frmTargetSelection.strUserNo;
                         parUserNm = frmTargetSelection.strUserNm;
@@ -208,6 +210,7 @@ namespace WindowsFormsApp1
             {
                 UserSelection frmTargetSelection = new UserSelection();
                 frmTargetSelection.ShowDialog(this);
+                this.Visible = true;
 
                 parUserNo = frmTargetSelection.strUserNo;
                 parUserNm = frmTargetSelection.strUserNm;

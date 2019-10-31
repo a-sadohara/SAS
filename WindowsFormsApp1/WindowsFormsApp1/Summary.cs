@@ -202,6 +202,7 @@ namespace WindowsFormsApp1
         {
             ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"));
             frmViewEnlargedimage.ShowDialog(this);
+            this.Visible = true;
         }
 
         private void btnLogOut_Click(object sender, EventArgs e)

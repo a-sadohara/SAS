@@ -53,6 +53,9 @@
   <PropertyGroup>
     <StartupObject>WindowsFormsApp1.Common</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>App.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -126,6 +129,9 @@
     </Compile>
     <Compile Include="ListWpf_UserCtrl.xaml.cs">
       <DependentUpon>ListWpf_UserCtrl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataGridWpf_UserCtrl.xaml.cs">
+      <DependentUpon>DataGridWpf_UserCtrl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserSelection.cs">
       <SubType>Form</SubType>
@@ -229,6 +235,7 @@
     <EmbeddedResource Include="ViewEnlargedimage.resx">
       <DependentUpon>ViewEnlargedimage.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="App.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -261,6 +268,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="ListWpf_UserCtrl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DataGridWpf_UserCtrl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

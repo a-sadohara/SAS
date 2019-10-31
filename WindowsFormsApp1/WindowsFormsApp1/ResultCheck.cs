@@ -52,23 +52,16 @@ namespace WindowsFormsApp1
         {
             InitializeComponent();
 
-            //// Buttonのフォント調整
-            if ((int)System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width >= 1920)
-            {
-                // OFF
-                btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("　", "").Replace("\r\n", "");
-                btnRenzokuWhite.Text = btnRenzokuWhite.Text.Replace("　", "").Replace("\r\n", "");
-                btnTanpatuBlack.Text = btnTanpatuBlack.Text.Replace("　", "").Replace("\r\n", "");
-                btnRenzokuBlack.Text = btnRenzokuBlack.Text.Replace("　", "").Replace("\r\n", "");
-                btnOther.Text = btnOther.Text.Replace("　", "").Replace("\r\n", "");
-                btnJudgeNG.Text = btnJudgeNG.Text.Replace("　", "").Replace("\r\n", "");
-                btnTanpatuWhite.TextAlign = ContentAlignment.MiddleCenter;
-                btnRenzokuWhite.TextAlign = ContentAlignment.MiddleCenter;
-                btnTanpatuBlack.TextAlign = ContentAlignment.MiddleCenter;
-                btnRenzokuBlack.TextAlign = ContentAlignment.MiddleCenter;
-                btnOther.TextAlign = ContentAlignment.MiddleCenter;
-                btnJudgeNG.TextAlign = ContentAlignment.MiddleCenter;
-            }
+            MessageBox.Show(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height.ToString());
+
+            /// Buttonのフォント調整
+            /// 解像度：1920x1080 拡大率：125% 以上にスクリーンが広くなる場合
+            btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("　", "").Replace("\r\n", "");
+            btnRenzokuWhite.Text = btnRenzokuWhite.Text.Replace("　", "").Replace("\r\n", "");
+            btnTanpatuBlack.Text = btnTanpatuBlack.Text.Replace("　", "").Replace("\r\n", "");
+            btnRenzokuBlack.Text = btnRenzokuBlack.Text.Replace("　", "").Replace("\r\n", "");
+            btnOther.Text = btnOther.Text.Replace("　", "").Replace("\r\n", "");
+            btnJudgeNG.Text = btnJudgeNG.Text.Replace("　", "").Replace("\r\n", "");
 
             objTargetInfoDto = objTargetInfo;
             intRow = intRowIndex;
@@ -165,6 +158,7 @@ namespace WindowsFormsApp1
             ErrorReasonDTO errorReasonDto = new ErrorReasonDTO();
             SelectErrorReason frmErrorReason = new SelectErrorReason(errorReasonDto);
             frmErrorReason.ShowDialog(this);
+            this.Visible = true;
 
             if (!string.IsNullOrEmpty(errorReasonDto.getStrErrorReason()))
             {
@@ -227,6 +221,7 @@ namespace WindowsFormsApp1
             this.Visible = false;
             Result frmResult = new Result(objTargetInfoDto,intRow);
             frmResult.ShowDialog(this);
+            //this.Visible = true;
             this.Close();
         }
 
@@ -246,8 +241,8 @@ namespace WindowsFormsApp1
                 lstStr.Add(i.ToString());
             }
 
-            ListWpf_WinForm frmListInWpf = new ListWpf_WinForm(lstStr);
-            frmListInWpf.ShowDialog();
+            //ListWpf_WinForm frmListInWpf = new ListWpf_WinForm(lstStr);
+            //frmListInWpf.ShowDialog();
 
             //button2.Text = frmListInWpf.strVal;
         }
@@ -383,6 +378,7 @@ namespace WindowsFormsApp1
 
             ListWpf_WinForm frmListInWpf = new ListWpf_WinForm(lstStr);
             frmListInWpf.ShowDialog();
+            this.Visible = true;
 
             //button3.Text = frmListInWpf.strVal;
         }

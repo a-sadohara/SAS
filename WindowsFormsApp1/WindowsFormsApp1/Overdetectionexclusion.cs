@@ -318,6 +318,7 @@ namespace WindowsFormsApp1
             Summary frmSummary = new Summary();
 
             frmSummary.ShowDialog(this);
+            this.Visible = true;
             intRet = frmSummary.intRet;
 
             DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
@@ -395,6 +396,7 @@ namespace WindowsFormsApp1
         private void viewImage(PictureBox picBox)
         {
             ViewEnlargedimage frmViewImage = new ViewEnlargedimage(System.Drawing.Image.FromFile(picBox.ImageLocation));
+            this.Visible = true;
             frmViewImage.ShowDialog(this);
         }
 

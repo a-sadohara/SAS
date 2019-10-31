@@ -129,7 +129,7 @@
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button4.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button4.Location = new System.Drawing.Point(883, 159);
+            this.button4.Location = new System.Drawing.Point(843, 159);
             this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(105, 36);
@@ -155,7 +155,7 @@
             this.grbWhere.Controls.Add(this.panel5);
             this.grbWhere.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.grbWhere.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.grbWhere.Location = new System.Drawing.Point(60, 5);
+            this.grbWhere.Location = new System.Drawing.Point(20, 5);
             this.grbWhere.Margin = new System.Windows.Forms.Padding(0);
             this.grbWhere.Name = "grbWhere";
             this.grbWhere.Padding = new System.Windows.Forms.Padding(2);
@@ -279,6 +279,7 @@
             this.txtNgSide.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtNgSide.Location = new System.Drawing.Point(706, 79);
             this.txtNgSide.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtNgSide.MaxLength = 2;
             this.txtNgSide.Name = "txtNgSide";
             this.txtNgSide.Size = new System.Drawing.Size(30, 24);
             this.txtNgSide.TabIndex = 26;
@@ -289,6 +290,7 @@
             this.txtRow.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtRow.Location = new System.Drawing.Point(706, 27);
             this.txtRow.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtRow.MaxLength = 4;
             this.txtRow.Name = "txtRow";
             this.txtRow.Size = new System.Drawing.Size(35, 24);
             this.txtRow.TabIndex = 26;
@@ -299,6 +301,7 @@
             this.txtCol.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtCol.Location = new System.Drawing.Point(706, 53);
             this.txtCol.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtCol.MaxLength = 1;
             this.txtCol.Name = "txtCol";
             this.txtCol.Size = new System.Drawing.Size(20, 24);
             this.txtCol.TabIndex = 26;
@@ -322,6 +325,7 @@
             this.txtUserNm.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.txtUserNm.Location = new System.Drawing.Point(706, 1);
             this.txtUserNm.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtUserNm.MaxLength = 20;
             this.txtUserNm.Name = "txtUserNm";
             this.txtUserNm.Size = new System.Drawing.Size(85, 24);
             this.txtUserNm.TabIndex = 26;
@@ -428,6 +432,7 @@
             this.textBox4.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.textBox4.Location = new System.Drawing.Point(472, 131);
             this.textBox4.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.textBox4.MaxLength = 19;
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(130, 24);
             this.textBox4.TabIndex = 26;
@@ -438,6 +443,7 @@
             this.textBox7.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.textBox7.Location = new System.Drawing.Point(312, 131);
             this.textBox7.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.textBox7.MaxLength = 19;
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(130, 24);
             this.textBox7.TabIndex = 26;
@@ -472,6 +478,7 @@
             this.textBox3.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.textBox3.Location = new System.Drawing.Point(472, 105);
             this.textBox3.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.textBox3.MaxLength = 19;
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(130, 24);
             this.textBox3.TabIndex = 26;
@@ -482,6 +489,7 @@
             this.textBox6.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.textBox6.Location = new System.Drawing.Point(312, 105);
             this.textBox6.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.textBox6.MaxLength = 19;
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(130, 24);
             this.textBox6.TabIndex = 26;
@@ -492,6 +500,7 @@
             this.txtKenhan2_To.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtKenhan2_To.Location = new System.Drawing.Point(372, 79);
             this.txtKenhan2_To.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtKenhan2_To.MaxLength = 3;
             this.txtKenhan2_To.Name = "txtKenhan2_To";
             this.txtKenhan2_To.Size = new System.Drawing.Size(30, 24);
             this.txtKenhan2_To.TabIndex = 26;
@@ -502,6 +511,7 @@
             this.txtKenhan2_From.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtKenhan2_From.Location = new System.Drawing.Point(312, 79);
             this.txtKenhan2_From.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtKenhan2_From.MaxLength = 3;
             this.txtKenhan2_From.Name = "txtKenhan2_From";
             this.txtKenhan2_From.Size = new System.Drawing.Size(30, 24);
             this.txtKenhan2_From.TabIndex = 26;
@@ -512,6 +522,7 @@
             this.txtKenhan1_To.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtKenhan1_To.Location = new System.Drawing.Point(372, 53);
             this.txtKenhan1_To.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtKenhan1_To.MaxLength = 3;
             this.txtKenhan1_To.Name = "txtKenhan1_To";
             this.txtKenhan1_To.Size = new System.Drawing.Size(30, 24);
             this.txtKenhan1_To.TabIndex = 26;
@@ -522,6 +533,7 @@
             this.txtKenhan1_From.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtKenhan1_From.Location = new System.Drawing.Point(312, 53);
             this.txtKenhan1_From.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtKenhan1_From.MaxLength = 3;
             this.txtKenhan1_From.Name = "txtKenhan1_From";
             this.txtKenhan1_From.Size = new System.Drawing.Size(30, 24);
             this.txtKenhan1_From.TabIndex = 26;
@@ -532,6 +544,7 @@
             this.txtHansoEndDate.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtHansoEndDate.Location = new System.Drawing.Point(312, 27);
             this.txtHansoEndDate.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtHansoEndDate.MaxLength = 19;
             this.txtHansoEndDate.Name = "txtHansoEndDate";
             this.txtHansoEndDate.Size = new System.Drawing.Size(130, 24);
             this.txtHansoEndDate.TabIndex = 26;
@@ -542,6 +555,7 @@
             this.textBox2.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.textBox2.Location = new System.Drawing.Point(472, 27);
             this.textBox2.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.textBox2.MaxLength = 19;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(130, 24);
             this.textBox2.TabIndex = 26;
@@ -552,6 +566,7 @@
             this.textBox1.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.textBox1.Location = new System.Drawing.Point(472, 1);
             this.textBox1.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.textBox1.MaxLength = 19;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(130, 24);
             this.textBox1.TabIndex = 26;
@@ -562,6 +577,7 @@
             this.txtHansoStaDate.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtHansoStaDate.Location = new System.Drawing.Point(312, 1);
             this.txtHansoStaDate.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtHansoStaDate.MaxLength = 19;
             this.txtHansoStaDate.Name = "txtHansoStaDate";
             this.txtHansoStaDate.Size = new System.Drawing.Size(130, 24);
             this.txtHansoStaDate.TabIndex = 26;
@@ -584,6 +600,7 @@
             this.txtHanNo.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtHanNo.Location = new System.Drawing.Point(56, 79);
             this.txtHanNo.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtHanNo.MaxLength = 10;
             this.txtHanNo.Name = "txtHanNo";
             this.txtHanNo.Size = new System.Drawing.Size(80, 24);
             this.txtHanNo.TabIndex = 26;
@@ -606,6 +623,7 @@
             this.txtSashizu.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtSashizu.Location = new System.Drawing.Point(56, 53);
             this.txtSashizu.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtSashizu.MaxLength = 7;
             this.txtSashizu.Name = "txtSashizu";
             this.txtSashizu.Size = new System.Drawing.Size(55, 24);
             this.txtSashizu.TabIndex = 26;
@@ -628,6 +646,7 @@
             this.txtHinNm.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtHinNm.Location = new System.Drawing.Point(56, 27);
             this.txtHinNm.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtHinNm.MaxLength = 10;
             this.txtHinNm.Name = "txtHinNm";
             this.txtHinNm.Size = new System.Drawing.Size(80, 24);
             this.txtHinNm.TabIndex = 26;
@@ -650,6 +669,7 @@
             this.txtGoki.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtGoki.Location = new System.Drawing.Point(56, 1);
             this.txtGoki.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtGoki.MaxLength = 1;
             this.txtGoki.Name = "txtGoki";
             this.txtGoki.Size = new System.Drawing.Size(20, 24);
             this.txtGoki.TabIndex = 26;
@@ -737,17 +757,17 @@
             this.panel2.Location = new System.Drawing.Point(0, 197);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(60, 324);
+            this.panel2.Size = new System.Drawing.Size(20, 324);
             this.panel2.TabIndex = 4;
             // 
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(994, 197);
+            this.panel3.Location = new System.Drawing.Point(1060, 197);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(86, 324);
+            this.panel3.Size = new System.Drawing.Size(20, 324);
             this.panel3.TabIndex = 5;
             // 
             // panel6
@@ -755,10 +775,10 @@
             this.panel6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel6.Controls.Add(this.dgvData);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(60, 197);
+            this.panel6.Location = new System.Drawing.Point(20, 197);
             this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(934, 324);
+            this.panel6.Size = new System.Drawing.Size(1040, 324);
             this.panel6.TabIndex = 6;
             // 
             // dgvData
@@ -820,7 +840,7 @@
             this.dgvData.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvData.RowTemplate.ReadOnly = true;
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvData.Size = new System.Drawing.Size(934, 324);
+            this.dgvData.Size = new System.Drawing.Size(1040, 324);
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
