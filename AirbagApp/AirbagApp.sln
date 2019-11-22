@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageChecker", "WindowsFormsApp1\ImageChecker.csproj", "{9BCB317D-2EBA-4BFD-8D38-9F518B751FC7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageChecker", "ImageChecker\ImageChecker.csproj", "{9BCB317D-2EBA-4BFD-8D38-9F518B751FC7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserMasterMaintenance", "UserMasterMaintenance\UserMasterMaintenance.csproj", "{07CA92F0-F8F8-4D27-A20E-14AA4DD8961D}"
 EndProject
