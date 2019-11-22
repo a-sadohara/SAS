@@ -19,6 +19,7 @@ namespace ImageChecker.DTO
             dtTargetInfo.Columns.Add("CheckProcess", typeof(string));
             dtTargetInfo.Columns.Add("Process", typeof(string));
             dtTargetInfo.Columns.Add("Status", typeof(Int32));
+            dtTargetInfo.Columns.Add("CheckFlg", typeof(Int16));
         }
 
 

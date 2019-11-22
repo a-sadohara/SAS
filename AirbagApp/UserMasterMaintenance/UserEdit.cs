@@ -229,6 +229,9 @@ namespace UserMasterMaintenance
         {
             try
             {
+                if (bolModeNonDBCon == true)
+                    return true;
+
                 // PostgreSQLへ接続
                 using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                 {
@@ -294,6 +297,9 @@ namespace UserMasterMaintenance
         {
             try
             {
+                if (bolModeNonDBCon == true)
+                    return true;
+
                 // PostgreSQLへ接続
                 using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                 {

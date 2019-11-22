@@ -314,6 +314,13 @@ namespace ImageChecker
 
         private void Button6_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("過検知除外登録します。よろしいですか？"
+                 , "確認"
+                 , MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
+
             this.Visible = false;
             Summary frmSummary = new Summary();
 
@@ -395,7 +402,7 @@ namespace ImageChecker
 
         private void viewImage(PictureBox picBox)
         {
-            ViewEnlargedimage frmViewImage = new ViewEnlargedimage(System.Drawing.Image.FromFile(picBox.ImageLocation));
+            ViewEnlargedimage frmViewImage = new ViewEnlargedimage(System.Drawing.Image.FromFile(picBox.ImageLocation), picBox.ImageLocation);
             this.Visible = true;
             frmViewImage.ShowDialog(this);
         }
@@ -421,12 +428,18 @@ namespace ImageChecker
             int intCnt = 0;
             foreach(string strFilePath in System.IO.Directory.GetFiles(@".\Image", "*", System.IO.SearchOption.AllDirectories))
             {
+                if (strFilePath.IndexOf("01_F1_A0559") >= 0 || strFilePath.IndexOf("01_F2_A0559") >= 0 || strFilePath.IndexOf("1_04_01_S334_T1") >= 0)
+                    continue;
+
                 lstPicBox[intCnt].Image = System.Drawing.Image.FromFile(strFilePath);
                 lstPicBox[intCnt].ImageLocation = strFilePath;
 
                 intCnt++;
             }
 
+            // 前＆次ボタンのイメージ縮小対応
+            button7.Image = bmpImageScale(button7.Image, button7.ClientSize.Width, button7.ClientSize.Height);
+            button6.Image = bmpImageScale(button6.Image, button6.ClientSize.Width, button6.ClientSize.Height);
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
@@ -442,6 +455,11 @@ namespace ImageChecker
         private void btnLogOut_Click(object sender, EventArgs e)
         {
             LogOut();
+        }
+
+        private Bitmap bmpImageScale(Image img, int width, int height)
+        {
+            return new Bitmap(img, width, height);
         }
     }
 }

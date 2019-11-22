@@ -39,7 +39,7 @@
             this.panel5 = new System.Windows.Forms.Panel();
             this.dgvData = new System.Windows.Forms.DataGridView();
             this.chkSelectReason = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.txtReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HinNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel2.SuspendLayout();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
@@ -118,7 +118,7 @@
             this.dgvData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.chkSelectReason,
-            this.txtReason});
+            this.HinNo});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -135,7 +135,7 @@
             this.dgvData.RowHeadersVisible = false;
             this.dgvData.RowHeadersWidth = 51;
             this.dgvData.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dgvData.RowTemplate.Height = 30;
+            this.dgvData.RowTemplate.Height = 75;
             this.dgvData.RowTemplate.ReadOnly = true;
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
@@ -151,12 +151,12 @@
             this.chkSelectReason.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.chkSelectReason.Width = 40;
             // 
-            // txtReason
+            // HinNo
             // 
-            this.txtReason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.txtReason.HeaderText = "理由";
-            this.txtReason.MinimumWidth = 6;
-            this.txtReason.Name = "txtReason";
+            this.HinNo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.HinNo.HeaderText = "品名";
+            this.HinNo.MinimumWidth = 6;
+            this.HinNo.Name = "HinNo";
             // 
             // HinNoSelection
             // 
@@ -191,6 +191,6 @@
         private System.Windows.Forms.DataGridView dgvData;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.DataGridViewCheckBoxColumn chkSelectReason;
-        private System.Windows.Forms.DataGridViewTextBoxColumn txtReason;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HinNo;
     }
 }

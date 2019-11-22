@@ -33,14 +33,16 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Summary));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblNgImgCushionNum = new System.Windows.Forms.Label();
             this.btnLogOut = new System.Windows.Forms.Button();
             this.lblUser = new System.Windows.Forms.Label();
             this.lblEndDate = new System.Windows.Forms.Label();
             this.lblStaDate = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.lblHansoEndDate = new System.Windows.Forms.Label();
             this.lblHansoStaDate = new System.Windows.Forms.Label();
+            this.lblKensaNo = new System.Windows.Forms.Label();
             this.lblHanNo = new System.Windows.Forms.Label();
             this.lblSashizu = new System.Windows.Forms.Label();
             this.lblShinaNm = new System.Windows.Forms.Label();
@@ -52,16 +54,15 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.dgvData = new System.Windows.Forms.DataGridView();
-            this.lblNgImgNum = new System.Windows.Forms.Label();
             this.no = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.line = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ng = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.position = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.inpDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.endDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.userNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Except = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NgReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ExcepInpDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ExceptUserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -71,15 +72,16 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.panel1.Controls.Add(this.lblNgImgNum);
+            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.lblNgImgCushionNum);
             this.panel1.Controls.Add(this.btnLogOut);
             this.panel1.Controls.Add(this.lblUser);
             this.panel1.Controls.Add(this.lblEndDate);
             this.panel1.Controls.Add(this.lblStaDate);
-            this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.label7);
             this.panel1.Controls.Add(this.lblHansoEndDate);
             this.panel1.Controls.Add(this.lblHansoStaDate);
+            this.panel1.Controls.Add(this.lblKensaNo);
             this.panel1.Controls.Add(this.lblHanNo);
             this.panel1.Controls.Add(this.lblSashizu);
             this.panel1.Controls.Add(this.lblShinaNm);
@@ -88,14 +90,36 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1363, 134);
+            this.panel1.Size = new System.Drawing.Size(1284, 131);
             this.panel1.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label1.Location = new System.Drawing.Point(157, 111);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(243, 17);
+            this.label1.TabIndex = 26;
+            this.label1.Text = "クッション数：1404（NG：55 / OK：1349）";
+            // 
+            // lblNgImgCushionNum
+            // 
+            this.lblNgImgCushionNum.AutoSize = true;
+            this.lblNgImgCushionNum.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblNgImgCushionNum.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblNgImgCushionNum.Location = new System.Drawing.Point(157, 94);
+            this.lblNgImgCushionNum.Name = "lblNgImgCushionNum";
+            this.lblNgImgCushionNum.Size = new System.Drawing.Size(229, 17);
+            this.lblNgImgCushionNum.TabIndex = 26;
+            this.lblNgImgCushionNum.Text = "画像検査枚数：200（NG：55 / OK：145）";
             // 
             // btnLogOut
             // 
             this.btnLogOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLogOut.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnLogOut.Location = new System.Drawing.Point(1245, 9);
+            this.btnLogOut.Location = new System.Drawing.Point(1166, 9);
             this.btnLogOut.Margin = new System.Windows.Forms.Padding(2);
             this.btnLogOut.Name = "btnLogOut";
             this.btnLogOut.Size = new System.Drawing.Size(107, 36);
@@ -110,7 +134,7 @@
             this.lblUser.AutoSize = true;
             this.lblUser.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblUser.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblUser.Location = new System.Drawing.Point(941, 19);
+            this.lblUser.Location = new System.Drawing.Point(862, 19);
             this.lblUser.Margin = new System.Windows.Forms.Padding(2);
             this.lblUser.MaximumSize = new System.Drawing.Size(300, 0);
             this.lblUser.MinimumSize = new System.Drawing.Size(300, 0);
@@ -125,7 +149,7 @@
             this.lblEndDate.AutoSize = true;
             this.lblEndDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblEndDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblEndDate.Location = new System.Drawing.Point(157, 94);
+            this.lblEndDate.Location = new System.Drawing.Point(157, 77);
             this.lblEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblEndDate.Name = "lblEndDate";
             this.lblEndDate.Size = new System.Drawing.Size(207, 17);
@@ -137,24 +161,12 @@
             this.lblStaDate.AutoSize = true;
             this.lblStaDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblStaDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblStaDate.Location = new System.Drawing.Point(157, 77);
+            this.lblStaDate.Location = new System.Drawing.Point(157, 60);
             this.lblStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStaDate.Name = "lblStaDate";
             this.lblStaDate.Size = new System.Drawing.Size(207, 17);
             this.lblStaDate.TabIndex = 23;
             this.lblStaDate.Text = "判定開始日時：2019/01/22 16:30:15";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.label6.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label6.Location = new System.Drawing.Point(157, 60);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(175, 17);
-            this.label6.TabIndex = 22;
-            this.label6.Text = "検査範囲行　検反部№2：1～351";
             // 
             // label7
             // 
@@ -164,9 +176,9 @@
             this.label7.Location = new System.Drawing.Point(157, 43);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(175, 17);
+            this.label7.Size = new System.Drawing.Size(124, 17);
             this.label7.TabIndex = 21;
-            this.label7.Text = "検査範囲行　検反部№1：1～351";
+            this.label7.Text = "検査範囲行　：1～351";
             // 
             // lblHansoEndDate
             // 
@@ -192,6 +204,18 @@
             this.lblHansoStaDate.TabIndex = 19;
             this.lblHansoStaDate.Text = "搬送開始日時：2019/01/22 16:30:15";
             // 
+            // lblKensaNo
+            // 
+            this.lblKensaNo.AutoSize = true;
+            this.lblKensaNo.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblKensaNo.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblKensaNo.Location = new System.Drawing.Point(392, 9);
+            this.lblKensaNo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblKensaNo.Name = "lblKensaNo";
+            this.lblKensaNo.Size = new System.Drawing.Size(74, 17);
+            this.lblKensaNo.TabIndex = 1;
+            this.lblKensaNo.Text = "検査番号： 9";
+            // 
             // lblHanNo
             // 
             this.lblHanNo.AutoSize = true;
@@ -200,19 +224,19 @@
             this.lblHanNo.Location = new System.Drawing.Point(16, 60);
             this.lblHanNo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblHanNo.Name = "lblHanNo";
-            this.lblHanNo.Size = new System.Drawing.Size(113, 17);
+            this.lblHanNo.Size = new System.Drawing.Size(109, 17);
             this.lblHanNo.TabIndex = 1;
-            this.lblHanNo.Text = "反番：470068-０AC";
+            this.lblHanNo.Text = "反番：470068-0AC";
             // 
             // lblSashizu
             // 
             this.lblSashizu.AutoSize = true;
-            this.lblSashizu.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.lblSashizu.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblSashizu.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblSashizu.Location = new System.Drawing.Point(16, 42);
             this.lblSashizu.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSashizu.Name = "lblSashizu";
-            this.lblSashizu.Size = new System.Drawing.Size(93, 18);
+            this.lblSashizu.Size = new System.Drawing.Size(90, 17);
             this.lblSashizu.TabIndex = 1;
             this.lblSashizu.Text = "指図：1070551";
             // 
@@ -249,14 +273,14 @@
             this.panel4.Location = new System.Drawing.Point(0, 508);
             this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1363, 91);
+            this.panel4.Size = new System.Drawing.Size(1284, 91);
             this.panel4.TabIndex = 3;
             // 
             // btnBackSummaryCheck
             // 
             this.btnBackSummaryCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnBackSummaryCheck.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnBackSummaryCheck.Location = new System.Drawing.Point(1223, 31);
+            this.btnBackSummaryCheck.Location = new System.Drawing.Point(1144, 31);
             this.btnBackSummaryCheck.Margin = new System.Windows.Forms.Padding(2);
             this.btnBackSummaryCheck.Name = "btnBackSummaryCheck";
             this.btnBackSummaryCheck.Size = new System.Drawing.Size(107, 36);
@@ -281,20 +305,20 @@
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel2.Location = new System.Drawing.Point(0, 134);
+            this.panel2.Location = new System.Drawing.Point(0, 131);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(40, 374);
+            this.panel2.Size = new System.Drawing.Size(40, 377);
             this.panel2.TabIndex = 4;
             // 
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(1306, 134);
+            this.panel3.Location = new System.Drawing.Point(1227, 131);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(57, 374);
+            this.panel3.Size = new System.Drawing.Size(57, 377);
             this.panel3.TabIndex = 5;
             // 
             // panel6
@@ -302,10 +326,10 @@
             this.panel6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel6.Controls.Add(this.dgvData);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(40, 134);
+            this.panel6.Location = new System.Drawing.Point(40, 131);
             this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1266, 374);
+            this.panel6.Size = new System.Drawing.Size(1187, 377);
             this.panel6.TabIndex = 6;
             // 
             // dgvData
@@ -327,10 +351,10 @@
             this.Column,
             this.ng,
             this.position,
-            this.reason,
-            this.inpDate,
-            this.endDate,
-            this.userNm});
+            this.Except,
+            this.NgReason,
+            this.ExcepInpDate,
+            this.ExceptUserNm});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -355,88 +379,77 @@
             this.dgvData.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dgvData.RowHeadersVisible = false;
             this.dgvData.RowHeadersWidth = 51;
-            this.dgvData.RowTemplate.Height = 30;
+            this.dgvData.RowTemplate.Height = 75;
             this.dgvData.RowTemplate.ReadOnly = true;
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvData.Size = new System.Drawing.Size(1266, 374);
+            this.dgvData.Size = new System.Drawing.Size(1187, 377);
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
-            // 
-            // lblNgImgNum
-            // 
-            this.lblNgImgNum.AutoSize = true;
-            this.lblNgImgNum.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblNgImgNum.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgImgNum.Location = new System.Drawing.Point(157, 111);
-            this.lblNgImgNum.Name = "lblNgImgNum";
-            this.lblNgImgNum.Size = new System.Drawing.Size(162, 17);
-            this.lblNgImgNum.TabIndex = 26;
-            this.lblNgImgNum.Text = "NG枚数 / 画像枚数：55 / 200";
             // 
             // no
             // 
             this.no.HeaderText = "№";
             this.no.MinimumWidth = 6;
             this.no.Name = "no";
-            this.no.Width = 60;
             // 
             // line
             // 
             this.line.HeaderText = "行";
             this.line.MinimumWidth = 6;
             this.line.Name = "line";
-            this.line.Width = 60;
             // 
             // Column
             // 
             this.Column.HeaderText = "列";
             this.Column.MinimumWidth = 6;
             this.Column.Name = "Column";
-            this.Column.Width = 60;
             // 
             // ng
             // 
             this.ng.HeaderText = "NG面";
             this.ng.MinimumWidth = 6;
             this.ng.Name = "ng";
+            this.ng.Width = 120;
             // 
             // position
             // 
-            this.position.HeaderText = "位置（X,Y）cm";
+            this.position.HeaderText = "位置(X,Y)cm";
             this.position.MinimumWidth = 6;
             this.position.Name = "position";
-            this.position.Width = 130;
+            this.position.Width = 200;
             // 
-            // reason
+            // Except
             // 
-            this.reason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.reason.HeaderText = "NG理由";
-            this.reason.MinimumWidth = 6;
-            this.reason.Name = "reason";
+            this.Except.HeaderText = "過検知除外";
+            this.Except.Name = "Except";
+            this.Except.Width = 140;
             // 
-            // inpDate
+            // NgReason
             // 
-            this.inpDate.HeaderText = "入力時刻";
-            this.inpDate.Name = "inpDate";
-            this.inpDate.Width = 150;
+            this.NgReason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.NgReason.HeaderText = "NG理由";
+            this.NgReason.MinimumWidth = 6;
+            this.NgReason.Name = "NgReason";
+            this.NgReason.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.NgReason.Width = 79;
             // 
-            // endDate
+            // ExcepInpDate
             // 
-            this.endDate.HeaderText = "終了時刻";
-            this.endDate.Name = "endDate";
-            this.endDate.Width = 150;
+            this.ExcepInpDate.HeaderText = "過検知検査時刻";
+            this.ExcepInpDate.Name = "ExcepInpDate";
+            this.ExcepInpDate.Width = 300;
             // 
-            // userNm
+            // ExceptUserNm
             // 
-            this.userNm.HeaderText = "作業者名";
-            this.userNm.Name = "userNm";
-            this.userNm.Width = 150;
+            this.ExceptUserNm.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ExceptUserNm.HeaderText = "過検知検査作業者";
+            this.ExceptUserNm.Name = "ExceptUserNm";
             // 
             // Summary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1363, 599);
+            this.ClientSize = new System.Drawing.Size(1284, 599);
             this.Controls.Add(this.panel6);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
@@ -445,7 +458,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Summary";
-            this.Text = "サマリ";
+            this.Text = "過検知除外結果";
             this.Load += new System.EventHandler(this.Summary_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -465,7 +478,6 @@
         private System.Windows.Forms.Label lblGoki;
         private System.Windows.Forms.Label lblEndDate;
         private System.Windows.Forms.Label lblStaDate;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label lblHansoEndDate;
         private System.Windows.Forms.Label lblHansoStaDate;
@@ -478,15 +490,17 @@
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.DataGridView dgvData;
         private System.Windows.Forms.Button btnLogOut;
-        private System.Windows.Forms.Label lblNgImgNum;
+        private System.Windows.Forms.Label lblNgImgCushionNum;
+        private System.Windows.Forms.Label lblKensaNo;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridViewTextBoxColumn no;
         private System.Windows.Forms.DataGridViewTextBoxColumn line;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column;
         private System.Windows.Forms.DataGridViewTextBoxColumn ng;
         private System.Windows.Forms.DataGridViewTextBoxColumn position;
-        private System.Windows.Forms.DataGridViewTextBoxColumn reason;
-        private System.Windows.Forms.DataGridViewTextBoxColumn inpDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn endDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn userNm;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Except;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NgReason;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ExcepInpDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ExceptUserNm;
     }
 }

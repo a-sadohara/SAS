@@ -14,183 +14,297 @@ namespace BeforeInspection
 {
     public partial class Main : Form
     {
-        public NpgsqlConnection NpgsqlCon;
         public DataTable dtData;
-        public String m_strUserNo;
-        public String m_strUserNm;
 
+        private string m_strKensaWay;
+        private string m_CON_KENSA_WAY_S = "S";
+        private string m_CON_KENSA_WAY_X = "X";
+        private string m_CON_KENSA_WAY_Y = "Y";
+        private string m_CON_KENSA_WAY_R = "R";
+
+        private const string m_CON_SEW_S = "ＳＷ";
+        private const string m_CON_SEW_E = "ＥＷ";
+
+        private int m_intKensaNo; 
+        private int m_intRowNumNow; 
+        private int m_intRowCntByTan; //仮
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public Main()
         {
             InitializeComponent();
 
-            txtHinNo.Height = pnlHinNo.Height;
-            txtHinNo.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtSashizu.Height = pnlSashizu.Height;
-            txtSashizu.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtHanNo.Height = pnlHanNo.Height;
-            txtHanNo.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtKensaTaishoNum.Height = pnlKensaTaishoNum_LastNum.Height;
-            txtKensaTaishoNum.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtKensaTaishoNumMax.Height = pnlKensaTaishoNum_LastNum.Height;
-            txtKensaTaishoNumMax.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtKensaStartRow.Height = pnlKensaStartRow_1.Height;
-            txtKensaStartRow.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtSagyosyaInfo_1.Height = pnlSagyosyaInfo_1.Height;
-            txtSagyosyaInfo_1.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtSagyosyaInfo_2.Height = pnlSagyosyaInfo_2.Height;
-            txtSagyosyaInfo_2.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtStartDate_Year.Height = pnlStartDate.Height;
-            txtStartDate_Year.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtStartDate_Month.Height = pnlStartDate.Height;
-            txtStartDate_Month.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtStartDate_Day.Height = pnlStartDate.Height;
-            txtStartDate_Day.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtStartDate_Hour.Height = pnlStartDate.Height;
-            txtStartDate_Hour.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtStartDate_Minute.Height = pnlStartDate.Height;
-            txtStartDate_Minute.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtStartDate_Second.Height = pnlStartDate.Height;
-            txtStartDate_Second.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtEndDate_Year.Height = pnlEndDate.Height;
-            txtEndDate_Year.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtEndDate_Month.Height = pnlEndDate.Height;
-            txtEndDate_Month.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtEndDate_Day.Height = pnlEndDate.Height;
-            txtEndDate_Day.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtEndDate_Hour.Height = pnlEndDate.Height;
-            txtEndDate_Hour.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtEndDate_Minute.Height = pnlEndDate.Height;
-            txtEndDate_Minute.Font = new System.Drawing.Font("メイリオ", 10F);
-            txtEndDate_Second.Height = pnlEndDate.Height;
-            txtEndDate_Second.Font = new System.Drawing.Font("メイリオ", 10F);
+            this.StartPosition = FormStartPosition.CenterScreen;
 
-            btnKensaWay_S.Height = pnlKensaWay.Height;
-            btnKensaWay_X.Height = pnlKensaWay.Height;
-            btnKensaWay_Y.Height = pnlKensaWay.Height;
-            btnKensaWay_R.Height = pnlKensaWay.Height;
+            tableLayoutPanel1.RowStyles[7] = new RowStyle(SizeType.Percent, 0F);
+            tableLayoutPanel1.RowStyles[8] = new RowStyle(SizeType.Percent, 0F);
 
+            m_intKensaNo = 1;
+            m_intRowNumNow = 1;
+
+            // 値や背景色の初期化
+            lblKensaNo.Text = "検査番号：" + m_intKensaNo;
             txtHinNo.Text = "";
             txtSashizu.Text = "";
             txtHanNo.Text = "";
             txtKensaTaishoNum.Text = "";
-            txtKensaTaishoNumMax.Text = "";
+            lblKensaTaishoNumMax.Text = "";
             txtKensaStartRow.Text = "";
             txtSagyosyaInfo_1.Text = "";
             txtSagyosyaInfo_2.Text = "";
-            txtStartDate_Year.Text = "";
-            txtStartDate_Month.Text = "";
-            txtStartDate_Day.Text = "";
-            txtStartDate_Hour.Text = "";
-            txtStartDate_Minute.Text = "";
-            txtStartDate_Second.Text = "";
-            txtEndDate_Year.Text = "";
-            txtEndDate_Month.Text = "";
-            txtEndDate_Day.Text = "";
-            txtEndDate_Hour.Text = "";
-            txtEndDate_Minute.Text = "";
-            txtEndDate_Second.Text = "";
+            lblStartDate.Text = "";
+            lblEndDate.Text = "";
+            btnKensaWay_S_2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            btnKensaWay_X_2.BackColor = SystemColors.Control;
+            btnKensaWay_Y_2.BackColor = SystemColors.Control;
+            btnKensaWay_R_2.BackColor = SystemColors.Control;
+            m_strKensaWay = m_CON_KENSA_WAY_S;
+            txtHinNo.BackColor = SystemColors.Window;
 
-            btnKensaWay_S.BackColor = System.Drawing.SystemColors.Control;
-            btnKensaWay_X.BackColor = System.Drawing.SystemColors.Control;
-            btnKensaWay_Y.BackColor = System.Drawing.SystemColors.Control;
-            btnKensaWay_R.BackColor = System.Drawing.SystemColors.Control;
+            // 検査方向ステータスの初期化
+            picKensaWay_Front.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_S.png");
+            lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+            lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+            picKensaWay_Back.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_X.png");
+            lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+            lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
 
+            btnNext.Enabled = false;
         }
 
+        /// <summary>
+        /// ロードイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Main_Load(object sender, EventArgs e)
+        {
+            // 座標系プロパティの設定　※Load後じゃないと反映されない
+            txtHinNo.Location = new Point(txtHinNo.Location.X, (int)((double)(pnlHinNo.Size.Height / 2) - ((double)txtHinNo.Size.Height / 2)));
+            txtSashizu.Location = new Point(txtSashizu.Location.X, (int)(((double)pnlSashizu.Size.Height / 2) - ((double)txtSashizu.Size.Height / 2)));
+            txtHanNo.Location = new Point(txtHanNo.Location.X, (int)(((double)pnlHanNo.Size.Height / 2) - ((double)txtHanNo.Size.Height / 2)));
+            txtKensaTaishoNum.Location = new Point(txtKensaTaishoNum.Location.X, (int)(((double)pnlKensaTaishoNum_LastNum.Size.Height / 2) - ((double)txtKensaTaishoNum.Size.Height / 2)));
+            lblKensaTaishoNumMax.Location = new Point(lblKensaTaishoNumMax.Location.X, (int)(((double)pnlKensaTaishoNum_LastNum.Size.Height / 2) - ((double)lblKensaTaishoNumMax.Size.Height / 2)));
+            txtKensaStartRow.Location = new Point(txtKensaStartRow.Location.X, (int)(((double)pnlKensaStartRow.Size.Height / 2) - ((double)txtKensaStartRow.Size.Height / 2)));
+            txtSagyosyaInfo_1.Location = new Point(txtSagyosyaInfo_1.Location.X, (int)(((double)pnlSagyosyaInfo_1.Size.Height / 2) - ((double)txtSagyosyaInfo_1.Size.Height / 2)));
+            txtSagyosyaInfo_2.Location = new Point(txtSagyosyaInfo_2.Location.X, (int)(((double)pnlSagyosyaInfo_2.Size.Height / 2) - ((double)txtSagyosyaInfo_2.Size.Height / 2)));
+            btnKensaWay_S_2.Height = pnlKensaWay_Front.Height;
+            btnKensaWay_X_2.Height = pnlKensaWay_Front.Height;
+            btnKensaWay_Y_2.Height = pnlKensaWay_Back.Height;
+            btnKensaWay_R_2.Height = pnlKensaWay_Back.Height;
+        }
+
+        /// <summary>
+        /// 開始時刻（現在時刻日時）ボタン押下
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnStartDate_Click(object sender, EventArgs e)
         {
-            DateTime dtNow = DateTime.Now;
-            txtStartDate_Year.Text = dtNow.Year.ToString();
-            txtStartDate_Month.Text = dtNow.Month.ToString();
-            txtStartDate_Day.Text = dtNow.Day.ToString();
-            txtStartDate_Hour.Text = dtNow.Hour.ToString();
-            txtStartDate_Minute.Text = dtNow.Minute.ToString();
-            txtStartDate_Second.Text = dtNow.Second.ToString();
+            // キーボード非表示
+            if (KeyboardApp.IsOpen())
+                KeyboardApp.KillApp();
+
+            DialogResult result = MessageBox.Show("以下の情報で、撮像装置へデータを転送します。よろしいですか？\r\n" +
+                                                  lblTitleHinNo.Text + "：" + txtHinNo.Text + "\r\n" +
+                                                  lblTitleSashizu.Text + "：" + txtSashizu.Text + "\r\n" +
+                                                  lblTitleHanNo.Text + "：" + txtHanNo.Text + "\r\n" +
+                                                  lblTitleKensaTaishoNum_LastNum.Text + "：" + txtKensaTaishoNum.Text + "／" + lblKensaTaishoNumMax.Text + "\r\n" +
+                                                  lblTitleKensaStartRow.Text + "：" + txtKensaStartRow.Text + "\r\n" +
+                                                  lblTitleSagyosyaInfo.Text + " " + lblTitleSagyosyaInfo_KenHanbuNo1.Text + "：" + txtSagyosyaInfo_1.Text + "\r\n" +
+                                                  lblTitleSagyosyaInfo.Text + " " + lblTitleSagyosyaInfo_KenHanbuNo2.Text + "：" + txtSagyosyaInfo_2.Text + "\r\n" +
+                                                  lblTitleKensaWay.Text + "：" + m_strKensaWay,
+                                                  "確認", MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes)
+            {
+                lblStartDate.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            }
         }
 
+        /// <summary>
+        /// 終了時刻（現在時刻日時）ボタン押下
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnEndDate_Click(object sender, EventArgs e)
         {
             DateTime dtNow = DateTime.Now;
-            txtEndDate_Year.Text = dtNow.Year.ToString();
-            txtEndDate_Month.Text = dtNow.Month.ToString();
-            txtEndDate_Day.Text = dtNow.Day.ToString();
-            txtEndDate_Hour.Text = dtNow.Hour.ToString();
-            txtEndDate_Minute.Text = dtNow.Minute.ToString();
-            txtEndDate_Second.Text = dtNow.Second.ToString();
+            lblEndDate.Text = dtNow.ToString("yyyy/MM/dd HH:mm:ss");
+            btnNext.Enabled = true;
         }
 
+        /// <summary>
+        /// 品名クリックイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtHinNo_Click(object sender, EventArgs e)
         {
+            // キーボード非表示
+            if (KeyboardApp.IsOpen())
+                KeyboardApp.KillApp();
+
+            // 品番選択画面
             HinNoSelection frmHinNoSelection = new HinNoSelection();
             frmHinNoSelection.ShowDialog(this);
             txtHinNo.Text = frmHinNoSelection.strHinNm;
             if (!string.IsNullOrEmpty(txtHinNo.Text))
             {
-                DateTime dtNow = DateTime.Now;
-
+                // TODO 指図反映
                 txtSashizu.Text = "1070205";
-                //txtHanNo.Text = "180128-OAE";
-                //txtKensaTaishoNum.Text = "356";
-                //txtKensaStartRow_1.Text = "180";
-                //txtKensaStartRow_2.Text = "180";
-                //txtSagyosyaInfo_1.Text = "0001　エアバッグ　太郎";
-                //txtSagyosyaInfo_2.Text = "0001　エアバッグ　太郎";
-                //btnKensaWay_Click(btnKensaWay_S, e);
-
-                //txtStartDate_Year.Text = dtNow.Year.ToString();
-                //txtStartDate_Month.Text = dtNow.Month.ToString();
-                //txtStartDate_Day.Text = dtNow.Day.ToString();
-                //txtStartDate_Hour.Text = dtNow.Hour.ToString();
-                //txtStartDate_Minute.Text = dtNow.Minute.ToString();
-                //txtStartDate_Second.Text = dtNow.Second.ToString();
-
-                //lblLastNum.Text = "535";
-                //lblSlash.Text = "／";
             }
 
+            // 反番毎の
+            m_intRowCntByTan = 500;
         }
 
-        private void btnKensaWay_Click(dynamic sender, EventArgs e)
+        /// <summary>
+        /// 検査方向ボタンクリックイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnKensaWay_Click(object sender, EventArgs e)
         {
-            foreach (Button btn in new Button[] { btnKensaWay_S, btnKensaWay_X, btnKensaWay_Y, btnKensaWay_R })
+            Button btn = (Button)sender;
+
+
+            ////検反部No1,2の表示
+            //btn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            //if (btn == btnKensaWay_S_2 || btn == btnKensaWay_X_2)
+            //{
+            //    picKensaWay_Front.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_S.png");
+            //    lblSEW_1_Front.Text = m_CON_SEW_E;
+            //    lblSEW_2_Front.Text = m_CON_SEW_S;
+            //    picKensaWay_Back.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_X.png");
+            //    lblSEW_1_Back.Text = m_CON_SEW_E;
+            //    lblSEW_2_Back.Text = m_CON_SEW_S;
+
+            //    //btnKensaWay_S_2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            //    //btnKensaWay_X_2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            //    //btnKensaWay_Y_2.BackColor = SystemColors.Control;
+            //    //btnKensaWay_R_2.BackColor = SystemColors.Control;
+
+            //    //m_strKensaWay = m_CON_KENSA_WAY_S;   
+            //}
+            //else if (btn == btnKensaWay_R_2 || btn == btnKensaWay_Y_2)
+            //{
+            //    picKensaWay_Front.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_R.png");
+            //    lblSEW_1_Front.Text = m_CON_SEW_S;
+            //    lblSEW_2_Front.Text = m_CON_SEW_E;
+            //    picKensaWay_Back.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_Y.png");
+            //    lblSEW_1_Back.Text = m_CON_SEW_S;
+            //    lblSEW_2_Back.Text = m_CON_SEW_E;
+
+            //    //btnKensaWay_S_2.BackColor = SystemColors.Control;
+            //    //btnKensaWay_X_2.BackColor = SystemColors.Control;
+            //    //btnKensaWay_Y_2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            //    //btnKensaWay_R_2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+
+            //    //m_strKensaWay = m_CON_KENSA_WAY_R;
+            //}
+
+            // 個別
+            if (btn == btnKensaWay_S_2)
             {
-                if (sender == btn)
-                {
-                    btn.BackColor = System.Drawing.SystemColors.ActiveCaption;
-                }
-                else
-                {
-                    btn.BackColor = SystemColors.Control;
-                }
+                picKensaWay_Front.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_S.png");
+                lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+                lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+                picKensaWay_Back.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_X.png");
+                lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+                lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+                m_strKensaWay = m_CON_KENSA_WAY_S;   
             }
+            else if (btn == btnKensaWay_X_2)
+            {
+                picKensaWay_Front.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_X.png");
+                lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+                lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+                picKensaWay_Back.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_S.png");
+                lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+                lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+                m_strKensaWay = m_CON_KENSA_WAY_X;
+            }
+            else if (btn == btnKensaWay_Y_2)
+            {
+                picKensaWay_Front.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_Y.png");
+                lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+                lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+                picKensaWay_Back.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_R.png");
+                lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+                lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+                m_strKensaWay = m_CON_KENSA_WAY_Y;
+            }
+            else if (btn == btnKensaWay_R_2)
+            {
+                picKensaWay_Front.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_R.png");
+                lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+                lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+                picKensaWay_Back.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_Y.png");
+                lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+                lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+                m_strKensaWay = m_CON_KENSA_WAY_R;
+            }
+
+            //ボタンの背景色
+            btn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            foreach (Button btnKensaWay in new Button[] { btnKensaWay_S_2,btnKensaWay_X_2,btnKensaWay_Y_2,btnKensaWay_R_2 })
+            {
+                if (btnKensaWay != btn)
+                    btnKensaWay.BackColor = SystemColors.Control;
+            }
+
+            calcMaxRow();
+
         }
 
+        /// <summary>
+        /// 次ボタンクリックイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnNext_Click(object sender, EventArgs e)
         {
+            // 値や背景色の初期化
             txtHinNo.Text = "";
             txtSashizu.Text = "";
             txtHanNo.Text = "";
             txtKensaTaishoNum.Text = "";
-            txtKensaTaishoNumMax.Text = "";
+            lblKensaTaishoNumMax.Text = "";
             txtKensaStartRow.Text = "";
             txtSagyosyaInfo_1.Text = "";
             txtSagyosyaInfo_2.Text = "";
-            txtStartDate_Year.Text = "";
-            txtStartDate_Month.Text = "";
-            txtStartDate_Day.Text = "";
-            txtStartDate_Hour.Text = "";
-            txtStartDate_Minute.Text = "";
-            txtStartDate_Second.Text = "";
-            txtEndDate_Year.Text = "";
-            txtEndDate_Month.Text = "";
-            txtEndDate_Day.Text = "";
-            txtEndDate_Hour.Text = "";
-            txtEndDate_Minute.Text = "";
-            txtEndDate_Second.Text = "";
+            lblStartDate.Text = "";
+            lblEndDate.Text = "";
+            btnKensaWay_S_2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            btnKensaWay_X_2.BackColor = SystemColors.Control;
+            btnKensaWay_Y_2.BackColor = SystemColors.Control;
+            btnKensaWay_R_2.BackColor = SystemColors.Control;
+            m_strKensaWay = m_CON_KENSA_WAY_S;
+            txtHinNo.BackColor = SystemColors.Window;
+
+            // 検査方向ステータスの初期化
+            picKensaWay_Front.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_S.png");
+            lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+            lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+            picKensaWay_Back.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_X.png");
+            lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
+            lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+
+            btnNext.Enabled = false;
         }
 
+        /// <summary>
+        /// 作業者情報テキストボックスのフォーカスインイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>対象イベント：OnClick,Enter</remarks>
         private void txtSagyosyaInfo_FocusIn(dynamic sender, EventArgs e)
         {
+            DispKeyboard(sender, e);
+
             // 選択情報を初期化
             sender.Text = "";
 
@@ -199,11 +313,22 @@ namespace BeforeInspection
             sender.MaxLength = 4;
         }
 
+        /// <summary>
+        /// 作業者情報テキストボックスのフォーカスインイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtSagyosyaInfo_DoubleClick(object sender, EventArgs e)
         {
             SelectUser(sender, false);
         }
 
+
+        /// <summary>
+        /// 作業者情報テキストボックスキーダウン処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtSagyosyaInfo_KeyDown(dynamic sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -229,8 +354,14 @@ namespace BeforeInspection
             }
         }
 
+        /// <summary>
+        /// 作業者キープレスイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtSagyosyaInfo_KeyPress(object sender, KeyPressEventArgs e)
         {
+            // エンター,バックスペース,0～9のみ
             if (e.KeyChar != '\r' && e.KeyChar != '\b' && e.KeyChar < '0' || '9' < e.KeyChar)
             {
                 e.Handled = true;
@@ -238,7 +369,7 @@ namespace BeforeInspection
         }
 
         /// <summary>
-        /// 職員選択
+        /// 作業者選択
         /// </summary>
         /// <param name="parChk">チェック有無</param>
         private void SelectUser(dynamic txtSagyosyaInfo, bool parChk = true)
@@ -250,41 +381,82 @@ namespace BeforeInspection
 
             if (parChk)
             {
-                // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                try
                 {
-                    NpgsqlCon.Open();
+                    if (bolModeNonDBCon == true)
+                        throw new Exception("DB非接続モードです");
 
-                    // SQL抽出
-                    NpgsqlCommand NpgsqlCom = null;
-                    NpgsqlDataAdapter NpgsqlDtAd = null;
+                    // PostgreSQLへ接続
+                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                    {
+                        NpgsqlCon.Open();
+
+                        // SQL抽出
+                        NpgsqlCommand NpgsqlCom = null;
+                        NpgsqlDataAdapter NpgsqlDtAd = null;
+                        dtData = new DataTable();
+
+                        dtData = new DataTable();
+                        strSQL += "SELECT USERNO,USERNAME FROM SAGYOSYA ";
+                        strSQL += "WHERE USERNO = '" + txtSagyosyaInfo.Text + "'";
+                        NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
+                        NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
+                        NpgsqlDtAd.Fill(dtData);
+                    }
+                }
+                catch
+                {
                     dtData = new DataTable();
-                    strSQL += "SELECT USERNO,USERNAME FROM SAGYOSYA ";
-                    strSQL += "WHERE USERNO = '" + txtSagyosyaInfo.Text + "'";
-                    NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                    NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                    NpgsqlDtAd.Fill(dtData);
+                    dtData.Columns.Add("USERNO");
+                    dtData.Columns.Add("USERNAME");
+                    dtData.Columns.Add("USERYOMIGANA");
 
-                    if (dtData.Rows.Count > 0)
+                    // 後々この処理は消す
+                    foreach (string line in System.IO.File.ReadLines("作業者.tsv", Encoding.Default))
                     {
-                        strUserNo = dtData.Rows[0][0].ToString();
-                        strUserNm = dtData.Rows[0][1].ToString();
-                    }
-                    else
-                    {
-                        MessageBox.Show("入力された職員番号は存在しません");
+                        // 改行コードを変換
+                        string strLine = line.Replace("\\rn", Environment.NewLine);
 
-                        UserSelection frmTargetSelection = new UserSelection();
-                        frmTargetSelection.ShowDialog(this);
-                        this.Visible = true;
+                        string[] csv = strLine.Split('\t');
+                        string[] data = new string[csv.Length];
+                        Array.Copy(csv, 0, data, 0, data.Length);
 
-                        strUserNo = frmTargetSelection.strUserNo;
-                        strUserNm = frmTargetSelection.strUserNm;
+                        if (data[0].ToString() != txtSagyosyaInfo.Text)
+                            continue;
+
+                        dtData.Rows.Add(data);
                     }
+                }
+
+                if (dtData.Rows.Count > 0)
+                {
+                    strUserNo = dtData.Rows[0][0].ToString();
+                    strUserNm = dtData.Rows[0][1].ToString();
+                }
+                else
+                {
+                    // キーボード非表示
+                    if (KeyboardApp.IsOpen())
+                        KeyboardApp.KillApp();
+
+                    MessageBox.Show("入力された職員番号は存在しません");
+
+                    // 作業者選択画面表示
+                    UserSelection frmTargetSelection = new UserSelection();
+                    frmTargetSelection.ShowDialog(this);
+                    this.Visible = true;
+
+                    strUserNo = frmTargetSelection.strUserNo;
+                    strUserNm = frmTargetSelection.strUserNm;
                 }
             }
             else
             {
+                // キーボード非表示
+                if (KeyboardApp.IsOpen())
+                    KeyboardApp.KillApp();
+
+                // 作業者選択画面表示
                 UserSelection frmTargetSelection = new UserSelection();
                 frmTargetSelection.ShowDialog(this);
                 this.Visible = true;
@@ -295,11 +467,15 @@ namespace BeforeInspection
 
             if (!String.IsNullOrEmpty(strUserNo))
             {
+                // ユーザ情報設定
                 txtSagyosyaInfo.Text = strUserNo + "　" + strUserNm;
 
                 // 入力不可にする
                 txtSagyosyaInfo.ReadOnly = true;
                 txtSagyosyaInfo.BackColor = SystemColors.Window;
+
+                // 次のコントロールを選択する
+                this.SelectNextControl((Control)txtSagyosyaInfo, true, true, true, true);
             }
             else
             {
@@ -310,6 +486,146 @@ namespace BeforeInspection
                 txtSagyosyaInfo.ReadOnly = false;
                 txtSagyosyaInfo.MaxLength = 4;
             }
+        }
+
+        /// <summary>
+        /// キーボード表示
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DispKeyboard(object sender, EventArgs e)
+        {
+            if (bolUseKeyboadApp == false)
+                return;
+
+            // 座標
+            int intX = 0;
+            int intY = 0;
+            int intWidth = 0;
+            int intHeight = 0;
+
+            // DPI設定値　※通常(拡大率100%)が96
+            float dpiDef = 96;
+            float dpiX = 0;
+            float dpiY = 0;
+
+            // タイトルバー幅
+            int intTitleWidth = 0;
+            
+            // DPI設定値を取得
+            using (Graphics graphics = Graphics.FromHwnd(IntPtr.Zero))
+            {
+                dpiX = graphics.DpiX;
+                dpiY = graphics.DpiY;
+            }
+
+            // Windows枠幅を取得
+            intTitleWidth = SystemInformation.CaptionHeight;
+
+            // NumLockを設定
+            SetNumLock(true);
+
+            // 座標・サイズ指定
+            intX = (int)((double)(PointToScreen(this.Location).X));
+            intY = (int)((double)(PointToScreen(pnlInfo.Location).Y + intTitleWidth));
+            intWidth = (int)((double)(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - intX) / (dpiX / dpiDef));
+            intHeight = (int)((double)(Screen.PrimaryScreen.WorkingArea.Height - intY) / (dpiY / dpiDef));
+
+            KeyboardApp.OnApp(intX, intY, intWidth, intHeight);
+        }
+
+        /// <summary>
+        /// テキストボックス（一般）キープレスイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtNormalType_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\r')
+            {
+                // エンター：次のコントロールを選択する
+                this.SelectNextControl((Control)sender, true, true, true, true);
+            }
+        }
+
+        /// <summary>
+        /// テキストボックス（数値のみ）キープレスイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtNumType_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\r')
+            {
+                // エンター：次のコントロールを選択する
+                this.SelectNextControl((Control)sender, true, true, true, true);
+            }
+            else if (e.KeyChar != '\b' && e.KeyChar < '0' || '9' < e.KeyChar)
+            {
+                // バックスペース,0～9のみ
+                e.Handled = true;
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // 値や背景色の初期化
+            txtKensaTaishoNum.Text = "";
+            lblKensaTaishoNumMax.Text = "";
+            txtKensaStartRow.Text = "";
+            txtSagyosyaInfo_1.Text = "";
+            txtSagyosyaInfo_2.Text = "";
+            lblStartDate.Text = "";
+            lblEndDate.Text = "";
+            txtHinNo.BackColor = SystemColors.Window;
+
+            btnNext.Enabled = false;
+        }
+
+        private void txtHanNo_Leave(object sender, EventArgs e)
+        {
+            ////TODO 反物毎の枚数を格納
+            //m_intRowCntByTan = 500;
+        }
+
+        private void txtKensaTaishoNum_Leave(object sender, EventArgs e)
+        {
+            calcMaxRow();
+        }
+
+        private void txtKensaStartRow_Leave(object sender, EventArgs e)
+        {
+            calcMaxRow();
+        }
+
+        private void calcMaxRow()
+        {
+            // 最終行計算
+            if (txtKensaTaishoNum.Text != "" && txtKensaStartRow.Text != "")
+            {
+                if (m_strKensaWay == m_CON_KENSA_WAY_S || m_strKensaWay == m_CON_KENSA_WAY_X)
+                {
+                    lblKensaTaishoNumMax.Text = (int.Parse(txtKensaStartRow.Text) + int.Parse(txtKensaTaishoNum.Text) - 1).ToString();
+                }
+                else if (m_strKensaWay == m_CON_KENSA_WAY_Y || m_strKensaWay == m_CON_KENSA_WAY_R)
+                {
+                    lblKensaTaishoNumMax.Text = (int.Parse(txtKensaStartRow.Text) - int.Parse(txtKensaTaishoNum.Text) + 1).ToString();
+                }
+            }
+            else
+            {
+                lblKensaTaishoNumMax.Text = "";
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

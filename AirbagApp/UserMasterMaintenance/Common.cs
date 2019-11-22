@@ -14,6 +14,12 @@ namespace UserMasterMaintenance
 
         public const string NAME_SEPARATE = "　";
 
+        /// <summary>
+        /// DB非接続モード
+        /// </summary>
+        /// <remarks>デバッグ用</remarks>
+        public static bool bolModeNonDBCon = true;  //true:DB接続なし false:DB接続あり
+
         public const string CON_DB_INFO = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
 
         /// <summary>
@@ -67,8 +73,14 @@ namespace UserMasterMaintenance
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            // DB非接続
+            if (args.Length >= 1)
+            {
+                if (int.Parse(args[0]) > 0) { bolModeNonDBCon = true; } else { bolModeNonDBCon = false; }
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new UserMasterMaintenance());

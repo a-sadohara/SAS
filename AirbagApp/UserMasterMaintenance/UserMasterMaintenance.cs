@@ -74,32 +74,39 @@ namespace UserMasterMaintenance
                                   , "確認"
                                   , MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    try
+                    if (bolModeNonDBCon == true)
                     {
-                        // PostgreSQLへ接続
-                        using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                        MessageBox.Show("削除しました");
+                    }
+                    else
+                    {
+                        try
                         {
-                            NpgsqlCon.Open();
-
-                            using (var transaction = NpgsqlCon.BeginTransaction())
+                            // PostgreSQLへ接続
+                            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                             {
-                                if (DelUser(NpgsqlCon, transaction) == true)
+                                NpgsqlCon.Open();
+
+                                using (var transaction = NpgsqlCon.BeginTransaction())
                                 {
-                                    transaction.Commit();
-                                    MessageBox.Show("削除しました");
-                                }
-                                else 
-                                {
-                                    MessageBox.Show("削除に失敗したためロールバックします");
+                                    if (DelUser(NpgsqlCon, transaction) == true)
+                                    {
+                                        transaction.Commit();
+                                        MessageBox.Show("削除しました");
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("削除に失敗したためロールバックします");
+                                    }
                                 }
                             }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("削除時にエラーが発生しました。"
-                                       + Environment.NewLine
-                                       + ex.Message);
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("削除時にエラーが発生しました。"
+                                           + Environment.NewLine
+                                           + ex.Message);
+                        }
                     }
 
                     // 再表示
@@ -244,6 +251,9 @@ namespace UserMasterMaintenance
 
             try
             {
+                if (bolModeNonDBCon == true)
+                    throw new Exception("DB非接続モードです");
+
                 // 条件が指定されていない場合は抽出しない
                 // PostgreSQLへ接続
                 using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))

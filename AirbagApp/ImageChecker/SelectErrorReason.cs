@@ -18,11 +18,14 @@ namespace ImageChecker
 
         ErrorReasonDTO eorrReasonDto;
 
-        public SelectErrorReason(ErrorReasonDTO errorReason)
+        private bool m_chkReg;
+
+        public SelectErrorReason(ErrorReasonDTO errorReason, bool chkReg = false)
         {
             InitializeComponent();
 
             eorrReasonDto = errorReason;
+            m_chkReg = chkReg;
 
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
@@ -67,6 +70,16 @@ namespace ImageChecker
 
                 if(row.Cells[0].Value.Equals(true))
                 {
+                    if (m_chkReg == true)
+                    {
+                        if (MessageBox.Show("NG理由：" + row.Cells[1].Value + "で登録しますか？"
+                                          , "確認"
+                                          , MessageBoxButtons.YesNo) == DialogResult.No)
+                        {
+                            return;
+                        }
+                    }
+
                     eorrReasonDto.setStrErrorReason(row.Cells[1].Value.ToString());
                     this.Close();
                 }

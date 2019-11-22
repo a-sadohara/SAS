@@ -115,6 +115,18 @@
     </Compile>
     <Compile Include="DTO\ErrorReasonDTO.cs" />
     <Compile Include="DTO\TargetInfoDto.cs" />
+    <Compile Include="CheckExcept.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CheckExcept.Designer.cs">
+      <DependentUpon>CheckExcept.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LineCorrect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LineCorrect.Designer.cs">
+      <DependentUpon>LineCorrect.cs</DependentUpon>
+    </Compile>
     <Compile Include="ListWpf_WinForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -191,6 +203,12 @@
     </Compile>
     <EmbeddedResource Include="DisplayResultsAgo.resx">
       <DependentUpon>DisplayResultsAgo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CheckExcept.resx">
+      <DependentUpon>CheckExcept.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LineCorrect.resx">
+      <DependentUpon>LineCorrect.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ListWpf_WinForm.resx">
       <DependentUpon>ListWpf_WinForm.cs</DependentUpon>

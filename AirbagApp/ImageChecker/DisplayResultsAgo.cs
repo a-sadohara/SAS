@@ -27,7 +27,7 @@ namespace ImageChecker
         public DisplayResultsAgo()
         {
             InitializeComponent();
-            
+
             //// DataGridViewのフォント調整
             //if (1920 > (int)System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width)
             //{
@@ -39,6 +39,34 @@ namespace ImageChecker
 
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
+
+            // テキストボックス初期化
+            txtGoki.Text = "";
+            txtHinNm.Text = "";
+            txtSashizu.Text = "";
+            txtHanNo.Text = "";
+            txtKensaNo.Text = "";
+            txtHansoStaDate_From.Text = "";
+            txtHansoStaDate_To.Text = "";
+            txtKensakuRow_From.Text = "";
+            txtKensakuRow_To.Text = "";
+            txtHansoEndDate_From.Text = "";
+            txtHansoEndDate_To.Text = "";
+            txtJudgeStaDate_From.Text = "";
+            txtJudgeStaDate_To.Text = "";
+            txtJudgeEndDate_From.Text = "";
+            txtJudgeEndDate_To.Text = "";
+            txtUserNm.Text = "";
+            txtRow.Text = "";
+            txtCol.Text = "";
+            txtNgSide.Text = "";
+            txtNgReason.Text = "";
+
+            // 列のスタイル変更
+            this.dgvData.Columns[0].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //№
+            this.dgvData.Columns[1].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //号機
+            this.dgvData.Columns[10].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;    //検査番号
+            //this.dgvData.Columns[11].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;    //行
         }
 
         private void Result_Load(object sender, EventArgs e)
@@ -56,9 +84,8 @@ namespace ImageChecker
             dgvData.ReadOnly = true;
 
 
-            foreach (string line in File.ReadLines("検査結果過去分.tsv", Encoding.Default))
+            foreach (string line in File.ReadLines("検査結果確認過去分.tsv", Encoding.Default))
             {
-
                 // 改行コードを変換
                 string strLine = line.Replace("\\rn", Environment.NewLine);
 
@@ -68,6 +95,10 @@ namespace ImageChecker
                 this.dgvData.Rows.Add(data);
 
             }
+
+            // 検索件数更新
+            lblSearchCountMax.Text = this.dgvData.Rows.Count.ToString();
+            lblSearchCount.Text = lblSearchCountMax.Text;
 
         }
 
@@ -94,9 +125,7 @@ namespace ImageChecker
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"));
-            frmViewEnlargedimage.ShowDialog(this);
-            this.Visible = true;
+            
         }
 
         private void btnLogOut_Click(object sender, EventArgs e)
@@ -174,36 +203,66 @@ namespace ImageChecker
 
             if (parChk)
             {
-                // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                try
                 {
-                    NpgsqlCon.Open();
+                    if (bolModeNonDBCon == true)
+                        throw new Exception("DB非接続モードです");
 
-                    // SQL抽出
-                    NpgsqlCommand NpgsqlCom = null;
-                    NpgsqlDataAdapter NpgsqlDtAd = null;
-                    dtData = new DataTable();
-                    strSQL += "SELECT USERNAME FROM SAGYOSYA ";
-                    strSQL += "WHERE USERNO = '" + txtUserNm.Text + "'";
-                    NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                    NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                    NpgsqlDtAd.Fill(dtData);
-
-                    if (dtData.Rows.Count > 0)
+                    // PostgreSQLへ接続
+                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                     {
-                        parUserNo = dtData.Rows[0][0].ToString();
-                    }
-                    else
-                    {
-                        MessageBox.Show("入力された職員番号は存在しません");
+                        NpgsqlCon.Open();
 
-                        UserSelection frmTargetSelection = new UserSelection();
-                        frmTargetSelection.ShowDialog(this);
-                        this.Visible = true;
-
-                        parUserNo = frmTargetSelection.strUserNm;
+                        // SQL抽出
+                        NpgsqlCommand NpgsqlCom = null;
+                        NpgsqlDataAdapter NpgsqlDtAd = null;
+                        dtData = new DataTable();
+                        strSQL += "SELECT USERNO,USERNAME,USERYOMIGANA FROM SAGYOSYA ";
+                        strSQL += "WHERE USERNO = '" + txtUserNm.Text + "'";
+                        NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
+                        NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
+                        NpgsqlDtAd.Fill(dtData);
                     }
                 }
+                catch
+                {
+                    dtData = new DataTable();
+                    dtData.Columns.Add("USERNO");
+                    dtData.Columns.Add("USERNAME");
+                    dtData.Columns.Add("USERYOMIGANA");
+
+                    // 後々この処理は消す
+                    foreach (string line in System.IO.File.ReadLines("作業者.tsv", Encoding.Default))
+                    {
+                        // 改行コードを変換
+                        string strLine = line.Replace("\\rn", Environment.NewLine);
+
+                        string[] csv = strLine.Split('\t');
+                        string[] data = new string[csv.Length];
+                        Array.Copy(csv, 0, data, 0, data.Length);
+
+                        if (data[0].ToString() != txtUserNm.Text)
+                            continue;
+
+                        dtData.Rows.Add(data);
+                    }
+                }
+
+                if (dtData.Rows.Count > 0)
+                {
+                    parUserNo = dtData.Rows[0][1].ToString();
+                }
+                else
+                {
+                    MessageBox.Show("入力された職員番号は存在しません");
+
+                    UserSelection frmTargetSelection = new UserSelection();
+                    frmTargetSelection.ShowDialog(this);
+                    this.Visible = true;
+
+                    parUserNo = frmTargetSelection.strUserNm;
+                }
+
             }
             else
             {
@@ -241,6 +300,57 @@ namespace ImageChecker
             {
                 e.Handled = true;
             }
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            this.dgvData.Rows.Clear();
+
+            // データ抽出
+            foreach (string line in File.ReadLines("検査結果確認過去分.tsv", Encoding.Default))
+            {
+                // 改行コードを変換
+                string strLine = line.Replace("\\rn", Environment.NewLine);
+
+                string[] csv = strLine.Split('\t');
+                string[] data = new string[csv.Length];
+                Array.Copy(csv, 0, data, 0, data.Length);
+                this.dgvData.Rows.Add(data);
+
+            }
+
+            // 検索件数更新
+            lblSearchCountMax.Text = this.dgvData.Rows.Count.ToString();
+            lblSearchCount.Text = lblSearchCountMax.Text;
+        }
+
+        private void BackResultCheck_Click(object sender, EventArgs e)
+        {
+            //if (MessageBox.Show("以下の情報で合否確認に戻ります。よろしいですか？\r\n" +
+            //                    this.dataGridView1.SelectedRows[0].Cells[1].Value +
+            //                    this.dataGridView1.SelectedRows[0].Cells[2].Value
+            //                  , "確認"
+            //                  , MessageBoxButtons.YesNo) == DialogResult.No)
+            //{
+            //    return;
+            //}
+
+            TargetInfoDto dtTagetInfo = new TargetInfoDto();
+            DataTable dtWkInfo = dtTagetInfo.getTargetInfoDTO();
+
+            //TODO
+            //検査番号,品名,反番等で、対象選択の行と紐づけ
+
+            ResultCheck frmResultCheck = new ResultCheck(dtTagetInfo, this.dgvData.SelectedRows[0].Index, true);
+            frmResultCheck.ShowDialog(this);
+            this.Visible = true;
+        }
+
+        private void dgvData_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"), ".\\Image\\05_F1_B0019.jpg");
+            frmViewEnlargedimage.ShowDialog(this);
+            this.Visible = true;
         }
     }
 

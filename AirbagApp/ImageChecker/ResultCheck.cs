@@ -17,6 +17,7 @@ namespace ImageChecker
     {
         TargetInfoDto objTargetInfoDto;
         int intRow;
+        bool m_dummy;
 
         // 実際の座標（Input値）
         private int intPctWidthFact = 1000;
@@ -48,20 +49,39 @@ namespace ImageChecker
         private string m_strFlip = m_CON_FLIP_S;
         private Bitmap m_bmpImgInit = null;
 
-        public ResultCheck(TargetInfoDto objTargetInfo,int intRowIndex)
+        public ResultCheck(TargetInfoDto objTargetInfo,int intRowIndex, bool dummy = false)
         {
             InitializeComponent();
 
-            MessageBox.Show(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height.ToString());
+            m_dummy = dummy;
+            
+            if (m_dummy == true)
+            {
+                button1.Text = "検査結果確認\r\n(過去分)へ戻る";
+            }
 
-            /// Buttonのフォント調整
-            /// 解像度：1920x1080 拡大率：125% 以上にスクリーンが広くなる場合
-            btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("　", "").Replace("\r\n", "");
-            btnRenzokuWhite.Text = btnRenzokuWhite.Text.Replace("　", "").Replace("\r\n", "");
-            btnTanpatuBlack.Text = btnTanpatuBlack.Text.Replace("　", "").Replace("\r\n", "");
-            btnRenzokuBlack.Text = btnRenzokuBlack.Text.Replace("　", "").Replace("\r\n", "");
-            btnOther.Text = btnOther.Text.Replace("　", "").Replace("\r\n", "");
-            btnJudgeNG.Text = btnJudgeNG.Text.Replace("　", "").Replace("\r\n", "");
+            //// Buttonのフォント調整
+            //// 拡大率：100%時は改行を削除
+
+            //// DPI設定値　※通常(拡大率100%)が96
+            //float dpiDef = 96;
+            //float dpiX = 0;
+            //float dpiY = 0;
+            //using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+            //{
+            //    dpiX = graphics.DpiX;
+            //    dpiY = graphics.DpiY;
+            //}
+
+            //if (dpiX == dpiDef)
+            //{
+            //    btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("　", "").Replace("\r\n", "");
+            //    btnRenzokuWhite.Text = btnRenzokuWhite.Text.Replace("　", "").Replace("\r\n", "");
+            //    btnTanpatuBlack.Text = btnTanpatuBlack.Text.Replace("　", "").Replace("\r\n", "");
+            //    btnRenzokuBlack.Text = btnRenzokuBlack.Text.Replace("　", "").Replace("\r\n", "");
+            //    btnOther.Text = btnOther.Text.Replace("　", "").Replace("\r\n", "");
+            //    btnJudgeNG.Text = btnJudgeNG.Text.Replace("　", "").Replace("\r\n", "");
+            //}
 
             objTargetInfoDto = objTargetInfo;
             intRow = intRowIndex;
@@ -72,10 +92,29 @@ namespace ImageChecker
             comboBox1.SelectedIndex = 33;
             comboBox2.SelectedIndex = 2;
 
-            Bitmap bmpImgInit = new Bitmap(pictureBox5.Image);
-            bmpImgInit.RotateFlip(RotateFlipType.Rotate90FlipX);
-            m_bmpImgInit = new Bitmap(bmpImgInit);
-            pictureBox5.Image = bmpImgInit;
+            Bitmap bmpImgInit1 = new Bitmap(pictureBox5.Image);
+            Bitmap bmpImgInit2 = new Bitmap(pictureBox5.Image);
+            bmpImgInit1.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            bmpImgInit2.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            bmpImgInit2.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            m_bmpImgInit = new Bitmap(bmpImgInit1);
+            pictureBox5.Image = bmpImgInit1;
+            //bmpImgInit.RotateFlip(RotateFlipType.Rotate90FlipX);
+            pictureBox2.Image = new Bitmap(bmpImgInit2);
+            // NG画像テーブルレイアウトパネル
+            //// 縦表示
+            //pictureBox3.Visible = false;
+            //label16.Visible = false;
+            //tableLayoutPanel3.ColumnStyles[1] = new ColumnStyle(SizeType.Percent, 0F);
+            //// 横表示
+            pictureBox1.Image = System.Drawing.Image.FromFile(@".\Image\01_F1_A0559.png");
+            //pictureBox3.Image = System.Drawing.Image.FromFile(@".\Image\01_F2_A0559.png");
+            pictureBox1.ImageLocation = System.IO.Path.GetFullPath(@".\Image\01_F1_A0559.png");
+            //pictureBox3.ImageLocation = System.IO.Path.GetFullPath(@".\Image\01_F2_A0559.png");
+            //pictureBox2.Visible = false;
+            //label15.Visible = false;
+            //tableLayoutPanel3.RowStyles[2] = new RowStyle(SizeType.Percent, 0F);
+            //tableLayoutPanel3.RowStyles[3] = new RowStyle(SizeType.Percent, 0F);
         }
 
 
@@ -86,11 +125,31 @@ namespace ImageChecker
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            this.Close();
+            if (MessageBox.Show("過検知で登録します。よろしいですか？"
+                              , "確認"
+                              , MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
+
+            Result frmResult = new Result(objTargetInfoDto, intRow, m_dummy);
+            frmResult.ShowDialog(this);
+            this.Visible = true;
+            if (frmResult.intRet == 1)
+            {
+                this.Close();
+            }
         }
 
         private void BtnTanpatuWhite_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("NG理由：" + btnTanpatuWhite.Text.Replace("\r\n", "").Replace("　", "").Replace("□", "") + "で登録しますか？"
+                                          , "確認"
+                                          , MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
+
             // ON
             btnTanpatuWhite.Text = btnTanpatuWhite.Text.Replace("□","■");
             lblReason.Text = btnTanpatuWhite.Text.Replace("\r\n", "").Replace("　", "");
@@ -103,10 +162,25 @@ namespace ImageChecker
             btnJudgeNG.Text = btnJudgeNG.Text.Replace("■", "□");
 
             button6.Enabled = true;
+
+            Result frmResult = new Result(objTargetInfoDto, intRow, m_dummy);
+            frmResult.ShowDialog(this);
+            this.Visible = true;
+            if (frmResult.intRet == 1)
+            {
+                this.Close();
+            }
         }
 
         private void BtnTanpatuBlack_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("NG理由：" + btnTanpatuBlack.Text.Replace("\r\n", "").Replace("　", "").Replace("□", "") + "で登録しますか？"
+                                          , "確認"
+                                          , MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
+
             // ON
             btnTanpatuBlack.Text = btnTanpatuBlack.Text.Replace("□", "■");
             lblReason.Text = btnTanpatuBlack.Text.Replace("\r\n", "").Replace("　", "");
@@ -119,10 +193,25 @@ namespace ImageChecker
             btnJudgeNG.Text = btnJudgeNG.Text.Replace("■", "□");
 
             button6.Enabled = true;
+
+            Result frmResult = new Result(objTargetInfoDto, intRow, m_dummy);
+            frmResult.ShowDialog(this);
+            this.Visible = true;
+            if (frmResult.intRet == 1)
+            {
+                this.Close();
+            }
         }
 
         private void BtnRenzokuWhite_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("NG理由：" + btnRenzokuWhite.Text.Replace("\r\n", "").Replace("　", "").Replace("□", "") + "で登録しますか？"
+                                          , "確認"
+                                          , MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
+
             // ON
             btnRenzokuWhite.Text = btnRenzokuWhite.Text.Replace("□", "■");
             lblReason.Text = btnRenzokuWhite.Text.Replace("\r\n", "").Replace("　", "");
@@ -135,10 +224,25 @@ namespace ImageChecker
             btnJudgeNG.Text = btnJudgeNG.Text.Replace("■", "□");
 
             button6.Enabled = true;
+
+            Result frmResult = new Result(objTargetInfoDto, intRow, m_dummy);
+            frmResult.ShowDialog(this);
+            this.Visible = true;
+            if (frmResult.intRet == 1)
+            {
+                this.Close();
+            }
         }
 
         private void BtnRenzokuBlack_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("NG理由：" + btnRenzokuBlack.Text.Replace("\r\n", "").Replace("　", "").Replace("□", "") + "で登録しますか？"
+                                          , "確認"
+                                          , MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
+
             // ON
             btnRenzokuBlack.Text = btnRenzokuBlack.Text.Replace("□", "■");
             lblReason.Text = btnRenzokuBlack.Text.Replace("\r\n", "").Replace("　", "");
@@ -151,12 +255,20 @@ namespace ImageChecker
             btnJudgeNG.Text = btnJudgeNG.Text.Replace("■", "□");
 
             button6.Enabled = true;
+
+            Result frmResult = new Result(objTargetInfoDto, intRow, m_dummy);
+            frmResult.ShowDialog(this);
+            this.Visible = true;
+            if (frmResult.intRet == 1)
+            {
+                this.Close();
+            }
         }
 
         private void BtnOther_Click(object sender, EventArgs e)
         {
             ErrorReasonDTO errorReasonDto = new ErrorReasonDTO();
-            SelectErrorReason frmErrorReason = new SelectErrorReason(errorReasonDto);
+            SelectErrorReason frmErrorReason = new SelectErrorReason(errorReasonDto, true);
             frmErrorReason.ShowDialog(this);
             this.Visible = true;
 
@@ -174,11 +286,26 @@ namespace ImageChecker
                 btnJudgeNG.Text = btnJudgeNG.Text.Replace("■", "□");
 
                 button6.Enabled = true;
+
+                Result frmResult = new Result(objTargetInfoDto, intRow, m_dummy);
+                frmResult.ShowDialog(this);
+                this.Visible = true;
+                if (frmResult.intRet == 1)
+                {
+                    this.Close();
+                }
             }
         }
 
         private void btnJudgeNG_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("NG理由：" + btnJudgeNG.Text.Replace("\r\n", "").Replace("　", "").Replace("□", "") + "で登録しますか？"
+                                          , "確認"
+                                          , MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
+
             // ON
             btnJudgeNG.Text = btnJudgeNG.Text.Replace("□", "■");
             lblReason.Text = btnJudgeNG.Text.Replace("\r\n", "").Replace("　", "");
@@ -191,14 +318,25 @@ namespace ImageChecker
             btnOther.Text = btnOther.Text.Replace("■", "□");
 
             button6.Enabled = true;
+
+            Result frmResult = new Result(objTargetInfoDto, intRow, m_dummy);
+            frmResult.ShowDialog(this);
+            this.Visible = true;
+            if (frmResult.intRet == 1)
+            {
+                this.Close();
+            }
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
-            dtTargetInfo.Rows[intRow]["Status"] = "3";
+            if (m_dummy == false)
+            {
+                DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
+                dtTargetInfo.Rows[intRow]["Status"] = "3";
 
-            objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
+                objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
+            }
             this.Close();
         }
 
@@ -211,15 +349,18 @@ namespace ImageChecker
             lblUser.Text = "作業者名：" + g_parUserNm;
 
             // 検査方向のテーブルパネルの描画調整
-            tableLayoutPanel2.Location = new Point((tableLayoutPanel1.Controls[1].ClientSize.Width / 2 - tableLayoutPanel2.Controls[1].ClientSize.Width ), tableLayoutPanel2.Location.Y);
+            //tableLayoutPanel2.Location = new Point((tableLayoutPanel1.Controls[1].ClientSize.Width / 2 - tableLayoutPanel2.Controls[1].ClientSize.Width ), tableLayoutPanel2.Location.Y);
+
+            // 前＆次ボタンのイメージ縮小対応
+            button7.Image = bmpImageScale(button7.Image, button7.ClientSize.Width, button7.ClientSize.Height);
+            button6.Image = bmpImageScale(button6.Image, button6.ClientSize.Width, button6.ClientSize.Height);
 
             DrwFrame();
         }
 
         private void Button6_Click(object sender, EventArgs e)
         {
-            this.Visible = false;
-            Result frmResult = new Result(objTargetInfoDto,intRow);
+            Result frmResult = new Result(objTargetInfoDto, intRow, m_dummy);
             frmResult.ShowDialog(this);
             //this.Visible = true;
             this.Close();
@@ -320,12 +461,18 @@ namespace ImageChecker
         {
             Bitmap bmpImage = new Bitmap(m_bmpImgInit);
             pictureBox5.Image = bmpImage;
+            Bitmap bmpImage2 = new Bitmap(m_bmpImgInit);
+            bmpImage2.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            pictureBox2.Image = new Bitmap(bmpImage2);
             // ON
             btnFlipS.BackColor = System.Drawing.SystemColors.ActiveCaption;
             // OFF
             btnFlipX.BackColor = SystemColors.Control;
             btnFlipY.BackColor = SystemColors.Control;
             btnFlipR.BackColor = SystemColors.Control;
+
+            lblFront.Text = "検反部No.1：Ｓ";
+            lblBack.Text = "検反部No.2：Ｘ";
         }
 
         private void btnFlipX_Click(object sender, EventArgs e)
@@ -333,12 +480,19 @@ namespace ImageChecker
             Bitmap bmpImage = new Bitmap(m_bmpImgInit);
             bmpImage.RotateFlip(RotateFlipType.RotateNoneFlipX);
             pictureBox5.Image = bmpImage;
+            Bitmap bmpImage2 = new Bitmap(m_bmpImgInit);
+            bmpImage2.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            bmpImage2.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            pictureBox2.Image = new Bitmap(bmpImage2);
             // ON
             btnFlipX.BackColor = System.Drawing.SystemColors.ActiveCaption;
             // OFF
             btnFlipS.BackColor = SystemColors.Control;
             btnFlipY.BackColor = SystemColors.Control;
             btnFlipR.BackColor = SystemColors.Control;
+
+            lblFront.Text = "検反部No.1：Ｘ";
+            lblBack.Text = "検反部No.2：Ｓ";
         }
 
         private void btnFlipY_Click(object sender, EventArgs e)
@@ -346,12 +500,19 @@ namespace ImageChecker
             Bitmap bmpImage = new Bitmap(m_bmpImgInit);
             bmpImage.RotateFlip(RotateFlipType.RotateNoneFlipY);
             pictureBox5.Image = bmpImage;
+            Bitmap bmpImage2 = new Bitmap(m_bmpImgInit);
+            bmpImage2.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            bmpImage2.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            pictureBox2.Image = new Bitmap(bmpImage2);
             // ON
             btnFlipY.BackColor = System.Drawing.SystemColors.ActiveCaption;
             // OFF
             btnFlipS.BackColor = SystemColors.Control;
             btnFlipX.BackColor = SystemColors.Control;
             btnFlipR.BackColor = SystemColors.Control;
+
+            lblFront.Text = "検反部No.1：Ｙ";
+            lblBack.Text = "検反部No.2：Ｒ";
         }
 
         private void btnFlipR_Click(object sender, EventArgs e)
@@ -359,12 +520,19 @@ namespace ImageChecker
             Bitmap bmpImage = new Bitmap(m_bmpImgInit);
             bmpImage.RotateFlip(RotateFlipType.RotateNoneFlipXY);
             pictureBox5.Image = bmpImage;
+            Bitmap bmpImage2 = new Bitmap(m_bmpImgInit);
+            bmpImage2.RotateFlip(RotateFlipType.RotateNoneFlipXY);
+            bmpImage2.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            pictureBox2.Image = new Bitmap(bmpImage2);
             // ON
             btnFlipR.BackColor = System.Drawing.SystemColors.ActiveCaption;
             // OFF
             btnFlipS.BackColor = SystemColors.Control;
             btnFlipX.BackColor = SystemColors.Control;
             btnFlipY.BackColor = SystemColors.Control;
+
+            lblFront.Text = "検反部No.1：Ｒ";
+            lblBack.Text = "検反部No.2：Ｙ";
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -381,6 +549,23 @@ namespace ImageChecker
             this.Visible = true;
 
             //button3.Text = frmListInWpf.strVal;
+        }
+
+        private Bitmap bmpImageScale(Image img, int width, int height)
+        {
+            return new Bitmap(img, width, height);
+        }
+
+        private void pictureBox_Click(dynamic sender, EventArgs e)
+        {
+            ViewEnlargedimage frmViewImage = new ViewEnlargedimage(System.Drawing.Image.FromFile(sender.ImageLocation), sender.ImageLocation);
+            this.Visible = true;
+            frmViewImage.ShowDialog(this);
+        }
+
+        private void pictureBox1_DoubleClick(dynamic sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -127,18 +127,26 @@ namespace ImageChecker
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public LoginForm()
+        public LoginForm(string UserNo = "", short DispNum = 0)
         {
             InitializeComponent();
 
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            // 初期設定
+            // ユーザIDを初期選択
+            txtUser.Select();
 
+            // 初期設定
             // 1.ユーザID
-            if (!String.IsNullOrEmpty(parUserNo))
+            if (!String.IsNullOrEmpty(UserNo))
             {
-                txtUser.Text = parUserNo + " " + parUserNm;
+                // ユーザIDを初期選択
+                txtUser.Select();
+
+                // 入力制限
+                txtUser.ReadOnly = false;
+                txtUser.MaxLength = 4;
+                txtUser.Text = UserNo;
             }
             else
             {
@@ -146,7 +154,7 @@ namespace ImageChecker
             }
 
             // 2.表示枚数
-            switch (g_parDispNum)
+            switch (DispNum)
             {
                 case 2:
                     rdbDispNum2.Checked = true;
@@ -154,11 +162,14 @@ namespace ImageChecker
                 case 4:
                     rdbDispNum4.Checked = true;
                     break;
+                case 6:
+                    rdbDispNum6.Checked = true;
+                    break;
                 case 9:
                     rdbDispNum9.Checked = true;
                     break;
                 default:
-                    rdbDispNum9.Checked = true;
+                    rdbDispNum6.Checked = true;
                     break;
             }
         }
@@ -173,37 +184,67 @@ namespace ImageChecker
 
             if (parChk)
             {
-                // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                try
                 {
-                    NpgsqlCon.Open();
+                    if (bolModeNonDBCon == true)
+                        throw new Exception("DB非接続モードです");
 
-                    // SQL抽出
-                    NpgsqlCommand NpgsqlCom = null;
-                    NpgsqlDataAdapter NpgsqlDtAd = null;
+                    // PostgreSQLへ接続
+                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                    {
+                        NpgsqlCon.Open();
+
+                        // SQL抽出
+                        NpgsqlCommand NpgsqlCom = null;
+                        NpgsqlDataAdapter NpgsqlDtAd = null;
+
+                        dtData = new DataTable();
+                        strSQL += "SELECT USERNO,USERNAME,USERYOMIGANA FROM SAGYOSYA ";
+                        strSQL += "WHERE USERNO = '" + txtUser.Text + "'";
+                        NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
+                        NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
+                        NpgsqlDtAd.Fill(dtData);
+                    }
+                }
+                catch
+                {
                     dtData = new DataTable();
-                    strSQL += "SELECT USERNAME FROM SAGYOSYA ";
-                    strSQL += "WHERE USERNO = '" + txtUser.Text + "'";
-                    NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                    NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                    NpgsqlDtAd.Fill(dtData);
+                    dtData.Columns.Add("USERNO");
+                    dtData.Columns.Add("USERNAME");
+                    dtData.Columns.Add("USERYOMIGANA");
 
-                    if (dtData.Rows.Count > 0)
+                    // 後々この処理は消す
+                    foreach (string line in System.IO.File.ReadLines("作業者.tsv", Encoding.Default))
                     {
-                        parUserNo = txtUser.Text;
-                        parUserNm = dtData.Rows[0][0].ToString();
-                    }
-                    else
-                    {
-                        MessageBox.Show("入力された職員番号は存在しません");
+                        // 改行コードを変換
+                        string strLine = line.Replace("\\rn", Environment.NewLine);
 
-                        UserSelection frmTargetSelection = new UserSelection();
-                        frmTargetSelection.ShowDialog(this);
-                        this.Visible = true;
+                        string[] csv = strLine.Split('\t');
+                        string[] data = new string[csv.Length];
+                        Array.Copy(csv, 0, data, 0, data.Length);
 
-                        parUserNo = frmTargetSelection.strUserNo;
-                        parUserNm = frmTargetSelection.strUserNm;
+                        if (data[0].ToString() != txtUser.Text)
+                            continue;
+
+                        dtData.Rows.Add(data);
                     }
+                }
+
+                if (dtData.Rows.Count > 0)
+                {
+                    parUserNo = txtUser.Text;
+                    parUserNm = dtData.Rows[0][1].ToString();
+                }
+                else
+                {
+                    MessageBox.Show("入力された職員番号は存在しません");
+
+                    UserSelection frmTargetSelection = new UserSelection();
+                    frmTargetSelection.ShowDialog(this);
+                    this.Visible = true;
+
+                    parUserNo = frmTargetSelection.strUserNo;
+                    parUserNm = frmTargetSelection.strUserNm;
                 }
             }
             else
@@ -223,6 +264,9 @@ namespace ImageChecker
                 // 入力不可にする
                 txtUser.ReadOnly = true;
                 txtUser.BackColor = SystemColors.Window;
+
+                // 次のコントロールを選択する
+                this.SelectNextControl(txtUser, true, true, true, true);
             }
             else
             {
@@ -240,5 +284,10 @@ namespace ImageChecker
 
         #endregion
 
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+            //// ユーザIDを初期選択
+            //txtUser.Select();
+        }
     }
 }

@@ -58,7 +58,6 @@
             this.dgvUser = new System.Windows.Forms.DataGridView();
             this.UserNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
-
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUser)).BeginInit();
             this.SuspendLayout();
@@ -291,7 +290,7 @@
             dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.dgvUser.RowsDefaultCellStyle = dataGridViewCellStyle6;
             this.dgvUser.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.dgvUser.RowTemplate.Height = 30;
+            this.dgvUser.RowTemplate.Height = 75;
             this.dgvUser.RowTemplate.ReadOnly = true;
             this.dgvUser.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvUser.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -321,16 +320,6 @@
             this.UserNm.ReadOnly = true;
             this.UserNm.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // elementHost1
-            // 
-            //this.elementHost1.Location = new System.Drawing.Point(25, 199);
-            //this.elementHost1.Name = "elementHost1";
-            //this.elementHost1.Size = new System.Drawing.Size(471, 367);
-            //this.elementHost1.TabIndex = 2;
-            //this.elementHost1.Text = "elementHost1";
-            //this.elementHost1.Visible = false;
-            //this.elementHost1.Child = null;
-            // 
             // UserSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -339,7 +328,6 @@
             this.ClientSize = new System.Drawing.Size(521, 587);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.lblTiitle);
-            //this.Controls.Add(this.elementHost1);
             this.Controls.Add(this.dgvUser);
             this.Name = "UserSelection";
             this.Text = "作業者検索";

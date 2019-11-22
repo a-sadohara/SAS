@@ -33,10 +33,13 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DisplayResultsAgo));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button4 = new System.Windows.Forms.Button();
+            this.btnSearch = new System.Windows.Forms.Button();
             this.btnLogOut = new System.Windows.Forms.Button();
             this.grbWhere = new System.Windows.Forms.GroupBox();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.lblSearchCountMax = new System.Windows.Forms.Label();
+            this.lblSearchCount = new System.Windows.Forms.Label();
+            this.lblTitleSearchCount = new System.Windows.Forms.Label();
             this.lblNgReason = new System.Windows.Forms.Label();
             this.lblGoki = new System.Windows.Forms.Label();
             this.txtNgReason = new System.Windows.Forms.TextBox();
@@ -48,39 +51,39 @@
             this.lblHinNm = new System.Windows.Forms.Label();
             this.txtUserNm = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.lblSashizu = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.txtJudgeEndDate_To = new System.Windows.Forms.TextBox();
+            this.txtJudgeEndDate_From = new System.Windows.Forms.TextBox();
             this.lblCol = new System.Windows.Forms.Label();
             this.lblRow = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.txtKenhan2_To = new System.Windows.Forms.TextBox();
-            this.txtKenhan2_From = new System.Windows.Forms.TextBox();
-            this.txtKenhan1_To = new System.Windows.Forms.TextBox();
-            this.txtKenhan1_From = new System.Windows.Forms.TextBox();
-            this.txtHansoEndDate = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.txtHansoStaDate = new System.Windows.Forms.TextBox();
+            this.txtJudgeStaDate_To = new System.Windows.Forms.TextBox();
+            this.txtJudgeStaDate_From = new System.Windows.Forms.TextBox();
+            this.txtKensakuRow_To = new System.Windows.Forms.TextBox();
+            this.txtKensakuRow_From = new System.Windows.Forms.TextBox();
+            this.txtHansoEndDate_From = new System.Windows.Forms.TextBox();
+            this.txtHansoEndDate_To = new System.Windows.Forms.TextBox();
+            this.txtHansoStaDate_To = new System.Windows.Forms.TextBox();
+            this.txtHansoStaDate_From = new System.Windows.Forms.TextBox();
             this.lblEndDate = new System.Windows.Forms.Label();
+            this.txtKensaNo = new System.Windows.Forms.TextBox();
             this.txtHanNo = new System.Windows.Forms.TextBox();
             this.lblStaDate = new System.Windows.Forms.Label();
             this.txtSashizu = new System.Windows.Forms.TextBox();
-            this.lblTitleKenhan2 = new System.Windows.Forms.Label();
             this.txtHinNm = new System.Windows.Forms.TextBox();
             this.lblTitleKenhan1 = new System.Windows.Forms.Label();
             this.txtGoki = new System.Windows.Forms.TextBox();
             this.lblHansoEndDate = new System.Windows.Forms.Label();
+            this.lblKensaNo = new System.Windows.Forms.Label();
             this.lblHanNo = new System.Windows.Forms.Label();
             this.lblHansoStaDate = new System.Windows.Forms.Label();
             this.lblUser = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.BackResultCheck = new System.Windows.Forms.Button();
             this.btnBackTargetSelection = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -93,16 +96,18 @@
             this.HanNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HansoStaDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HansoEndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.KenHan1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.KenHan2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Kensaku = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HanteiStaDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HanteiEndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.KensaNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.line = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ng = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.position = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.IntDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             this.grbWhere.SuspendLayout();
             this.panel5.SuspendLayout();
@@ -114,7 +119,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.btnSearch);
             this.panel1.Controls.Add(this.btnLogOut);
             this.panel1.Controls.Add(this.grbWhere);
             this.panel1.Controls.Add(this.lblUser);
@@ -122,20 +127,20 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1080, 197);
+            this.panel1.Size = new System.Drawing.Size(1080, 169);
             this.panel1.TabIndex = 0;
             // 
-            // button4
+            // btnSearch
             // 
-            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button4.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button4.Location = new System.Drawing.Point(843, 159);
-            this.button4.Margin = new System.Windows.Forms.Padding(2);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(105, 36);
-            this.button4.TabIndex = 0;
-            this.button4.Text = "検索";
-            this.button4.UseVisualStyleBackColor = true;
+            this.btnSearch.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnSearch.Location = new System.Drawing.Point(936, 131);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(105, 36);
+            this.btnSearch.TabIndex = 0;
+            this.btnSearch.Text = "検索";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
             // btnLogOut
             // 
@@ -152,20 +157,25 @@
             // 
             // grbWhere
             // 
+            this.grbWhere.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.grbWhere.Controls.Add(this.panel5);
             this.grbWhere.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.grbWhere.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.grbWhere.Location = new System.Drawing.Point(20, 5);
+            this.grbWhere.Location = new System.Drawing.Point(20, 4);
             this.grbWhere.Margin = new System.Windows.Forms.Padding(0);
             this.grbWhere.Name = "grbWhere";
             this.grbWhere.Padding = new System.Windows.Forms.Padding(2);
-            this.grbWhere.Size = new System.Drawing.Size(821, 190);
+            this.grbWhere.Size = new System.Drawing.Size(914, 163);
             this.grbWhere.TabIndex = 28;
             this.grbWhere.TabStop = false;
             this.grbWhere.Text = "検索条件";
             // 
             // panel5
             // 
+            this.panel5.Controls.Add(this.lblSearchCountMax);
+            this.panel5.Controls.Add(this.lblSearchCount);
+            this.panel5.Controls.Add(this.lblTitleSearchCount);
             this.panel5.Controls.Add(this.lblNgReason);
             this.panel5.Controls.Add(this.lblGoki);
             this.panel5.Controls.Add(this.txtNgReason);
@@ -177,35 +187,34 @@
             this.panel5.Controls.Add(this.lblHinNm);
             this.panel5.Controls.Add(this.txtUserNm);
             this.panel5.Controls.Add(this.label6);
+            this.panel5.Controls.Add(this.label7);
             this.panel5.Controls.Add(this.label5);
-            this.panel5.Controls.Add(this.label4);
-            this.panel5.Controls.Add(this.label2);
-            this.panel5.Controls.Add(this.label3);
             this.panel5.Controls.Add(this.label1);
+            this.panel5.Controls.Add(this.label4);
+            this.panel5.Controls.Add(this.label3);
             this.panel5.Controls.Add(this.lblSashizu);
-            this.panel5.Controls.Add(this.textBox4);
-            this.panel5.Controls.Add(this.textBox7);
+            this.panel5.Controls.Add(this.txtJudgeEndDate_To);
+            this.panel5.Controls.Add(this.txtJudgeEndDate_From);
             this.panel5.Controls.Add(this.lblCol);
             this.panel5.Controls.Add(this.lblRow);
-            this.panel5.Controls.Add(this.textBox3);
-            this.panel5.Controls.Add(this.textBox6);
-            this.panel5.Controls.Add(this.txtKenhan2_To);
-            this.panel5.Controls.Add(this.txtKenhan2_From);
-            this.panel5.Controls.Add(this.txtKenhan1_To);
-            this.panel5.Controls.Add(this.txtKenhan1_From);
-            this.panel5.Controls.Add(this.txtHansoEndDate);
-            this.panel5.Controls.Add(this.textBox2);
-            this.panel5.Controls.Add(this.textBox1);
-            this.panel5.Controls.Add(this.txtHansoStaDate);
+            this.panel5.Controls.Add(this.txtJudgeStaDate_To);
+            this.panel5.Controls.Add(this.txtJudgeStaDate_From);
+            this.panel5.Controls.Add(this.txtKensakuRow_To);
+            this.panel5.Controls.Add(this.txtKensakuRow_From);
+            this.panel5.Controls.Add(this.txtHansoEndDate_From);
+            this.panel5.Controls.Add(this.txtHansoEndDate_To);
+            this.panel5.Controls.Add(this.txtHansoStaDate_To);
+            this.panel5.Controls.Add(this.txtHansoStaDate_From);
             this.panel5.Controls.Add(this.lblEndDate);
+            this.panel5.Controls.Add(this.txtKensaNo);
             this.panel5.Controls.Add(this.txtHanNo);
             this.panel5.Controls.Add(this.lblStaDate);
             this.panel5.Controls.Add(this.txtSashizu);
-            this.panel5.Controls.Add(this.lblTitleKenhan2);
             this.panel5.Controls.Add(this.txtHinNm);
             this.panel5.Controls.Add(this.lblTitleKenhan1);
             this.panel5.Controls.Add(this.txtGoki);
             this.panel5.Controls.Add(this.lblHansoEndDate);
+            this.panel5.Controls.Add(this.lblKensaNo);
             this.panel5.Controls.Add(this.lblHanNo);
             this.panel5.Controls.Add(this.lblHansoStaDate);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -213,15 +222,51 @@
             this.panel5.Location = new System.Drawing.Point(2, 20);
             this.panel5.Margin = new System.Windows.Forms.Padding(0);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(817, 168);
+            this.panel5.Size = new System.Drawing.Size(910, 141);
             this.panel5.TabIndex = 0;
+            // 
+            // lblSearchCountMax
+            // 
+            this.lblSearchCountMax.AutoSize = true;
+            this.lblSearchCountMax.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblSearchCountMax.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblSearchCountMax.Location = new System.Drawing.Point(863, 116);
+            this.lblSearchCountMax.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblSearchCountMax.Name = "lblSearchCountMax";
+            this.lblSearchCountMax.Size = new System.Drawing.Size(29, 17);
+            this.lblSearchCountMax.TabIndex = 1;
+            this.lblSearchCountMax.Text = "999";
+            // 
+            // lblSearchCount
+            // 
+            this.lblSearchCount.AutoSize = true;
+            this.lblSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblSearchCount.Location = new System.Drawing.Point(808, 116);
+            this.lblSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblSearchCount.Name = "lblSearchCount";
+            this.lblSearchCount.Size = new System.Drawing.Size(29, 17);
+            this.lblSearchCount.TabIndex = 1;
+            this.lblSearchCount.Text = "999";
+            // 
+            // lblTitleSearchCount
+            // 
+            this.lblTitleSearchCount.AutoSize = true;
+            this.lblTitleSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblTitleSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblTitleSearchCount.Location = new System.Drawing.Point(739, 116);
+            this.lblTitleSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTitleSearchCount.Name = "lblTitleSearchCount";
+            this.lblTitleSearchCount.Size = new System.Drawing.Size(63, 17);
+            this.lblTitleSearchCount.TabIndex = 1;
+            this.lblTitleSearchCount.Text = "検索件数：";
             // 
             // lblNgReason
             // 
             this.lblNgReason.AutoSize = true;
             this.lblNgReason.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblNgReason.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgReason.Location = new System.Drawing.Point(638, 109);
+            this.lblNgReason.Location = new System.Drawing.Point(739, 30);
             this.lblNgReason.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgReason.Name = "lblNgReason";
             this.lblNgReason.Size = new System.Drawing.Size(57, 17);
@@ -243,7 +288,7 @@
             // txtNgReason
             // 
             this.txtNgReason.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtNgReason.Location = new System.Drawing.Point(706, 105);
+            this.txtNgReason.Location = new System.Drawing.Point(807, 27);
             this.txtNgReason.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.txtNgReason.Name = "txtNgReason";
             this.txtNgReason.Size = new System.Drawing.Size(85, 24);
@@ -255,7 +300,7 @@
             this.lblTitleUserNm.AutoSize = true;
             this.lblTitleUserNm.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleUserNm.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleUserNm.Location = new System.Drawing.Point(638, 4);
+            this.lblTitleUserNm.Location = new System.Drawing.Point(564, 30);
             this.lblTitleUserNm.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleUserNm.Name = "lblTitleUserNm";
             this.lblTitleUserNm.Size = new System.Drawing.Size(63, 17);
@@ -267,7 +312,7 @@
             this.lblNgSide.AutoSize = true;
             this.lblNgSide.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblNgSide.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgSide.Location = new System.Drawing.Point(638, 83);
+            this.lblNgSide.Location = new System.Drawing.Point(739, 4);
             this.lblNgSide.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgSide.Name = "lblNgSide";
             this.lblNgSide.Size = new System.Drawing.Size(46, 17);
@@ -277,7 +322,7 @@
             // txtNgSide
             // 
             this.txtNgSide.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtNgSide.Location = new System.Drawing.Point(706, 79);
+            this.txtNgSide.Location = new System.Drawing.Point(807, 1);
             this.txtNgSide.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.txtNgSide.MaxLength = 2;
             this.txtNgSide.Name = "txtNgSide";
@@ -288,7 +333,7 @@
             // txtRow
             // 
             this.txtRow.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtRow.Location = new System.Drawing.Point(706, 27);
+            this.txtRow.Location = new System.Drawing.Point(632, 53);
             this.txtRow.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.txtRow.MaxLength = 4;
             this.txtRow.Name = "txtRow";
@@ -299,7 +344,7 @@
             // txtCol
             // 
             this.txtCol.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtCol.Location = new System.Drawing.Point(706, 53);
+            this.txtCol.Location = new System.Drawing.Point(632, 80);
             this.txtCol.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.txtCol.MaxLength = 1;
             this.txtCol.Name = "txtCol";
@@ -323,7 +368,7 @@
             // 
             this.txtUserNm.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtUserNm.ImeMode = System.Windows.Forms.ImeMode.Disable;
-            this.txtUserNm.Location = new System.Drawing.Point(706, 1);
+            this.txtUserNm.Location = new System.Drawing.Point(632, 27);
             this.txtUserNm.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
             this.txtUserNm.MaxLength = 20;
             this.txtUserNm.Name = "txtUserNm";
@@ -342,12 +387,25 @@
             this.label6.BackColor = System.Drawing.Color.Transparent;
             this.label6.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label6.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label6.Location = new System.Drawing.Point(447, 133);
+            this.label6.Location = new System.Drawing.Point(389, 108);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(20, 18);
             this.label6.TabIndex = 1;
             this.label6.Text = "～";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.BackColor = System.Drawing.Color.Transparent;
+            this.label7.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.label7.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label7.Location = new System.Drawing.Point(839, 116);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(20, 18);
+            this.label7.TabIndex = 1;
+            this.label7.Text = "／";
             // 
             // label5
             // 
@@ -355,51 +413,12 @@
             this.label5.BackColor = System.Drawing.Color.Transparent;
             this.label5.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label5.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label5.Location = new System.Drawing.Point(447, 107);
+            this.label5.Location = new System.Drawing.Point(389, 81);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(20, 18);
             this.label5.TabIndex = 1;
             this.label5.Text = "～";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label4.Location = new System.Drawing.Point(447, 29);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(20, 18);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "～";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.Transparent;
-            this.label2.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.label2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label2.Location = new System.Drawing.Point(347, 82);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(20, 18);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "～";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.label3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label3.Location = new System.Drawing.Point(447, 3);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(20, 18);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "～";
             // 
             // label1
             // 
@@ -407,54 +426,80 @@
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(347, 55);
+            this.label1.Location = new System.Drawing.Point(289, 55);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(20, 18);
             this.label1.TabIndex = 1;
             this.label1.Text = "～";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.BackColor = System.Drawing.Color.Transparent;
+            this.label4.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label4.Location = new System.Drawing.Point(389, 29);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(20, 18);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "～";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.Transparent;
+            this.label3.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.label3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label3.Location = new System.Drawing.Point(389, 3);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(20, 18);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "～";
+            // 
             // lblSashizu
             // 
             this.lblSashizu.AutoSize = true;
             this.lblSashizu.BackColor = System.Drawing.Color.Transparent;
-            this.lblSashizu.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.lblSashizu.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblSashizu.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSashizu.Location = new System.Drawing.Point(10, 55);
+            this.lblSashizu.Location = new System.Drawing.Point(10, 56);
             this.lblSashizu.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSashizu.Name = "lblSashizu";
-            this.lblSashizu.Size = new System.Drawing.Size(44, 18);
+            this.lblSashizu.Size = new System.Drawing.Size(41, 17);
             this.lblSashizu.TabIndex = 1;
             this.lblSashizu.Text = "指図：";
             // 
-            // textBox4
+            // txtJudgeEndDate_To
             // 
-            this.textBox4.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox4.Location = new System.Drawing.Point(472, 131);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.textBox4.MaxLength = 19;
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(130, 24);
-            this.textBox4.TabIndex = 26;
-            this.textBox4.Text = "2999/12/31 23:59:59";
+            this.txtJudgeEndDate_To.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtJudgeEndDate_To.Location = new System.Drawing.Point(414, 106);
+            this.txtJudgeEndDate_To.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtJudgeEndDate_To.MaxLength = 19;
+            this.txtJudgeEndDate_To.Name = "txtJudgeEndDate_To";
+            this.txtJudgeEndDate_To.Size = new System.Drawing.Size(130, 24);
+            this.txtJudgeEndDate_To.TabIndex = 26;
+            this.txtJudgeEndDate_To.Text = "2999/12/31 23:59:59";
             // 
-            // textBox7
+            // txtJudgeEndDate_From
             // 
-            this.textBox7.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox7.Location = new System.Drawing.Point(312, 131);
-            this.textBox7.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.textBox7.MaxLength = 19;
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(130, 24);
-            this.textBox7.TabIndex = 26;
-            this.textBox7.Text = "2999/12/31 23:59:59";
+            this.txtJudgeEndDate_From.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtJudgeEndDate_From.Location = new System.Drawing.Point(254, 106);
+            this.txtJudgeEndDate_From.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtJudgeEndDate_From.MaxLength = 19;
+            this.txtJudgeEndDate_From.Name = "txtJudgeEndDate_From";
+            this.txtJudgeEndDate_From.Size = new System.Drawing.Size(130, 24);
+            this.txtJudgeEndDate_From.TabIndex = 26;
+            this.txtJudgeEndDate_From.Text = "2999/12/31 23:59:59";
             // 
             // lblCol
             // 
             this.lblCol.AutoSize = true;
             this.lblCol.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblCol.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblCol.Location = new System.Drawing.Point(638, 55);
+            this.lblCol.Location = new System.Drawing.Point(564, 83);
             this.lblCol.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCol.Name = "lblCol";
             this.lblCol.Size = new System.Drawing.Size(30, 17);
@@ -466,134 +511,123 @@
             this.lblRow.AutoSize = true;
             this.lblRow.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblRow.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblRow.Location = new System.Drawing.Point(638, 30);
+            this.lblRow.Location = new System.Drawing.Point(564, 56);
             this.lblRow.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblRow.Name = "lblRow";
             this.lblRow.Size = new System.Drawing.Size(30, 17);
             this.lblRow.TabIndex = 1;
             this.lblRow.Text = "行：";
             // 
-            // textBox3
+            // txtJudgeStaDate_To
             // 
-            this.textBox3.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox3.Location = new System.Drawing.Point(472, 105);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.textBox3.MaxLength = 19;
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(130, 24);
-            this.textBox3.TabIndex = 26;
-            this.textBox3.Text = "2999/12/31 23:59:59";
+            this.txtJudgeStaDate_To.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtJudgeStaDate_To.Location = new System.Drawing.Point(414, 79);
+            this.txtJudgeStaDate_To.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtJudgeStaDate_To.MaxLength = 19;
+            this.txtJudgeStaDate_To.Name = "txtJudgeStaDate_To";
+            this.txtJudgeStaDate_To.Size = new System.Drawing.Size(130, 24);
+            this.txtJudgeStaDate_To.TabIndex = 26;
+            this.txtJudgeStaDate_To.Text = "2999/12/31 23:59:59";
             // 
-            // textBox6
+            // txtJudgeStaDate_From
             // 
-            this.textBox6.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox6.Location = new System.Drawing.Point(312, 105);
-            this.textBox6.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.textBox6.MaxLength = 19;
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(130, 24);
-            this.textBox6.TabIndex = 26;
-            this.textBox6.Text = "2999/12/31 23:59:59";
+            this.txtJudgeStaDate_From.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtJudgeStaDate_From.Location = new System.Drawing.Point(254, 79);
+            this.txtJudgeStaDate_From.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtJudgeStaDate_From.MaxLength = 19;
+            this.txtJudgeStaDate_From.Name = "txtJudgeStaDate_From";
+            this.txtJudgeStaDate_From.Size = new System.Drawing.Size(130, 24);
+            this.txtJudgeStaDate_From.TabIndex = 26;
+            this.txtJudgeStaDate_From.Text = "2999/12/31 23:59:59";
             // 
-            // txtKenhan2_To
+            // txtKensakuRow_To
             // 
-            this.txtKenhan2_To.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtKenhan2_To.Location = new System.Drawing.Point(372, 79);
-            this.txtKenhan2_To.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.txtKenhan2_To.MaxLength = 3;
-            this.txtKenhan2_To.Name = "txtKenhan2_To";
-            this.txtKenhan2_To.Size = new System.Drawing.Size(30, 24);
-            this.txtKenhan2_To.TabIndex = 26;
-            this.txtKenhan2_To.Text = "999";
+            this.txtKensakuRow_To.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtKensakuRow_To.Location = new System.Drawing.Point(314, 53);
+            this.txtKensakuRow_To.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtKensakuRow_To.MaxLength = 3;
+            this.txtKensakuRow_To.Name = "txtKensakuRow_To";
+            this.txtKensakuRow_To.Size = new System.Drawing.Size(30, 24);
+            this.txtKensakuRow_To.TabIndex = 26;
+            this.txtKensakuRow_To.Text = "999";
             // 
-            // txtKenhan2_From
+            // txtKensakuRow_From
             // 
-            this.txtKenhan2_From.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtKenhan2_From.Location = new System.Drawing.Point(312, 79);
-            this.txtKenhan2_From.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.txtKenhan2_From.MaxLength = 3;
-            this.txtKenhan2_From.Name = "txtKenhan2_From";
-            this.txtKenhan2_From.Size = new System.Drawing.Size(30, 24);
-            this.txtKenhan2_From.TabIndex = 26;
-            this.txtKenhan2_From.Text = "999";
+            this.txtKensakuRow_From.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtKensakuRow_From.Location = new System.Drawing.Point(254, 53);
+            this.txtKensakuRow_From.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtKensakuRow_From.MaxLength = 3;
+            this.txtKensakuRow_From.Name = "txtKensakuRow_From";
+            this.txtKensakuRow_From.Size = new System.Drawing.Size(30, 24);
+            this.txtKensakuRow_From.TabIndex = 26;
+            this.txtKensakuRow_From.Text = "999";
             // 
-            // txtKenhan1_To
+            // txtHansoEndDate_From
             // 
-            this.txtKenhan1_To.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtKenhan1_To.Location = new System.Drawing.Point(372, 53);
-            this.txtKenhan1_To.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.txtKenhan1_To.MaxLength = 3;
-            this.txtKenhan1_To.Name = "txtKenhan1_To";
-            this.txtKenhan1_To.Size = new System.Drawing.Size(30, 24);
-            this.txtKenhan1_To.TabIndex = 26;
-            this.txtKenhan1_To.Text = "999";
+            this.txtHansoEndDate_From.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtHansoEndDate_From.Location = new System.Drawing.Point(254, 27);
+            this.txtHansoEndDate_From.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtHansoEndDate_From.MaxLength = 19;
+            this.txtHansoEndDate_From.Name = "txtHansoEndDate_From";
+            this.txtHansoEndDate_From.Size = new System.Drawing.Size(130, 24);
+            this.txtHansoEndDate_From.TabIndex = 26;
+            this.txtHansoEndDate_From.Text = "2999/12/31 23:59:59";
             // 
-            // txtKenhan1_From
+            // txtHansoEndDate_To
             // 
-            this.txtKenhan1_From.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtKenhan1_From.Location = new System.Drawing.Point(312, 53);
-            this.txtKenhan1_From.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.txtKenhan1_From.MaxLength = 3;
-            this.txtKenhan1_From.Name = "txtKenhan1_From";
-            this.txtKenhan1_From.Size = new System.Drawing.Size(30, 24);
-            this.txtKenhan1_From.TabIndex = 26;
-            this.txtKenhan1_From.Text = "999";
+            this.txtHansoEndDate_To.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtHansoEndDate_To.Location = new System.Drawing.Point(414, 27);
+            this.txtHansoEndDate_To.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtHansoEndDate_To.MaxLength = 19;
+            this.txtHansoEndDate_To.Name = "txtHansoEndDate_To";
+            this.txtHansoEndDate_To.Size = new System.Drawing.Size(130, 24);
+            this.txtHansoEndDate_To.TabIndex = 26;
+            this.txtHansoEndDate_To.Text = "2999/12/31 23:59:59";
             // 
-            // txtHansoEndDate
+            // txtHansoStaDate_To
             // 
-            this.txtHansoEndDate.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtHansoEndDate.Location = new System.Drawing.Point(312, 27);
-            this.txtHansoEndDate.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.txtHansoEndDate.MaxLength = 19;
-            this.txtHansoEndDate.Name = "txtHansoEndDate";
-            this.txtHansoEndDate.Size = new System.Drawing.Size(130, 24);
-            this.txtHansoEndDate.TabIndex = 26;
-            this.txtHansoEndDate.Text = "2999/12/31 23:59:59";
+            this.txtHansoStaDate_To.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtHansoStaDate_To.Location = new System.Drawing.Point(414, 1);
+            this.txtHansoStaDate_To.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtHansoStaDate_To.MaxLength = 19;
+            this.txtHansoStaDate_To.Name = "txtHansoStaDate_To";
+            this.txtHansoStaDate_To.Size = new System.Drawing.Size(130, 24);
+            this.txtHansoStaDate_To.TabIndex = 26;
+            this.txtHansoStaDate_To.Text = "2999/12/31 23:59:59";
             // 
-            // textBox2
+            // txtHansoStaDate_From
             // 
-            this.textBox2.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox2.Location = new System.Drawing.Point(472, 27);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.textBox2.MaxLength = 19;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(130, 24);
-            this.textBox2.TabIndex = 26;
-            this.textBox2.Text = "2999/12/31 23:59:59";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.textBox1.Location = new System.Drawing.Point(472, 1);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.textBox1.MaxLength = 19;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(130, 24);
-            this.textBox1.TabIndex = 26;
-            this.textBox1.Text = "2999/12/31 23:59:59";
-            // 
-            // txtHansoStaDate
-            // 
-            this.txtHansoStaDate.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtHansoStaDate.Location = new System.Drawing.Point(312, 1);
-            this.txtHansoStaDate.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.txtHansoStaDate.MaxLength = 19;
-            this.txtHansoStaDate.Name = "txtHansoStaDate";
-            this.txtHansoStaDate.Size = new System.Drawing.Size(130, 24);
-            this.txtHansoStaDate.TabIndex = 26;
-            this.txtHansoStaDate.Text = "2999/12/31 23:59:59";
+            this.txtHansoStaDate_From.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtHansoStaDate_From.Location = new System.Drawing.Point(254, 1);
+            this.txtHansoStaDate_From.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtHansoStaDate_From.MaxLength = 19;
+            this.txtHansoStaDate_From.Name = "txtHansoStaDate_From";
+            this.txtHansoStaDate_From.Size = new System.Drawing.Size(130, 24);
+            this.txtHansoStaDate_From.TabIndex = 26;
+            this.txtHansoStaDate_From.Text = "2999/12/31 23:59:59";
             // 
             // lblEndDate
             // 
             this.lblEndDate.AutoSize = true;
             this.lblEndDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblEndDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblEndDate.Location = new System.Drawing.Point(171, 134);
+            this.lblEndDate.Location = new System.Drawing.Point(164, 109);
             this.lblEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblEndDate.Name = "lblEndDate";
             this.lblEndDate.Size = new System.Drawing.Size(85, 17);
             this.lblEndDate.TabIndex = 24;
             this.lblEndDate.Text = "判定終了日時：";
+            // 
+            // txtKensaNo
+            // 
+            this.txtKensaNo.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtKensaNo.Location = new System.Drawing.Point(632, 1);
+            this.txtKensaNo.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtKensaNo.MaxLength = 4;
+            this.txtKensaNo.Name = "txtKensaNo";
+            this.txtKensaNo.Size = new System.Drawing.Size(35, 24);
+            this.txtKensaNo.TabIndex = 26;
+            this.txtKensaNo.Text = "9999";
             // 
             // txtHanNo
             // 
@@ -611,7 +645,7 @@
             this.lblStaDate.AutoSize = true;
             this.lblStaDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblStaDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblStaDate.Location = new System.Drawing.Point(171, 108);
+            this.lblStaDate.Location = new System.Drawing.Point(164, 82);
             this.lblStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStaDate.Name = "lblStaDate";
             this.lblStaDate.Size = new System.Drawing.Size(85, 17);
@@ -629,18 +663,6 @@
             this.txtSashizu.TabIndex = 26;
             this.txtSashizu.Text = "1234567";
             // 
-            // lblTitleKenhan2
-            // 
-            this.lblTitleKenhan2.AutoSize = true;
-            this.lblTitleKenhan2.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblTitleKenhan2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleKenhan2.Location = new System.Drawing.Point(171, 82);
-            this.lblTitleKenhan2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblTitleKenhan2.Name = "lblTitleKenhan2";
-            this.lblTitleKenhan2.Size = new System.Drawing.Size(136, 17);
-            this.lblTitleKenhan2.TabIndex = 22;
-            this.lblTitleKenhan2.Text = "検査範囲行　検反部№2：";
-            // 
             // txtHinNm
             // 
             this.txtHinNm.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -657,12 +679,12 @@
             this.lblTitleKenhan1.AutoSize = true;
             this.lblTitleKenhan1.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleKenhan1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleKenhan1.Location = new System.Drawing.Point(171, 55);
+            this.lblTitleKenhan1.Location = new System.Drawing.Point(164, 56);
             this.lblTitleKenhan1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleKenhan1.Name = "lblTitleKenhan1";
-            this.lblTitleKenhan1.Size = new System.Drawing.Size(136, 17);
+            this.lblTitleKenhan1.Size = new System.Drawing.Size(63, 17);
             this.lblTitleKenhan1.TabIndex = 21;
-            this.lblTitleKenhan1.Text = "検査範囲行　検反部№1：";
+            this.lblTitleKenhan1.Text = "検査範囲行";
             // 
             // txtGoki
             // 
@@ -680,12 +702,24 @@
             this.lblHansoEndDate.AutoSize = true;
             this.lblHansoEndDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblHansoEndDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblHansoEndDate.Location = new System.Drawing.Point(171, 30);
+            this.lblHansoEndDate.Location = new System.Drawing.Point(164, 30);
             this.lblHansoEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblHansoEndDate.Name = "lblHansoEndDate";
             this.lblHansoEndDate.Size = new System.Drawing.Size(85, 17);
             this.lblHansoEndDate.TabIndex = 20;
             this.lblHansoEndDate.Text = "搬送終了日時：";
+            // 
+            // lblKensaNo
+            // 
+            this.lblKensaNo.AutoSize = true;
+            this.lblKensaNo.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblKensaNo.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblKensaNo.Location = new System.Drawing.Point(564, 4);
+            this.lblKensaNo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblKensaNo.Name = "lblKensaNo";
+            this.lblKensaNo.Size = new System.Drawing.Size(63, 17);
+            this.lblKensaNo.TabIndex = 1;
+            this.lblKensaNo.Text = "検査番号：";
             // 
             // lblHanNo
             // 
@@ -704,7 +738,7 @@
             this.lblHansoStaDate.AutoSize = true;
             this.lblHansoStaDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblHansoStaDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblHansoStaDate.Location = new System.Drawing.Point(171, 4);
+            this.lblHansoStaDate.Location = new System.Drawing.Point(164, 4);
             this.lblHansoStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblHansoStaDate.Name = "lblHansoStaDate";
             this.lblHansoStaDate.Size = new System.Drawing.Size(85, 17);
@@ -730,6 +764,7 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
+            this.panel4.Controls.Add(this.BackResultCheck);
             this.panel4.Controls.Add(this.btnBackTargetSelection);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel4.Location = new System.Drawing.Point(0, 521);
@@ -737,6 +772,19 @@
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1080, 78);
             this.panel4.TabIndex = 3;
+            // 
+            // BackResultCheck
+            // 
+            this.BackResultCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BackResultCheck.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.BackResultCheck.Location = new System.Drawing.Point(962, 13);
+            this.BackResultCheck.Margin = new System.Windows.Forms.Padding(2);
+            this.BackResultCheck.Name = "BackResultCheck";
+            this.BackResultCheck.Size = new System.Drawing.Size(107, 54);
+            this.BackResultCheck.TabIndex = 0;
+            this.BackResultCheck.Text = "検査結果を\r\n更新する";
+            this.BackResultCheck.UseVisualStyleBackColor = true;
+            this.BackResultCheck.Click += new System.EventHandler(this.BackResultCheck_Click);
             // 
             // btnBackTargetSelection
             // 
@@ -754,20 +802,20 @@
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel2.Location = new System.Drawing.Point(0, 197);
+            this.panel2.Location = new System.Drawing.Point(0, 169);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(20, 324);
+            this.panel2.Size = new System.Drawing.Size(20, 352);
             this.panel2.TabIndex = 4;
             // 
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(1060, 197);
+            this.panel3.Location = new System.Drawing.Point(1060, 169);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(20, 324);
+            this.panel3.Size = new System.Drawing.Size(20, 352);
             this.panel3.TabIndex = 5;
             // 
             // panel6
@@ -775,10 +823,10 @@
             this.panel6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel6.Controls.Add(this.dgvData);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(20, 197);
+            this.panel6.Location = new System.Drawing.Point(20, 169);
             this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1040, 324);
+            this.panel6.Size = new System.Drawing.Size(1040, 352);
             this.panel6.TabIndex = 6;
             // 
             // dgvData
@@ -793,7 +841,7 @@
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvData.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvData.ColumnHeadersHeight = 22;
+            this.dgvData.ColumnHeadersHeight = 30;
             this.dgvData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.no,
             this.Goki,
@@ -802,16 +850,18 @@
             this.HanNo,
             this.HansoStaDate,
             this.HansoEndDate,
-            this.KenHan1,
-            this.KenHan2,
+            this.Kensaku,
             this.HanteiStaDate,
             this.HanteiEndDate,
+            this.KensaNo,
             this.line,
             this.Column,
             this.ng,
-            this.UserNm,
             this.position,
-            this.reason});
+            this.reason,
+            this.IntDate,
+            this.EndDate,
+            this.UserNm});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -838,129 +888,164 @@
             this.dgvData.RowHeadersVisible = false;
             this.dgvData.RowHeadersWidth = 51;
             this.dgvData.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.dgvData.RowTemplate.Height = 75;
             this.dgvData.RowTemplate.ReadOnly = true;
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvData.Size = new System.Drawing.Size(1040, 324);
+            this.dgvData.Size = new System.Drawing.Size(1040, 352);
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
+            this.dgvData.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvData_CellDoubleClick);
             // 
             // no
             // 
+            this.no.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.no.HeaderText = "№";
             this.no.MinimumWidth = 6;
             this.no.Name = "no";
-            this.no.Width = 37;
+            this.no.ReadOnly = true;
+            this.no.Width = 44;
             // 
             // Goki
             // 
+            this.Goki.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.Goki.HeaderText = "号機";
             this.Goki.Name = "Goki";
             this.Goki.ReadOnly = true;
-            this.Goki.Width = 38;
+            this.Goki.Width = 55;
             // 
             // HinNm
             // 
+            this.HinNm.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HinNm.HeaderText = "品名";
             this.HinNm.Name = "HinNm";
             this.HinNm.ReadOnly = true;
-            this.HinNm.Width = 83;
+            this.HinNm.Width = 55;
             // 
             // SashiZu
             // 
+            this.SashiZu.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.SashiZu.HeaderText = "指図";
             this.SashiZu.Name = "SashiZu";
             this.SashiZu.ReadOnly = true;
-            this.SashiZu.Width = 58;
+            this.SashiZu.Width = 55;
             // 
             // HanNo
             // 
+            this.HanNo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HanNo.HeaderText = "反番";
             this.HanNo.Name = "HanNo";
             this.HanNo.ReadOnly = true;
-            this.HanNo.Width = 83;
+            this.HanNo.Width = 55;
             // 
             // HansoStaDate
             // 
+            this.HansoStaDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HansoStaDate.HeaderText = "搬送開始日時";
             this.HansoStaDate.Name = "HansoStaDate";
             this.HansoStaDate.ReadOnly = true;
-            this.HansoStaDate.Width = 133;
+            this.HansoStaDate.Width = 99;
             // 
             // HansoEndDate
             // 
+            this.HansoEndDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HansoEndDate.HeaderText = "搬送終了日時";
             this.HansoEndDate.Name = "HansoEndDate";
             this.HansoEndDate.ReadOnly = true;
-            this.HansoEndDate.Width = 133;
+            this.HansoEndDate.Width = 99;
             // 
-            // KenHan1
+            // Kensaku
             // 
-            this.KenHan1.HeaderText = "検反部№1";
-            this.KenHan1.Name = "KenHan1";
-            this.KenHan1.ReadOnly = true;
-            this.KenHan1.Width = 68;
-            // 
-            // KenHan2
-            // 
-            this.KenHan2.HeaderText = "検反部№2";
-            this.KenHan2.Name = "KenHan2";
-            this.KenHan2.ReadOnly = true;
-            this.KenHan2.Width = 68;
+            this.Kensaku.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Kensaku.HeaderText = "検査範囲行";
+            this.Kensaku.Name = "Kensaku";
+            this.Kensaku.ReadOnly = true;
+            this.Kensaku.Width = 88;
             // 
             // HanteiStaDate
             // 
+            this.HanteiStaDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HanteiStaDate.HeaderText = "判定開始日時";
             this.HanteiStaDate.Name = "HanteiStaDate";
             this.HanteiStaDate.ReadOnly = true;
-            this.HanteiStaDate.Width = 133;
+            this.HanteiStaDate.Width = 99;
             // 
             // HanteiEndDate
             // 
+            this.HanteiEndDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HanteiEndDate.HeaderText = "判定終了日時";
             this.HanteiEndDate.Name = "HanteiEndDate";
             this.HanteiEndDate.ReadOnly = true;
-            this.HanteiEndDate.Width = 133;
+            this.HanteiEndDate.Width = 99;
+            // 
+            // KensaNo
+            // 
+            this.KensaNo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.KensaNo.HeaderText = "検査番号";
+            this.KensaNo.Name = "KensaNo";
+            this.KensaNo.ReadOnly = true;
+            this.KensaNo.Width = 77;
             // 
             // line
             // 
+            this.line.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.line.HeaderText = "行";
             this.line.MinimumWidth = 6;
             this.line.Name = "line";
-            this.line.Width = 35;
+            this.line.Width = 44;
             // 
             // Column
             // 
+            this.Column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.Column.HeaderText = "列";
             this.Column.MinimumWidth = 6;
             this.Column.Name = "Column";
-            this.Column.Width = 20;
+            this.Column.Width = 44;
             // 
             // ng
             // 
+            this.ng.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.ng.HeaderText = "NG面";
             this.ng.MinimumWidth = 6;
             this.ng.Name = "ng";
-            this.ng.Width = 43;
-            // 
-            // UserNm
-            // 
-            this.UserNm.HeaderText = "作業者名";
-            this.UserNm.MinimumWidth = 100;
-            this.UserNm.Name = "UserNm";
+            this.ng.Width = 60;
             // 
             // position
             // 
+            this.position.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.position.HeaderText = "位置（X,Y）cm";
             this.position.MinimumWidth = 6;
             this.position.Name = "position";
-            this.position.Width = 85;
+            this.position.Width = 112;
             // 
             // reason
             // 
-            this.reason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.reason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.reason.HeaderText = "NG理由";
             this.reason.MinimumWidth = 100;
             this.reason.Name = "reason";
+            // 
+            // IntDate
+            // 
+            this.IntDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.IntDate.HeaderText = "入力時刻";
+            this.IntDate.Name = "IntDate";
+            this.IntDate.ReadOnly = true;
+            this.IntDate.Width = 77;
+            // 
+            // EndDate
+            // 
+            this.EndDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.EndDate.HeaderText = "終了時刻";
+            this.EndDate.Name = "EndDate";
+            this.EndDate.ReadOnly = true;
+            this.EndDate.Width = 77;
+            // 
+            // UserNm
+            // 
+            this.UserNm.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.UserNm.HeaderText = "作業者名";
+            this.UserNm.MinimumWidth = 100;
+            this.UserNm.Name = "UserNm";
             // 
             // DisplayResultsAgo
             // 
@@ -975,7 +1060,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "DisplayResultsAgo";
-            this.Text = "検査結果照会";
+            this.Text = "検査履歴照会";
             this.Load += new System.EventHandler(this.Result_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -998,7 +1083,6 @@
         private System.Windows.Forms.Label lblGoki;
         private System.Windows.Forms.Label lblEndDate;
         private System.Windows.Forms.Label lblStaDate;
-        private System.Windows.Forms.Label lblTitleKenhan2;
         private System.Windows.Forms.Label lblTitleKenhan1;
         private System.Windows.Forms.Label lblHansoEndDate;
         private System.Windows.Forms.Label lblHansoStaDate;
@@ -1019,7 +1103,7 @@
         private System.Windows.Forms.Label lblCol;
         private System.Windows.Forms.Label lblRow;
         private System.Windows.Forms.Label lblTitleUserNm;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.GroupBox grbWhere;
         private System.Windows.Forms.Button btnLogOut;
         private System.Windows.Forms.Panel panel5;
@@ -1027,24 +1111,27 @@
         private System.Windows.Forms.TextBox txtSashizu;
         private System.Windows.Forms.TextBox txtHinNm;
         private System.Windows.Forms.TextBox txtGoki;
-        private System.Windows.Forms.TextBox textBox7;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.TextBox txtKenhan2_From;
-        private System.Windows.Forms.TextBox txtKenhan1_From;
-        private System.Windows.Forms.TextBox txtHansoEndDate;
-        private System.Windows.Forms.TextBox txtHansoStaDate;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtKenhan2_To;
-        private System.Windows.Forms.TextBox txtKenhan1_To;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtJudgeEndDate_From;
+        private System.Windows.Forms.TextBox txtJudgeStaDate_From;
+        private System.Windows.Forms.TextBox txtHansoEndDate_From;
+        private System.Windows.Forms.TextBox txtHansoStaDate_From;
+        private System.Windows.Forms.TextBox txtHansoStaDate_To;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtJudgeEndDate_To;
+        private System.Windows.Forms.TextBox txtJudgeStaDate_To;
+        private System.Windows.Forms.TextBox txtHansoEndDate_To;
+        private System.Windows.Forms.TextBox txtKensaNo;
+        private System.Windows.Forms.Label lblKensaNo;
+        private System.Windows.Forms.Label lblSearchCountMax;
+        private System.Windows.Forms.Label lblSearchCount;
+        private System.Windows.Forms.Label lblTitleSearchCount;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtKensakuRow_To;
+        private System.Windows.Forms.TextBox txtKensakuRow_From;
         private System.Windows.Forms.DataGridViewTextBoxColumn no;
         private System.Windows.Forms.DataGridViewTextBoxColumn Goki;
         private System.Windows.Forms.DataGridViewTextBoxColumn HinNm;
@@ -1052,15 +1139,18 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn HanNo;
         private System.Windows.Forms.DataGridViewTextBoxColumn HansoStaDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn HansoEndDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn KenHan1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn KenHan2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Kensaku;
         private System.Windows.Forms.DataGridViewTextBoxColumn HanteiStaDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn HanteiEndDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn KensaNo;
         private System.Windows.Forms.DataGridViewTextBoxColumn line;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column;
         private System.Windows.Forms.DataGridViewTextBoxColumn ng;
-        private System.Windows.Forms.DataGridViewTextBoxColumn UserNm;
         private System.Windows.Forms.DataGridViewTextBoxColumn position;
         private System.Windows.Forms.DataGridViewTextBoxColumn reason;
+        private System.Windows.Forms.DataGridViewTextBoxColumn IntDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EndDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UserNm;
+        private System.Windows.Forms.Button BackResultCheck;
     }
 }

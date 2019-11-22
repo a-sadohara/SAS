@@ -72,7 +72,6 @@
             this.UserNm,
             this.YomiGana});
             this.dgvUser.Location = new System.Drawing.Point(12, 173);
-            this.dgvUser.MultiSelect = false;
             this.dgvUser.Name = "dgvUser";
             this.dgvUser.ReadOnly = true;
             this.dgvUser.RowHeadersVisible = false;
@@ -314,10 +313,10 @@
             this.llkあ.AutoSize = true;
             this.llkあ.Location = new System.Drawing.Point(31, 43);
             this.llkあ.Name = "llkあ";
-            this.llkあ.Size = new System.Drawing.Size(14, 12);
+            this.llkあ.Size = new System.Drawing.Size(15, 12);
             this.llkあ.TabIndex = 1;
             this.llkあ.TabStop = true;
-            this.llkあ.Text = "ア";
+            this.llkあ.Text = "あ";
             this.llkあ.Click += new System.EventHandler(this.llk_Click);
             // 
             // lblUserNo_Between
@@ -343,9 +342,9 @@
             this.lblTitleUserYomiGana.AutoSize = true;
             this.lblTitleUserYomiGana.Location = new System.Drawing.Point(17, 21);
             this.lblTitleUserYomiGana.Name = "lblTitleUserYomiGana";
-            this.lblTitleUserYomiGana.Size = new System.Drawing.Size(113, 12);
+            this.lblTitleUserYomiGana.Size = new System.Drawing.Size(118, 12);
             this.lblTitleUserYomiGana.TabIndex = 0;
-            this.lblTitleUserYomiGana.Text = "作業者名（読みカナ）：";
+            this.lblTitleUserYomiGana.Text = "作業者名（読み仮名）：";
             // 
             // btnSearch
             // 

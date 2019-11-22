@@ -81,7 +81,7 @@
             this.btnLogin.Margin = new System.Windows.Forms.Padding(2);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(188, 70);
-            this.btnLogin.TabIndex = 5;
+            this.btnLogin.TabIndex = 2;
             this.btnLogin.Text = "ログイン";
             this.btnLogin.UseVisualStyleBackColor = true;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
@@ -94,8 +94,7 @@
             this.rdbDispNum2.Location = new System.Drawing.Point(21, 81);
             this.rdbDispNum2.Name = "rdbDispNum2";
             this.rdbDispNum2.Size = new System.Drawing.Size(35, 24);
-            this.rdbDispNum2.TabIndex = 2;
-            this.rdbDispNum2.TabStop = true;
+            this.rdbDispNum2.TabIndex = 0;
             this.rdbDispNum2.Text = "2";
             this.rdbDispNum2.UseVisualStyleBackColor = true;
             // 
@@ -107,8 +106,7 @@
             this.rdbDispNum4.Location = new System.Drawing.Point(136, 81);
             this.rdbDispNum4.Name = "rdbDispNum4";
             this.rdbDispNum4.Size = new System.Drawing.Size(35, 24);
-            this.rdbDispNum4.TabIndex = 3;
-            this.rdbDispNum4.TabStop = true;
+            this.rdbDispNum4.TabIndex = 0;
             this.rdbDispNum4.Text = "4";
             this.rdbDispNum4.UseVisualStyleBackColor = true;
             // 
@@ -120,8 +118,7 @@
             this.rdbDispNum9.Location = new System.Drawing.Point(366, 81);
             this.rdbDispNum9.Name = "rdbDispNum9";
             this.rdbDispNum9.Size = new System.Drawing.Size(35, 24);
-            this.rdbDispNum9.TabIndex = 4;
-            this.rdbDispNum9.TabStop = true;
+            this.rdbDispNum9.TabIndex = 0;
             this.rdbDispNum9.Text = "9";
             this.rdbDispNum9.UseVisualStyleBackColor = true;
             // 
@@ -178,8 +175,7 @@
             this.rdbDispNum6.Location = new System.Drawing.Point(251, 81);
             this.rdbDispNum6.Name = "rdbDispNum6";
             this.rdbDispNum6.Size = new System.Drawing.Size(35, 24);
-            this.rdbDispNum6.TabIndex = 4;
-            this.rdbDispNum6.TabStop = true;
+            this.rdbDispNum6.TabIndex = 0;
             this.rdbDispNum6.Text = "6";
             this.rdbDispNum6.UseVisualStyleBackColor = true;
             // 
@@ -216,6 +212,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "LoginForm";
             this.Text = "ログイン";
+            this.Load += new System.EventHandler(this.LoginForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picDispNum2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picDispNum4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picDispNum9)).EndInit();

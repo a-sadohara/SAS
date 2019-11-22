@@ -77,7 +77,7 @@ namespace ImageChecker
         public UserSelection()
         {
             InitializeComponent();
-            
+
             this.StartPosition = FormStartPosition.CenterParent;
         }
 
@@ -96,34 +96,37 @@ namespace ImageChecker
 
             try
             {
-                // 条件が指定されていない場合は抽出しない
-                if (!string.IsNullOrEmpty(strKanaSta) && !string.IsNullOrEmpty(strKanaEnd))
+                if (bolModeNonDBCon == true)
+                    throw new Exception("DB非接続モードです");
+
+                // PostgreSQLへ接続
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                 {
-                    // PostgreSQLへ接続
-                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                    NpgsqlCon.Open();
+
+                    // SQL抽出
+                    NpgsqlCommand NpgsqlCom = null;
+                    NpgsqlDataAdapter NpgsqlDtAd = null;
+                    dtData = new DataTable();
+                    strSQL += "SELECT * FROM SAGYOSYA ";
+                    if (!string.IsNullOrEmpty(strKanaSta) && !string.IsNullOrEmpty(strKanaEnd))
                     {
-                        NpgsqlCon.Open();
-
-                        // SQL抽出
-                        NpgsqlCommand NpgsqlCom = null;
-                        NpgsqlDataAdapter NpgsqlDtAd = null;
-                        dtData = new DataTable();
-                        strSQL += "SELECT * FROM SAGYOSYA ";
                         strSQL += "WHERE SUBSTRING(USERYOMIGANA,1,1) BETWEEN '" + strKanaSta + "' AND '" + strKanaEnd + "'";
-                        strSQL += "ORDER BY USERNO ASC ";
-                        NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                        NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                        NpgsqlDtAd.Fill(dtData);
+                    }
 
-                        //TODO:
-                        // データグリッドに反映
-                        //usrctlDataGridWpf = new DataGridWpf_UserCtrl(this, elementHost1, DataGridWpf_UserCtrl.COLUM_TYPE.USER, dtData);
-                        //elementHost1.Child = usrctlDataGridWpf;
-                        // データグリッドビューに反映
-                        foreach (DataRow row in dtData.Rows)
-                        {
-                            this.dgvUser.Rows.Add(row.ItemArray);
-                        }
+                    strSQL += "ORDER BY USERNO ASC ";
+                    NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
+                    NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
+                    NpgsqlDtAd.Fill(dtData);
+
+                    //TODO:
+                    // データグリッドに反映
+                    //usrctlDataGridWpf = new DataGridWpf_UserCtrl(this, elementHost1, DataGridWpf_UserCtrl.COLUM_TYPE.USER, dtData);
+                    //elementHost1.Child = usrctlDataGridWpf;
+                    // データグリッドビューに反映
+                    foreach (DataRow row in dtData.Rows)
+                    {
+                        this.dgvUser.Rows.Add(row.ItemArray);
                     }
                 }
 

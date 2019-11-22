@@ -98,6 +98,9 @@ namespace BeforeInspection
                 // 条件が指定されていない場合は抽出しない
                 if (!string.IsNullOrEmpty(strKanaSta) && !string.IsNullOrEmpty(strKanaEnd))
                 {
+                    if (bolModeNonDBCon == true)
+                        throw new Exception("DB非接続モードです");
+
                     // PostgreSQLへ接続
                     using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                     {

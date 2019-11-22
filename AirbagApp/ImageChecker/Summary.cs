@@ -26,6 +26,10 @@ namespace ImageChecker
 
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
+
+            // 列のスタイル変更
+            this.dgvData.Columns[0].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //№
+            //this.dgvData.Columns[1].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //行
         }
 
         private void Summary_Load(object sender, EventArgs e)
@@ -42,8 +46,7 @@ namespace ImageChecker
             this.dgvData.AllowUserToAddRows = false;
             dgvData.ReadOnly = true;
 
-
-            foreach (string line in File.ReadLines("判定登録.tsv", Encoding.Default))
+            foreach (string line in File.ReadLines("過検知除外結果.tsv", Encoding.Default))
             {
 
                 // 改行コードを変換
@@ -87,7 +90,7 @@ namespace ImageChecker
             dynamic sheets = null;
             string strPrintReportName = "PrintReport.xlsm";
             string strPrintReportPath = @"..\..\" + strPrintReportName;
-            string strCsvFilePath = @".\判定登録.tsv";
+            string strCsvFilePath = @".\過検知除外結果.tsv";
             string strSaveDirPath = @".\OutPrint";
             string strSaveFileNm = "検査結果照会_" + DateTime.Now.ToString("yyyyMMddHHmmss");
 
@@ -200,7 +203,7 @@ namespace ImageChecker
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"));
+            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"), ".\\Image\\05_F1_B0019.jpg");
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
         }

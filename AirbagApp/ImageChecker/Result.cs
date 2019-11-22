@@ -18,17 +18,29 @@ namespace ImageChecker
 
         TargetInfoDto objTargetInfoDto;
         int intRow;
+        bool m_dummy;
 
-        public Result(TargetInfoDto objTargetInfo,int intRowIndex)
+        public int intRet { get; set; }
+
+        public Result(TargetInfoDto objTargetInfo,int intRowIndex, bool dummy = false)
         {
             InitializeComponent();
 
             objTargetInfoDto = objTargetInfo;
             intRow = intRowIndex;
+            m_dummy = dummy;
+
+            if (dummy == true)
+            {
+                btnBackTargetSelection.Text = "検査結果確認\r\n(過去分)へ戻る";
+            }
 
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
 
+            // 列のスタイル変更
+            this.dgvData.Columns[0].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //№
+            //this.dgvData.Columns[1].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //行
         }
 
         private void Result_Load(object sender, EventArgs e)
@@ -63,22 +75,36 @@ namespace ImageChecker
 
         private void Button1_Click(object sender, EventArgs e)
         {
+            if (m_dummy == false)
+            {
+                DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
+                dtTargetInfo.Rows[intRow]["Status"] = "3";
 
-            DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
-            dtTargetInfo.Rows[intRow]["Status"] = "3";
-
-            objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
-
+                objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
+            }
+            intRet = 1;
             this.Close();
         }
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
-            dtTargetInfo.Rows[intRow]["Status"] = "4";
-            dtTargetInfo.Rows[intRow]["Process"] = "検査結果";
+            if (MessageBox.Show("判定登録します。よろしいですか？"
+                 , "確認"
+                 , MessageBoxButtons.YesNo) == DialogResult.No)
+            {
+                return;
+            }
 
-            objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
+            intRet = 1;
+
+            if (m_dummy == false)
+            {
+                DataTable dtTargetInfo = objTargetInfoDto.getTargetInfoDTO();
+                dtTargetInfo.Rows[intRow]["Status"] = "4";
+                dtTargetInfo.Rows[intRow]["Process"] = "検査結果";
+
+                objTargetInfoDto.setTargetInfoDTO(dtTargetInfo);
+            }
 
             //var result = "";
             //var error = "";
@@ -199,7 +225,7 @@ namespace ImageChecker
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"));
+            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(System.Drawing.Image.FromFile(".\\Image\\05_F1_B0019.jpg"), ".\\Image\\05_F1_B0019.jpg");
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
         }
