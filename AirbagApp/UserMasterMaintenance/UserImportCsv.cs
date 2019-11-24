@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -18,11 +14,11 @@ namespace UserMasterMaintenance
     {
         #region 変数・定数
         // CSVファイル配置情報
-        public const int COL_USER_INFO_NO = 0;
-        public const int COL_USER_INFO_NAME_SEI = 1;
-        public const int COL_USER_INFO_NAME_MEI = 2;
-        public const int COL_USER_INFO_KANA_SEI = 3;
-        public const int COL_USER_INFO_KANA_MEI = 4;
+        private const int m_CON_COL_USER_INFO_NO = 0;
+        private const int m_CON_COL_USER_INFO_NAME_SEI = 1;
+        private const int m_CON_COL_USER_INFO_NAME_MEI = 2;
+        private const int m_CON_COL_USER_INFO_KANA_SEI = 3;
+        private const int m_CON_COL_USER_INFO_KANA_MEI = 4;
 
         /// <summary>
         /// 作業者登録CSVファイル
@@ -104,17 +100,17 @@ namespace UserMasterMaintenance
                               , MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 // ファイル存在チェック
-                string fileName = txtCsvFile.Text;
-                if (System.IO.File.Exists(fileName) == false)
+                string strFileName = txtCsvFile.Text;
+                if (System.IO.File.Exists(strFileName) == false)
                 {
                     MessageBox.Show("指定されたcsvファイルが存在しません。" 
                                    + Environment.NewLine 
-                                   + fileName);
+                                   + strFileName);
                     return;
                 }
 
                 // CSVファイル読み込み＆入力データチェックを行う
-                if (ReadCsvData(fileName, out lstUserData) == false) 
+                if (ReadCsvData(strFileName, out lstUserData) == false) 
                 {
                     return;
                 }
@@ -209,17 +205,17 @@ namespace UserMasterMaintenance
             stArrayData = strFileReadLine.Split(',');
 
             // 列数チェック
-            if (stArrayData.Length <= COL_USER_INFO_KANA_MEI) 
+            if (stArrayData.Length <= m_CON_COL_USER_INFO_KANA_MEI) 
             {
                 return false;
             }
 
             // CSVの各項目を構造体へ格納する
-            uciData.strUserID = stArrayData[COL_USER_INFO_NO];
-            uciData.strUserNameSei = stArrayData[COL_USER_INFO_NAME_SEI];
-            uciData.strUserNameMei = stArrayData[COL_USER_INFO_NAME_MEI];
-            uciData.strUserKanaSei = stArrayData[COL_USER_INFO_KANA_SEI];
-            uciData.strUserKanaMei = stArrayData[COL_USER_INFO_KANA_MEI];
+            uciData.strUserID = stArrayData[m_CON_COL_USER_INFO_NO];
+            uciData.strUserNameSei = stArrayData[m_CON_COL_USER_INFO_NAME_SEI];
+            uciData.strUserNameMei = stArrayData[m_CON_COL_USER_INFO_NAME_MEI];
+            uciData.strUserKanaSei = stArrayData[m_CON_COL_USER_INFO_KANA_SEI];
+            uciData.strUserKanaMei = stArrayData[m_CON_COL_USER_INFO_KANA_MEI];
 
             return true;
         }
@@ -310,11 +306,11 @@ namespace UserMasterMaintenance
         {
             try
             {
-                if (bolModeNonDBCon == true)
+                if (g_bolModeNonDBCon == true)
                     return true;
 
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
                 {
                     NpgsqlCon.Open();
 
@@ -323,22 +319,22 @@ namespace UserMasterMaintenance
                         foreach (UserCsvInfo uciCheckData in lstUserData) 
                         {
                             // SQL文を作成する
-                            string strCreateSql = @"INSERT INTO SAGYOSYA (USERNO, USERNAME, USERYOMIGANA)
-                                                                  VALUES (:UserNo, :UserName, :UserYomigana)
-                                                             ON CONFLICT (USERNO)
-                                                            DO UPDATE SET USERNAME = :UserName
-                                                                        , USERYOMIGANA = :UserYomigana";
+                            string strCreateSql = @"INSERT INTO mst_Worker (WorkerNo, WorkerSurname, WorkerName, WorkerSurnameKana, WorkerNameKana, Delflg)
+                                                                    VALUES (:UserNo, :UserSurname, :UserName, :UserSurnameKana, :UserNameKana, 0)
+                                                               ON CONFLICT (WorkerNo)
+                                                             DO UPDATE SET WorkerSurname = :UserSurname
+                                                                         , WorkerName = :UserName
+                                                                         , WorkerSurnameKana = :UserSurnameKana
+                                                                         , WorkerNameKana = :UserNameKana";
 
                             // SQLコマンドに各パラメータを設定する
                             var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
 
                             command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = String.Format("{0:D4}", Int32.Parse(uciCheckData.strUserID)) });
-                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = uciCheckData.strUserNameSei 
-                                                                                                          + NAME_SEPARATE 
-                                                                                                          + uciCheckData.strUserNameMei});
-                            command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = uciCheckData.strUserKanaSei 
-                                                                                                              + NAME_SEPARATE 
-                                                                                                              + uciCheckData.strUserKanaMei});
+                            command.Parameters.Add(new NpgsqlParameter("UserSurname", DbType.String) { Value = uciCheckData.strUserNameSei });
+                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = uciCheckData.strUserNameMei});
+                            command.Parameters.Add(new NpgsqlParameter("UserSurnameKana", DbType.String) { Value = uciCheckData.strUserKanaSei });
+                            command.Parameters.Add(new NpgsqlParameter("UserNameKana", DbType.String) { Value = uciCheckData.strUserKanaMei });
 
                             // sqlを実行する
                             if (ExecTranSQL(command, transaction) == false)

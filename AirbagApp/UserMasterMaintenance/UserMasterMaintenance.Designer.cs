@@ -72,6 +72,7 @@
             this.UserNm,
             this.YomiGana});
             this.dgvUser.Location = new System.Drawing.Point(12, 173);
+            this.dgvUser.MultiSelect = false;
             this.dgvUser.Name = "dgvUser";
             this.dgvUser.ReadOnly = true;
             this.dgvUser.RowHeadersVisible = false;
@@ -171,21 +172,27 @@
             // 
             // txtUserNo_To
             // 
+            this.txtUserNo_To.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtUserNo_To.Location = new System.Drawing.Point(147, 97);
             this.txtUserNo_To.MaxLength = 4;
             this.txtUserNo_To.Name = "txtUserNo_To";
+            this.txtUserNo_To.ShortcutsEnabled = false;
             this.txtUserNo_To.Size = new System.Drawing.Size(36, 19);
             this.txtUserNo_To.TabIndex = 16;
-            this.txtUserNo_To.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_To_KeyPress);
+            this.txtUserNo_To.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_KeyPress);
+            this.txtUserNo_To.Leave += new System.EventHandler(this.txtUserNo_To_Leave);
             // 
             // txtUserNo_From
             // 
+            this.txtUserNo_From.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtUserNo_From.Location = new System.Drawing.Point(82, 97);
             this.txtUserNo_From.MaxLength = 4;
             this.txtUserNo_From.Name = "txtUserNo_From";
+            this.txtUserNo_From.ShortcutsEnabled = false;
             this.txtUserNo_From.Size = new System.Drawing.Size(36, 19);
             this.txtUserNo_From.TabIndex = 14;
-            this.txtUserNo_From.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_From_KeyPress);
+            this.txtUserNo_From.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_KeyPress);
+            this.txtUserNo_From.Leave += new System.EventHandler(this.txtUserNo_From_Leave);
             // 
             // llkわ
             // 
@@ -306,6 +313,7 @@
             this.llkEtc.TabIndex = 11;
             this.llkEtc.TabStop = true;
             this.llkEtc.Text = "その他";
+            this.llkEtc.Visible = false;
             this.llkEtc.Click += new System.EventHandler(this.llk_Click);
             // 
             // llkあ

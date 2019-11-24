@@ -46,9 +46,11 @@
             // 
             // txtUserNo
             // 
+            this.txtUserNo.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtUserNo.Location = new System.Drawing.Point(94, 30);
             this.txtUserNo.MaxLength = 4;
             this.txtUserNo.Name = "txtUserNo";
+            this.txtUserNo.ShortcutsEnabled = false;
             this.txtUserNo.Size = new System.Drawing.Size(36, 19);
             this.txtUserNo.TabIndex = 1;
             this.txtUserNo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_KeyPress);
@@ -56,6 +58,7 @@
             // 
             // txtUserNm_Sei
             // 
+            this.txtUserNm_Sei.ImeMode = System.Windows.Forms.ImeMode.Hiragana;
             this.txtUserNm_Sei.Location = new System.Drawing.Point(143, 68);
             this.txtUserNm_Sei.MaxLength = 10;
             this.txtUserNm_Sei.Name = "txtUserNm_Sei";
@@ -64,6 +67,7 @@
             // 
             // txtUserYomiGana_Sei
             // 
+            this.txtUserYomiGana_Sei.ImeMode = System.Windows.Forms.ImeMode.Katakana;
             this.txtUserYomiGana_Sei.Location = new System.Drawing.Point(143, 134);
             this.txtUserYomiGana_Sei.MaxLength = 30;
             this.txtUserYomiGana_Sei.Name = "txtUserYomiGana_Sei";
@@ -117,6 +121,7 @@
             // 
             // txtUserNm_Mei
             // 
+            this.txtUserNm_Mei.ImeMode = System.Windows.Forms.ImeMode.Hiragana;
             this.txtUserNm_Mei.Location = new System.Drawing.Point(143, 100);
             this.txtUserNm_Mei.MaxLength = 10;
             this.txtUserNm_Mei.Name = "txtUserNm_Mei";
@@ -135,6 +140,7 @@
             // 
             // txtUserYomiGana_Mei
             // 
+            this.txtUserYomiGana_Mei.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtUserYomiGana_Mei.Location = new System.Drawing.Point(143, 168);
             this.txtUserYomiGana_Mei.MaxLength = 30;
             this.txtUserYomiGana_Mei.Name = "txtUserYomiGana_Mei";
