@@ -567,5 +567,21 @@ namespace ImageChecker
         {
 
         }
+
+        private void btnCopyReg_Click(object sender, EventArgs e)
+        {
+            CopyReg frmCopyReg = new CopyReg(System.Drawing.Image.FromFile(pictureBox1.ImageLocation), pictureBox1.ImageLocation, objTargetInfoDto, intRow, m_dummy);
+            frmCopyReg.ShowDialog(this);
+            if (frmCopyReg.intRet == 1)
+            {
+                Result frmResult = new Result(objTargetInfoDto, intRow, m_dummy);
+                frmResult.ShowDialog(this);
+                this.Visible = true;
+                if (frmResult.intRet == 1)
+                {
+                    this.Close();
+                }
+            }
+        }
     }
 }

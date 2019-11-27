@@ -498,10 +498,10 @@
             // 
             this.BackResultCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.BackResultCheck.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.BackResultCheck.Location = new System.Drawing.Point(1158, 13);
+            this.BackResultCheck.Location = new System.Drawing.Point(1131, 13);
             this.BackResultCheck.Margin = new System.Windows.Forms.Padding(2);
             this.BackResultCheck.Name = "BackResultCheck";
-            this.BackResultCheck.Size = new System.Drawing.Size(107, 54);
+            this.BackResultCheck.Size = new System.Drawing.Size(127, 54);
             this.BackResultCheck.TabIndex = 1;
             this.BackResultCheck.Text = "検査結果を\r\n更新する";
             this.BackResultCheck.UseVisualStyleBackColor = true;
@@ -513,7 +513,7 @@
             this.btnBackTargetSelection.Location = new System.Drawing.Point(18, 13);
             this.btnBackTargetSelection.Margin = new System.Windows.Forms.Padding(2);
             this.btnBackTargetSelection.Name = "btnBackTargetSelection";
-            this.btnBackTargetSelection.Size = new System.Drawing.Size(107, 54);
+            this.btnBackTargetSelection.Size = new System.Drawing.Size(127, 54);
             this.btnBackTargetSelection.TabIndex = 0;
             this.btnBackTargetSelection.Text = "検査対象\r\n選択へ戻る";
             this.btnBackTargetSelection.UseVisualStyleBackColor = true;
@@ -652,62 +652,65 @@
             // 
             this.Except.HeaderText = "過検知除外";
             this.Except.Name = "Except";
-            this.Except.Width = 110;
+            this.Except.Width = 143;
             // 
             // Ret
             // 
             this.Ret.HeaderText = "合否確認";
             this.Ret.Name = "Ret";
-            this.Ret.Width = 110;
+            this.Ret.Width = 137;
             // 
             // reason
             // 
+            this.reason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.reason.HeaderText = "NG理由";
-            this.reason.MinimumWidth = 6;
+            this.reason.MinimumWidth = 240;
             this.reason.Name = "reason";
-            this.reason.Width = 167;
+            this.reason.Width = 240;
             // 
             // ExceptInpDate
             // 
             this.ExceptInpDate.HeaderText = "過検知検査時刻";
             this.ExceptInpDate.Name = "ExceptInpDate";
-            this.ExceptInpDate.Width = 170;
+            this.ExceptInpDate.Width = 240;
             // 
             // ExceptUser
             // 
             this.ExceptUser.HeaderText = "過検知検査作業者";
             this.ExceptUser.Name = "ExceptUser";
-            this.ExceptUser.Width = 150;
+            this.ExceptUser.Width = 190;
             // 
             // CheckInpDate
             // 
             this.CheckInpDate.HeaderText = "合否確認時刻";
             this.CheckInpDate.Name = "CheckInpDate";
-            this.CheckInpDate.Width = 170;
+            this.CheckInpDate.Width = 240;
             // 
             // ChekUser
             // 
             this.ChekUser.HeaderText = "合否確認作業者";
             this.ChekUser.Name = "ChekUser";
-            this.ChekUser.Width = 150;
+            this.ChekUser.Width = 190;
             // 
             // UpdInpDate
             // 
             this.UpdInpDate.HeaderText = "結果更新時刻";
             this.UpdInpDate.Name = "UpdInpDate";
-            this.UpdInpDate.Width = 170;
+            this.UpdInpDate.Width = 240;
             // 
             // UpdUser
             // 
-            this.UpdUser.HeaderText = "更新者";
+            this.UpdUser.HeaderText = "結果更新作業者";
             this.UpdUser.Name = "UpdUser";
-            this.UpdUser.Width = 150;
+            this.UpdUser.Width = 190;
             // 
             // UpdBefNgReason
             // 
+            this.UpdBefNgReason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.UpdBefNgReason.HeaderText = "更新前NG理由";
+            this.UpdBefNgReason.MinimumWidth = 240;
             this.UpdBefNgReason.Name = "UpdBefNgReason";
-            this.UpdBefNgReason.Width = 150;
+            this.UpdBefNgReason.Width = 240;
             // 
             // DisplayResults
             // 

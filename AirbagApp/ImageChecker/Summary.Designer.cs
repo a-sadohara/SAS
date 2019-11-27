@@ -279,11 +279,11 @@
             // btnBackSummaryCheck
             // 
             this.btnBackSummaryCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBackSummaryCheck.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnBackSummaryCheck.Location = new System.Drawing.Point(1144, 31);
+            this.btnBackSummaryCheck.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnBackSummaryCheck.Location = new System.Drawing.Point(1121, 13);
             this.btnBackSummaryCheck.Margin = new System.Windows.Forms.Padding(2);
             this.btnBackSummaryCheck.Name = "btnBackSummaryCheck";
-            this.btnBackSummaryCheck.Size = new System.Drawing.Size(107, 36);
+            this.btnBackSummaryCheck.Size = new System.Drawing.Size(146, 54);
             this.btnBackSummaryCheck.TabIndex = 0;
             this.btnBackSummaryCheck.Text = "合否確認";
             this.btnBackSummaryCheck.UseVisualStyleBackColor = true;
@@ -291,11 +291,11 @@
             // 
             // btnBackTargetSelection
             // 
-            this.btnBackTargetSelection.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.btnBackTargetSelection.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnBackTargetSelection.Location = new System.Drawing.Point(18, 13);
             this.btnBackTargetSelection.Margin = new System.Windows.Forms.Padding(2);
             this.btnBackTargetSelection.Name = "btnBackTargetSelection";
-            this.btnBackTargetSelection.Size = new System.Drawing.Size(107, 54);
+            this.btnBackTargetSelection.Size = new System.Drawing.Size(146, 54);
             this.btnBackTargetSelection.TabIndex = 0;
             this.btnBackTargetSelection.Text = "検査対象\r\n選択へ戻る";
             this.btnBackTargetSelection.UseVisualStyleBackColor = true;
@@ -385,30 +385,35 @@
             this.dgvData.Size = new System.Drawing.Size(1187, 377);
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
+            this.dgvData.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgvData_MouseUp);
             // 
             // no
             // 
             this.no.HeaderText = "№";
             this.no.MinimumWidth = 6;
             this.no.Name = "no";
+            this.no.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // line
             // 
             this.line.HeaderText = "行";
             this.line.MinimumWidth = 6;
             this.line.Name = "line";
+            this.line.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // Column
             // 
             this.Column.HeaderText = "列";
             this.Column.MinimumWidth = 6;
             this.Column.Name = "Column";
+            this.Column.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // ng
             // 
             this.ng.HeaderText = "NG面";
             this.ng.MinimumWidth = 6;
             this.ng.Name = "ng";
+            this.ng.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.ng.Width = 120;
             // 
             // position
@@ -416,27 +421,28 @@
             this.position.HeaderText = "位置(X,Y)cm";
             this.position.MinimumWidth = 6;
             this.position.Name = "position";
+            this.position.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.position.Width = 200;
             // 
             // Except
             // 
             this.Except.HeaderText = "過検知除外";
             this.Except.Name = "Except";
-            this.Except.Width = 140;
+            this.Except.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Except.Width = 200;
             // 
             // NgReason
             // 
-            this.NgReason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.NgReason.HeaderText = "NG理由";
-            this.NgReason.MinimumWidth = 6;
             this.NgReason.Name = "NgReason";
             this.NgReason.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.NgReason.Width = 79;
+            this.NgReason.Width = 260;
             // 
             // ExcepInpDate
             // 
             this.ExcepInpDate.HeaderText = "過検知検査時刻";
             this.ExcepInpDate.Name = "ExcepInpDate";
+            this.ExcepInpDate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.ExcepInpDate.Width = 300;
             // 
             // ExceptUserNm
@@ -444,6 +450,7 @@
             this.ExceptUserNm.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.ExceptUserNm.HeaderText = "過検知検査作業者";
             this.ExceptUserNm.Name = "ExceptUserNm";
+            this.ExceptUserNm.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // Summary
             // 

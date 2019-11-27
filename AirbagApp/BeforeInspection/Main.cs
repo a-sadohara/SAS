@@ -29,6 +29,21 @@ namespace BeforeInspection
         private int m_intRowNumNow; 
         private int m_intRowCntByTan; //仮
 
+        private int m_intStatus;
+        private const int m_CON_BEF = 1;    //検査開始前
+        private const int m_CON_CHK = 2;    //検査準備完了
+        private const int m_CON_STP = 3;    //検査中断
+        private const int m_CON_END = 4;    //検査終了
+        private const string m_CON_BEF_NM = "検査開始前";
+        private const string m_CON_CHK_NM = "検査準備完了";
+        private const string m_CON_STP_NM = "検査中断";
+        private const string m_CON_END_NM = "検査終了";
+
+        private Color m_clrActFore = System.Drawing.SystemColors.ControlText;
+        private Color m_clrActBack = System.Drawing.Color.White;
+        private Color m_clrNonActFore = System.Drawing.SystemColors.ControlLightLight;
+        private Color m_clrNonActBack = System.Drawing.Color.Transparent;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -70,6 +85,9 @@ namespace BeforeInspection
             picKensaWay_Back.Image = System.Drawing.Image.FromFile(@"Image\ABCDE_X.png");
             lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
             lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
+
+            setStatus(m_CON_BEF);
+            
 
             btnNext.Enabled = false;
         }
@@ -133,6 +151,8 @@ namespace BeforeInspection
             DateTime dtNow = DateTime.Now;
             lblEndDate.Text = dtNow.ToString("yyyy/MM/dd HH:mm:ss");
             btnNext.Enabled = true;
+
+            setStatus(m_CON_END);
         }
 
         /// <summary>
@@ -293,6 +313,8 @@ namespace BeforeInspection
             lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
 
             btnNext.Enabled = false;
+
+            setStatus(m_CON_BEF);
         }
 
         /// <summary>
@@ -620,12 +642,52 @@ namespace BeforeInspection
 
         private void button3_Click(object sender, EventArgs e)
         {
-
+            setStatus(m_CON_CHK);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-
+            setStatus(m_CON_STP);
         }
+
+        private void setStatus(int intStatus)
+        {
+            m_intStatus = intStatus;
+
+            // 非アクティブ化
+            foreach (Label lblStatus in new Label[] { lblStatusBef, lblStatusChk, lblStatusStp, lblStatusEnd })
+            {
+                if ((m_intStatus == m_CON_BEF && lblStatus == lblStatusBef) ||
+                    (m_intStatus == m_CON_CHK && lblStatus == lblStatusChk) ||
+                    (m_intStatus == m_CON_STP && lblStatus == lblStatusStp) ||
+                    (m_intStatus == m_CON_END && lblStatus == lblStatusEnd))
+                    continue;
+
+                lblStatus.ForeColor = m_clrNonActFore;
+                lblStatus.BackColor = m_clrNonActBack;
+            }
+
+            // アクティブ化
+            switch (m_intStatus)
+            {
+                case m_CON_BEF:
+                    lblStatusBef.ForeColor = m_clrActFore;
+                    lblStatusBef.BackColor = m_clrActBack;
+                    break;
+                case m_CON_CHK:
+                    lblStatusChk.ForeColor = m_clrActFore;
+                    lblStatusChk.BackColor = m_clrActBack;
+                    break;
+                case m_CON_STP:
+                    lblStatusStp.ForeColor = m_clrActFore;
+                    lblStatusStp.BackColor = m_clrActBack;
+                    break;
+                case m_CON_END:
+                    lblStatusEnd.ForeColor = m_clrActFore;
+                    lblStatusEnd.BackColor = m_clrActBack;
+                    break;
+            }
+            
+        } 
     }
 }

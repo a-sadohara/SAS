@@ -316,7 +316,7 @@ namespace ImageChecker
             //string s = "";
             //for (int i = 0; i <= dgvData.Columns.Count - 1; i++)
             //{
-            //    s = s + dgvData.Columns[i].Width.ToString() + ",";
+            //    s = s + dgvData.Columns[i].HeaderText + ":" + dgvData.Columns[i].Width.ToString() + ",";
             //}
             //MessageBox.Show(s);
         }

@@ -352,6 +352,16 @@ namespace ImageChecker
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
         }
+
+        private void dgvData_MouseUp(object sender, MouseEventArgs e)
+        {
+            //string s = "";
+            //for (int i = 0; i <= dgvData.Columns.Count - 1; i++)
+            //{
+            //    s = s + dgvData.Columns[i].HeaderText + ":" + dgvData.Columns[i].Width.ToString() + ",";
+            //}
+            //MessageBox.Show(s);
+        }
     }
 
 }

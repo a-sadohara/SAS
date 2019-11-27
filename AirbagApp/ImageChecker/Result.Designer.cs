@@ -277,20 +277,20 @@
             this.panel4.Controls.Add(this.btnBackResultCheck);
             this.panel4.Controls.Add(this.btnBackTargetSelection);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 521);
+            this.panel4.Location = new System.Drawing.Point(0, 508);
             this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1284, 78);
+            this.panel4.Size = new System.Drawing.Size(1284, 91);
             this.panel4.TabIndex = 3;
             // 
             // btnRegResult
             // 
             this.btnRegResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRegResult.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnRegResult.Location = new System.Drawing.Point(1144, 18);
+            this.btnRegResult.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnRegResult.Location = new System.Drawing.Point(1121, 13);
             this.btnRegResult.Margin = new System.Windows.Forms.Padding(2);
             this.btnRegResult.Name = "btnRegResult";
-            this.btnRegResult.Size = new System.Drawing.Size(107, 36);
+            this.btnRegResult.Size = new System.Drawing.Size(127, 54);
             this.btnRegResult.TabIndex = 0;
             this.btnRegResult.Text = "判定登録";
             this.btnRegResult.UseVisualStyleBackColor = true;
@@ -299,11 +299,11 @@
             // btnBackResultCheck
             // 
             this.btnBackResultCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBackResultCheck.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnBackResultCheck.Location = new System.Drawing.Point(1016, 18);
+            this.btnBackResultCheck.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnBackResultCheck.Location = new System.Drawing.Point(981, 13);
             this.btnBackResultCheck.Margin = new System.Windows.Forms.Padding(2);
             this.btnBackResultCheck.Name = "btnBackResultCheck";
-            this.btnBackResultCheck.Size = new System.Drawing.Size(107, 36);
+            this.btnBackResultCheck.Size = new System.Drawing.Size(127, 54);
             this.btnBackResultCheck.TabIndex = 0;
             this.btnBackResultCheck.Text = "合否確認へ戻る";
             this.btnBackResultCheck.UseVisualStyleBackColor = true;
@@ -311,11 +311,11 @@
             // 
             // btnBackTargetSelection
             // 
-            this.btnBackTargetSelection.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.btnBackTargetSelection.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.btnBackTargetSelection.Location = new System.Drawing.Point(18, 13);
             this.btnBackTargetSelection.Margin = new System.Windows.Forms.Padding(2);
             this.btnBackTargetSelection.Name = "btnBackTargetSelection";
-            this.btnBackTargetSelection.Size = new System.Drawing.Size(107, 54);
+            this.btnBackTargetSelection.Size = new System.Drawing.Size(146, 54);
             this.btnBackTargetSelection.TabIndex = 0;
             this.btnBackTargetSelection.Text = "検査対象\r\n選択へ戻る";
             this.btnBackTargetSelection.UseVisualStyleBackColor = true;
@@ -328,7 +328,7 @@
             this.panel2.Location = new System.Drawing.Point(0, 131);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(40, 390);
+            this.panel2.Size = new System.Drawing.Size(40, 377);
             this.panel2.TabIndex = 4;
             // 
             // panel3
@@ -338,7 +338,7 @@
             this.panel3.Location = new System.Drawing.Point(1227, 131);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(57, 390);
+            this.panel3.Size = new System.Drawing.Size(57, 377);
             this.panel3.TabIndex = 5;
             // 
             // panel6
@@ -349,7 +349,7 @@
             this.panel6.Location = new System.Drawing.Point(40, 131);
             this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1187, 390);
+            this.panel6.Size = new System.Drawing.Size(1187, 377);
             this.panel6.TabIndex = 6;
             // 
             // dgvData
@@ -407,9 +407,10 @@
             this.dgvData.RowTemplate.Height = 75;
             this.dgvData.RowTemplate.ReadOnly = true;
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvData.Size = new System.Drawing.Size(1187, 390);
+            this.dgvData.Size = new System.Drawing.Size(1187, 377);
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
+            this.dgvData.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgvData_MouseUp);
             // 
             // no
             // 
@@ -460,34 +461,35 @@
             // 
             // reason
             // 
+            this.reason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.reason.HeaderText = "NG理由";
-            this.reason.MinimumWidth = 6;
+            this.reason.MinimumWidth = 240;
             this.reason.Name = "reason";
-            this.reason.Width = 150;
+            this.reason.Width = 240;
             // 
             // ExceptInpDate
             // 
             this.ExceptInpDate.HeaderText = "過検知検査時刻";
             this.ExceptInpDate.Name = "ExceptInpDate";
-            this.ExceptInpDate.Width = 280;
+            this.ExceptInpDate.Width = 240;
             // 
             // ExceptUser
             // 
             this.ExceptUser.HeaderText = "過検知検査作業者";
             this.ExceptUser.Name = "ExceptUser";
-            this.ExceptUser.Width = 150;
+            this.ExceptUser.Width = 190;
             // 
             // RetInpDate
             // 
             this.RetInpDate.HeaderText = "合否確認時刻";
             this.RetInpDate.Name = "RetInpDate";
-            this.RetInpDate.Width = 280;
+            this.RetInpDate.Width = 240;
             // 
             // RetUser
             // 
             this.RetUser.HeaderText = "合否確認作業者";
             this.RetUser.Name = "RetUser";
-            this.RetUser.Width = 150;
+            this.RetUser.Width = 190;
             // 
             // Result
             // 

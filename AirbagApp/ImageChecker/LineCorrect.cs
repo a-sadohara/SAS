@@ -12,6 +12,10 @@ namespace ImageChecker
 {
     public partial class LineCorrect : Form
     {
+        private int m_Correct = 0;
+        private int m_CorrectInit_From = 0;
+        private int m_CorrectInit_To = 0;
+
         public LineCorrect(string Goki,
                            string Sashizu,
                            string HanNo,
@@ -32,32 +36,29 @@ namespace ImageChecker
             lblKensaNo.Text = KensaNo;
             lblHansoStaDate.Text = HansoStaDate;
             lblHansoStaDate.Text = HansoEndDate;
-            lblKensaHaniLine.Text = KensaHaniLine;
+            lblCorrect.Text = "補正値：±0";
 
-            txtLine.Text = "";
+            m_Correct = 0;
+            lblKensaHaniLine_Before.Text = KensaHaniLine;
+            lblKensaHaniLine_After.Text = KensaHaniLine;
+
+            string[] strCorrect = KensaHaniLine.Split('～');
+            if (strCorrect.Length == 2)
+            {
+                m_CorrectInit_From = int.Parse(strCorrect[0]);
+                m_CorrectInit_To = int.Parse(strCorrect[1]);
+            } 
+            else 
+            {
+                MessageBox.Show("検査範囲業が [開始～終了] の関係になっていません。値を確認してください");
+                return;
+            }
+
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            string plusminus = "";
-            if (txtLine.Text == "")
-            {
-                MessageBox.Show("行補正値を入力してください");
-                return;
-            }
-            else
-            {
-                if(int.Parse(txtLine.Text) >= 0)
-                {
-                    plusminus = "+";
-                }
-                else
-                {
-                    plusminus = "-";
-                }
-            }
-
-            if (MessageBox.Show("行補正値 [" + plusminus + txtLine.Text.ToString().Replace("+","").Replace("-","") + "] で登録しますか？"
+            if (MessageBox.Show("行補正をしますか？"
                               , "確認"
                               , MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
@@ -68,6 +69,26 @@ namespace ImageChecker
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void btnMinus_Click(object sender, EventArgs e)
+        {
+            m_Correct -= 1;
+            lblCorrect.Text = "補正値：";
+            if (m_Correct > 0) { lblCorrect.Text = lblCorrect.Text + "+"; } else if (m_Correct == 0) { lblCorrect.Text = lblCorrect.Text + "±"; }
+            lblCorrect.Text = lblCorrect.Text + m_Correct.ToString();
+
+            lblKensaHaniLine_After.Text = m_CorrectInit_From.ToString() + "～" + (m_CorrectInit_To + m_Correct).ToString();
+        }
+
+        private void btnPlus_Click(object sender, EventArgs e)
+        {
+            m_Correct += 1;
+            lblCorrect.Text = "補正値：";
+            if (m_Correct > 0) { lblCorrect.Text = lblCorrect.Text + "+"; } else if (m_Correct == 0) { lblCorrect.Text = lblCorrect.Text + "±"; }
+            lblCorrect.Text = lblCorrect.Text + m_Correct.ToString();
+
+            lblKensaHaniLine_After.Text = m_CorrectInit_From.ToString() + "～" + (m_CorrectInit_To + m_Correct).ToString();
         }
     }
 }

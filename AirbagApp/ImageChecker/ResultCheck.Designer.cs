@@ -204,6 +204,7 @@
             this.btnCopyReg.TabIndex = 25;
             this.btnCopyReg.Text = "複写して登録";
             this.btnCopyReg.UseVisualStyleBackColor = true;
+            this.btnCopyReg.Click += new System.EventHandler(this.btnCopyReg_Click);
             // 
             // label11
             // 
@@ -390,7 +391,7 @@
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32F));
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32F));
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 36F));
-            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 155F));
+            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 157F));
             this.tlpMain.Controls.Add(this.tableLayoutPanel9, 0, 0);
             this.tlpMain.Controls.Add(this.tableLayoutPanel4, 1, 1);
             this.tlpMain.Controls.Add(this.panel4, 0, 1);

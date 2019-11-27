@@ -91,8 +91,8 @@ namespace ImageChecker
             this.btnDisplayResultsAgo = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -143,6 +143,7 @@ namespace ImageChecker
             this.dataGridView1.Size = new System.Drawing.Size(1284, 546);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
+            this.dataGridView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseUp);
             // 
             // No
             // 
@@ -150,6 +151,7 @@ namespace ImageChecker
             this.No.MinimumWidth = 6;
             this.No.Name = "No";
             this.No.ReadOnly = true;
+            this.No.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.No.Width = 60;
             // 
             // TargetInfo
@@ -160,18 +162,19 @@ namespace ImageChecker
             this.TargetInfo.MinimumWidth = 6;
             this.TargetInfo.Name = "TargetInfo";
             this.TargetInfo.ReadOnly = true;
-            this.TargetInfo.Width = 120;
+            this.TargetInfo.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.TargetInfo.Width = 200;
             // 
             // CheckInfo
             // 
-            this.CheckInfo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
             this.CheckInfo.DefaultCellStyle = dataGridViewCellStyle3;
             this.CheckInfo.HeaderText = "外観検査情報";
             this.CheckInfo.MinimumWidth = 6;
             this.CheckInfo.Name = "CheckInfo";
             this.CheckInfo.ReadOnly = true;
-            this.CheckInfo.Width = 99;
+            this.CheckInfo.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.CheckInfo.Width = 350;
             // 
             // Status
             // 
@@ -183,6 +186,7 @@ namespace ImageChecker
             this.Status.MinimumWidth = 6;
             this.Status.Name = "Status";
             this.Status.ReadOnly = true;
+            this.Status.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // lblUser
             // 
@@ -226,10 +230,10 @@ namespace ImageChecker
             // btnDisplayResultsAgo
             // 
             this.btnDisplayResultsAgo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDisplayResultsAgo.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnDisplayResultsAgo.Location = new System.Drawing.Point(1114, 7);
+            this.btnDisplayResultsAgo.Font = new System.Drawing.Font("メイリオ", 9.75F);
+            this.btnDisplayResultsAgo.Location = new System.Drawing.Point(1115, 7);
             this.btnDisplayResultsAgo.Name = "btnDisplayResultsAgo";
-            this.btnDisplayResultsAgo.Size = new System.Drawing.Size(156, 36);
+            this.btnDisplayResultsAgo.Size = new System.Drawing.Size(156, 54);
             this.btnDisplayResultsAgo.TabIndex = 3;
             this.btnDisplayResultsAgo.Text = "検査履歴照会";
             this.btnDisplayResultsAgo.UseVisualStyleBackColor = true;
@@ -251,32 +255,34 @@ namespace ImageChecker
             this.panel3.Controls.Add(this.button2);
             this.panel3.Controls.Add(this.button1);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 547);
+            this.panel3.Location = new System.Drawing.Point(0, 530);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1284, 52);
+            this.panel3.Size = new System.Drawing.Size(1284, 69);
             this.panel3.TabIndex = 4;
-            // 
-            // button1
-            // 
-            this.button1.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.button1.Location = new System.Drawing.Point(11, 7);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(156, 36);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "行補正";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // button2
             // 
-            this.button2.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button2.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.button2.Location = new System.Drawing.Point(181, 7);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(156, 36);
+            this.button2.Size = new System.Drawing.Size(156, 54);
             this.button2.TabIndex = 3;
             this.button2.Text = "検査対象外";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button1.Font = new System.Drawing.Font("メイリオ", 9.75F);
+            this.button1.Location = new System.Drawing.Point(11, 7);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(156, 54);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "行補正";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // TargetSelection
             // 

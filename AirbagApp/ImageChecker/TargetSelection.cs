@@ -386,6 +386,16 @@ namespace ImageChecker
             frmLineCorrect.ShowDialog(this);
             this.Visible = true;
         }
+
+        private void dataGridView1_MouseUp(object sender, MouseEventArgs e)
+        {
+            //string s = "";
+            //for (int i = 0; i <= dataGridView1.Columns.Count - 1; i++)
+            //{
+            //    s = s + dataGridView1.Columns[i].HeaderText + ":" + dataGridView1.Columns[i].Width.ToString() + ",";
+            //}
+            //MessageBox.Show(s);
+        }
     }
 
     public class DataGridViewDisableButtonColumn : DataGridViewButtonColumn

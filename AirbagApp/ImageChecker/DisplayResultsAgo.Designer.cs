@@ -104,10 +104,16 @@
             this.Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ng = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.position = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.IntDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Except = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Ret = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NgReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ExceptInpDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ExceptUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CheckInpDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CheckUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdIntDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdBefNgReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             this.grbWhere.SuspendLayout();
             this.panel5.SuspendLayout();
@@ -777,10 +783,10 @@
             // 
             this.BackResultCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.BackResultCheck.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.BackResultCheck.Location = new System.Drawing.Point(962, 13);
+            this.BackResultCheck.Location = new System.Drawing.Point(935, 13);
             this.BackResultCheck.Margin = new System.Windows.Forms.Padding(2);
             this.BackResultCheck.Name = "BackResultCheck";
-            this.BackResultCheck.Size = new System.Drawing.Size(107, 54);
+            this.BackResultCheck.Size = new System.Drawing.Size(127, 54);
             this.BackResultCheck.TabIndex = 0;
             this.BackResultCheck.Text = "検査結果を\r\n更新する";
             this.BackResultCheck.UseVisualStyleBackColor = true;
@@ -792,7 +798,7 @@
             this.btnBackTargetSelection.Location = new System.Drawing.Point(18, 13);
             this.btnBackTargetSelection.Margin = new System.Windows.Forms.Padding(2);
             this.btnBackTargetSelection.Name = "btnBackTargetSelection";
-            this.btnBackTargetSelection.Size = new System.Drawing.Size(107, 54);
+            this.btnBackTargetSelection.Size = new System.Drawing.Size(127, 54);
             this.btnBackTargetSelection.TabIndex = 0;
             this.btnBackTargetSelection.Text = "検査対象\r\n選択へ戻る";
             this.btnBackTargetSelection.UseVisualStyleBackColor = true;
@@ -858,10 +864,16 @@
             this.Column,
             this.ng,
             this.position,
-            this.reason,
-            this.IntDate,
-            this.EndDate,
-            this.UserNm});
+            this.Except,
+            this.Ret,
+            this.NgReason,
+            this.ExceptInpDate,
+            this.ExceptUser,
+            this.CheckInpDate,
+            this.CheckUser,
+            this.UpdIntDate,
+            this.UpdUser,
+            this.UpdBefNgReason});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -895,157 +907,182 @@
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dgvData.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvData_CellDoubleClick);
+            this.dgvData.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgvData_MouseUp);
             // 
             // no
             // 
-            this.no.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.no.HeaderText = "№";
-            this.no.MinimumWidth = 6;
             this.no.Name = "no";
             this.no.ReadOnly = true;
-            this.no.Width = 44;
+            this.no.Width = 50;
             // 
             // Goki
             // 
-            this.Goki.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.Goki.HeaderText = "号機";
             this.Goki.Name = "Goki";
             this.Goki.ReadOnly = true;
-            this.Goki.Width = 55;
+            this.Goki.Width = 50;
             // 
             // HinNm
             // 
-            this.HinNm.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HinNm.HeaderText = "品名";
             this.HinNm.Name = "HinNm";
             this.HinNm.ReadOnly = true;
-            this.HinNm.Width = 55;
+            this.HinNm.Width = 130;
             // 
             // SashiZu
             // 
-            this.SashiZu.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.SashiZu.HeaderText = "指図";
             this.SashiZu.Name = "SashiZu";
             this.SashiZu.ReadOnly = true;
-            this.SashiZu.Width = 55;
+            this.SashiZu.Width = 90;
             // 
             // HanNo
             // 
-            this.HanNo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HanNo.HeaderText = "反番";
             this.HanNo.Name = "HanNo";
             this.HanNo.ReadOnly = true;
-            this.HanNo.Width = 55;
+            this.HanNo.Width = 120;
             // 
             // HansoStaDate
             // 
-            this.HansoStaDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HansoStaDate.HeaderText = "搬送開始日時";
             this.HansoStaDate.Name = "HansoStaDate";
             this.HansoStaDate.ReadOnly = true;
-            this.HansoStaDate.Width = 99;
+            this.HansoStaDate.Width = 210;
             // 
             // HansoEndDate
             // 
-            this.HansoEndDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HansoEndDate.HeaderText = "搬送終了日時";
             this.HansoEndDate.Name = "HansoEndDate";
             this.HansoEndDate.ReadOnly = true;
-            this.HansoEndDate.Width = 99;
+            this.HansoEndDate.Width = 210;
             // 
             // Kensaku
             // 
-            this.Kensaku.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.Kensaku.HeaderText = "検査範囲行";
             this.Kensaku.Name = "Kensaku";
             this.Kensaku.ReadOnly = true;
-            this.Kensaku.Width = 88;
+            this.Kensaku.Width = 120;
             // 
             // HanteiStaDate
             // 
-            this.HanteiStaDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HanteiStaDate.HeaderText = "判定開始日時";
             this.HanteiStaDate.Name = "HanteiStaDate";
             this.HanteiStaDate.ReadOnly = true;
-            this.HanteiStaDate.Width = 99;
+            this.HanteiStaDate.Width = 210;
             // 
             // HanteiEndDate
             // 
-            this.HanteiEndDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.HanteiEndDate.HeaderText = "判定終了日時";
             this.HanteiEndDate.Name = "HanteiEndDate";
             this.HanteiEndDate.ReadOnly = true;
-            this.HanteiEndDate.Width = 99;
+            this.HanteiEndDate.Width = 210;
             // 
             // KensaNo
             // 
-            this.KensaNo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.KensaNo.HeaderText = "検査番号";
             this.KensaNo.Name = "KensaNo";
             this.KensaNo.ReadOnly = true;
-            this.KensaNo.Width = 77;
+            this.KensaNo.Width = 90;
             // 
             // line
             // 
-            this.line.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.line.HeaderText = "行";
-            this.line.MinimumWidth = 6;
             this.line.Name = "line";
-            this.line.Width = 44;
+            this.line.ReadOnly = true;
+            this.line.Width = 60;
             // 
             // Column
             // 
-            this.Column.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.Column.HeaderText = "列";
-            this.Column.MinimumWidth = 6;
             this.Column.Name = "Column";
-            this.Column.Width = 44;
+            this.Column.ReadOnly = true;
+            this.Column.Width = 50;
             // 
             // ng
             // 
-            this.ng.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.ng.HeaderText = "NG面";
-            this.ng.MinimumWidth = 6;
             this.ng.Name = "ng";
+            this.ng.ReadOnly = true;
             this.ng.Width = 60;
             // 
             // position
             // 
-            this.position.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.position.HeaderText = "位置（X,Y）cm";
-            this.position.MinimumWidth = 6;
+            this.position.HeaderText = "位置(X,Y)cm";
             this.position.Name = "position";
-            this.position.Width = 112;
+            this.position.ReadOnly = true;
+            this.position.Width = 90;
             // 
-            // reason
+            // Except
             // 
-            this.reason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.reason.HeaderText = "NG理由";
-            this.reason.MinimumWidth = 100;
-            this.reason.Name = "reason";
+            this.Except.HeaderText = "過検知除外";
+            this.Except.Name = "Except";
+            this.Except.ReadOnly = true;
+            this.Except.Width = 120;
             // 
-            // IntDate
+            // Ret
             // 
-            this.IntDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.IntDate.HeaderText = "入力時刻";
-            this.IntDate.Name = "IntDate";
-            this.IntDate.ReadOnly = true;
-            this.IntDate.Width = 77;
+            this.Ret.HeaderText = "合否確認";
+            this.Ret.Name = "Ret";
+            this.Ret.ReadOnly = true;
+            this.Ret.Width = 120;
             // 
-            // EndDate
+            // NgReason
             // 
-            this.EndDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.EndDate.HeaderText = "終了時刻";
-            this.EndDate.Name = "EndDate";
-            this.EndDate.ReadOnly = true;
-            this.EndDate.Width = 77;
+            this.NgReason.HeaderText = "NG理由";
+            this.NgReason.Name = "NgReason";
+            this.NgReason.ReadOnly = true;
+            this.NgReason.Width = 200;
             // 
-            // UserNm
+            // ExceptInpDate
             // 
-            this.UserNm.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.UserNm.HeaderText = "作業者名";
-            this.UserNm.MinimumWidth = 100;
-            this.UserNm.Name = "UserNm";
+            this.ExceptInpDate.HeaderText = "過検知検査時刻";
+            this.ExceptInpDate.Name = "ExceptInpDate";
+            this.ExceptInpDate.ReadOnly = true;
+            this.ExceptInpDate.Width = 210;
+            // 
+            // ExceptUser
+            // 
+            this.ExceptUser.HeaderText = "過検知検査作業者";
+            this.ExceptUser.Name = "ExceptUser";
+            this.ExceptUser.ReadOnly = true;
+            this.ExceptUser.Width = 160;
+            // 
+            // CheckInpDate
+            // 
+            this.CheckInpDate.HeaderText = "合否確認時刻";
+            this.CheckInpDate.Name = "CheckInpDate";
+            this.CheckInpDate.ReadOnly = true;
+            this.CheckInpDate.Width = 210;
+            // 
+            // CheckUser
+            // 
+            this.CheckUser.HeaderText = "合否確認作業者";
+            this.CheckUser.Name = "CheckUser";
+            this.CheckUser.ReadOnly = true;
+            this.CheckUser.Width = 160;
+            // 
+            // UpdIntDate
+            // 
+            this.UpdIntDate.HeaderText = "結果更新時刻";
+            this.UpdIntDate.Name = "UpdIntDate";
+            this.UpdIntDate.ReadOnly = true;
+            this.UpdIntDate.Width = 210;
+            // 
+            // UpdUser
+            // 
+            this.UpdUser.HeaderText = "結果更新作業者";
+            this.UpdUser.Name = "UpdUser";
+            this.UpdUser.ReadOnly = true;
+            this.UpdUser.Width = 160;
+            // 
+            // UpdBefNgReason
+            // 
+            this.UpdBefNgReason.HeaderText = "更新前NG理由";
+            this.UpdBefNgReason.Name = "UpdBefNgReason";
+            this.UpdBefNgReason.ReadOnly = true;
+            this.UpdBefNgReason.Width = 200;
             // 
             // DisplayResultsAgo
             // 
@@ -1132,6 +1169,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtKensakuRow_To;
         private System.Windows.Forms.TextBox txtKensakuRow_From;
+        private System.Windows.Forms.Button BackResultCheck;
         private System.Windows.Forms.DataGridViewTextBoxColumn no;
         private System.Windows.Forms.DataGridViewTextBoxColumn Goki;
         private System.Windows.Forms.DataGridViewTextBoxColumn HinNm;
@@ -1147,10 +1185,15 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column;
         private System.Windows.Forms.DataGridViewTextBoxColumn ng;
         private System.Windows.Forms.DataGridViewTextBoxColumn position;
-        private System.Windows.Forms.DataGridViewTextBoxColumn reason;
-        private System.Windows.Forms.DataGridViewTextBoxColumn IntDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EndDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn UserNm;
-        private System.Windows.Forms.Button BackResultCheck;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Except;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Ret;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NgReason;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ExceptInpDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ExceptUser;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CheckInpDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CheckUser;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UpdIntDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UpdUser;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UpdBefNgReason;
     }
 }
