@@ -22,7 +22,6 @@ namespace UserMasterMaintenance
         #endregion
 
         #region イベント
-
         /// <summary>
         /// 初期表示
         /// </summary>
@@ -32,7 +31,8 @@ namespace UserMasterMaintenance
 
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            dispDataGridView();
+            // 初期表示モードで明細表示を呼び出し
+            dispDataGridView(0, "0000", 0);
         }
 
         /// <summary>
@@ -45,15 +45,15 @@ namespace UserMasterMaintenance
             // 作業者登録画面を登録モードで表示する
             UserEdit frmUserReg = new UserEdit(g_CON_EDITMODE_REG);
             frmUserReg.ShowDialog();
-            if(frmUserReg.g_UpdateFlg == 1) 
+            if(frmUserReg.g_intUpdateFlg == 1) 
             {
-                dispDataGridView();
+                // 登録表示モードで明細表示を呼び出し
+                dispDataGridView(1, frmUserReg.g_strRegWorkerNo, 0);
             }
         }
 
         /// <summary>
         /// 削除ボタンクリック
-        /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -62,6 +62,7 @@ namespace UserMasterMaintenance
             string strSelUserNo = "";
             string strSelUserName = "";
             string strSelUserNameKana = "";
+            int intSelRow = 0;
 
             if (dgvUser.SelectedRows.Count == 0)
             {
@@ -75,6 +76,15 @@ namespace UserMasterMaintenance
                     strSelUserNo = NulltoString(r.Cells[m_CON_COL_USERNO].Value);
                     strSelUserName = NulltoString(r.Cells[m_CON_COL_USERNAME].Value);
                     strSelUserNameKana = NulltoString(r.Cells[m_CON_COL_USERNAMEKANA].Value);
+                    // 削除後の選択行
+                    if (r.Index == dgvUser.Rows.Count - 1)
+                    {
+                        intSelRow = r.Index - 1;
+                    }
+                    else 
+                    {
+                        intSelRow = r.Index;
+                    }
                 }
 
                 if (MessageBox.Show("選択されている行（データ）を削除しますか？"
@@ -102,6 +112,9 @@ namespace UserMasterMaintenance
                                     {
                                         transaction.Commit();
                                         MessageBox.Show("削除しました");
+
+                                        // 更新表示モードで明細表示を呼び出し
+                                        dispDataGridView(2, "0000", intSelRow);
                                     }
                                     else
                                     {
@@ -117,9 +130,6 @@ namespace UserMasterMaintenance
                                            + ex.Message);
                         }
                     }
-
-                    // 再表示
-                    dispDataGridView();
                 }
             }
         }
@@ -135,8 +145,8 @@ namespace UserMasterMaintenance
 
             if (System.Windows.Forms.DialogResult.OK == frmUserImportCsv.ShowDialog())
             {
-                //処理を記述する
-                dispDataGridView();
+                // 初期表示モードで明細表示を呼び出し
+                dispDataGridView(0, "0000", 0);
             }
         }
 
@@ -147,21 +157,21 @@ namespace UserMasterMaintenance
         /// <param name="e"></param>
         private void llk_Click(dynamic sender, EventArgs e)
         {
-            if (sender == llkあ) { m_strKanaSta = "ア"; m_strKanaEnd = "オ"; }
-            if (sender == llkか) { m_strKanaSta = "カ"; m_strKanaEnd = "コ"; }
-            if (sender == llkさ) { m_strKanaSta = "サ"; m_strKanaEnd = "ソ"; }
-            if (sender == llkた) { m_strKanaSta = "タ"; m_strKanaEnd = "ト"; }
-            if (sender == llkな) { m_strKanaSta = "ナ"; m_strKanaEnd = "ノ"; }
-            if (sender == llkは) { m_strKanaSta = "ハ"; m_strKanaEnd = "ホ"; }
-            if (sender == llkま) { m_strKanaSta = "マ"; m_strKanaEnd = "モ"; }
-            if (sender == llkや) { m_strKanaSta = "ヤ"; m_strKanaEnd = "ヨ"; }
-            if (sender == llkら) { m_strKanaSta = "ラ"; m_strKanaEnd = "ロ"; }
-            if (sender == llkわ) { m_strKanaSta = "ワ"; m_strKanaEnd = "ン"; }
+            if (sender == llkア) { m_strKanaSta = "ア"; m_strKanaEnd = "オ"; }
+            if (sender == llkカ) { m_strKanaSta = "カ"; m_strKanaEnd = "コ"; }
+            if (sender == llkサ) { m_strKanaSta = "サ"; m_strKanaEnd = "ソ"; }
+            if (sender == llkタ) { m_strKanaSta = "タ"; m_strKanaEnd = "ト"; }
+            if (sender == llkナ) { m_strKanaSta = "ナ"; m_strKanaEnd = "ノ"; }
+            if (sender == llkハ) { m_strKanaSta = "ハ"; m_strKanaEnd = "ホ"; }
+            if (sender == llkマ) { m_strKanaSta = "マ"; m_strKanaEnd = "モ"; }
+            if (sender == llkヤ) { m_strKanaSta = "ヤ"; m_strKanaEnd = "ヨ"; }
+            if (sender == llkラ) { m_strKanaSta = "ラ"; m_strKanaEnd = "ロ"; }
+            if (sender == llkワ) { m_strKanaSta = "ワ"; m_strKanaEnd = "ン"; }
             if (sender == llkEtc) { m_strKanaSta = "！"; m_strKanaEnd = "！"; }
             if (sender == llkNon) { m_strKanaSta = ""; m_strKanaEnd = ""; }
 
-            foreach (Label lbl in new Label[] { llkあ, llkか, llkさ, llkた, llkな,
-                                                llkは, llkま, llkや, llkら, llkわ,
+            foreach (Label lbl in new Label[] { llkア, llkカ, llkサ, llkタ, llkナ,
+                                                llkハ, llkマ, llkヤ, llkラ, llkワ,
                                                 llkEtc, llkNon })
             {
                 if (sender == lbl)
@@ -189,9 +199,10 @@ namespace UserMasterMaintenance
                                                dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString(),
                                                dgvUser.Rows[e.RowIndex].Cells[2].Value.ToString());
             frmUserReg.ShowDialog();
-            if (frmUserReg.g_UpdateFlg == 1)
+            if (frmUserReg.g_intUpdateFlg == 1)
             {
-                dispDataGridView();
+                // 更新表示モードで明細表示を呼び出し
+                dispDataGridView(2, "0000", e.RowIndex);
             }
         }
 
@@ -202,7 +213,8 @@ namespace UserMasterMaintenance
         /// <param name="e"></param>
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            dispDataGridView();
+            // 初期表示モードで明細表示を呼び出し
+            dispDataGridView(0, "0000", 0);
         }
 
         /// <summary>
@@ -272,7 +284,16 @@ namespace UserMasterMaintenance
         /// <summary>
         /// データグリッドビュー表示処理
         /// </summary>
-        private void dispDataGridView()
+        /// <param name="intExecMode">検索モード
+        ///   0：初期表示＆検索
+        ///   1：登録
+        ///   2：更新
+        /// </param>
+        /// <param name="strSelWorkerNo">明細検索対象</param>
+        /// <param name="intLastTimeSelLine">前回選択行</param>
+        private void dispDataGridView(int intExecMode
+                                    , string strSelWorkerNo
+                                    , int intLastTimeSelLine)
         {
             string strSQL = "";
 
@@ -353,9 +374,51 @@ namespace UserMasterMaintenance
 
             dgvUser.CurrentCell = null;
 
-            if (dgvUser.Rows.Count > 0) 
+            if (dgvUser.Rows.Count > 0)
             {
-                dgvUser.Rows[0].Selected = true;
+                // 表示モードが初期表示の場合
+                if (intExecMode == 0)
+                {
+                    // 0行目表示
+                    dgvUser.Rows[0].Selected = true;
+                    dgvUser.FirstDisplayedScrollingRowIndex = 0;
+                }
+                else if (intExecMode == 1) 
+                {
+                    int intSelRow = 0;
+
+                    // 対象の選択行を探す
+                    foreach (DataGridViewRow r in dgvUser.Rows)
+                    {
+                        if (strSelWorkerNo == NulltoString(r.Cells[m_CON_COL_USERNO].Value)) 
+                        {
+                            intSelRow = r.Index;
+                            break;
+                        }
+                    }
+
+                    // 更新行表示
+                    dgvUser.Rows[intSelRow].Selected = true;
+                    // 対象行が既に画面内に表示されている時は何もしない
+                    if (dgvUser.SelectedRows[0].Displayed)
+                    {
+                        return;
+                    }
+                    dgvUser.FirstDisplayedScrollingRowIndex = intSelRow;
+                }
+                // 表示モードが更新表示の場合
+                else if (intExecMode == 2)
+                {
+                    // 更新行表示
+                    dgvUser.Rows[intLastTimeSelLine].Selected = true;
+
+                    // 対象行が既に画面内に表示されている時は何もしない
+                    if (dgvUser.SelectedRows[0].Displayed)
+                    {
+                        return;
+                    }
+                    dgvUser.FirstDisplayedScrollingRowIndex = intLastTimeSelLine;
+                }
             }
         }
 

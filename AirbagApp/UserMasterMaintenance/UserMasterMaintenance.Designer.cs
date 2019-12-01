@@ -30,31 +30,31 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserMasterMaintenance));
             this.dgvUser = new System.Windows.Forms.DataGridView();
-            this.UserNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.YomiGana = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnReg = new System.Windows.Forms.Button();
             this.btnDel = new System.Windows.Forms.Button();
             this.btnImportCsv = new System.Windows.Forms.Button();
             this.gbxJoken = new System.Windows.Forms.GroupBox();
             this.txtUserNo_To = new System.Windows.Forms.TextBox();
             this.txtUserNo_From = new System.Windows.Forms.TextBox();
-            this.llkわ = new System.Windows.Forms.LinkLabel();
-            this.llkら = new System.Windows.Forms.LinkLabel();
-            this.llkや = new System.Windows.Forms.LinkLabel();
-            this.llkま = new System.Windows.Forms.LinkLabel();
-            this.llkは = new System.Windows.Forms.LinkLabel();
-            this.llkな = new System.Windows.Forms.LinkLabel();
-            this.llkた = new System.Windows.Forms.LinkLabel();
-            this.llkさ = new System.Windows.Forms.LinkLabel();
-            this.llkか = new System.Windows.Forms.LinkLabel();
+            this.llkワ = new System.Windows.Forms.LinkLabel();
+            this.llkラ = new System.Windows.Forms.LinkLabel();
+            this.llkヤ = new System.Windows.Forms.LinkLabel();
+            this.llkマ = new System.Windows.Forms.LinkLabel();
+            this.llkハ = new System.Windows.Forms.LinkLabel();
+            this.llkナ = new System.Windows.Forms.LinkLabel();
+            this.llkタ = new System.Windows.Forms.LinkLabel();
+            this.llkサ = new System.Windows.Forms.LinkLabel();
+            this.llkカ = new System.Windows.Forms.LinkLabel();
             this.llkNon = new System.Windows.Forms.LinkLabel();
             this.llkEtc = new System.Windows.Forms.LinkLabel();
-            this.llkあ = new System.Windows.Forms.LinkLabel();
+            this.llkア = new System.Windows.Forms.LinkLabel();
             this.lblUserNo_Between = new System.Windows.Forms.Label();
             this.lblTitleUserNo = new System.Windows.Forms.Label();
             this.lblTitleUserYomiGana = new System.Windows.Forms.Label();
             this.btnSearch = new System.Windows.Forms.Button();
+            this.UserNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.YomiGana = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUser)).BeginInit();
             this.gbxJoken.SuspendLayout();
             this.SuspendLayout();
@@ -83,31 +83,6 @@
             this.dgvUser.Size = new System.Drawing.Size(452, 274);
             this.dgvUser.TabIndex = 2;
             this.dgvUser.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUser_CellDoubleClick);
-            // 
-            // UserNo
-            // 
-            this.UserNo.HeaderText = "社員番号";
-            this.UserNo.Name = "UserNo";
-            this.UserNo.ReadOnly = true;
-            this.UserNo.Width = 78;
-            // 
-            // UserNm
-            // 
-            this.UserNm.FillWeight = 120F;
-            this.UserNm.HeaderText = "作業者名";
-            this.UserNm.MinimumWidth = 120;
-            this.UserNm.Name = "UserNm";
-            this.UserNm.ReadOnly = true;
-            this.UserNm.Width = 120;
-            // 
-            // YomiGana
-            // 
-            this.YomiGana.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.YomiGana.FillWeight = 180F;
-            this.YomiGana.HeaderText = "読み仮名";
-            this.YomiGana.MinimumWidth = 180;
-            this.YomiGana.Name = "YomiGana";
-            this.YomiGana.ReadOnly = true;
             // 
             // btnReg
             // 
@@ -148,18 +123,18 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbxJoken.Controls.Add(this.txtUserNo_To);
             this.gbxJoken.Controls.Add(this.txtUserNo_From);
-            this.gbxJoken.Controls.Add(this.llkわ);
-            this.gbxJoken.Controls.Add(this.llkら);
-            this.gbxJoken.Controls.Add(this.llkや);
-            this.gbxJoken.Controls.Add(this.llkま);
-            this.gbxJoken.Controls.Add(this.llkは);
-            this.gbxJoken.Controls.Add(this.llkな);
-            this.gbxJoken.Controls.Add(this.llkた);
-            this.gbxJoken.Controls.Add(this.llkさ);
-            this.gbxJoken.Controls.Add(this.llkか);
+            this.gbxJoken.Controls.Add(this.llkワ);
+            this.gbxJoken.Controls.Add(this.llkラ);
+            this.gbxJoken.Controls.Add(this.llkヤ);
+            this.gbxJoken.Controls.Add(this.llkマ);
+            this.gbxJoken.Controls.Add(this.llkハ);
+            this.gbxJoken.Controls.Add(this.llkナ);
+            this.gbxJoken.Controls.Add(this.llkタ);
+            this.gbxJoken.Controls.Add(this.llkサ);
+            this.gbxJoken.Controls.Add(this.llkカ);
             this.gbxJoken.Controls.Add(this.llkNon);
             this.gbxJoken.Controls.Add(this.llkEtc);
-            this.gbxJoken.Controls.Add(this.llkあ);
+            this.gbxJoken.Controls.Add(this.llkア);
             this.gbxJoken.Controls.Add(this.lblUserNo_Between);
             this.gbxJoken.Controls.Add(this.lblTitleUserNo);
             this.gbxJoken.Controls.Add(this.lblTitleUserYomiGana);
@@ -194,104 +169,104 @@
             this.txtUserNo_From.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_KeyPress);
             this.txtUserNo_From.Leave += new System.EventHandler(this.txtUserNo_From_Leave);
             // 
-            // llkわ
+            // llkワ
             // 
-            this.llkわ.AutoSize = true;
-            this.llkわ.Location = new System.Drawing.Point(231, 69);
-            this.llkわ.Name = "llkわ";
-            this.llkわ.Size = new System.Drawing.Size(15, 12);
-            this.llkわ.TabIndex = 10;
-            this.llkわ.TabStop = true;
-            this.llkわ.Text = "わ";
-            this.llkわ.Click += new System.EventHandler(this.llk_Click);
+            this.llkワ.AutoSize = true;
+            this.llkワ.Location = new System.Drawing.Point(231, 69);
+            this.llkワ.Name = "llkワ";
+            this.llkワ.Size = new System.Drawing.Size(14, 12);
+            this.llkワ.TabIndex = 10;
+            this.llkワ.TabStop = true;
+            this.llkワ.Text = "ワ";
+            this.llkワ.Click += new System.EventHandler(this.llk_Click);
             // 
-            // llkら
+            // llkラ
             // 
-            this.llkら.AutoSize = true;
-            this.llkら.Location = new System.Drawing.Point(181, 69);
-            this.llkら.Name = "llkら";
-            this.llkら.Size = new System.Drawing.Size(13, 12);
-            this.llkら.TabIndex = 9;
-            this.llkら.TabStop = true;
-            this.llkら.Text = "ら";
-            this.llkら.Click += new System.EventHandler(this.llk_Click);
+            this.llkラ.AutoSize = true;
+            this.llkラ.Location = new System.Drawing.Point(181, 69);
+            this.llkラ.Name = "llkラ";
+            this.llkラ.Size = new System.Drawing.Size(13, 12);
+            this.llkラ.TabIndex = 9;
+            this.llkラ.TabStop = true;
+            this.llkラ.Text = "ラ";
+            this.llkラ.Click += new System.EventHandler(this.llk_Click);
             // 
-            // llkや
+            // llkヤ
             // 
-            this.llkや.AutoSize = true;
-            this.llkや.Location = new System.Drawing.Point(131, 69);
-            this.llkや.Name = "llkや";
-            this.llkや.Size = new System.Drawing.Size(15, 12);
-            this.llkや.TabIndex = 8;
-            this.llkや.TabStop = true;
-            this.llkや.Text = "や";
-            this.llkや.Click += new System.EventHandler(this.llk_Click);
+            this.llkヤ.AutoSize = true;
+            this.llkヤ.Location = new System.Drawing.Point(131, 69);
+            this.llkヤ.Name = "llkヤ";
+            this.llkヤ.Size = new System.Drawing.Size(15, 12);
+            this.llkヤ.TabIndex = 8;
+            this.llkヤ.TabStop = true;
+            this.llkヤ.Text = "ヤ";
+            this.llkヤ.Click += new System.EventHandler(this.llk_Click);
             // 
-            // llkま
+            // llkマ
             // 
-            this.llkま.AutoSize = true;
-            this.llkま.Location = new System.Drawing.Point(81, 69);
-            this.llkま.Name = "llkま";
-            this.llkま.Size = new System.Drawing.Size(14, 12);
-            this.llkま.TabIndex = 7;
-            this.llkま.TabStop = true;
-            this.llkま.Text = "ま";
-            this.llkま.Click += new System.EventHandler(this.llk_Click);
+            this.llkマ.AutoSize = true;
+            this.llkマ.Location = new System.Drawing.Point(81, 69);
+            this.llkマ.Name = "llkマ";
+            this.llkマ.Size = new System.Drawing.Size(14, 12);
+            this.llkマ.TabIndex = 7;
+            this.llkマ.TabStop = true;
+            this.llkマ.Text = "マ";
+            this.llkマ.Click += new System.EventHandler(this.llk_Click);
             // 
-            // llkは
+            // llkハ
             // 
-            this.llkは.AutoSize = true;
-            this.llkは.Location = new System.Drawing.Point(31, 69);
-            this.llkは.Name = "llkは";
-            this.llkは.Size = new System.Drawing.Size(15, 12);
-            this.llkは.TabIndex = 6;
-            this.llkは.TabStop = true;
-            this.llkは.Text = "は";
-            this.llkは.Click += new System.EventHandler(this.llk_Click);
+            this.llkハ.AutoSize = true;
+            this.llkハ.Location = new System.Drawing.Point(31, 69);
+            this.llkハ.Name = "llkハ";
+            this.llkハ.Size = new System.Drawing.Size(15, 12);
+            this.llkハ.TabIndex = 6;
+            this.llkハ.TabStop = true;
+            this.llkハ.Text = "ハ";
+            this.llkハ.Click += new System.EventHandler(this.llk_Click);
             // 
-            // llkな
+            // llkナ
             // 
-            this.llkな.AutoSize = true;
-            this.llkな.Location = new System.Drawing.Point(231, 43);
-            this.llkな.Name = "llkな";
-            this.llkな.Size = new System.Drawing.Size(15, 12);
-            this.llkな.TabIndex = 5;
-            this.llkな.TabStop = true;
-            this.llkな.Text = "な";
-            this.llkな.Click += new System.EventHandler(this.llk_Click);
+            this.llkナ.AutoSize = true;
+            this.llkナ.Location = new System.Drawing.Point(231, 43);
+            this.llkナ.Name = "llkナ";
+            this.llkナ.Size = new System.Drawing.Size(15, 12);
+            this.llkナ.TabIndex = 5;
+            this.llkナ.TabStop = true;
+            this.llkナ.Text = "ナ";
+            this.llkナ.Click += new System.EventHandler(this.llk_Click);
             // 
-            // llkた
+            // llkタ
             // 
-            this.llkた.AutoSize = true;
-            this.llkた.Location = new System.Drawing.Point(181, 43);
-            this.llkた.Name = "llkた";
-            this.llkた.Size = new System.Drawing.Size(14, 12);
-            this.llkた.TabIndex = 4;
-            this.llkた.TabStop = true;
-            this.llkた.Text = "た";
-            this.llkた.Click += new System.EventHandler(this.llk_Click);
+            this.llkタ.AutoSize = true;
+            this.llkタ.Location = new System.Drawing.Point(181, 43);
+            this.llkタ.Name = "llkタ";
+            this.llkタ.Size = new System.Drawing.Size(13, 12);
+            this.llkタ.TabIndex = 4;
+            this.llkタ.TabStop = true;
+            this.llkタ.Text = "タ";
+            this.llkタ.Click += new System.EventHandler(this.llk_Click);
             // 
-            // llkさ
+            // llkサ
             // 
-            this.llkさ.AutoSize = true;
-            this.llkさ.Location = new System.Drawing.Point(131, 43);
-            this.llkさ.Name = "llkさ";
-            this.llkさ.Size = new System.Drawing.Size(13, 12);
-            this.llkさ.TabIndex = 3;
-            this.llkさ.TabStop = true;
-            this.llkさ.Text = "さ";
-            this.llkさ.Click += new System.EventHandler(this.llk_Click);
+            this.llkサ.AutoSize = true;
+            this.llkサ.Location = new System.Drawing.Point(131, 43);
+            this.llkサ.Name = "llkサ";
+            this.llkサ.Size = new System.Drawing.Size(15, 12);
+            this.llkサ.TabIndex = 3;
+            this.llkサ.TabStop = true;
+            this.llkサ.Text = "サ";
+            this.llkサ.Click += new System.EventHandler(this.llk_Click);
             // 
-            // llkか
+            // llkカ
             // 
-            this.llkか.AutoSize = true;
-            this.llkか.Location = new System.Drawing.Point(81, 43);
-            this.llkか.Name = "llkか";
-            this.llkか.Size = new System.Drawing.Size(15, 12);
-            this.llkか.TabIndex = 2;
-            this.llkか.TabStop = true;
-            this.llkか.Text = "か";
-            this.llkか.Click += new System.EventHandler(this.llk_Click);
+            this.llkカ.AutoSize = true;
+            this.llkカ.Location = new System.Drawing.Point(81, 43);
+            this.llkカ.Name = "llkカ";
+            this.llkカ.Size = new System.Drawing.Size(14, 12);
+            this.llkカ.TabIndex = 2;
+            this.llkカ.TabStop = true;
+            this.llkカ.Text = "カ";
+            this.llkカ.Click += new System.EventHandler(this.llk_Click);
             // 
             // llkNon
             // 
@@ -313,19 +288,18 @@
             this.llkEtc.TabIndex = 11;
             this.llkEtc.TabStop = true;
             this.llkEtc.Text = "その他";
-            this.llkEtc.Visible = false;
             this.llkEtc.Click += new System.EventHandler(this.llk_Click);
             // 
-            // llkあ
+            // llkア
             // 
-            this.llkあ.AutoSize = true;
-            this.llkあ.Location = new System.Drawing.Point(31, 43);
-            this.llkあ.Name = "llkあ";
-            this.llkあ.Size = new System.Drawing.Size(15, 12);
-            this.llkあ.TabIndex = 1;
-            this.llkあ.TabStop = true;
-            this.llkあ.Text = "あ";
-            this.llkあ.Click += new System.EventHandler(this.llk_Click);
+            this.llkア.AutoSize = true;
+            this.llkア.Location = new System.Drawing.Point(31, 43);
+            this.llkア.Name = "llkア";
+            this.llkア.Size = new System.Drawing.Size(14, 12);
+            this.llkア.TabIndex = 1;
+            this.llkア.TabStop = true;
+            this.llkア.Text = "ア";
+            this.llkア.Click += new System.EventHandler(this.llk_Click);
             // 
             // lblUserNo_Between
             // 
@@ -350,9 +324,9 @@
             this.lblTitleUserYomiGana.AutoSize = true;
             this.lblTitleUserYomiGana.Location = new System.Drawing.Point(17, 21);
             this.lblTitleUserYomiGana.Name = "lblTitleUserYomiGana";
-            this.lblTitleUserYomiGana.Size = new System.Drawing.Size(118, 12);
+            this.lblTitleUserYomiGana.Size = new System.Drawing.Size(113, 12);
             this.lblTitleUserYomiGana.TabIndex = 0;
-            this.lblTitleUserYomiGana.Text = "作業者名（読み仮名）：";
+            this.lblTitleUserYomiGana.Text = "作業者名（読みカナ）：";
             // 
             // btnSearch
             // 
@@ -364,6 +338,31 @@
             this.btnSearch.Text = "検索";
             this.btnSearch.UseVisualStyleBackColor = true;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // UserNo
+            // 
+            this.UserNo.HeaderText = "社員番号";
+            this.UserNo.Name = "UserNo";
+            this.UserNo.ReadOnly = true;
+            this.UserNo.Width = 78;
+            // 
+            // UserNm
+            // 
+            this.UserNm.FillWeight = 120F;
+            this.UserNm.HeaderText = "作業者名";
+            this.UserNm.MinimumWidth = 120;
+            this.UserNm.Name = "UserNm";
+            this.UserNm.ReadOnly = true;
+            this.UserNm.Width = 120;
+            // 
+            // YomiGana
+            // 
+            this.YomiGana.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.YomiGana.FillWeight = 180F;
+            this.YomiGana.HeaderText = "読みカナ";
+            this.YomiGana.MinimumWidth = 180;
+            this.YomiGana.Name = "YomiGana";
+            this.YomiGana.ReadOnly = true;
             // 
             // UserMasterMaintenance
             // 
@@ -389,31 +388,31 @@
         #endregion
 
         private System.Windows.Forms.DataGridView dgvUser;
-        private System.Windows.Forms.DataGridViewTextBoxColumn UserNo;
-        private System.Windows.Forms.DataGridViewTextBoxColumn UserNm;
-        private System.Windows.Forms.DataGridViewTextBoxColumn YomiGana;
         private System.Windows.Forms.Button btnReg;
         private System.Windows.Forms.Button btnDel;
         private System.Windows.Forms.Button btnImportCsv;
         private System.Windows.Forms.GroupBox gbxJoken;
         private System.Windows.Forms.TextBox txtUserNo_To;
         private System.Windows.Forms.TextBox txtUserNo_From;
-        private System.Windows.Forms.LinkLabel llkわ;
-        private System.Windows.Forms.LinkLabel llkら;
-        private System.Windows.Forms.LinkLabel llkや;
-        private System.Windows.Forms.LinkLabel llkま;
-        private System.Windows.Forms.LinkLabel llkは;
-        private System.Windows.Forms.LinkLabel llkな;
-        private System.Windows.Forms.LinkLabel llkた;
-        private System.Windows.Forms.LinkLabel llkさ;
-        private System.Windows.Forms.LinkLabel llkか;
+        private System.Windows.Forms.LinkLabel llkワ;
+        private System.Windows.Forms.LinkLabel llkラ;
+        private System.Windows.Forms.LinkLabel llkヤ;
+        private System.Windows.Forms.LinkLabel llkマ;
+        private System.Windows.Forms.LinkLabel llkハ;
+        private System.Windows.Forms.LinkLabel llkナ;
+        private System.Windows.Forms.LinkLabel llkタ;
+        private System.Windows.Forms.LinkLabel llkサ;
+        private System.Windows.Forms.LinkLabel llkカ;
         private System.Windows.Forms.LinkLabel llkNon;
         private System.Windows.Forms.LinkLabel llkEtc;
-        private System.Windows.Forms.LinkLabel llkあ;
+        private System.Windows.Forms.LinkLabel llkア;
         private System.Windows.Forms.Label lblUserNo_Between;
         private System.Windows.Forms.Label lblTitleUserNo;
         private System.Windows.Forms.Label lblTitleUserYomiGana;
         private System.Windows.Forms.Button btnSearch;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UserNo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UserNm;
+        private System.Windows.Forms.DataGridViewTextBoxColumn YomiGana;
     }
 }
 

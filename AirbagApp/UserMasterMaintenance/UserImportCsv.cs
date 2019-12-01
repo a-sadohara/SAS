@@ -14,17 +14,27 @@ namespace UserMasterMaintenance
     {
         #region 変数・定数
         // CSVファイル配置情報
-        private const int m_CON_COL_USER_INFO_NO = 0;
-        private const int m_CON_COL_USER_INFO_NAME_SEI = 1;
-        private const int m_CON_COL_USER_INFO_NAME_MEI = 2;
-        private const int m_CON_COL_USER_INFO_KANA_SEI = 3;
-        private const int m_CON_COL_USER_INFO_KANA_MEI = 4;
+        private const int m_CON_COL_USER_INFO_PROCESS_TYPE = 0;
+        private const int m_CON_COL_USER_INFO_NO = 1;
+        private const int m_CON_COL_USER_INFO_NAME_SEI = 2;
+        private const int m_CON_COL_USER_INFO_NAME_MEI = 3;
+        private const int m_CON_COL_USER_INFO_KANA_SEI = 4;
+        private const int m_CON_COL_USER_INFO_KANA_MEI = 5;
+
+        private const string m_CON_COL_PROCESS_TYPE_REG = "C";
+        private const string m_CON_COL_PROCESS_TYPE_UPD = "U";
+        private const string m_CON_COL_PROCESS_TYPE_DEL = "D";
+
+        private const string m_CON_OUTLOGFILE_NAME = "UserImportLog";
+
+        private static string m_strInputFileName = "";
 
         /// <summary>
         /// 作業者登録CSVファイル
         /// </summary>
         public class UserCsvInfo
         {
+            public string strProcessType { get; set; }
             public string strUserID { get; set; }
             public string strUserNameSei { get; set; }
             public string strUserNameMei { get; set; }
@@ -85,10 +95,12 @@ namespace UserMasterMaintenance
         private void btnImport_Click(object sender, EventArgs e)
         {
             // 読み込みデータ
-            List<UserCsvInfo> lstUserData = new List<UserCsvInfo>();
+            //List<UserCsvInfo> lstUserData = new List<UserCsvInfo>();
+            UserCsvInfo uciUserData = new UserCsvInfo();
+            int intReadData = 0;
 
             // 未入力チェック
-            if (txtCsvFile.Text == "") 
+            if (txtCsvFile.Text == "")
             {
                 MessageBox.Show("CSVファイルを選択してください");
                 btnCsvFile.Focus();
@@ -103,25 +115,76 @@ namespace UserMasterMaintenance
                 string strFileName = txtCsvFile.Text;
                 if (System.IO.File.Exists(strFileName) == false)
                 {
-                    MessageBox.Show("指定されたcsvファイルが存在しません。" 
-                                   + Environment.NewLine 
+                    MessageBox.Show("指定されたcsvファイルが存在しません。"
+                                   + Environment.NewLine
                                    + strFileName);
                     return;
                 }
 
-                // CSVファイル読み込み＆入力データチェックを行う
-                if (ReadCsvData(strFileName, out lstUserData) == false) 
+                m_strInputFileName = strFileName;
+
+                // 選択ファイル読み込み
+                using (StreamReader sr = new StreamReader(strFileName, Encoding.GetEncoding("Shift_JIS")))
                 {
-                    return;
+                    int intRowCount = 0;
+
+                    // PostgreSQLへ接続
+                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
+                    {
+                        NpgsqlCon.Open();
+
+                        using (var transaction = NpgsqlCon.BeginTransaction())
+                        {
+                            // ストリームの末尾まで繰り返す
+                            while (!sr.EndOfStream)
+                            {
+                                intRowCount = intRowCount + 1;
+
+                                // マーカCSVファイルを１行読み込む
+                                string strFileTextLine = sr.ReadLine();
+                                if (strFileTextLine == "" || intRowCount == 1)
+                                {
+                                    // ヘッダ行(1行目)または空行（最終行）の場合読み飛ばす
+                                    continue;
+                                }
+
+                                // CSVファイル読み込み＆入力データチェックを行う
+                                if (ReadCsvData(strFileTextLine, intRowCount, out uciUserData) == false)
+                                {
+                                    continue;
+                                }
+
+                                // 登録処理実施
+                                if (RegistrationUser(uciUserData, NpgsqlCon, transaction) == true)
+                                {
+                                    intReadData = intReadData + 1;
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
+
+                            // トランザクションコミット
+                            transaction.Commit();
+                        }
+                    }
+
+                    if (intRowCount == 1)
+                    {
+                        MessageBox.Show("CSVのデータが0件です");
+                        // ログファイルにエラー出力を行う
+                        OutPutImportLog("取り込み件数0件");
+                        this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                        this.Close();
+                        return;
+                    }
                 }
 
-                // 登録処理実施
-                if (RegistrationUser(lstUserData) == true) 
-                {
-                    MessageBox.Show("取込み処理が完了しました");
-                    this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                    this.Close();
-                }
+                MessageBox.Show("取込み処理が完了しました");
+                OutPutImportLog("取込み処理が完了しました。取り込み件数：" + intReadData + "件");
+                this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                this.Close();
             }
         }
         #endregion
@@ -130,60 +193,27 @@ namespace UserMasterMaintenance
         /// <summary>
         /// CSVファイル読み込み
         /// </summary>
-        /// <param name="strFileName">読み込むCSVファイル名</param>
+        /// <param name="strFileTextLine">CSVファイル行テキスト</param>
         /// <param name="lstUserData">CSVファイルデータ</param>
         /// <returns></returns>
-        private Boolean ReadCsvData(string strFileName
-                                  , out List<UserCsvInfo> lstUserData) 
+        private Boolean ReadCsvData(string strFileTextLine
+                                  , int intRowCount
+                                  , out UserCsvInfo uciUserData)
         {
-            int intRowCount = 0;
+            uciUserData = new UserCsvInfo();
 
-            // 読み込みデータ
-            lstUserData = new List<UserCsvInfo>();
-
-            // 選択ファイル読み込み
-            using (StreamReader sr = new StreamReader(strFileName, Encoding.GetEncoding("Shift_JIS")))
+            // CSVを読み込む
+            if (SetUserInfoCsv(strFileTextLine, out uciUserData) == false)
             {
-                // ストリームの末尾まで繰り返す
-                while (!sr.EndOfStream)
-                {
-                    UserCsvInfo uciUserData = new UserCsvInfo();
-
-                    intRowCount = intRowCount + 1;
-
-                    // マーカCSVファイルを１行読み込む
-                    string strFileTextLine = sr.ReadLine();
-                    if (strFileTextLine == ""　|| intRowCount == 1)
-                    {
-                        // ヘッダ行(1行目)または空行（最終行）の場合読み飛ばす
-                        continue;
-                    }
-
-                    // CSVを読み込む
-                    if (SetUserInfoCsv(strFileTextLine, out uciUserData) == false) 
-                    {
-                        MessageBox.Show(intRowCount + "行目の列数が不足しています" 
-                                      + Environment.NewLine 
-                                      + "データ：" + strFileTextLine);
-                        return false;
-                    }
-
-                    lstUserData.Add(uciUserData);
-                }
-            }
-
-            if (lstUserData.Count == 0)
-            {
-                MessageBox.Show("CSVのデータが0件です");
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目の列数が不足しています");
                 return false;
             }
-            else 
+
+            // 入力データチェックを行う
+            if (InputDataCheck(uciUserData, intRowCount) == false)
             {
-                // 入力データチェックを行う
-                if (InputDataCheck(lstUserData) == false) 
-                {
-                    return false;
-                }
+                return false;
             }
 
             return true;
@@ -195,7 +225,7 @@ namespace UserMasterMaintenance
         /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
         /// <returns></returns>
         private static Boolean SetUserInfoCsv(string strFileReadLine
-                                             ,out UserCsvInfo uciData)
+                                             , out UserCsvInfo uciData)
         {
             string[] stArrayData;
 
@@ -205,12 +235,13 @@ namespace UserMasterMaintenance
             stArrayData = strFileReadLine.Split(',');
 
             // 列数チェック
-            if (stArrayData.Length <= m_CON_COL_USER_INFO_KANA_MEI) 
+            if (stArrayData.Length <= m_CON_COL_USER_INFO_KANA_MEI)
             {
                 return false;
             }
 
             // CSVの各項目を構造体へ格納する
+            uciData.strProcessType = stArrayData[m_CON_COL_USER_INFO_PROCESS_TYPE];
             uciData.strUserID = stArrayData[m_CON_COL_USER_INFO_NO];
             uciData.strUserNameSei = stArrayData[m_CON_COL_USER_INFO_NAME_SEI];
             uciData.strUserNameMei = stArrayData[m_CON_COL_USER_INFO_NAME_MEI];
@@ -223,46 +254,55 @@ namespace UserMasterMaintenance
         /// <summary>
         /// /入力チェック
         /// </summary>
-        /// <param name="lstUserData">読み込みユーザ情報リスト</param>
+        /// <param name="uciCheckData">読み込みユーザ情報リスト</param>
+        /// <param name="intRowCount">対象行番号</param>
         /// <returns></returns>
-        private Boolean InputDataCheck(List<UserCsvInfo> lstUserData)
+        private Boolean InputDataCheck(UserCsvInfo uciCheckData
+                                     , int intRowCount)
         {
-            Int32 intRowCount = 2;
             Int32 intUserNo = 0;
 
-            foreach (UserCsvInfo uciCheckData in lstUserData) 
+            // 必須入力チェック
+            if (CheckRequiredInput(uciCheckData.strProcessType, "処理区分", intRowCount, 1) == false ||
+                CheckRequiredInput(uciCheckData.strUserID, "社員番号", intRowCount, 4) == false ||
+                CheckRequiredInput(uciCheckData.strUserNameSei, "作業者名 性", intRowCount, 10) == false ||
+                CheckRequiredInput(uciCheckData.strUserNameMei, "作業者名 名", intRowCount, 10) == false ||
+                CheckRequiredInput(uciCheckData.strUserKanaSei, "読み仮名 性", intRowCount, 10) == false ||
+                CheckRequiredInput(uciCheckData.strUserKanaMei, "読み仮名 名", intRowCount, 10) == false)
             {
+                return false;
+            }
 
-                // 必須入力チェック
-                if (CheckRequiredInput(uciCheckData.strUserID, "社員番号", intRowCount, 4) == false ||
-                    CheckRequiredInput(uciCheckData.strUserNameSei, "作業者名 性", intRowCount, 10) == false ||
-                    CheckRequiredInput(uciCheckData.strUserNameMei, "作業者名 名", intRowCount, 10) == false ||
-                    CheckRequiredInput(uciCheckData.strUserKanaSei, "読み仮名 性", intRowCount, 10) == false ||
-                    CheckRequiredInput(uciCheckData.strUserKanaMei, "読み仮名 名", intRowCount, 10) == false)
-                {
-                    return false;
-                }
+            // 文字入力チェック
+            if (uciCheckData.strProcessType != m_CON_COL_PROCESS_TYPE_REG &&
+                uciCheckData.strProcessType != m_CON_COL_PROCESS_TYPE_UPD &&
+                uciCheckData.strProcessType != m_CON_COL_PROCESS_TYPE_DEL)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目の処理区分は「C,U,D」のいずれかを指定してください。");
+                return false;
+            }
 
-                // 数値入力チェック
-                if (Int32.TryParse(uciCheckData.strUserID, out intUserNo) == false) 
-                {
-                    MessageBox.Show(intRowCount + "行目の社員番号は数字のみ入力してください。");
-                    return false;
-                }
+            // 数値入力チェック
+            if (Int32.TryParse(uciCheckData.strUserID, out intUserNo) == false)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目の社員番号は数字のみ入力してください。");
+                return false;
+            }
 
-                // カナ入力チェック
-                if (Regex.IsMatch(uciCheckData.strUserKanaSei, "^[ァ-ヶー]*$") == false)
-                {
-                    MessageBox.Show(intRowCount + "行目の読み仮名 性は全角カナのみ入力してください。");
-                    return false;
-                }
-                if (Regex.IsMatch(uciCheckData.strUserKanaMei, "^[ァ-ヶー]*$") == false)
-                {
-                    MessageBox.Show(intRowCount + "行目の読み仮名 名は全角カナのみ入力してください。");
-                    return false;
-                }
-
-                intRowCount = intRowCount + 1;
+            // カナ入力チェック
+            if (Regex.IsMatch(uciCheckData.strUserKanaSei, "^[ァ-ヶー]*$") == false)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目の読み仮名 性は全角カナのみ入力してください。");
+                return false;
+            }
+            if (Regex.IsMatch(uciCheckData.strUserKanaMei, "^[ァ-ヶー]*$") == false)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目の読み仮名 名は全角カナのみ入力してください。");
+                return false;
             }
 
             return true;
@@ -284,42 +324,40 @@ namespace UserMasterMaintenance
             // 必須入力チェック
             if (strCheckData == "")
             {
-                MessageBox.Show(intRowCount + "行目の" + strItemName + "は必須入力の項目です。");
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目の" + strItemName + "は必須入力の項目です。");
                 return false;
             }
-            else if(strCheckData.Length > intMaxLength)
+            else if (strCheckData.Length > intMaxLength)
             {
-                MessageBox.Show(intRowCount + "行目の" + strItemName + "が最大長を超えています。");
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目の" + strItemName + "が最大長を超えています。");
                 return false;
             }
-
 
             return true;
         }
 
-
         /// <summary>
         /// 登録処理
         /// </summary>
+        /// <param name="lstUserData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private Boolean RegistrationUser(List<UserCsvInfo> lstUserData)
+        private Boolean RegistrationUser(UserCsvInfo uciCheckData
+                                       , NpgsqlConnection NpgsqlCon
+                                       , NpgsqlTransaction transaction)
         {
             try
             {
                 if (g_bolModeNonDBCon == true)
                     return true;
 
-                // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
+                // 登録・更新
+                if (uciCheckData.strProcessType == m_CON_COL_PROCESS_TYPE_REG ||
+                    uciCheckData.strProcessType == m_CON_COL_PROCESS_TYPE_UPD)
                 {
-                    NpgsqlCon.Open();
-
-                    using (var transaction = NpgsqlCon.BeginTransaction())
-                    {
-                        foreach (UserCsvInfo uciCheckData in lstUserData) 
-                        {
-                            // SQL文を作成する
-                            string strCreateSql = @"INSERT INTO mst_Worker (WorkerNo, WorkerSurname, WorkerName, WorkerSurnameKana, WorkerNameKana, Delflg)
+                    // SQL文を作成する
+                    string strCreateSql = @"INSERT INTO mst_Worker (WorkerNo, WorkerSurname, WorkerName, WorkerSurnameKana, WorkerNameKana, Delflg)
                                                                     VALUES (:UserNo, :UserSurname, :UserName, :UserSurnameKana, :UserNameKana, 0)
                                                                ON CONFLICT (WorkerNo)
                                                              DO UPDATE SET WorkerSurname = :UserSurname
@@ -327,23 +365,30 @@ namespace UserMasterMaintenance
                                                                          , WorkerSurnameKana = :UserSurnameKana
                                                                          , WorkerNameKana = :UserNameKana";
 
-                            // SQLコマンドに各パラメータを設定する
-                            var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+                    // SQLコマンドに各パラメータを設定する
+                    var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
 
-                            command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = String.Format("{0:D4}", Int32.Parse(uciCheckData.strUserID)) });
-                            command.Parameters.Add(new NpgsqlParameter("UserSurname", DbType.String) { Value = uciCheckData.strUserNameSei });
-                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = uciCheckData.strUserNameMei});
-                            command.Parameters.Add(new NpgsqlParameter("UserSurnameKana", DbType.String) { Value = uciCheckData.strUserKanaSei });
-                            command.Parameters.Add(new NpgsqlParameter("UserNameKana", DbType.String) { Value = uciCheckData.strUserKanaMei });
+                    command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = String.Format("{0:D4}", Int32.Parse(uciCheckData.strUserID)) });
+                    command.Parameters.Add(new NpgsqlParameter("UserSurname", DbType.String) { Value = uciCheckData.strUserNameSei });
+                    command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = uciCheckData.strUserNameMei });
+                    command.Parameters.Add(new NpgsqlParameter("UserSurnameKana", DbType.String) { Value = uciCheckData.strUserKanaSei });
+                    command.Parameters.Add(new NpgsqlParameter("UserNameKana", DbType.String) { Value = uciCheckData.strUserKanaMei });
 
-                            // sqlを実行する
-                            if (ExecTranSQL(command, transaction) == false)
-                            {
-                                return false;
-                            }
-                        }
+                    // sqlを実行する
+                    if (ExecTranSQL(command, transaction) == false)
+                    {
+                        return false;
+                    }
+                }
+                // 削除
+                else if (uciCheckData.strProcessType == m_CON_COL_PROCESS_TYPE_DEL)
+                {
+                    string strSelUserNo = String.Format("{0:D4}", Int32.Parse(uciCheckData.strUserID));
 
-                        transaction.Commit();
+                    // ユーザ削除
+                    if (DelUser(NpgsqlCon, transaction, strSelUserNo) == false)
+                    {
+                        return false;
                     }
                 }
 
@@ -355,6 +400,68 @@ namespace UserMasterMaintenance
                                + Environment.NewLine
                                + ex.Message);
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// ユーザ削除処理
+        /// </summary>
+        /// <param name="NpgsqlCon">接続子</param>
+        /// <param name="transaction">トランザクション</param>
+        /// <returns></returns>
+        private Boolean DelUser(NpgsqlConnection NpgsqlCon
+                              , NpgsqlTransaction transaction
+                              , string strSelUserNo)
+        {
+            // SQL文を作成する
+            string strUpdateSql = @"UPDATE mst_Worker
+                                       SET Delflg = 1
+                                     WHERE WorkerNo = :UserNo";
+
+            // SQLコマンドに各パラメータを設定する
+            var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);
+
+            command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = strSelUserNo });
+
+            // sqlを実行する
+            if (ExecTranSQL(command, transaction) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// インポートログ出力
+        /// </summary>
+        private static void OutPutImportLog(string strLogText)
+        {
+            string strOutPutFilePath = "";
+            string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff");
+
+            // 出力ファイル設定
+            strOutPutFilePath = System.IO.Directory.GetCurrentDirectory() + @"\"
+                                                                          + m_CON_OUTLOGFILE_NAME
+                                                                          + "_"
+                                                                          + DateTime.Now.ToString("yyyyMMdd")
+                                                                          + ".txt";
+
+            try
+            {
+                //Shift JISで書き込む
+                //書き込むファイルが既に存在している場合は、上書きする
+                using (StreamWriter sw = new StreamWriter(strOutPutFilePath
+                                                        , true
+                                                        , Encoding.GetEncoding("shift_jis")))
+                {
+                    // １行ずつ出力を行う
+                    sw.WriteLine(m_strInputFileName + " " + time + ":" + strLogText);
+                }
+            }
+            catch
+            {
+                return;
             }
         }
         #endregion    

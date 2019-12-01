@@ -53,7 +53,6 @@ namespace UserMasterMaintenance
         public static Boolean ExecTranSQL(NpgsqlCommand nscCommand
                                         , NpgsqlTransaction transaction)
         {
-
             try
             {
                 nscCommand.ExecuteNonQuery();

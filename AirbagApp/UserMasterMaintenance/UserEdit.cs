@@ -12,7 +12,8 @@ namespace UserMasterMaintenance
     {
         #region 定数・変数
         private int m_intEditMode;
-        public int g_UpdateFlg = 0;
+        public int g_intUpdateFlg = 0;
+        public string g_strRegWorkerNo = "";
         #endregion
 
         #region イベント
@@ -34,7 +35,7 @@ namespace UserMasterMaintenance
                 // 登録処理を行う
                 if (RegistrationUser() == true)
                 {
-                    g_UpdateFlg = 1;
+                    g_intUpdateFlg = 1;
                     MessageBox.Show("登録しました");
                 }
                 else 
@@ -47,7 +48,7 @@ namespace UserMasterMaintenance
                 // 更新処理を行う
                 if (UpdateUser() == true)
                 {
-                    g_UpdateFlg = 1;
+                    g_intUpdateFlg = 1;
                     MessageBox.Show("更新しました");
                 }
                 else 
@@ -284,6 +285,8 @@ namespace UserMasterMaintenance
                             }
 
                             transaction.Commit();
+
+                            g_strRegWorkerNo = txtUserNo.Text;
                         }
                     }
                 }
@@ -343,6 +346,8 @@ namespace UserMasterMaintenance
                         }
 
                         transaction.Commit();
+
+                        g_strRegWorkerNo = txtUserNo.Text;
                     }
                 }
 
