@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
+using System.Drawing;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static UserMasterMaintenance.Common;
 using System.Text.RegularExpressions;
@@ -11,9 +16,10 @@ namespace UserMasterMaintenance
     public partial class UserEdit : Form
     {
         #region 定数・変数
-        private int m_intEditMode;
-        public int g_intUpdateFlg = 0;
-        public string g_strRegWorkerNo = "";
+        public int intEditMode;
+        public string UserNo;
+        public string parUserNm;
+        public string parUserYomiGana;
         #endregion
 
         #region イベント
@@ -30,12 +36,11 @@ namespace UserMasterMaintenance
                 return;
             }
 
-            if (m_intEditMode == g_CON_EDITMODE_REG)
+            if (intEditMode == CON_EDITMODE_REG)
             {
                 // 登録処理を行う
                 if (RegistrationUser() == true)
                 {
-                    g_intUpdateFlg = 1;
                     MessageBox.Show("登録しました");
                 }
                 else 
@@ -43,12 +48,11 @@ namespace UserMasterMaintenance
                     return;
                 }
             }
-            if (m_intEditMode == g_CON_EDITMODE_UPD) 
+            if (intEditMode == CON_EDITMODE_UPD) 
             {
                 // 更新処理を行う
                 if (UpdateUser() == true)
                 {
-                    g_intUpdateFlg = 1;
                     MessageBox.Show("更新しました");
                 }
                 else 
@@ -116,20 +120,19 @@ namespace UserMasterMaintenance
 
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            m_intEditMode = parEditMode;
+            intEditMode = parEditMode;
 
             // 更新モードで起動された場合、引数の情報を初期表示する
-            if (m_intEditMode == g_CON_EDITMODE_UPD)
+            if (intEditMode == CON_EDITMODE_UPD)
             {
-                this.Text = "更新";
                 // 社員番号
                 txtUserNo.Text = parUserNo;
                 txtUserNo.Enabled = false;
                 // 作業者名
-                if (parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE)).Count() == 2)
+                if (parUserNm.Split(Convert.ToChar(NAME_SEPARATE)).Count() == 2)
                 {
-                    txtUserNm_Sei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
-                    txtUserNm_Mei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
+                    txtUserNm_Sei.Text = parUserNm.Split(Convert.ToChar(NAME_SEPARATE))[0];
+                    txtUserNm_Mei.Text = parUserNm.Split(Convert.ToChar(NAME_SEPARATE))[1];
                 }
                 else
                 {
@@ -140,10 +143,10 @@ namespace UserMasterMaintenance
                     txtUserNm_Sei.Text = parUserNm;
                 }
                 // 読み仮名
-                if (parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE)).Count() == 2)
+                if (parUserYomiGana.Split(Convert.ToChar(NAME_SEPARATE)).Count() == 2)
                 {
-                    txtUserYomiGana_Sei.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
-                    txtUserYomiGana_Mei.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
+                    txtUserYomiGana_Sei.Text = parUserYomiGana.Split(Convert.ToChar(NAME_SEPARATE))[0];
+                    txtUserYomiGana_Mei.Text = parUserYomiGana.Split(Convert.ToChar(NAME_SEPARATE))[1];
                 }
                 else
                 {
@@ -156,7 +159,6 @@ namespace UserMasterMaintenance
             }
             else
             {
-                this.Text = "登録";
                 // 登録モードで起動された場合、画面の各項目を空白で表示する
                 txtUserNo.Clear();
                 txtUserNm_Sei.Clear();
@@ -227,11 +229,11 @@ namespace UserMasterMaintenance
         {
             try
             {
-                if (g_bolModeNonDBCon == true)
+                if (bolModeNonDBCon == true)
                     return true;
 
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                 {
                     NpgsqlCon.Open();
 
@@ -239,9 +241,9 @@ namespace UserMasterMaintenance
                     string strSelSql = @"SELECT 
                                              *
                                          FROM
-                                             mst_Worker 
+                                             SAGYOSYA 
                                          WHERE
-                                             WorkerNo = '" + txtUserNo.Text + "'";
+                                             USERNO = '" + txtUserNo.Text + "'";
 
                     // 重複チェックを行う
                     if (KeyDuplicateCheck(strSelSql, NpgsqlCon, "社員番号") == false)
@@ -254,29 +256,15 @@ namespace UserMasterMaintenance
                         using (var transaction = NpgsqlCon.BeginTransaction())
                         {
                             // SQL文を作成する
-                            string strCreateSql = @"INSERT INTO mst_Worker (
-                                                                    WorkerNo
-                                                                  , WorkerSurname
-                                                                  , WorkerName
-                                                                  , WorkerSurnameKana
-                                                                  , WorkerNameKana
-                                                                  , Delflg
-                                                                  )VALUES(
-                                                                   :UserNo
-                                                                  ,:UserSurname
-                                                                  ,:UserName
-                                                                  ,:UserSurnameKana
-                                                                  ,:UserNameKana
-                                                                  , 0)";
+                            string strCreateSql = @"INSERT INTO SAGYOSYA (USERNO, USERNAME, USERYOMIGANA)
+                                                               VALUES(:UserNo, :UserName, :UserYomigana)";
 
                             // SQLコマンドに各パラメータを設定する
                             var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
 
                             command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = txtUserNo.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserSurname", DbType.String) { Value = txtUserNm_Sei.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Mei.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserSurnameKana", DbType.String) { Value = txtUserYomiGana_Sei.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserNameKana", DbType.String) { Value = txtUserYomiGana_Mei.Text });
+                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Sei.Text + NAME_SEPARATE + txtUserNm_Mei.Text });
+                            command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = txtUserYomiGana_Sei.Text + NAME_SEPARATE + txtUserYomiGana_Mei.Text });
 
                             // sqlを実行する
                             if (ExecTranSQL(command, transaction) == false)
@@ -285,8 +273,6 @@ namespace UserMasterMaintenance
                             }
 
                             transaction.Commit();
-
-                            g_strRegWorkerNo = txtUserNo.Text;
                         }
                     }
                 }
@@ -311,33 +297,32 @@ namespace UserMasterMaintenance
         {
             try
             {
-                if (g_bolModeNonDBCon == true)
+                if (bolModeNonDBCon == true)
                     return true;
 
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
                 {
                     NpgsqlCon.Open();
 
                     using (var transaction = NpgsqlCon.BeginTransaction())
                     {
                         // SQL文を作成する
-                        string strUpdateSql = @"UPDATE mst_Worker
-                                                   SET WorkerSurname = :UserSurname
-                                                     , WorkerName = :UserName
-                                                     , WorkerSurnameKana = :UserSurnameKana
-                                                     , WorkerNameKana = :UserNameKana
-                                                 WHERE WorkerNo = :UserNo";
+                        string strUpdateSql = @"UPDATE SAGYOSYA
+                                                   SET USERNAME = :UserName
+                                                     , USERYOMIGANA = :UserYomigana
+                                                 WHERE USERNO = :UserNo";
 
                         // SQLコマンドに各パラメータを設定する
                         var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);
 
                         command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = txtUserNo.Text });
-                        command.Parameters.Add(new NpgsqlParameter("UserSurname", DbType.String){ Value = txtUserNm_Sei.Text });
-                        command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Mei.Text });
-                        command.Parameters.Add(new NpgsqlParameter("UserSurnameKana", DbType.String) { Value = txtUserYomiGana_Sei.Text });
-                        command.Parameters.Add(new NpgsqlParameter("UserNameKana", DbType.String) { Value = txtUserYomiGana_Mei.Text });
-
+                        command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Sei.Text 
+                                                                                                      + NAME_SEPARATE
+                                                                                                      + txtUserNm_Mei.Text });
+                        command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = txtUserYomiGana_Sei.Text 
+                                                                                                          + NAME_SEPARATE
+                                                                                                          + txtUserYomiGana_Mei.Text });
 
                         // sqlを実行する
                         if (ExecTranSQL(command, transaction) == false)
@@ -346,8 +331,6 @@ namespace UserMasterMaintenance
                         }
 
                         transaction.Commit();
-
-                        g_strRegWorkerNo = txtUserNo.Text;
                     }
                 }
 

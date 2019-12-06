@@ -9,18 +9,18 @@ namespace UserMasterMaintenance
 {
     static class Common
     {
-        public const int g_CON_EDITMODE_REG = 1;
-        public const int g_CON_EDITMODE_UPD = 2;
+        public const int CON_EDITMODE_REG = 1;
+        public const int CON_EDITMODE_UPD = 2;
 
-        public const string g_CON_NAME_SEPARATE = "　";
+        public const string NAME_SEPARATE = "　";
 
         /// <summary>
         /// DB非接続モード
         /// </summary>
         /// <remarks>デバッグ用</remarks>
-        public static bool g_bolModeNonDBCon = false;  //true:DB接続なし false:DB接続あり
+        public static bool bolModeNonDBCon = true;  //true:DB接続なし false:DB接続あり
 
-        public const string g_CON_DB_INFO = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
+        public const string CON_DB_INFO = "Server=192.168.2.17;Port=5432;User ID=postgres;Database=postgres;Password=password;Enlist=true";
 
         /// <summary>
         /// NULLを""に変換
@@ -53,6 +53,7 @@ namespace UserMasterMaintenance
         public static Boolean ExecTranSQL(NpgsqlCommand nscCommand
                                         , NpgsqlTransaction transaction)
         {
+
             try
             {
                 nscCommand.ExecuteNonQuery();
@@ -77,7 +78,7 @@ namespace UserMasterMaintenance
             // DB非接続
             if (args.Length >= 1)
             {
-                if (int.Parse(args[0]) > 0) { g_bolModeNonDBCon = true; } else { g_bolModeNonDBCon = false; }
+                if (int.Parse(args[0]) > 0) { bolModeNonDBCon = true; } else { bolModeNonDBCon = false; }
             }
 
             Application.EnableVisualStyles();

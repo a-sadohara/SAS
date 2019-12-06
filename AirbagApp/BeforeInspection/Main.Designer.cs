@@ -373,6 +373,7 @@
             // 
             // txtHinNo
             // 
+            this.txtHinNo.BackColor = System.Drawing.SystemColors.Window;
             this.txtHinNo.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtHinNo.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtHinNo.Location = new System.Drawing.Point(3, 0);
@@ -409,8 +410,6 @@
             this.txtSashizu.Size = new System.Drawing.Size(80, 31);
             this.txtSashizu.TabIndex = 2;
             this.txtSashizu.Text = "9999999";
-            this.txtSashizu.Click += new System.EventHandler(this.DispKeyboard);
-            this.txtSashizu.Enter += new System.EventHandler(this.DispKeyboard);
             this.txtSashizu.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNumType_KeyPress);
             // 
             // pnlHanNo
@@ -437,8 +436,6 @@
             this.txtHanNo.Size = new System.Drawing.Size(112, 31);
             this.txtHanNo.TabIndex = 3;
             this.txtHanNo.Text = "999999-XXX";
-            this.txtHanNo.Click += new System.EventHandler(this.DispKeyboard);
-            this.txtHanNo.Enter += new System.EventHandler(this.DispKeyboard);
             this.txtHanNo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNormalType_KeyPress);
             this.txtHanNo.Leave += new System.EventHandler(this.txtHanNo_Leave);
             // 
@@ -476,13 +473,12 @@
             this.txtKensaTaishoNum.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtKensaTaishoNum.Location = new System.Drawing.Point(3, 0);
             this.txtKensaTaishoNum.Margin = new System.Windows.Forms.Padding(0);
-            this.txtKensaTaishoNum.MaxLength = 3;
+            this.txtKensaTaishoNum.MaxLength = 4;
             this.txtKensaTaishoNum.Name = "txtKensaTaishoNum";
             this.txtKensaTaishoNum.Size = new System.Drawing.Size(52, 31);
             this.txtKensaTaishoNum.TabIndex = 4;
-            this.txtKensaTaishoNum.Text = "999";
+            this.txtKensaTaishoNum.Text = "9999";
             this.txtKensaTaishoNum.Click += new System.EventHandler(this.DispKeyboard);
-            this.txtKensaTaishoNum.Enter += new System.EventHandler(this.DispKeyboard);
             this.txtKensaTaishoNum.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNumType_KeyPress);
             this.txtKensaTaishoNum.Leave += new System.EventHandler(this.txtKensaTaishoNum_Leave);
             // 
@@ -518,13 +514,12 @@
             this.txtKensaStartRow.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtKensaStartRow.Location = new System.Drawing.Point(3, 0);
             this.txtKensaStartRow.Margin = new System.Windows.Forms.Padding(0);
-            this.txtKensaStartRow.MaxLength = 3;
+            this.txtKensaStartRow.MaxLength = 4;
             this.txtKensaStartRow.Name = "txtKensaStartRow";
             this.txtKensaStartRow.Size = new System.Drawing.Size(52, 31);
             this.txtKensaStartRow.TabIndex = 6;
-            this.txtKensaStartRow.Text = "999";
+            this.txtKensaStartRow.Text = "9999";
             this.txtKensaStartRow.Click += new System.EventHandler(this.DispKeyboard);
-            this.txtKensaStartRow.Enter += new System.EventHandler(this.DispKeyboard);
             this.txtKensaStartRow.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNumType_KeyPress);
             this.txtKensaStartRow.Leave += new System.EventHandler(this.txtKensaStartRow_Leave);
             // 
@@ -546,11 +541,11 @@
             this.txtSagyosyaInfo_1.Font = new System.Drawing.Font("メイリオ", 12F);
             this.txtSagyosyaInfo_1.Location = new System.Drawing.Point(3, 0);
             this.txtSagyosyaInfo_1.Margin = new System.Windows.Forms.Padding(0);
-            this.txtSagyosyaInfo_1.MaxLength = 100;
+            this.txtSagyosyaInfo_1.MaxLength = 10;
             this.txtSagyosyaInfo_1.Name = "txtSagyosyaInfo_1";
             this.txtSagyosyaInfo_1.Size = new System.Drawing.Size(232, 31);
             this.txtSagyosyaInfo_1.TabIndex = 7;
-            this.txtSagyosyaInfo_1.Text = "9999　＊＊＊＊";
+            this.txtSagyosyaInfo_1.Text = "＊＊＊＊";
             this.txtSagyosyaInfo_1.DoubleClick += new System.EventHandler(this.txtSagyosyaInfo_DoubleClick);
             this.txtSagyosyaInfo_1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSagyosyaInfo_KeyPress);
             // 
@@ -572,11 +567,11 @@
             this.txtSagyosyaInfo_2.Font = new System.Drawing.Font("メイリオ", 12F);
             this.txtSagyosyaInfo_2.Location = new System.Drawing.Point(3, 0);
             this.txtSagyosyaInfo_2.Margin = new System.Windows.Forms.Padding(0);
-            this.txtSagyosyaInfo_2.MaxLength = 100;
+            this.txtSagyosyaInfo_2.MaxLength = 10;
             this.txtSagyosyaInfo_2.Name = "txtSagyosyaInfo_2";
             this.txtSagyosyaInfo_2.Size = new System.Drawing.Size(232, 31);
             this.txtSagyosyaInfo_2.TabIndex = 8;
-            this.txtSagyosyaInfo_2.Text = "9999　＊＊＊＊";
+            this.txtSagyosyaInfo_2.Text = "＊＊＊＊";
             this.txtSagyosyaInfo_2.DoubleClick += new System.EventHandler(this.txtSagyosyaInfo_DoubleClick);
             this.txtSagyosyaInfo_2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSagyosyaInfo_KeyPress);
             // 
@@ -1346,7 +1341,7 @@
             this.lblGoki.Name = "lblGoki";
             this.lblGoki.Size = new System.Drawing.Size(71, 26);
             this.lblGoki.TabIndex = 1;
-            this.lblGoki.Text = "４号機";
+            this.lblGoki.Text = "N４号機";
             this.lblGoki.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // Main

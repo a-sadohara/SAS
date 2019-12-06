@@ -44,11 +44,12 @@
             this.txtNgSide = new System.Windows.Forms.TextBox();
             this.lblRow = new System.Windows.Forms.Label();
             this.txtUserNm = new System.Windows.Forms.TextBox();
+            this.lblTitleSearchCushionCnt = new System.Windows.Forms.Label();
             this.txtRow = new System.Windows.Forms.TextBox();
-            this.lblSearchCountMax = new System.Windows.Forms.Label();
-            this.lblSearchCount = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblTitleSearchCount = new System.Windows.Forms.Label();
+            this.lblTitleSearchImageCnt = new System.Windows.Forms.Label();
+            this.lblSerchCushionCnt = new System.Windows.Forms.Label();
+            this.lblSearchImageCnt = new System.Windows.Forms.Label();
+            this.lblTitleSearchCnt = new System.Windows.Forms.Label();
             this.btnSearch = new System.Windows.Forms.Button();
             this.lblUser = new System.Windows.Forms.Label();
             this.lblEndDate = new System.Windows.Forms.Label();
@@ -115,7 +116,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1276, 147);
+            this.panel1.Size = new System.Drawing.Size(1276, 156);
             this.panel1.TabIndex = 0;
             // 
             // btnLogOut
@@ -142,16 +143,17 @@
             this.grbWhere.Controls.Add(this.txtNgSide);
             this.grbWhere.Controls.Add(this.lblRow);
             this.grbWhere.Controls.Add(this.txtUserNm);
+            this.grbWhere.Controls.Add(this.lblTitleSearchCushionCnt);
             this.grbWhere.Controls.Add(this.txtRow);
-            this.grbWhere.Controls.Add(this.lblSearchCountMax);
-            this.grbWhere.Controls.Add(this.lblSearchCount);
-            this.grbWhere.Controls.Add(this.label1);
-            this.grbWhere.Controls.Add(this.lblTitleSearchCount);
+            this.grbWhere.Controls.Add(this.lblTitleSearchImageCnt);
+            this.grbWhere.Controls.Add(this.lblSerchCushionCnt);
+            this.grbWhere.Controls.Add(this.lblSearchImageCnt);
+            this.grbWhere.Controls.Add(this.lblTitleSearchCnt);
             this.grbWhere.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.grbWhere.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.grbWhere.Location = new System.Drawing.Point(448, 4);
             this.grbWhere.Name = "grbWhere";
-            this.grbWhere.Size = new System.Drawing.Size(414, 115);
+            this.grbWhere.Size = new System.Drawing.Size(425, 146);
             this.grbWhere.TabIndex = 28;
             this.grbWhere.TabStop = false;
             this.grbWhere.Text = "検索条件";
@@ -254,6 +256,18 @@
             this.txtUserNm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtUserNm_KeyDown);
             this.txtUserNm.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNm_KeyPress);
             // 
+            // lblTitleSearchCushionCnt
+            // 
+            this.lblTitleSearchCushionCnt.AutoSize = true;
+            this.lblTitleSearchCushionCnt.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblTitleSearchCushionCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblTitleSearchCushionCnt.Location = new System.Drawing.Point(248, 119);
+            this.lblTitleSearchCushionCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTitleSearchCushionCnt.Name = "lblTitleSearchCushionCnt";
+            this.lblTitleSearchCushionCnt.Size = new System.Drawing.Size(85, 17);
+            this.lblTitleSearchCushionCnt.TabIndex = 1;
+            this.lblTitleSearchCushionCnt.Text = "クッション数：";
+            // 
             // txtRow
             // 
             this.txtRow.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -262,58 +276,58 @@
             this.txtRow.Size = new System.Drawing.Size(53, 24);
             this.txtRow.TabIndex = 26;
             // 
-            // lblSearchCountMax
+            // lblTitleSearchImageCnt
             // 
-            this.lblSearchCountMax.AutoSize = true;
-            this.lblSearchCountMax.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblSearchCountMax.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchCountMax.Location = new System.Drawing.Point(343, 91);
-            this.lblSearchCountMax.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblSearchCountMax.Name = "lblSearchCountMax";
-            this.lblSearchCountMax.Size = new System.Drawing.Size(29, 17);
-            this.lblSearchCountMax.TabIndex = 1;
-            this.lblSearchCountMax.Text = "999";
+            this.lblTitleSearchImageCnt.AutoSize = true;
+            this.lblTitleSearchImageCnt.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblTitleSearchImageCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblTitleSearchImageCnt.Location = new System.Drawing.Point(248, 102);
+            this.lblTitleSearchImageCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTitleSearchImageCnt.Name = "lblTitleSearchImageCnt";
+            this.lblTitleSearchImageCnt.Size = new System.Drawing.Size(85, 17);
+            this.lblTitleSearchImageCnt.TabIndex = 1;
+            this.lblTitleSearchImageCnt.Text = "画像検査枚数：";
             // 
-            // lblSearchCount
+            // lblSerchCushionCnt
             // 
-            this.lblSearchCount.AutoSize = true;
-            this.lblSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchCount.Location = new System.Drawing.Point(287, 91);
-            this.lblSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblSearchCount.Name = "lblSearchCount";
-            this.lblSearchCount.Size = new System.Drawing.Size(29, 17);
-            this.lblSearchCount.TabIndex = 1;
-            this.lblSearchCount.Text = "999";
+            this.lblSerchCushionCnt.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblSerchCushionCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblSerchCushionCnt.Location = new System.Drawing.Point(337, 119);
+            this.lblSerchCushionCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblSerchCushionCnt.Name = "lblSerchCushionCnt";
+            this.lblSerchCushionCnt.Size = new System.Drawing.Size(77, 17);
+            this.lblSerchCushionCnt.TabIndex = 1;
+            this.lblSerchCushionCnt.Text = "9999 / 9999";
+            this.lblSerchCushionCnt.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label1
+            // lblSearchImageCnt
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(320, 91);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(19, 17);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "／";
+            this.lblSearchImageCnt.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblSearchImageCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblSearchImageCnt.Location = new System.Drawing.Point(337, 102);
+            this.lblSearchImageCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblSearchImageCnt.Name = "lblSearchImageCnt";
+            this.lblSearchImageCnt.Size = new System.Drawing.Size(77, 17);
+            this.lblSearchImageCnt.TabIndex = 1;
+            this.lblSearchImageCnt.Text = "9999 / 9999";
+            this.lblSearchImageCnt.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblTitleSearchCount
+            // lblTitleSearchCnt
             // 
-            this.lblTitleSearchCount.AutoSize = true;
-            this.lblTitleSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblTitleSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleSearchCount.Location = new System.Drawing.Point(220, 91);
-            this.lblTitleSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblTitleSearchCount.Name = "lblTitleSearchCount";
-            this.lblTitleSearchCount.Size = new System.Drawing.Size(63, 17);
-            this.lblTitleSearchCount.TabIndex = 1;
-            this.lblTitleSearchCount.Text = "検索件数：";
+            this.lblTitleSearchCnt.AutoSize = true;
+            this.lblTitleSearchCnt.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblTitleSearchCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblTitleSearchCnt.Location = new System.Drawing.Point(220, 85);
+            this.lblTitleSearchCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTitleSearchCnt.Name = "lblTitleSearchCnt";
+            this.lblTitleSearchCnt.Size = new System.Drawing.Size(63, 17);
+            this.lblTitleSearchCnt.TabIndex = 1;
+            this.lblTitleSearchCnt.Text = "検索件数：";
             // 
             // btnSearch
             // 
             this.btnSearch.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnSearch.Location = new System.Drawing.Point(867, 83);
+            this.btnSearch.Location = new System.Drawing.Point(878, 114);
             this.btnSearch.Margin = new System.Windows.Forms.Padding(2);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(107, 36);
@@ -478,9 +492,9 @@
             this.lblGoki.Location = new System.Drawing.Point(16, 9);
             this.lblGoki.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblGoki.Name = "lblGoki";
-            this.lblGoki.Size = new System.Drawing.Size(52, 17);
+            this.lblGoki.Size = new System.Drawing.Size(56, 17);
             this.lblGoki.TabIndex = 1;
-            this.lblGoki.Text = "号機：１";
+            this.lblGoki.Text = "号機：N4";
             // 
             // panel4
             // 
@@ -523,20 +537,20 @@
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel2.Location = new System.Drawing.Point(0, 147);
+            this.panel2.Location = new System.Drawing.Point(0, 156);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(40, 374);
+            this.panel2.Size = new System.Drawing.Size(40, 365);
             this.panel2.TabIndex = 4;
             // 
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(1219, 147);
+            this.panel3.Location = new System.Drawing.Point(1219, 156);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(57, 374);
+            this.panel3.Size = new System.Drawing.Size(57, 365);
             this.panel3.TabIndex = 5;
             // 
             // panel6
@@ -544,10 +558,10 @@
             this.panel6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel6.Controls.Add(this.dgvData);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(40, 147);
+            this.panel6.Location = new System.Drawing.Point(40, 156);
             this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1179, 374);
+            this.panel6.Size = new System.Drawing.Size(1179, 365);
             this.panel6.TabIndex = 6;
             // 
             // dgvData
@@ -608,7 +622,7 @@
             this.dgvData.RowTemplate.Height = 75;
             this.dgvData.RowTemplate.ReadOnly = true;
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvData.Size = new System.Drawing.Size(1179, 374);
+            this.dgvData.Size = new System.Drawing.Size(1179, 365);
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dgvData.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgvData_MouseUp);
@@ -772,10 +786,8 @@
         private System.Windows.Forms.Button btnLogOut;
         private System.Windows.Forms.Label lblKensaNo;
         private System.Windows.Forms.Button BackResultCheck;
-        private System.Windows.Forms.Label lblTitleSearchCount;
-        private System.Windows.Forms.Label lblSearchCount;
-        private System.Windows.Forms.Label lblSearchCountMax;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblTitleSearchCnt;
+        private System.Windows.Forms.Label lblSearchImageCnt;
         private System.Windows.Forms.Label lblNgImgCushionNum;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridViewTextBoxColumn no;
@@ -793,5 +805,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn UpdInpDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn UpdUser;
         private System.Windows.Forms.DataGridViewTextBoxColumn UpdBefNgReason;
+        private System.Windows.Forms.Label lblTitleSearchCushionCnt;
+        private System.Windows.Forms.Label lblTitleSearchImageCnt;
+        private System.Windows.Forms.Label lblSerchCushionCnt;
     }
 }

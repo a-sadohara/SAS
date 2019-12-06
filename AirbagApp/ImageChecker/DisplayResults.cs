@@ -70,8 +70,8 @@ namespace ImageChecker
             }
 
             // 検索件数更新
-            lblSearchCountMax.Text = this.dgvData.Rows.Count.ToString();
-            lblSearchCount.Text = lblSearchCountMax.Text;
+            lblSearchImageCnt.Text = this.dgvData.Rows.Count.ToString() + " / " + this.dgvData.Rows.Count.ToString();
+            lblSerchCushionCnt.Text = (this.dgvData.Rows.Count * 4).ToString() + " / " + (this.dgvData.Rows.Count * 4).ToString();
 
         }
 
@@ -306,9 +306,8 @@ namespace ImageChecker
             }
 
             // 検索件数更新
-            lblSearchCountMax.Text = this.dgvData.Rows.Count.ToString();
-            lblSearchCount.Text = lblSearchCountMax.Text;
-
+            lblSearchImageCnt.Text = this.dgvData.Rows.Count.ToString() + " / " + this.dgvData.Rows.Count.ToString();
+            lblSerchCushionCnt.Text = (this.dgvData.Rows.Count * 4).ToString() + " / " + (this.dgvData.Rows.Count * 4).ToString();
         }
 
         private void dgvData_MouseUp(object sender, MouseEventArgs e)

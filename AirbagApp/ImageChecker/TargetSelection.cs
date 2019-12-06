@@ -358,7 +358,7 @@ namespace ImageChecker
             spl1 = this.dataGridView1.SelectedRows[0].Cells[1].Value.ToString().Replace("\r\n", "|").Split('|');
             spl2 = this.dataGridView1.SelectedRows[0].Cells[2].Value.ToString().Replace("\r\n", "|").Split('|');
 
-            CheckExcept frmLineCorrect = new CheckExcept(spl1[0].Substring(3, 1), spl1[1].Substring(3), spl1[2].Substring(3), spl1[3].Substring(3), spl2[5].Substring(5),
+            CheckExcept frmLineCorrect = new CheckExcept(spl1[0].Substring(3, 2), spl1[1].Substring(3), spl1[2].Substring(3), spl1[3].Substring(3), spl2[5].Substring(5),
                                                          spl2[0].Substring(7), spl2[1].Substring(7), spl2[2].Substring(6));
             frmLineCorrect.ShowDialog(this);
             this.Visible = true;
@@ -381,7 +381,7 @@ namespace ImageChecker
             spl1 = this.dataGridView1.SelectedRows[0].Cells[1].Value.ToString().Replace("\r\n", "|").Split('|');
             spl2 = this.dataGridView1.SelectedRows[0].Cells[2].Value.ToString().Replace("\r\n", "|").Split('|');
 
-            LineCorrect frmLineCorrect = new LineCorrect(spl1[0].Substring(3,1), spl1[1].Substring(3), spl1[2].Substring(3), spl1[3].Substring(3), spl2[5].Substring(5),
+            LineCorrect frmLineCorrect = new LineCorrect(spl1[0].Substring(3,2), spl1[1].Substring(3), spl1[2].Substring(3), spl1[3].Substring(3), spl2[5].Substring(5),
                                                          spl2[0].Substring(7), spl2[1].Substring(7), spl2[2].Substring(6));
             frmLineCorrect.ShowDialog(this);
             this.Visible = true;

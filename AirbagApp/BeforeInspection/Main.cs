@@ -490,7 +490,7 @@ namespace BeforeInspection
             if (!String.IsNullOrEmpty(strUserNo))
             {
                 // ユーザ情報設定
-                txtSagyosyaInfo.Text = strUserNo + "　" + strUserNm;
+                txtSagyosyaInfo.Text = strUserNm;
 
                 // 入力不可にする
                 txtSagyosyaInfo.ReadOnly = true;
@@ -520,6 +520,8 @@ namespace BeforeInspection
             if (bolUseKeyboadApp == false)
                 return;
 
+            TextBox txtBox = (TextBox)sender;
+
             // 座標
             int intX = 0;
             int intY = 0;
@@ -544,16 +546,22 @@ namespace BeforeInspection
             // Windows枠幅を取得
             intTitleWidth = SystemInformation.CaptionHeight;
 
-            // NumLockを設定
-            SetNumLock(true);
+            //// NumLockを設定
+            //SetNumLock(true);
 
-            // 座標・サイズ指定
-            intX = (int)((double)(PointToScreen(this.Location).X));
-            intY = (int)((double)(PointToScreen(pnlInfo.Location).Y + intTitleWidth));
-            intWidth = (int)((double)(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - intX) / (dpiX / dpiDef));
-            intHeight = (int)((double)(Screen.PrimaryScreen.WorkingArea.Height - intY) / (dpiY / dpiDef));
+            //// 座標・サイズ指定
+            //intX = (int)((double)(PointToScreen(this.Location).X));
+            //intY = (int)((double)(PointToScreen(pnlInfo.Location).Y + intTitleWidth));
+            //intWidth = (int)((double)(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - intX) / (dpiX / dpiDef));
+            //intHeight = (int)((double)(Screen.PrimaryScreen.WorkingArea.Height - intY) / (dpiY / dpiDef));
 
-            KeyboardApp.OnApp(intX, intY, intWidth, intHeight);
+            //KeyboardApp.OnApp(intX, intY, intWidth, intHeight);
+
+            InpttForm frmInpttForm = new InpttForm(txtBox.MaxLength);
+            frmInpttForm.ShowDialog(this);
+            this.Visible = true;
+
+            txtBox.Text = frmInpttForm.strInput;
         }
 
         /// <summary>
@@ -688,6 +696,6 @@ namespace BeforeInspection
                     break;
             }
             
-        } 
+        }
     }
 }

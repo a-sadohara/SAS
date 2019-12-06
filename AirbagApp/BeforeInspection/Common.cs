@@ -12,7 +12,7 @@ namespace BeforeInspection
 {
     static class Common
     {
-        public static bool bolUseKeyboadApp = false;  //true:使用する false:使用しない
+        public static bool bolUseKeyboadApp = true;  //true:使用する false:使用しない
 
         /// <summary>
         /// DB非接続モード

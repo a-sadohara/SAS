@@ -266,9 +266,9 @@
             this.lblGoki.Location = new System.Drawing.Point(16, 9);
             this.lblGoki.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblGoki.Name = "lblGoki";
-            this.lblGoki.Size = new System.Drawing.Size(52, 17);
+            this.lblGoki.Size = new System.Drawing.Size(56, 17);
             this.lblGoki.TabIndex = 1;
-            this.lblGoki.Text = "号機：１";
+            this.lblGoki.Text = "号機：N4";
             // 
             // panel4
             // 
