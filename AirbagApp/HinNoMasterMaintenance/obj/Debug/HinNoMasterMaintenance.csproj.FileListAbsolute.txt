@@ -22,3 +22,13 @@ D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\obj\Debug\HinNoMasterMaintenance.
 D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\obj\Debug\HinNoMasterMaintenance.csproj.GenerateResource.cache
 D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\obj\Debug\HinNoMasterMaintenance.exe
 D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\obj\Debug\HinNoMasterMaintenance.pdb
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\bin\Debug\Npgsql.dll
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\bin\Debug\System.Threading.Tasks.Extensions.dll
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\bin\Debug\System.ValueTuple.dll
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\bin\Debug\Npgsql.pdb
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\bin\Debug\Npgsql.xml
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\bin\Debug\System.Threading.Tasks.Extensions.xml
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\bin\Debug\System.ValueTuple.xml
+D:\10.GIT\SAS\AirbagApp\HinNoMasterMaintenance\obj\Debug\HinNoMasterMaintenance.csproj.CopyComplete

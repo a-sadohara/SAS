@@ -10,30 +10,69 @@ using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
 using Npgsql;
-//using static HinNoMasterMaintenance.Common;
+using System.Runtime.InteropServices;
+using System.Linq.Expressions;
 
 namespace HinNoMasterMaintenance
 {
     public partial class HinNoImportCsv : Form
     {
         #region 変数・定数
-        // CSVファイル配置情報
-        public const int COL_USER_INFO_NO = 0;
-        public const int COL_USER_INFO_NAME_SEI = 1;
-        public const int COL_USER_INFO_NAME_MEI = 2;
-        public const int COL_USER_INFO_KANA_SEI = 3;
-        public const int COL_USER_INFO_KANA_MEI = 4;
+        // ファイル名指定
+        private const string m_CON_FILE_NAME_REGISTER_INI_DATA = "RegisterIniData";
+        private const string m_CON_FILE_NAME_CONFIG_PLC = "ConfigPLC";
+        private const string m_CON_FILE_NAME_AIRBAG_COORD = "AirBagCoord";
+        private const string m_CON_FILE_NAME_CAMERA_INFO = "カメラ情報";
+        private const string m_CON_FILE_NAME_THRESHOLD_INFO = "閾値情報";
+        private const string m_CON_FILE_NAME_REASON_JUDGMENT = "判定理由マスタ";
+        private const string m_CON_FILE_NAME_COPY_PNG = "*";
+
+        // INIファイルのセクション
+        private const string m_CON_INI_SECTION_REGISTER = "REGISTER";
 
         /// <summary>
-        /// 作業者登録CSVファイル
+        /// 品番情報CSV
         /// </summary>
-        public class UserCsvInfo
+        private class IniDataRegister
         {
-            public string strUserID { get; set; }
-            public string strUserNameSei { get; set; }
-            public string strUserNameMei { get; set; }
-            public string strUserKanaSei { get; set; }
-            public string strUserKanaMei { get; set; }
+            public string RegistFlg { get; set; }
+            public string SelectFlg { get; set; }
+            public string Name { get; set; }
+            public string ParamNo { get; set; }
+            public string ImageFile { get; set; }
+            public string Length { get; set; }
+            public string Width { get; set; }
+            public string MarkerColor1 { get; set; }
+            public string MarkerColor2 { get; set; }
+            public string AutoPrint { get; set; }
+            public string AutoStop { get; set; }
+            public string TempFile1 { get; set; }
+            public string TempPoint1 { get; set; }
+            public string TempSize1 { get; set; }
+            public string TempFile2 { get; set; }
+            public string TempPoint2 { get; set; }
+            public string TempSize2 { get; set; }
+            public string BasePoint1 { get; set; }
+            public string BasePoint2 { get; set; }
+            public string BasePoint3 { get; set; }
+            public string BasePoint4 { get; set; }
+            public string BasePoint5 { get; set; }
+            public string Plus1 { get; set; }
+            public string Plus2 { get; set; }
+            public string Plus3 { get; set; }
+            public string Plus4 { get; set; }
+            public string Plus5 { get; set; }
+            public string AreaMagX { get; set; }
+            public string AreaMagY { get; set; }
+            public string TempFile3 { get; set; }
+            public string TempFile4 { get; set; }
+            public string AutoCalcAreaMagFlg { get; set; }
+            public string AreaMagCoefficient { get; set; }
+            public string AreaMagCorrection { get; set; }
+            public string BThreadNum { get; set; }
+            public string BThreadNo { get; set; }
+            public string BTCamNo { get; set; }
+
         }
         #endregion
 
@@ -49,295 +88,241 @@ namespace HinNoMasterMaintenance
         }
 
         /// <summary>
-        /// CSVファイル選択ボタンクリック
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CsvFile_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        /// <summary>
         /// CSV取り込みボタンクリック
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void btnImport_Click(object sender, EventArgs e)
         {
-            //// 読み込みデータ
-            //List<UserCsvInfo> lstUserData = new List<UserCsvInfo>();
+            // 未入力チェック
+            if (txtFolder.Text == "")
+            {
+                MessageBox.Show("フォルダを選択してください");
+                btnSearchFolder.Focus();
+                return;
+            }
 
-            //// 未入力チェック
-            //if (txtCsvFile.Text == "") 
-            //{
-            //    MessageBox.Show("CSVファイルを選択してください");
-            //    btnCsvFile.Focus();
-            //    return;
-            //}
-
-            if (MessageBox.Show("指定したCSVファイルを取込みます。\r\nよろしいですか？"
+            if (MessageBox.Show("指定したフォルダのファイルを取込みます。\r\nよろしいですか？"
                               , "確認"
                               , MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                //    // ファイル存在チェック
-                //    string fileName = txtCsvFile.Text;
-                //    if (System.IO.File.Exists(fileName) == false)
-                //    {
-                //        MessageBox.Show("指定されたcsvファイルが存在しません。" 
-                //                       + Environment.NewLine 
-                //                       + fileName);
-                //        return;
-                //    }
 
-                //    // CSVファイル読み込み＆入力データチェックを行う
-                //    if (ReadCsvData(fileName, out lstUserData) == false) 
-                //    {
-                //        return;
-                //    }
+                DirectoryInfo directorySearchFolder = new DirectoryInfo(txtFolder.Text);
 
-                //    // 登録処理実施
-                //    if (RegistrationUser(lstUserData) == true) 
-                //    {
-                MessageBox.Show("取込み処理が完了しました");
-                this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                this.Close();
+                FileInfo[] fileInfosInput = directorySearchFolder.GetFiles("*.*"
+                                                                         , SearchOption.AllDirectories);
+                if (fileInfosInput.Length > 0)
+                {
+                    // フォルダ内のファイルの数だけループする
+                    foreach (FileInfo Inputfile in fileInfosInput)
+                    {
+                        // 対象のファイルがロックされているか確認する
+                        if (IsFileLocked(Inputfile.FullName) == true)
+                        {
+                            // ファイルがロックされている場合、スキップする
+                            continue;
+                        }
+
+                        // 品番情報ファイルを判定する
+                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.INI") == true) 
+                        {
+                            // 品番情報ファイルの場合、取り込みを行う
+                        
+                        }
+
+                        // PLC設定ファイルを判定する
+                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CONFIG_PLC + ".INI") == true)
+                        {
+                            // PLC設定より、レジマーク間距離を取得し登録する。
+
+                        }
+
+                        // エアバック領域設定ファイルを判定する
+                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_AIRBAG_COORD + "[0-9][0-9]*.INI") == true)
+                        {
+                            // エアバック領域設定より、列数を取得し登録する。
+
+                        }
+
+                        // カメラ情報を判定する
+                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CAMERA_INFO + ".CSV") == true)
+                        {
+                            // CSVファイルを取り込み、カメラ情報を取得し登録する。
+
+                        }
+
+                        // 閾値情報を判定する。
+                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_THRESHOLD_INFO + ".CSV") == true)
+                        {
+                            // CSVファイルを取り込み、閾値情報を取得し登録する。
+
+                        }
+
+                        // 判定理由マスタを判定する。
+                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REASON_JUDGMENT + ".CSV") == true)
+                        {
+                            // CSVファイルを取り込み、判定理由マスタを登録する
+
+                        }
+
+                        // マスタ画像を判定する。
+                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_COPY_PNG + ".PNG") == true)
+                        {
+                            // マスタ画像を取り込み先のフォルダにコピーする。
+
+                        }
+                    }
+
+                    MessageBox.Show("取込み処理が完了しました");
+                    this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                    this.Close();
+                }
+                else 
+                {
+                    MessageBox.Show("フォルダ内にファイルが存在しません。");
+                    this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                    this.Close();
+                }
             }
-            //}
+        }
+
+        /// <summary>
+        /// フォルダ検索ボタン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSearchFolder_Click(object sender, EventArgs e)
+        {
+            //FolderBrowserDialogクラスのインスタンスを作成
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+
+            //上部に表示する説明テキストを指定する
+            fbd.Description = "フォルダを指定してください。";
+            //ルートフォルダを指定する
+            fbd.RootFolder = Environment.SpecialFolder.Desktop;
+            //RootFolder以下にあるフォルダである必要がある
+            fbd.SelectedPath = @"C:\Windows";
+            //ユーザーが新しいフォルダを作成できるようにする
+            fbd.ShowNewFolderButton = true;
+
+            //ダイアログを表示する
+            if (fbd.ShowDialog(this) == DialogResult.OK)
+            {
+                //選択されたフォルダを表示する
+                txtFolder.Text = fbd.SelectedPath;
+            }
         }
         #endregion
 
-        //#region メソッド
-        ///// <summary>
-        ///// CSVファイル読み込み
-        ///// </summary>
-        ///// <param name="strFileName">読み込むCSVファイル名</param>
-        ///// <param name="lstUserData">CSVファイルデータ</param>
-        ///// <returns></returns>
-        //private Boolean ReadCsvData(string strFileName
-        //                          , out List<UserCsvInfo> lstUserData) 
-        //{
-        //    int intRowCount = 0;
+        #region ラッパー
+        [DllImport("kernel32.dll")]
+        private static extern int GetPrivateProfileString(
+            string lpApplicationName,
+            string lpKeyName,
+            string lpDefault,
+            StringBuilder lpReturnedstring,
+            int nSize,
+            string lpFileName);
 
-        //    // 読み込みデータ
-        //    lstUserData = new List<UserCsvInfo>();
+        private static string GetIniValue(string path, string section, string key)
+        {
+            StringBuilder sb = new StringBuilder(256);
+            GetPrivateProfileString(section, key, string.Empty, sb, sb.Capacity, path);
+            return sb.ToString();
+        }
 
-        //    // 選択ファイル読み込み
-        //    using (StreamReader sr = new StreamReader(strFileName, Encoding.GetEncoding("Shift_JIS")))
-        //    {
-        //        // ストリームの末尾まで繰り返す
-        //        while (!sr.EndOfStream)
-        //        {
-        //            UserCsvInfo uciUserData = new UserCsvInfo();
+        private static string GetName<T>(Expression<Func<T>> e)
+        {
+            var member = (MemberExpression)e.Body;
+            return member.Member.Name;
+        }
+        #endregion
 
-        //            intRowCount = intRowCount + 1;
+        #region メソッド
+        /// <summary>
+        /// 品番情報取り込み
+        /// </summary>
+        private static void ImportRegisterIniData(FileInfo Inputfile) 
+        {
+            List<string> lstRegisterIniData = new List<string>();
 
-        //            // マーカCSVファイルを１行読み込む
-        //            string strFileTextLine = sr.ReadLine();
-        //            if (strFileTextLine == ""　|| intRowCount == 1)
-        //            {
-        //                // ヘッダ行(1行目)または空行（最終行）の場合読み飛ばす
-        //                continue;
-        //            }
+            // ファイル読み込み処理を行う
+            using (StreamReader sr = new StreamReader(Inputfile.FullName
+                                                    , Encoding.GetEncoding("Shift_JIS")))
+            {
+                string strFileTextLine = "";
+                // ストリームの末尾まで繰り返す
+                while (!sr.EndOfStream)
+                {
+                    // 商品テキストファイルを１行読み込む
+                    strFileTextLine = sr.ReadLine();
+                    if (strFileTextLine == " ")
+                    {
+                        // 空行（最終行）の場合読み飛ばす
+                        continue;
+                    }
 
-        //            // CSVを読み込む
-        //            if (SetUserInfoCsv(strFileTextLine, out uciUserData) == false) 
-        //            {
-        //                MessageBox.Show(intRowCount + "行目の列数が不足しています" 
-        //                              + Environment.NewLine 
-        //                              + "データ：" + strFileTextLine);
-        //                return false;
-        //            }
+                    // 品番情報ファイル内のセクションを取得する
+                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_REGISTER + "[0-9][0-9][0-9]]") == true)
+                    {
+                        // セクションの場合はセクションリストに追加
+                        string strFileTextLineReplace = strFileTextLine.Replace("[", "");
+                        strFileTextLineReplace = strFileTextLine.Replace("]", "");
+                        lstRegisterIniData.Add(strFileTextLine);
 
-        //            lstUserData.Add(uciUserData);
-        //        }
-        //    }
+                    }
+                }
 
-        //    if (lstUserData.Count == 0)
-        //    {
-        //        MessageBox.Show("CSVのデータが0件です");
-        //        return false;
-        //    }
-        //    else 
-        //    {
-        //        // 入力データチェックを行う
-        //        if (InputDataCheck(lstUserData) == false) 
-        //        {
-        //            return false;
-        //        }
-        //    }
+                // セクションの数だけループする
+                foreach (string strRegister in lstRegisterIniData) 
+                {
+                    IniDataRegister idrCurrentData = new IniDataRegister();
 
-        //    return true;
-        //}
+                    // 各項目の値を取得する
+                    // FieldInfoを取得する
+                    Type typeOfMyStruct = typeof(IniDataRegister);
+                    System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
 
-        ///// <summary>
-        ///// ＣＳＶ→構造体格納（ユーザ情報CSV）
-        ///// </summary>
-        ///// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
-        ///// <returns></returns>
-        //private static Boolean SetUserInfoCsv(string strFileReadLine
-        //                                     ,out UserCsvInfo uciData)
-        //{
-        //    string[] stArrayData;
+                    // 各フィールドに値を設定する
+                    foreach (var fieldInfo in fieldInfos)
+                    {
+                        fieldInfo.SetValue(idrCurrentData
+                                         , GetIniValue(Inputfile.FullName, strRegister, GetName(() => fieldInfo.Name)));
+                    }
 
-        //    uciData = new UserCsvInfo();
+                    // 読み込んだ値をDBに登録する
 
-        //    // 半角スペース区切りで分割して配列に格納する
-        //    stArrayData = strFileReadLine.Split(',');
+                }
+            }    
+        }
 
-        //    // 列数チェック
-        //    if (stArrayData.Length <= COL_USER_INFO_KANA_MEI) 
-        //    {
-        //        return false;
-        //    }
+        /// <summary>
+        /// 指定されたファイルがロックされているかどうかを返します。
+        /// </summary>
+        /// <param name="path">検証したいファイルへのフルパス</param>
+        /// <returns>ロックされているかどうか</returns>
+        private static Boolean IsFileLocked(string path)
+        {
+            FileStream stream = null;
 
-        //    // CSVの各項目を構造体へ格納する
-        //    uciData.strUserID = stArrayData[COL_USER_INFO_NO];
-        //    uciData.strUserNameSei = stArrayData[COL_USER_INFO_NAME_SEI];
-        //    uciData.strUserNameMei = stArrayData[COL_USER_INFO_NAME_MEI];
-        //    uciData.strUserKanaSei = stArrayData[COL_USER_INFO_KANA_SEI];
-        //    uciData.strUserKanaMei = stArrayData[COL_USER_INFO_KANA_MEI];
+            try
+            {
+                stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch
+            {
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                {
+                    stream.Close();
+                }
+            }
 
-        //    return true;
-        //}
-
-        ///// <summary>
-        ///// /入力チェック
-        ///// </summary>
-        ///// <param name="lstUserData">読み込みユーザ情報リスト</param>
-        ///// <returns></returns>
-        //private Boolean InputDataCheck(List<UserCsvInfo> lstUserData)
-        //{
-        //    Int32 intRowCount = 2;
-        //    Int32 intUserNo = 0;
-
-        //    foreach (UserCsvInfo uciCheckData in lstUserData) 
-        //    {
-
-        //        // 必須入力チェック
-        //        if (CheckRequiredInput(uciCheckData.strUserID, "社員番号", intRowCount, 4) == false ||
-        //            CheckRequiredInput(uciCheckData.strUserNameSei, "作業者名 性", intRowCount, 10) == false ||
-        //            CheckRequiredInput(uciCheckData.strUserNameMei, "作業者名 名", intRowCount, 10) == false ||
-        //            CheckRequiredInput(uciCheckData.strUserKanaSei, "読み仮名 性", intRowCount, 10) == false ||
-        //            CheckRequiredInput(uciCheckData.strUserKanaMei, "読み仮名 名", intRowCount, 10) == false)
-        //        {
-        //            return false;
-        //        }
-
-        //        // 数値入力チェック
-        //        if (Int32.TryParse(uciCheckData.strUserID, out intUserNo) == false) 
-        //        {
-        //            MessageBox.Show(intRowCount + "行目の社員番号は数字のみ入力してください。");
-        //            return false;
-        //        }
-
-        //        // カナ入力チェック
-        //        if (Regex.IsMatch(uciCheckData.strUserKanaSei, "^[ァ-ヶー]*$") == false)
-        //        {
-        //            MessageBox.Show(intRowCount + "行目の読み仮名 性は全角カナのみ入力してください。");
-        //            return false;
-        //        }
-        //        if (Regex.IsMatch(uciCheckData.strUserKanaMei, "^[ァ-ヶー]*$") == false)
-        //        {
-        //            MessageBox.Show(intRowCount + "行目の読み仮名 名は全角カナのみ入力してください。");
-        //            return false;
-        //        }
-
-        //        intRowCount = intRowCount + 1;
-        //    }
-
-        //    return true;
-        //}
-
-        ///// <summary>
-        ///// 必須入力チェック
-        ///// </summary>
-        ///// <param name="strCheckData">チェック対象テキスト</param>
-        ///// <param name="strItemName">チェック対象項目名</param>
-        ///// <param name="intRowCount">チェック対象行番号</param>
-        ///// <param name="intMaxLength">項目最大長</param>
-        ///// <returns></returns>
-        //private Boolean CheckRequiredInput(String strCheckData
-        //                                 , String strItemName
-        //                                 , Int32 intRowCount
-        //                                 , Int32 intMaxLength)
-        //{
-        //    // 必須入力チェック
-        //    if (strCheckData == "")
-        //    {
-        //        MessageBox.Show(intRowCount + "行目の" + strItemName + "は必須入力の項目です。");
-        //        return false;
-        //    }
-        //    else if(strCheckData.Length > intMaxLength)
-        //    {
-        //        MessageBox.Show(intRowCount + "行目の" + strItemName + "が最大長を超えています。");
-        //        return false;
-        //    }
-
-
-        //    return true;
-        //}
-
-
-        ///// <summary>
-        ///// 登録処理
-        ///// </summary>
-        ///// <returns></returns>
-        //private Boolean RegistrationUser(List<UserCsvInfo> lstUserData)
-        //{
-        //    try
-        //    {
-        //        if (bolModeNonDBCon == true)
-        //            return true;
-
-        //        // PostgreSQLへ接続
-        //        using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
-        //        {
-        //            NpgsqlCon.Open();
-
-        //            using (var transaction = NpgsqlCon.BeginTransaction())
-        //            {
-        //                foreach (UserCsvInfo uciCheckData in lstUserData) 
-        //                {
-        //                    // SQL文を作成する
-        //                    string strCreateSql = @"INSERT INTO SAGYOSYA (USERNO, USERNAME, USERYOMIGANA)
-        //                                                          VALUES (:UserNo, :UserName, :UserYomigana)
-        //                                                     ON CONFLICT (USERNO)
-        //                                                    DO UPDATE SET USERNAME = :UserName
-        //                                                                , USERYOMIGANA = :UserYomigana";
-
-        //                    // SQLコマンドに各パラメータを設定する
-        //                    var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
-
-        //                    command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = String.Format("{0:D4}", Int32.Parse(uciCheckData.strUserID)) });
-        //                    command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = uciCheckData.strUserNameSei 
-        //                                                                                                  + NAME_SEPARATE 
-        //                                                                                                  + uciCheckData.strUserNameMei});
-        //                    command.Parameters.Add(new NpgsqlParameter("UserYomigana", DbType.String) { Value = uciCheckData.strUserKanaSei 
-        //                                                                                                      + NAME_SEPARATE 
-        //                                                                                                      + uciCheckData.strUserKanaMei});
-
-        //                    // sqlを実行する
-        //                    if (ExecTranSQL(command, transaction) == false)
-        //                    {
-        //                        return false;
-        //                    }
-        //                }
-
-        //                transaction.Commit();
-        //            }
-        //        }
-
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("登録時にエラーが発生しました。"
-        //                       + Environment.NewLine
-        //                       + ex.Message);
-        //        return false;
-        //    }
-        //}
-        //#endregion    
+            return false;
+        }
+        #endregion
     }
 }
