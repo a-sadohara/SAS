@@ -105,7 +105,7 @@ namespace HinNoMasterMaintenance
 
         private void button2_Click(object sender, EventArgs e)
         {
-            UserImportCsv frmUserImportCsv = new UserImportCsv();
+            HinNoImportCsv frmUserImportCsv = new HinNoImportCsv();
             frmUserImportCsv.ShowDialog(this);
         }
 

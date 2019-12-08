@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
-//using Npgsql;
+using Npgsql;
 //using static HinNoMasterMaintenance.Common;
 
 namespace HinNoMasterMaintenance
 {
-    public partial class UserImportCsv : Form
+    public partial class HinNoImportCsv : Form
     {
         #region 変数・定数
         // CSVファイル配置情報
@@ -41,7 +41,7 @@ namespace HinNoMasterMaintenance
         /// <summary>
         /// 初期表示
         /// </summary>
-        public UserImportCsv()
+        public HinNoImportCsv()
         {
             InitializeComponent();
 

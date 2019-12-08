@@ -1,6 +1,6 @@
 ﻿namespace HinNoMasterMaintenance
 {
-    partial class UserImportCsv
+    partial class HinNoImportCsv
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserImportCsv));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HinNoImportCsv));
             this.txtCsvFile = new System.Windows.Forms.TextBox();
             this.lblTitleCsvFile = new System.Windows.Forms.Label();
             this.btnCsvFile = new System.Windows.Forms.Button();
