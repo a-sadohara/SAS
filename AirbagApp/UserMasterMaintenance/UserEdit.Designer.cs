@@ -46,9 +46,11 @@
             // 
             // txtUserNo
             // 
+            this.txtUserNo.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtUserNo.Location = new System.Drawing.Point(94, 30);
             this.txtUserNo.MaxLength = 4;
             this.txtUserNo.Name = "txtUserNo";
+            this.txtUserNo.ShortcutsEnabled = false;
             this.txtUserNo.Size = new System.Drawing.Size(36, 19);
             this.txtUserNo.TabIndex = 1;
             this.txtUserNo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNo_KeyPress);
@@ -56,6 +58,7 @@
             // 
             // txtUserNm_Sei
             // 
+            this.txtUserNm_Sei.ImeMode = System.Windows.Forms.ImeMode.Hiragana;
             this.txtUserNm_Sei.Location = new System.Drawing.Point(143, 68);
             this.txtUserNm_Sei.MaxLength = 10;
             this.txtUserNm_Sei.Name = "txtUserNm_Sei";
@@ -64,6 +67,7 @@
             // 
             // txtUserYomiGana_Sei
             // 
+            this.txtUserYomiGana_Sei.ImeMode = System.Windows.Forms.ImeMode.Katakana;
             this.txtUserYomiGana_Sei.Location = new System.Drawing.Point(143, 134);
             this.txtUserYomiGana_Sei.MaxLength = 30;
             this.txtUserYomiGana_Sei.Name = "txtUserYomiGana_Sei";
@@ -93,9 +97,9 @@
             this.lblTitleYomiGana.AutoSize = true;
             this.lblTitleYomiGana.Location = new System.Drawing.Point(35, 137);
             this.lblTitleYomiGana.Name = "lblTitleYomiGana";
-            this.lblTitleYomiGana.Size = new System.Drawing.Size(52, 12);
+            this.lblTitleYomiGana.Size = new System.Drawing.Size(47, 12);
             this.lblTitleYomiGana.TabIndex = 6;
-            this.lblTitleYomiGana.Text = "読み仮名";
+            this.lblTitleYomiGana.Text = "読みカナ";
             // 
             // lblTitleUserNm_Sei
             // 
@@ -117,6 +121,7 @@
             // 
             // txtUserNm_Mei
             // 
+            this.txtUserNm_Mei.ImeMode = System.Windows.Forms.ImeMode.Hiragana;
             this.txtUserNm_Mei.Location = new System.Drawing.Point(143, 100);
             this.txtUserNm_Mei.MaxLength = 10;
             this.txtUserNm_Mei.Name = "txtUserNm_Mei";
@@ -135,6 +140,7 @@
             // 
             // txtUserYomiGana_Mei
             // 
+            this.txtUserYomiGana_Mei.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtUserYomiGana_Mei.Location = new System.Drawing.Point(143, 168);
             this.txtUserYomiGana_Mei.MaxLength = 30;
             this.txtUserYomiGana_Mei.Name = "txtUserYomiGana_Mei";
@@ -144,20 +150,20 @@
             // lblTitleYomiGana_Sei
             // 
             this.lblTitleYomiGana_Sei.AutoSize = true;
-            this.lblTitleYomiGana_Sei.Location = new System.Drawing.Point(120, 137);
+            this.lblTitleYomiGana_Sei.Location = new System.Drawing.Point(113, 137);
             this.lblTitleYomiGana_Sei.Name = "lblTitleYomiGana_Sei";
-            this.lblTitleYomiGana_Sei.Size = new System.Drawing.Size(17, 12);
+            this.lblTitleYomiGana_Sei.Size = new System.Drawing.Size(24, 12);
             this.lblTitleYomiGana_Sei.TabIndex = 7;
-            this.lblTitleYomiGana_Sei.Text = "姓";
+            this.lblTitleYomiGana_Sei.Text = "セイ";
             // 
             // lblTitleYomiGana_Mei
             // 
             this.lblTitleYomiGana_Mei.AutoSize = true;
-            this.lblTitleYomiGana_Mei.Location = new System.Drawing.Point(120, 171);
+            this.lblTitleYomiGana_Mei.Location = new System.Drawing.Point(115, 171);
             this.lblTitleYomiGana_Mei.Name = "lblTitleYomiGana_Mei";
-            this.lblTitleYomiGana_Mei.Size = new System.Drawing.Size(17, 12);
+            this.lblTitleYomiGana_Mei.Size = new System.Drawing.Size(22, 12);
             this.lblTitleYomiGana_Mei.TabIndex = 9;
-            this.lblTitleYomiGana_Mei.Text = "名";
+            this.lblTitleYomiGana_Mei.Text = "メイ";
             // 
             // UserEdit
             // 

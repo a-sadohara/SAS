@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static UserMasterMaintenance.Common;
 using Npgsql;
@@ -16,20 +11,17 @@ namespace UserMasterMaintenance
     public partial class UserMasterMaintenance : Form
     {
         #region 定数・変数
-        private DataTable dtData;
+        private DataTable m_dtData;
 
-        private string strKanaSta = "";
-        private string strKanaEnd = "";
-        private string strYomiGanaSta = "";
-        private string strYomiGanaEnd = "";
+        private string m_strKanaSta = "";
+        private string m_strKanaEnd = "";
 
-        private int intSelRow = 0;
-
-        private const Int32 COL_USERNO = 0;
+        private const Int32 m_CON_COL_USERNO = 0;
+        private const Int32 m_CON_COL_USERNAME = 1;
+        private const Int32 m_CON_COL_USERNAMEKANA = 2;
         #endregion
 
         #region イベント
-
         /// <summary>
         /// 初期表示
         /// </summary>
@@ -39,7 +31,8 @@ namespace UserMasterMaintenance
 
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            dispDataGridView();
+            // 初期表示モードで明細表示を呼び出し
+            dispDataGridView(0, "0000", 0);
         }
 
         /// <summary>
@@ -50,19 +43,27 @@ namespace UserMasterMaintenance
         private void btnReg_Click(object sender, EventArgs e)
         {
             // 作業者登録画面を登録モードで表示する
-            UserEdit frmUserReg = new UserEdit(CON_EDITMODE_REG);
+            UserEdit frmUserReg = new UserEdit(g_CON_EDITMODE_REG);
             frmUserReg.ShowDialog();
-            dispDataGridView();
+            if(frmUserReg.g_intUpdateFlg == 1) 
+            {
+                // 登録表示モードで明細表示を呼び出し
+                dispDataGridView(1, frmUserReg.g_strRegWorkerNo, 0);
+            }
         }
 
         /// <summary>
         /// 削除ボタンクリック
-        /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void btnDel_Click(object sender, EventArgs e)
         {
+            string strSelUserNo = "";
+            string strSelUserName = "";
+            string strSelUserNameKana = "";
+            int intSelRow = 0;
+
             if (dgvUser.SelectedRows.Count == 0)
             {
                 MessageBox.Show("削除する行を選択してください");
@@ -70,11 +71,29 @@ namespace UserMasterMaintenance
             }
             else
             {
-                if (MessageBox.Show("選択されている行（データ）を削除しますか？"
-                                  , "確認"
-                                  , MessageBoxButtons.YesNo) == DialogResult.Yes)
+                foreach (DataGridViewRow r in dgvUser.SelectedRows)
                 {
-                    if (bolModeNonDBCon == true)
+                    strSelUserNo = NulltoString(r.Cells[m_CON_COL_USERNO].Value);
+                    strSelUserName = NulltoString(r.Cells[m_CON_COL_USERNAME].Value);
+                    strSelUserNameKana = NulltoString(r.Cells[m_CON_COL_USERNAMEKANA].Value);
+                    // 削除後の選択行
+                    if (r.Index == dgvUser.Rows.Count - 1)
+                    {
+                        intSelRow = r.Index - 1;
+                    }
+                    else 
+                    {
+                        intSelRow = r.Index;
+                    }
+                }
+
+                if (MessageBox.Show("選択されている行（データ）を削除しますか？"
+                                   + Environment.NewLine
+                                   + "社員番号：" + strSelUserNo + " 作業者名：" + strSelUserName + " 読み仮名：" + strSelUserNameKana
+                                   , "確認"
+                                   , MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    if (g_bolModeNonDBCon == true)
                     {
                         MessageBox.Show("削除しました");
                     }
@@ -83,16 +102,19 @@ namespace UserMasterMaintenance
                         try
                         {
                             // PostgreSQLへ接続
-                            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
                             {
                                 NpgsqlCon.Open();
 
                                 using (var transaction = NpgsqlCon.BeginTransaction())
                                 {
-                                    if (DelUser(NpgsqlCon, transaction) == true)
+                                    if (DelUser(NpgsqlCon, transaction, strSelUserNo) == true)
                                     {
                                         transaction.Commit();
                                         MessageBox.Show("削除しました");
+
+                                        // 更新表示モードで明細表示を呼び出し
+                                        dispDataGridView(2, "0000", intSelRow);
                                     }
                                     else
                                     {
@@ -108,9 +130,6 @@ namespace UserMasterMaintenance
                                            + ex.Message);
                         }
                     }
-
-                    // 再表示
-                    dispDataGridView();
                 }
             }
         }
@@ -126,8 +145,8 @@ namespace UserMasterMaintenance
 
             if (System.Windows.Forms.DialogResult.OK == frmUserImportCsv.ShowDialog())
             {
-                //処理を記述する
-                dispDataGridView();
+                // 初期表示モードで明細表示を呼び出し
+                dispDataGridView(0, "0000", 0);
             }
         }
 
@@ -138,21 +157,21 @@ namespace UserMasterMaintenance
         /// <param name="e"></param>
         private void llk_Click(dynamic sender, EventArgs e)
         {
-            if (sender == llkあ) { strKanaSta = "ア"; strKanaEnd = "オ"; }
-            if (sender == llkか) { strKanaSta = "カ"; strKanaEnd = "コ"; }
-            if (sender == llkさ) { strKanaSta = "サ"; strKanaEnd = "ソ"; }
-            if (sender == llkた) { strKanaSta = "タ"; strKanaEnd = "ト"; }
-            if (sender == llkな) { strKanaSta = "ナ"; strKanaEnd = "ノ"; }
-            if (sender == llkは) { strKanaSta = "ハ"; strKanaEnd = "ホ"; }
-            if (sender == llkま) { strKanaSta = "マ"; strKanaEnd = "モ"; }
-            if (sender == llkや) { strKanaSta = "ヤ"; strKanaEnd = "ヨ"; }
-            if (sender == llkら) { strKanaSta = "ラ"; strKanaEnd = "ロ"; }
-            if (sender == llkわ) { strKanaSta = "ワ"; strKanaEnd = "ン"; }
-            if (sender == llkEtc) { strKanaSta = "！"; strKanaEnd = "！"; }
-            if (sender == llkNon) { strKanaSta = ""; strKanaEnd = ""; }
+            if (sender == llkア) { m_strKanaSta = "ア"; m_strKanaEnd = "オ"; }
+            if (sender == llkカ) { m_strKanaSta = "カ"; m_strKanaEnd = "コ"; }
+            if (sender == llkサ) { m_strKanaSta = "サ"; m_strKanaEnd = "ソ"; }
+            if (sender == llkタ) { m_strKanaSta = "タ"; m_strKanaEnd = "ト"; }
+            if (sender == llkナ) { m_strKanaSta = "ナ"; m_strKanaEnd = "ノ"; }
+            if (sender == llkハ) { m_strKanaSta = "ハ"; m_strKanaEnd = "ホ"; }
+            if (sender == llkマ) { m_strKanaSta = "マ"; m_strKanaEnd = "モ"; }
+            if (sender == llkヤ) { m_strKanaSta = "ヤ"; m_strKanaEnd = "ヨ"; }
+            if (sender == llkラ) { m_strKanaSta = "ラ"; m_strKanaEnd = "ロ"; }
+            if (sender == llkワ) { m_strKanaSta = "ワ"; m_strKanaEnd = "ン"; }
+            if (sender == llkEtc) { m_strKanaSta = "！"; m_strKanaEnd = "！"; }
+            if (sender == llkNon) { m_strKanaSta = ""; m_strKanaEnd = ""; }
 
-            foreach (Label lbl in new Label[] { llkあ, llkか, llkさ, llkた, llkな,
-                                                llkは, llkま, llkや, llkら, llkわ,
+            foreach (Label lbl in new Label[] { llkア, llkカ, llkサ, llkタ, llkナ,
+                                                llkハ, llkマ, llkヤ, llkラ, llkワ,
                                                 llkEtc, llkNon })
             {
                 if (sender == lbl)
@@ -175,12 +194,16 @@ namespace UserMasterMaintenance
         {
 
             // 作業者登録画面を更新モードで表示する
-            UserEdit frmUserReg = new UserEdit(CON_EDITMODE_UPD,
+            UserEdit frmUserReg = new UserEdit(g_CON_EDITMODE_UPD,
                                                dgvUser.Rows[e.RowIndex].Cells[0].Value.ToString(),
                                                dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString(),
                                                dgvUser.Rows[e.RowIndex].Cells[2].Value.ToString());
             frmUserReg.ShowDialog();
-            dispDataGridView();
+            if (frmUserReg.g_intUpdateFlg == 1)
+            {
+                // 更新表示モードで明細表示を呼び出し
+                dispDataGridView(2, "0000", e.RowIndex);
+            }
         }
 
         /// <summary>
@@ -190,7 +213,8 @@ namespace UserMasterMaintenance
         /// <param name="e"></param>
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            dispDataGridView();
+            // 初期表示モードで明細表示を呼び出し
+            dispDataGridView(0, "0000", 0);
         }
 
         /// <summary>
@@ -198,7 +222,7 @@ namespace UserMasterMaintenance
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtUserNo_From_KeyPress(object sender, KeyPressEventArgs e)
+        private void txtUserNo_KeyPress(object sender, KeyPressEventArgs e)
         {
             //0～9と、バックスペース以外の時は、イベントをキャンセルする
             if ((e.KeyChar < '0' || '9' < e.KeyChar) && e.KeyChar != '\b')
@@ -208,16 +232,50 @@ namespace UserMasterMaintenance
         }
 
         /// <summary>
-        /// 作業者番号To入力イベント
+        /// 作業者番号Fromフォーカス消失
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtUserNo_To_KeyPress(object sender, KeyPressEventArgs e)
+        private void txtUserNo_From_Leave(object sender, EventArgs e)
         {
-            //0～9と、バックスペース以外の時は、イベントをキャンセルする
-            if ((e.KeyChar < '0' || '9' < e.KeyChar) && e.KeyChar != '\b')
+            int intUserNo = 0;
+
+            if (txtUserNo_From.TextLength > 0)
             {
-                e.Handled = true;
+                if (Int32.TryParse(txtUserNo_From.Text, out intUserNo) == false)
+                {
+                    MessageBox.Show("数値のみ入力してください。");
+                    txtUserNo_From.Focus();
+                    return;
+                }
+                else
+                {
+                    txtUserNo_From.Text = String.Format("{0:D4}", intUserNo);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 作業者番号Toフォーカス消失
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtUserNo_To_Leave(object sender, EventArgs e)
+        {
+            int intUserNo = 0;
+
+            if (txtUserNo_To.TextLength > 0)
+            {
+                if (Int32.TryParse(txtUserNo_To.Text, out intUserNo) == false)
+                {
+                    MessageBox.Show("数値のみ入力してください。");
+                    txtUserNo_To.Focus();
+                    return;
+                }
+                else
+                {
+                    txtUserNo_To.Text = String.Format("{0:D4}", intUserNo);
+                }
             }
         }
         #endregion
@@ -226,69 +284,71 @@ namespace UserMasterMaintenance
         /// <summary>
         /// データグリッドビュー表示処理
         /// </summary>
-        private void dispDataGridView()
+        /// <param name="intExecMode">検索モード
+        ///   0：初期表示＆検索
+        ///   1：登録
+        ///   2：更新
+        /// </param>
+        /// <param name="strSelWorkerNo">明細検索対象</param>
+        /// <param name="intLastTimeSelLine">前回選択行</param>
+        private void dispDataGridView(int intExecMode
+                                    , string strSelWorkerNo
+                                    , int intLastTimeSelLine)
         {
             string strSQL = "";
 
-            foreach (DataGridViewRow r in dgvUser.SelectedRows) { intSelRow = r.Index; }
-
             dgvUser.Rows.Clear();
 
-            int intYomiGanaSta = 0;
-            int intYomiGanaEnd = 0;
-
-            if (txtUserNo_From.Text != "" &&
-                Int32.TryParse(txtUserNo_From.Text, out intYomiGanaSta) == true)
-            {
-                strYomiGanaSta = txtUserNo_From.Text;
-            }
-
-            if (txtUserNo_To.Text != "" &&
-                Int32.TryParse(txtUserNo_To.Text, out intYomiGanaEnd) == true)
-            {
-                strYomiGanaEnd = txtUserNo_To.Text;
-            }
+            int intUserNoSta = 0;
+            int intUserNoEnd = 0;
 
             try
             {
-                if (bolModeNonDBCon == true)
+                if (g_bolModeNonDBCon == true)
                     throw new Exception("DB非接続モードです");
 
                 // 条件が指定されていない場合は抽出しない
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
                 {
                     NpgsqlCon.Open();
 
                     // SQL抽出
                     NpgsqlCommand NpgsqlCom = null;
                     NpgsqlDataAdapter NpgsqlDtAd = null;
-                    dtData = new DataTable();
-                    strSQL += "SELECT * FROM SAGYOSYA ";
-                    strSQL += "WHERE 1 = 1 ";
-                    if (!string.IsNullOrEmpty(strKanaSta))
+                    m_dtData = new DataTable();
+                    strSQL += @"SELECT 
+                                    WorkerNo
+                                  , WorkerSurname || '" + g_CON_NAME_SEPARATE + @"' || WorkerName as WorkerName
+                                  , WorkerSurnameKana || '" + g_CON_NAME_SEPARATE + @"' || WorkerNameKana as WorkerNameKana
+                                FROM 
+                                    mst_Worker ";
+                    strSQL += "WHERE Delflg = 0 ";
+                    if (!string.IsNullOrEmpty(m_strKanaSta))
                     {
-                        strSQL += "AND SUBSTRING(USERYOMIGANA,1,1) >= '" + strKanaSta + "' ";
+                        strSQL += "AND SUBSTRING(WorkerSurnameKana,1,1) >= '" + m_strKanaSta + "' ";
                     }
-                    if (!string.IsNullOrEmpty(strKanaEnd))
+                    if (!string.IsNullOrEmpty(m_strKanaEnd))
                     {
-                        strSQL += "AND SUBSTRING(USERYOMIGANA,1,1) <= '" + strKanaEnd + "' ";
+                        strSQL += "AND SUBSTRING(WorkerSurnameKana,1,1) <= '" + m_strKanaEnd + "' ";
                     }
-                    if (!string.IsNullOrEmpty(strYomiGanaSta))
+                    if (txtUserNo_From.Text != "")
                     {
-                        strSQL += "AND TO_NUMBER(USERNO, '0000') >= " + intYomiGanaSta + " ";
+                        Int32.TryParse(txtUserNo_From.Text, out intUserNoSta);
+                        strSQL += "AND TO_NUMBER(WorkerNo, '0000') >= " + intUserNoSta + " ";
                     }
-                    if (!string.IsNullOrEmpty(strYomiGanaEnd))
+                    if (txtUserNo_To.Text != "")
                     {
-                        strSQL += "AND TO_NUMBER(USERNO, '0000') <= " + intYomiGanaEnd + " ";
+                        Int32.TryParse(txtUserNo_To.Text, out intUserNoEnd);
+                        strSQL += "AND TO_NUMBER(WorkerNo, '0000') <= " + intUserNoEnd + " ";
                     }
-                    strSQL += "ORDER BY USERNO ASC ;";
+                    strSQL += "ORDER BY WorkerNo ASC ;";
                     NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
                     NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                    NpgsqlDtAd.Fill(dtData);
+                    NpgsqlDtAd.Fill(m_dtData);
 
                     // データグリッドビューに反映
-                    foreach (DataRow row in dtData.Rows)
+                    foreach (DataRow row in m_dtData.Rows)
                     {
                         this.dgvUser.Rows.Add(row.ItemArray);
                     }
@@ -314,18 +374,51 @@ namespace UserMasterMaintenance
 
             dgvUser.CurrentCell = null;
 
-            // 選択行設定
-            //if (intSelRow <= dgvUser.Rows.Count - 1)
-            //{
-            //    dgvUser.Rows[intSelRow].Selected = true;
-            //}
-            //else if (dgvUser.Rows.Count > 0)
-            //{
-            //    dgvUser.Rows[dgvUser.Rows.Count - 1].Selected = true;
-            //}
-            if (dgvUser.Rows.Count > 0) 
+            if (dgvUser.Rows.Count > 0)
             {
-                dgvUser.Rows[0].Selected = true;
+                // 表示モードが初期表示の場合
+                if (intExecMode == 0)
+                {
+                    // 0行目表示
+                    dgvUser.Rows[0].Selected = true;
+                    dgvUser.FirstDisplayedScrollingRowIndex = 0;
+                }
+                else if (intExecMode == 1) 
+                {
+                    int intSelRow = 0;
+
+                    // 対象の選択行を探す
+                    foreach (DataGridViewRow r in dgvUser.Rows)
+                    {
+                        if (strSelWorkerNo == NulltoString(r.Cells[m_CON_COL_USERNO].Value)) 
+                        {
+                            intSelRow = r.Index;
+                            break;
+                        }
+                    }
+
+                    // 更新行表示
+                    dgvUser.Rows[intSelRow].Selected = true;
+                    // 対象行が既に画面内に表示されている時は何もしない
+                    if (dgvUser.SelectedRows[0].Displayed)
+                    {
+                        return;
+                    }
+                    dgvUser.FirstDisplayedScrollingRowIndex = intSelRow;
+                }
+                // 表示モードが更新表示の場合
+                else if (intExecMode == 2)
+                {
+                    // 更新行表示
+                    dgvUser.Rows[intLastTimeSelLine].Selected = true;
+
+                    // 対象行が既に画面内に表示されている時は何もしない
+                    if (dgvUser.SelectedRows[0].Displayed)
+                    {
+                        return;
+                    }
+                    dgvUser.FirstDisplayedScrollingRowIndex = intLastTimeSelLine;
+                }
             }
         }
 
@@ -336,28 +429,27 @@ namespace UserMasterMaintenance
         /// <param name="transaction">トランザクション</param>
         /// <returns></returns>
         private Boolean DelUser(NpgsqlConnection NpgsqlCon
-                              , NpgsqlTransaction transaction)
+                              , NpgsqlTransaction transaction
+                              , string strSelUserNo)
         {
-            foreach (DataGridViewRow r in dgvUser.SelectedRows)
+            // SQL文を作成する
+            string strUpdateSql = @"UPDATE mst_Worker
+                                           SET Delflg = 1
+                                         WHERE WorkerNo = :UserNo";
+
+            // SQLコマンドに各パラメータを設定する
+            var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);
+
+            command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = strSelUserNo });
+
+            // sqlを実行する
+            if (ExecTranSQL(command, transaction) == false)
             {
-                string strSelUserNo = NulltoString(r.Cells[COL_USERNO].Value);
-                // SQL文を作成する
-                string strCreateSql = @"DELETE FROM SAGYOSYA WHERE USERNO = :UserNo";
-
-                // SQLコマンドに各パラメータを設定する
-                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
-
-                command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = strSelUserNo });
-
-                // sqlを実行する
-                if (ExecTranSQL(command, transaction) == false)
-                {
-                    return false;
-                }
+                return false;
             }
 
             return true;
         }
-        #endregion    
+        #endregion
     }
 }
