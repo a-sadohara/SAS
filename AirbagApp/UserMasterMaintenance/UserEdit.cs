@@ -241,7 +241,7 @@ namespace UserMasterMaintenance
                                          FROM
                                              mst_Worker 
                                          WHERE
-                                             WorkerNo = '" + txtUserNo.Text + "'";
+                                             employee_num = '" + txtUserNo.Text + "'";
 
                     // 重複チェックを行う
                     if (KeyDuplicateCheck(strSelSql, NpgsqlCon, "社員番号") == false)
@@ -255,12 +255,12 @@ namespace UserMasterMaintenance
                         {
                             // SQL文を作成する
                             string strCreateSql = @"INSERT INTO mst_Worker (
-                                                                    WorkerNo
-                                                                  , WorkerSurname
-                                                                  , WorkerName
-                                                                  , WorkerSurnameKana
-                                                                  , WorkerNameKana
-                                                                  , Delflg
+                                                                    employee_num
+                                                                  , worker_name_sei
+                                                                  , worker_name_mei
+                                                                  , worker_name_sei_kana
+                                                                  , worker_name_mei_kana
+                                                                  , del_flg
                                                                   )VALUES(
                                                                    :UserNo
                                                                   ,:UserSurname
@@ -323,11 +323,11 @@ namespace UserMasterMaintenance
                     {
                         // SQL文を作成する
                         string strUpdateSql = @"UPDATE mst_Worker
-                                                   SET WorkerSurname = :UserSurname
-                                                     , WorkerName = :UserName
-                                                     , WorkerSurnameKana = :UserSurnameKana
-                                                     , WorkerNameKana = :UserNameKana
-                                                 WHERE WorkerNo = :UserNo";
+                                                   SET worker_name_sei = :UserSurname
+                                                     , worker_name_mei = :UserName
+                                                     , worker_name_sei_kana = :UserSurnameKana
+                                                     , worker_name_mei_kana = :UserNameKana
+                                                 WHERE employee_num = :UserNo";
 
                         // SQLコマンドに各パラメータを設定する
                         var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);

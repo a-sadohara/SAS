@@ -365,14 +365,14 @@ namespace UserMasterMaintenance
                     uciCheckData.strProcessType == m_CON_COL_PROCESS_TYPE_UPD)
                 {
                     // SQL文を作成する
-                    string strCreateSql = @"INSERT INTO mst_Worker (WorkerNo, WorkerSurname, WorkerName, WorkerSurnameKana, WorkerNameKana, Delflg)
+                    string strCreateSql = @"INSERT INTO mst_Worker (employee_num, worker_name_sei, worker_name_mei, worker_name_sei_kana, worker_name_mei_kana, del_flg)
                                                                     VALUES (:UserNo, :UserSurname, :UserName, :UserSurnameKana, :UserNameKana, 0)
-                                                               ON CONFLICT (WorkerNo)
-                                                             DO UPDATE SET WorkerSurname = :UserSurname
-                                                                         , WorkerName = :UserName
-                                                                         , WorkerSurnameKana = :UserSurnameKana
-                                                                         , WorkerNameKana = :UserNameKana
-                                                                     WHERE mst_Worker.Delflg = 0 ";
+                                                               ON CONFLICT (employee_num)
+                                                             DO UPDATE SET worker_name_sei = :UserSurname
+                                                                         , worker_name_mei = :UserName
+                                                                         , worker_name_sei_kana = :UserSurnameKana
+                                                                         , worker_name_mei_kana = :UserNameKana
+                                                                     WHERE mst_Worker.del_flg = 0 ";
 
                     // SQLコマンドに各パラメータを設定する
                     var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
@@ -424,8 +424,8 @@ namespace UserMasterMaintenance
         {
             // SQL文を作成する
             string strUpdateSql = @"UPDATE mst_Worker
-                                       SET Delflg = 1
-                                     WHERE WorkerNo = :UserNo";
+                                       SET del_flg = 1
+                                     WHERE employee_num = :UserNo";
 
             // SQLコマンドに各パラメータを設定する
             var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);

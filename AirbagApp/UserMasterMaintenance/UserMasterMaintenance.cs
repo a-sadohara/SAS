@@ -318,31 +318,31 @@ namespace UserMasterMaintenance
                     NpgsqlDataAdapter NpgsqlDtAd = null;
                     m_dtData = new DataTable();
                     strSQL += @"SELECT 
-                                    WorkerNo
-                                  , WorkerSurname || '" + g_CON_NAME_SEPARATE + @"' || WorkerName as WorkerName
-                                  , WorkerSurnameKana || '" + g_CON_NAME_SEPARATE + @"' || WorkerNameKana as WorkerNameKana
+                                    employee_num
+                                  , worker_name_sei || '" + g_CON_NAME_SEPARATE + @"' || worker_name_mei as worker_name
+                                  , worker_name_sei_kana || '" + g_CON_NAME_SEPARATE + @"' || worker_name_mei_kana as worker_name_kana
                                 FROM 
                                     mst_Worker ";
-                    strSQL += "WHERE Delflg = 0 ";
+                    strSQL += "WHERE del_flg = 0 ";
                     if (!string.IsNullOrEmpty(m_strKanaSta))
                     {
-                        strSQL += "AND SUBSTRING(WorkerSurnameKana,1,1) >= '" + m_strKanaSta + "' ";
+                        strSQL += "AND SUBSTRING(worker_name_sei_kana,1,1) >= '" + m_strKanaSta + "' ";
                     }
                     if (!string.IsNullOrEmpty(m_strKanaEnd))
                     {
-                        strSQL += "AND SUBSTRING(WorkerSurnameKana,1,1) <= '" + m_strKanaEnd + "' ";
+                        strSQL += "AND SUBSTRING(worker_name_sei_kana,1,1) <= '" + m_strKanaEnd + "' ";
                     }
                     if (txtUserNo_From.Text != "")
                     {
                         Int32.TryParse(txtUserNo_From.Text, out intUserNoSta);
-                        strSQL += "AND TO_NUMBER(WorkerNo, '0000') >= " + intUserNoSta + " ";
+                        strSQL += "AND TO_NUMBER(employee_num, '0000') >= " + intUserNoSta + " ";
                     }
                     if (txtUserNo_To.Text != "")
                     {
                         Int32.TryParse(txtUserNo_To.Text, out intUserNoEnd);
-                        strSQL += "AND TO_NUMBER(WorkerNo, '0000') <= " + intUserNoEnd + " ";
+                        strSQL += "AND TO_NUMBER(employee_num, '0000') <= " + intUserNoEnd + " ";
                     }
-                    strSQL += "ORDER BY WorkerNo ASC ;";
+                    strSQL += "ORDER BY employee_num ASC ;";
                     NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
                     NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
                     NpgsqlDtAd.Fill(m_dtData);
@@ -434,8 +434,8 @@ namespace UserMasterMaintenance
         {
             // SQL文を作成する
             string strUpdateSql = @"UPDATE mst_Worker
-                                           SET Delflg = 1
-                                         WHERE WorkerNo = :UserNo";
+                                           SET del_flg = 1
+                                         WHERE employee_num = :UserNo";
 
             // SQLコマンドに各パラメータを設定する
             var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);
