@@ -12,12 +12,13 @@ using System.Text.RegularExpressions;
 using Npgsql;
 using System.Runtime.InteropServices;
 using System.Linq.Expressions;
+using static HinNoMasterMaintenance.Common;
 
 namespace HinNoMasterMaintenance
 {
     public partial class HinNoImportCsv : Form
     {
-        #region 変数・定数
+        #region 定数
         // ファイル名指定
         private const string m_CON_FILE_NAME_REGISTER_INI_DATA = "RegisterIniData";
         private const string m_CON_FILE_NAME_CONFIG_PLC = "ConfigPLC";
@@ -30,11 +31,99 @@ namespace HinNoMasterMaintenance
         // INIファイルのセクション
         private const string m_CON_INI_SECTION_REGISTER = "REGISTER";
 
+        // ログファイルの出力アプリ名
+        private const string m_CON_OUTLOGFILE_NAME = "HinNoImportLog";
+
+        // 品番情報csv 取り込み時特殊対応項目
+        private const string m_CON_COL_FILE_NUM = "file_num";
+        private const string m_CON_COL_REG_NUM = "register_num";
+        private const string m_CON_COL_RATEXUPD = "stretch_rate_x_upd";
+        private const string m_CON_COL_RATEYUPD = "stretch_rate_y_upd";
+
+        /// <summary>
+        /// INIファイルのセパレータ
+        /// </summary>
+        private const Char m_CON_SEPARATOR_XY = ' ';
+        #endregion
+
+        #region 変数
+        /// <summary>
+        /// 特殊対応ディクショナリ
+        /// </summary>
+        private static Dictionary<string, string> m_RegisterUniqueIni = new Dictionary<string, string>
+        {
+            {"regimark_1_point_x","TempPoint1"},
+            {"regimark_1_point_y","TempPoint1"},
+            {"regimark_1_size_w","TempSize1"},
+            {"regimark_1_size_h","TempSize1"},
+            {"regimark_2_point_x","TempPoint2"},
+            {"regimark_2_point_y","TempPoint2"},
+            {"regimark_2_size_w","TempSize2"},
+            {"regimark_2_size_h","TempSize2"},
+            {"base_point_1_x","BasePoint1"},
+            {"base_point_1_y","BasePoint1"},
+            {"base_point_2_x","BasePoint2"},
+            {"base_point_2_y","BasePoint2"},
+            {"base_point_3_x","BasePoint3"},
+            {"base_point_3_y","BasePoint3"},
+            {"base_point_4_x","BasePoint4"},
+            {"base_point_4_y","BasePoint4"},
+            {"base_point_5_x","BasePoint5"},
+            {"base_point_5_y","BasePoint5"},
+            {"point_1_plus_direction_x","Plus1"},
+            {"point_1_plus_direction_y","Plus1"},
+            {"point_2_plus_direction_x","Plus2"},
+            {"point_2_plus_direction_y","Plus2"},
+            {"point_3_plus_direction_x","Plus3"},
+            {"point_3_plus_direction_y","Plus3"},
+            {"point_4_plus_direction_x","Plus4"},
+            {"point_4_plus_direction_y","Plus4"},
+            {"point_5_plus_direction_x","Plus5"},
+            {"point_5_plus_direction_y","Plus5"}
+        };
+
+        /// <summary>
+        /// スプリット対象項目
+        /// </summary>
+        private static Dictionary<string, int> m_RegisterUniqueIniSplit = new Dictionary<string, int>
+        {
+            {"regimark_1_point_x",0},
+            {"regimark_1_point_y",1},
+            {"regimark_1_size_w",0},
+            {"regimark_1_size_h",1},
+            {"regimark_2_point_x",0},
+            {"regimark_2_point_y",1},
+            {"regimark_2_size_w",0},
+            {"regimark_2_size_h",1},
+            {"base_point_1_x",0},
+            {"base_point_1_y",1},
+            {"base_point_2_x",0},
+            {"base_point_2_y",1},
+            {"base_point_3_x",0},
+            {"base_point_3_y",1},
+            {"base_point_4_x",0},
+            {"base_point_4_y",1},
+            {"base_point_5_x",0},
+            {"base_point_5_y",1},
+            {"point_1_plus_direction_x",0},
+            {"point_1_plus_direction_y",1},
+            {"point_2_plus_direction_x",0},
+            {"point_2_plus_direction_y",1},
+            {"point_3_plus_direction_x",0},
+            {"point_3_plus_direction_y",1},
+            {"point_4_plus_direction_x",0},
+            {"point_4_plus_direction_y",1},
+            {"point_5_plus_direction_x",0},
+            {"point_5_plus_direction_y",1}
+        };
+
         /// <summary>
         /// 品番情報CSV
         /// </summary>
         private class IniDataRegister
         {
+            public string file_num { get; set; }
+            public string register_num { get; set; }
             public string RegistFlg { get; set; }
             public string SelectFlg { get; set; }
             public string Name { get; set; }
@@ -47,23 +136,39 @@ namespace HinNoMasterMaintenance
             public string AutoPrint { get; set; }
             public string AutoStop { get; set; }
             public string TempFile1 { get; set; }
-            public string TempPoint1 { get; set; }
-            public string TempSize1 { get; set; }
+            public string regimark_1_point_x { get; set; }
+            public string regimark_1_point_y { get; set; }
+            public string regimark_1_size_w { get; set; }
+            public string regimark_1_size_h { get; set; }
             public string TempFile2 { get; set; }
-            public string TempPoint2 { get; set; }
-            public string TempSize2 { get; set; }
-            public string BasePoint1 { get; set; }
-            public string BasePoint2 { get; set; }
-            public string BasePoint3 { get; set; }
-            public string BasePoint4 { get; set; }
-            public string BasePoint5 { get; set; }
-            public string Plus1 { get; set; }
-            public string Plus2 { get; set; }
-            public string Plus3 { get; set; }
-            public string Plus4 { get; set; }
-            public string Plus5 { get; set; }
+            public string regimark_2_point_x { get; set; }
+            public string regimark_2_point_y { get; set; }
+            public string regimark_2_size_w { get; set; }
+            public string regimark_2_size_h { get; set; }
+            public string base_point_1_x { get; set; }
+            public string base_point_1_y { get; set; }
+            public string base_point_2_x { get; set; }
+            public string base_point_2_y { get; set; }
+            public string base_point_3_x { get; set; }
+            public string base_point_3_y { get; set; }
+            public string base_point_4_x { get; set; }
+            public string base_point_4_y { get; set; }
+            public string base_point_5_x { get; set; }
+            public string base_point_5_y { get; set; }
+            public string point_1_plus_direction_x { get; set; }
+            public string point_1_plus_direction_y { get; set; }
+            public string point_2_plus_direction_x { get; set; }
+            public string point_2_plus_direction_y { get; set; }
+            public string point_3_plus_direction_x { get; set; }
+            public string point_3_plus_direction_y { get; set; }
+            public string point_4_plus_direction_x { get; set; }
+            public string point_4_plus_direction_y { get; set; }
+            public string point_5_plus_direction_x { get; set; }
+            public string point_5_plus_direction_y { get; set; }
             public string AreaMagX { get; set; }
             public string AreaMagY { get; set; }
+            public string stretch_rate_x_upd { get; set; }
+            public string stretch_rate_y_upd { get; set; }
             public string TempFile3 { get; set; }
             public string TempFile4 { get; set; }
             public string AutoCalcAreaMagFlg { get; set; }
@@ -72,7 +177,6 @@ namespace HinNoMasterMaintenance
             public string BThreadNum { get; set; }
             public string BThreadNo { get; set; }
             public string BTCamNo { get; set; }
-
         }
         #endregion
 
@@ -94,6 +198,8 @@ namespace HinNoMasterMaintenance
         /// <param name="e"></param>
         private void btnImport_Click(object sender, EventArgs e)
         {
+            List<IniDataRegister> lstDataRegistersToDB = new List<IniDataRegister>();
+
             // 未入力チェック
             if (txtFolder.Text == "")
             {
@@ -126,8 +232,19 @@ namespace HinNoMasterMaintenance
                         // 品番情報ファイルを判定する
                         if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.INI") == true) 
                         {
+
                             // 品番情報ファイルの場合、取り込みを行う
-                        
+                            lstDataRegistersToDB = ImportRegisterIniData(Inputfile);
+
+
+                            // 読み込んだ値に対してチェック処理を行う
+                            if (CheckRegisterIniData(lstDataRegistersToDB
+                                                   , Inputfile.Name) == false)
+                            {
+                                continue;
+                            }
+
+                            // 読み込んだ値をDBに登録する
                         }
 
                         // PLC設定ファイルを判定する
@@ -242,9 +359,12 @@ namespace HinNoMasterMaintenance
         /// <summary>
         /// 品番情報取り込み
         /// </summary>
-        private static void ImportRegisterIniData(FileInfo Inputfile) 
+        /// <param name="Inputfile">読み込みファイル情報</param>
+        /// <returns></returns>
+        private static List<IniDataRegister> ImportRegisterIniData(FileInfo Inputfile) 
         {
-            List<string> lstRegisterIniData = new List<string>();
+            List<IniDataRegister> lstDataRegisterDB = new List<IniDataRegister>();
+            List<string> lstRegisterIniSection = new List<string>();
 
             // ファイル読み込み処理を行う
             using (StreamReader sr = new StreamReader(Inputfile.FullName
@@ -268,32 +388,41 @@ namespace HinNoMasterMaintenance
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", "");
                         strFileTextLineReplace = strFileTextLine.Replace("]", "");
-                        lstRegisterIniData.Add(strFileTextLine);
+                        lstRegisterIniSection.Add(strFileTextLine);
 
                     }
                 }
 
                 // セクションの数だけループする
-                foreach (string strRegister in lstRegisterIniData) 
+                foreach (string strRegister in lstRegisterIniSection) 
                 {
                     IniDataRegister idrCurrentData = new IniDataRegister();
 
-                    // 各項目の値を取得する
-                    // FieldInfoを取得する
-                    Type typeOfMyStruct = typeof(IniDataRegister);
-                    System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
-
-                    // 各フィールドに値を設定する
-                    foreach (var fieldInfo in fieldInfos)
-                    {
-                        fieldInfo.SetValue(idrCurrentData
-                                         , GetIniValue(Inputfile.FullName, strRegister, GetName(() => fieldInfo.Name)));
-                    }
-
-                    // 読み込んだ値をDBに登録する
-
+                    // Iniファイルの値をクラスへ格納する
+                    idrCurrentData = DataRegIniToDBClass(Inputfile, strRegister);
                 }
+
+                return lstDataRegisterDB;
             }    
+        }
+
+        /// <summary>
+        /// 品番情報チェック処理
+        /// </summary>
+        /// <param name="lstDataRegisters">読み込んだ品番情報</param>
+        /// <param name="strFileName">ファイル名</param>
+        /// <returns></returns>
+        private static Boolean CheckRegisterIniData(List<IniDataRegister> idrCurrentData
+                                                  , string strFileName) 
+        {
+            // 入力項目が0件の場合エラー
+            if (idrCurrentData.Count == 0) 
+            {
+                OutPutImportLog("品番ファイル内0件", strFileName);
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -322,6 +451,111 @@ namespace HinNoMasterMaintenance
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// 品番マスタメンテINIファイル読み込み格納処理
+        /// </summary>
+        /// <param name="Inputfile">読み込みINIファイル</param>
+        /// <param name="strRegister">セクション</param>
+        /// <returns></returns>
+        private static IniDataRegister DataRegIniToDBClass(FileInfo Inputfile
+                                                         , string strRegister) 
+        {
+            IniDataRegister idrCurrentData = new IniDataRegister();
+
+            // 各項目の値を取得する
+            // FieldInfoを取得する
+            Type typeOfMyStruct = typeof(IniDataRegister);
+            System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
+
+            // ファイルナンバーの格納を行う
+            idrCurrentData.file_num =
+                SubstringRight(System.IO.Path.GetFileNameWithoutExtension(Inputfile.Name), 2);
+            // セクションナンバーの格納を行う
+            idrCurrentData.register_num = SubstringRight(strRegister, 3);
+
+            string strTenmIniValue = "";
+
+            // Iniファイルから各値を読み込む
+            foreach (var fieldInfo in fieldInfos)
+            {
+                // 指定したキーが存在する場合、値を取得する
+                string  strUniKey = "";
+                m_RegisterUniqueIni.TryGetValue(fieldInfo.Name, out strUniKey);
+
+                int intUniSplitVal = 99999;
+                m_RegisterUniqueIniSplit.TryGetValue(fieldInfo.Name, out intUniSplitVal);
+
+                // フィールド名ごとに値の格納処理を行う
+                if (fieldInfo.Name == m_CON_COL_FILE_NUM ||
+                    fieldInfo.Name == m_CON_COL_REG_NUM)
+                {
+                    // ファイル名セクション名は設定済みのためスキップ
+                    continue;
+                }
+                else if (fieldInfo.Name == m_CON_COL_RATEXUPD ||
+                         fieldInfo.Name == m_CON_COL_RATEYUPD)
+                {
+                    // 更新用項目は空文字
+                    fieldInfo.SetValue(idrCurrentData, "");
+                }
+                else if (strUniKey != "") 
+                {
+                    // 特殊対応項目の場合は特殊対応して設定
+                    strTenmIniValue = NulltoString(GetIniValue(Inputfile.FullName
+                                                             , strRegister
+                                                             , GetName(() => strUniKey)));
+                    fieldInfo.SetValue(idrCurrentData, strTenmIniValue.Split(m_CON_SEPARATOR_XY)[intUniSplitVal]);
+                }
+                else
+                {
+                    // それ以外の項目は普通に設定
+                    fieldInfo.SetValue(idrCurrentData, GetIniValue(Inputfile.FullName
+                                                     , strRegister
+                                                     , GetName(() => fieldInfo.Name)));
+                }
+            }
+
+            return idrCurrentData;
+        }
+        #endregion
+
+        #region ログ出力
+        /// <summary>
+        /// インポートログ出力
+        /// </summary>
+        /// <param name="strLogText">ログのテキスト</param>
+        /// <param name="strFileName">ログ対象ファイル名</param>
+        private static void OutPutImportLog(string strLogText
+                                          , string strFileName)
+        {
+            string strOutPutFilePath = "";
+            string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff");
+
+            // 出力ファイル設定
+            strOutPutFilePath = System.IO.Directory.GetCurrentDirectory() + @"\"
+                                                                          + m_CON_OUTLOGFILE_NAME
+                                                                          + "_"
+                                                                          + DateTime.Now.ToString("yyyyMMdd")
+                                                                          + ".txt";
+
+            try
+            {
+                //Shift JISで書き込む
+                //書き込むファイルが既に存在している場合は、上書きする
+                using (StreamWriter sw = new StreamWriter(strOutPutFilePath
+                                                        , true
+                                                        , Encoding.GetEncoding("shift_jis")))
+                {
+                    // １行ずつ出力を行う
+                    sw.WriteLine(time + " " + strFileName + ":" + strLogText);
+                }
+            }
+            catch
+            {
+                return;
+            }
         }
         #endregion
     }

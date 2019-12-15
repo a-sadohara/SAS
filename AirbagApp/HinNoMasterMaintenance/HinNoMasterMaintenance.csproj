@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common.cs" />
     <Compile Include="HinNoMasterMaintenance.cs">
       <SubType>Form</SubType>
     </Compile>
