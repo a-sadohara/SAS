@@ -1,46 +1,151 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using Npgsql;
+using System;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 using static BeforeInspection.Common;
-using Npgsql;
 
 namespace BeforeInspection
 {
     public partial class UserSelection : Form
     {
+        // 社員番号
         public string strUserNo { get; set; }
+        // 作業者名
         public string strUserNm { get; set; }
 
         public DataTable dtData;
         //public DataGridWpf_UserCtrl usrctlDataGridWpf;
 
-        #region イベント
-
-        private void lblSearch_Click(dynamic sender, EventArgs e)
+        #region メソッド
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public UserSelection()
         {
+            InitializeComponent();
+
+            this.StartPosition = FormStartPosition.CenterParent;
+
+            dispDataGridView();
+        }
+
+        /// <summary>
+        /// データグリッドビュー表示
+        /// </summary>
+        /// <param name="strKanaSta">カナ（開始）</param>
+        /// <param name="strKanaEnd">カナ（終了）</param>
+        private void dispDataGridView(string strKanaSta = "", string strKanaEnd = "")
+        {
+            string strSQL = "";
+
+            dgvUser.Rows.Clear();
+
+            try
+            {
+                DbOpen();
+
+                // SQL抽出
+                NpgsqlCommand NpgsqlCom = null;
+                NpgsqlDataAdapter NpgsqlDtAd = null;
+                dtData = new DataTable();
+                strSQL += @"SELECT 
+                                        employee_num
+                                      , worker_name_sei || worker_name_mei as worker_name
+                                    FROM 
+                                        mst_Worker ";
+                strSQL += "WHERE del_flg = 0 ";
+                if (strKanaSta == "！" && strKanaEnd == "！")
+                {
+                    strSQL += "AND NOT( ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ア' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'オ') ";
+                    strSQL += "    OR ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'カ' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'コ') ";
+                    strSQL += "    OR ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'サ' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'ソ') ";
+                    strSQL += "    OR ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'タ' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'ト') ";
+                    strSQL += "    OR ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ナ' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'ノ') ";
+                    strSQL += "    OR ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ハ' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'ホ') ";
+                    strSQL += "    OR ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'マ' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'モ') ";
+                    strSQL += "    OR ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ヤ' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'ヨ') ";
+                    strSQL += "    OR ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ラ' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'ロ') ";
+                    strSQL += "    OR ";
+                    strSQL += "    ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ワ' AND ";
+                    strSQL += "      SUBSTRING(worker_name_sei_kana,1,1) <= 'ン') ";
+                    strSQL += ") ";
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(strKanaSta))
+                    {
+                        strSQL += "AND SUBSTRING(worker_name_sei_kana,1,1) >= '" + strKanaSta + "' ";
+                    }
+                    if (!string.IsNullOrEmpty(strKanaEnd))
+                    {
+                        strSQL += "AND SUBSTRING(worker_name_sei_kana,1,1) <= '" + strKanaEnd + "' ";
+                    }
+                }
+                strSQL += "ORDER BY employee_num ASC ;";
+                NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
+                NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
+                NpgsqlDtAd.Fill(dtData);
+
+                // データグリッドに反映
+                foreach (DataRow row in dtData.Rows)
+                {
+                    this.dgvUser.Rows.Add(row.ItemArray);
+                }
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
+                // メッセージ出力
+                MessageBox.Show("作業者マスタの取得で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+        }
+        #endregion
+
+        #region イベント
+        private void lblSearch_Click(object sender, EventArgs e)
+        {
+            Label lblSearch = (Label)sender;
+
             string strKanaSta = "";
             string strKanaEnd = "";
 
-            if (sender == lblSearchあ) { strKanaSta = "ア"; strKanaEnd = "オ"; }
-            else if (sender == lblSearchか) { strKanaSta = "カ"; strKanaEnd = "コ"; }
-            else if (sender == lblSearchさ) { strKanaSta = "サ"; strKanaEnd = "ソ"; }
-            else if (sender == lblSearchた) { strKanaSta = "タ"; strKanaEnd = "ト"; }
-            else if (sender == lblSearchな) { strKanaSta = "ナ"; strKanaEnd = "ノ"; }
-            else if (sender == lblSearchは) { strKanaSta = "ハ"; strKanaEnd = "ホ"; }
-            else if (sender == lblSearchま) { strKanaSta = "マ"; strKanaEnd = "モ"; }
-            else if (sender == lblSearchや) { strKanaSta = "ヤ"; strKanaEnd = "ヨ"; }
-            else if (sender == lblSearchら) { strKanaSta = "ラ"; strKanaEnd = "ロ"; }
-            else if (sender == lblSearchわ) { strKanaSta = "ワ"; strKanaEnd = "ン"; }
+            if (lblSearch == lblSearchあ) { strKanaSta = "ア"; strKanaEnd = "オ"; }
+            else if (lblSearch == lblSearchか) { strKanaSta = "カ"; strKanaEnd = "コ"; }
+            else if (lblSearch == lblSearchさ) { strKanaSta = "サ"; strKanaEnd = "ソ"; }
+            else if (lblSearch == lblSearchた) { strKanaSta = "タ"; strKanaEnd = "ト"; }
+            else if (lblSearch == lblSearchな) { strKanaSta = "ナ"; strKanaEnd = "ノ"; }
+            else if (lblSearch == lblSearchは) { strKanaSta = "ハ"; strKanaEnd = "ホ"; }
+            else if (lblSearch == lblSearchま) { strKanaSta = "マ"; strKanaEnd = "モ"; }
+            else if (lblSearch == lblSearchや) { strKanaSta = "ヤ"; strKanaEnd = "ヨ"; }
+            else if (lblSearch == lblSearchら) { strKanaSta = "ラ"; strKanaEnd = "ロ"; }
+            else if (lblSearch == lblSearchわ) { strKanaSta = "ワ"; strKanaEnd = "ン"; }
+            else if (lblSearch == lblSearchEtc) { strKanaSta = "！"; strKanaEnd = "！"; }
+            else if (lblSearch == lblSearchNon) { strKanaSta = ""; strKanaEnd = ""; }
 
             foreach (Label lbl in new Label[] { lblSearchあ, lblSearchか, lblSearchさ, lblSearchた, lblSearchな,
-                                                lblSearchは, lblSearchま, lblSearchや, lblSearchら, lblSearchわ})
+                                                lblSearchは, lblSearchま, lblSearchや, lblSearchら, lblSearchわ,
+                                                lblSearchEtc, lblSearchNon})
             {
                 if (sender == lbl)
                 {
@@ -65,112 +170,6 @@ namespace BeforeInspection
 
             this.Close();
         }
-
         #endregion
-
-        #region メソッド
-
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        public UserSelection()
-        {
-            InitializeComponent();
-            
-            this.StartPosition = FormStartPosition.CenterParent;
-        }
-
-        /// <summary>
-        /// データグリッドビュー表示
-        /// </summary>
-        /// <param name="strKanaSta">カナ（開始）</param>
-        /// <param name="strKanaEnd">カナ（終了）</param>
-        private void dispDataGridView(string strKanaSta = "", string strKanaEnd = "")
-        {
-            string strSQL = "";
-
-            dgvUser.Rows.Clear();
-
-            //usrctlDataGridWpf = new DataGridWpf_UserCtrl(this, elementHost1, DataGridWpf_UserCtrl.COLUM_TYPE.USER);
-
-            try
-            {
-                // 条件が指定されていない場合は抽出しない
-                if (!string.IsNullOrEmpty(strKanaSta) && !string.IsNullOrEmpty(strKanaEnd))
-                {
-                    if (bolModeNonDBCon == true)
-                        throw new Exception("DB非接続モードです");
-
-                    // PostgreSQLへ接続
-                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
-                    {
-                        NpgsqlCon.Open();
-
-                        // SQL抽出
-                        NpgsqlCommand NpgsqlCom = null;
-                        NpgsqlDataAdapter NpgsqlDtAd = null;
-                        dtData = new DataTable();
-                        strSQL += "SELECT * FROM SAGYOSYA ";
-                        strSQL += "WHERE SUBSTRING(USERYOMIGANA,1,1) BETWEEN '" + strKanaSta + "' AND '" + strKanaEnd + "'";
-                        strSQL += "ORDER BY USERNO ASC ";
-                        NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                        NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                        NpgsqlDtAd.Fill(dtData);
-
-                        //TODO:
-                        // データグリッドに反映
-                        //usrctlDataGridWpf = new DataGridWpf_UserCtrl(this, elementHost1, DataGridWpf_UserCtrl.COLUM_TYPE.USER, dtData);
-                        //elementHost1.Child = usrctlDataGridWpf;
-                        // データグリッドビューに反映
-                        foreach (DataRow row in dtData.Rows)
-                        {
-                            this.dgvUser.Rows.Add(row.ItemArray);
-                        }
-                    }
-                }
-
-                // 描画崩れ防止
-                if (this.dgvUser.Rows.Count == 0)
-                {
-                    this.dgvUser.Rows.Add(new object[] { null, null });
-                    dgvUser.Rows.RemoveAt(0);
-                }
-                //elementHost1.Child = usrctlDataGridWpf;
-
-            }
-            catch (Exception e)
-            {
-                string strErrMsg = "";
-                strErrMsg = e.Message;
-
-                // 後々この処理は消す
-                foreach (string line in File.ReadLines("作業者.tsv", Encoding.Default))
-                {
-                    // 改行コードを変換
-                    string strLine = line.Replace("\\rn", Environment.NewLine);
-
-                    string[] csv = strLine.Split('\t');
-                    string[] data = new string[csv.Length];
-                    Array.Copy(csv, 0, data, 0, data.Length);
-                    this.dgvUser.Rows.Add(data);
-                }
-            }
-        }
-
-        #endregion
-
-        private void UserSelection_Load(object sender, EventArgs e)
-        {
-            dispDataGridView();
-        }
-
-        private void UserSelection_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //if (usrctlDataGridWpf.arrSelectData != null)
-            //{
-            //    strUserNo = usrctlDataGridWpf.arrSelectData[0].ToString();
-            //    strUserNm = usrctlDataGridWpf.arrSelectData[1].ToString();
-            //}
-        }
     }
 }

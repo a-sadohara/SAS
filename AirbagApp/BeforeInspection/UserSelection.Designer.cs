@@ -58,6 +58,8 @@
             this.dgvUser = new System.Windows.Forms.DataGridView();
             this.UserNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UserNm = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblSearchEtc = new System.Windows.Forms.Label();
+            this.lblSearchNon = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUser)).BeginInit();
             this.SuspendLayout();
@@ -83,6 +85,8 @@
             this.panel1.Controls.Add(this.lblSearchや);
             this.panel1.Controls.Add(this.lblSearchま);
             this.panel1.Controls.Add(this.lblSearchは);
+            this.panel1.Controls.Add(this.lblSearchNon);
+            this.panel1.Controls.Add(this.lblSearchEtc);
             this.panel1.Controls.Add(this.lblSearchな);
             this.panel1.Controls.Add(this.lblSearchた);
             this.panel1.Controls.Add(this.lblSearchさ);
@@ -90,7 +94,7 @@
             this.panel1.Controls.Add(this.lblSearchあ);
             this.panel1.Location = new System.Drawing.Point(16, 36);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(490, 132);
+            this.panel1.Size = new System.Drawing.Size(614, 132);
             this.panel1.TabIndex = 0;
             // 
             // lblSearchわ
@@ -295,7 +299,7 @@
             this.dgvUser.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvUser.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dgvUser.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvUser.Size = new System.Drawing.Size(490, 387);
+            this.dgvUser.Size = new System.Drawing.Size(614, 387);
             this.dgvUser.TabIndex = 1;
             this.dgvUser.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvUser_CellClick);
             // 
@@ -320,19 +324,49 @@
             this.UserNm.ReadOnly = true;
             this.UserNm.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
+            // lblSearchEtc
+            // 
+            this.lblSearchEtc.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblSearchEtc.AutoSize = true;
+            this.lblSearchEtc.BackColor = System.Drawing.Color.Transparent;
+            this.lblSearchEtc.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblSearchEtc.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblSearchEtc.Location = new System.Drawing.Point(492, 15);
+            this.lblSearchEtc.Name = "lblSearchEtc";
+            this.lblSearchEtc.Size = new System.Drawing.Size(69, 28);
+            this.lblSearchEtc.TabIndex = 0;
+            this.lblSearchEtc.Text = "その他";
+            this.lblSearchEtc.Click += new System.EventHandler(this.lblSearch_Click);
+            // 
+            // lblSearchNon
+            // 
+            this.lblSearchNon.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblSearchNon.AutoSize = true;
+            this.lblSearchNon.BackColor = System.Drawing.Color.Transparent;
+            this.lblSearchNon.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblSearchNon.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblSearchNon.Location = new System.Drawing.Point(484, 84);
+            this.lblSearchNon.Name = "lblSearchNon";
+            this.lblSearchNon.Size = new System.Drawing.Size(88, 28);
+            this.lblSearchNon.TabIndex = 0;
+            this.lblSearchNon.Text = "条件なし";
+            this.lblSearchNon.Click += new System.EventHandler(this.lblSearch_Click);
+            // 
             // UserSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.ClientSize = new System.Drawing.Size(521, 587);
+            this.ClientSize = new System.Drawing.Size(645, 587);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.lblTiitle);
             this.Controls.Add(this.dgvUser);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "UserSelection";
             this.Text = "作業者検索";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.UserSelection_FormClosing);
-            this.Load += new System.EventHandler(this.UserSelection_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUser)).EndInit();
@@ -359,5 +393,7 @@
 
         private System.Windows.Forms.DataGridViewTextBoxColumn UserNo;
         private System.Windows.Forms.DataGridViewTextBoxColumn UserNm;
+        private System.Windows.Forms.Label lblSearchNon;
+        private System.Windows.Forms.Label lblSearchEtc;
     }
 }

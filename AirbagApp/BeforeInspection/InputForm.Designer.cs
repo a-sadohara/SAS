@@ -1,6 +1,6 @@
 ﻿namespace BeforeInspection
 {
-    partial class InpttForm
+    partial class InputForm
     {
         /// <summary>
         /// Required designer variable.
@@ -56,7 +56,8 @@
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
@@ -94,7 +95,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(294, 339);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(289, 319);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // btn7
@@ -103,10 +104,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn7.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btn7.Location = new System.Drawing.Point(1, 57);
+            this.btn7.Location = new System.Drawing.Point(1, 54);
             this.btn7.Margin = new System.Windows.Forms.Padding(1);
             this.btn7.Name = "btn7";
-            this.btn7.Size = new System.Drawing.Size(71, 54);
+            this.btn7.Size = new System.Drawing.Size(70, 51);
             this.btn7.TabIndex = 0;
             this.btn7.Text = "7";
             this.btn7.UseVisualStyleBackColor = true;
@@ -118,10 +119,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn8.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btn8.Location = new System.Drawing.Point(74, 57);
+            this.btn8.Location = new System.Drawing.Point(73, 54);
             this.btn8.Margin = new System.Windows.Forms.Padding(1);
             this.btn8.Name = "btn8";
-            this.btn8.Size = new System.Drawing.Size(71, 54);
+            this.btn8.Size = new System.Drawing.Size(70, 51);
             this.btn8.TabIndex = 0;
             this.btn8.Text = "8";
             this.btn8.UseVisualStyleBackColor = true;
@@ -133,10 +134,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn9.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btn9.Location = new System.Drawing.Point(147, 57);
+            this.btn9.Location = new System.Drawing.Point(145, 54);
             this.btn9.Margin = new System.Windows.Forms.Padding(1);
             this.btn9.Name = "btn9";
-            this.btn9.Size = new System.Drawing.Size(71, 54);
+            this.btn9.Size = new System.Drawing.Size(70, 51);
             this.btn9.TabIndex = 0;
             this.btn9.Text = "9";
             this.btn9.UseVisualStyleBackColor = true;
@@ -148,10 +149,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnBak.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btnBak.Location = new System.Drawing.Point(220, 57);
+            this.btnBak.Location = new System.Drawing.Point(217, 54);
             this.btnBak.Margin = new System.Windows.Forms.Padding(1);
             this.btnBak.Name = "btnBak";
-            this.btnBak.Size = new System.Drawing.Size(73, 54);
+            this.btnBak.Size = new System.Drawing.Size(71, 51);
             this.btnBak.TabIndex = 0;
             this.btnBak.Text = "BAK";
             this.btnBak.UseVisualStyleBackColor = true;
@@ -163,10 +164,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn4.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btn4.Location = new System.Drawing.Point(1, 113);
+            this.btn4.Location = new System.Drawing.Point(1, 107);
             this.btn4.Margin = new System.Windows.Forms.Padding(1);
             this.btn4.Name = "btn4";
-            this.btn4.Size = new System.Drawing.Size(71, 54);
+            this.btn4.Size = new System.Drawing.Size(70, 51);
             this.btn4.TabIndex = 0;
             this.btn4.Text = "4";
             this.btn4.UseVisualStyleBackColor = true;
@@ -178,10 +179,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn5.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btn5.Location = new System.Drawing.Point(74, 113);
+            this.btn5.Location = new System.Drawing.Point(73, 107);
             this.btn5.Margin = new System.Windows.Forms.Padding(1);
             this.btn5.Name = "btn5";
-            this.btn5.Size = new System.Drawing.Size(71, 54);
+            this.btn5.Size = new System.Drawing.Size(70, 51);
             this.btn5.TabIndex = 0;
             this.btn5.Text = "5";
             this.btn5.UseVisualStyleBackColor = true;
@@ -193,10 +194,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn6.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btn6.Location = new System.Drawing.Point(147, 113);
+            this.btn6.Location = new System.Drawing.Point(145, 107);
             this.btn6.Margin = new System.Windows.Forms.Padding(1);
             this.btn6.Name = "btn6";
-            this.btn6.Size = new System.Drawing.Size(71, 54);
+            this.btn6.Size = new System.Drawing.Size(70, 51);
             this.btn6.TabIndex = 0;
             this.btn6.Text = "6";
             this.btn6.UseVisualStyleBackColor = true;
@@ -208,10 +209,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAllClear.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btnAllClear.Location = new System.Drawing.Point(220, 113);
+            this.btnAllClear.Location = new System.Drawing.Point(217, 107);
             this.btnAllClear.Margin = new System.Windows.Forms.Padding(1);
             this.btnAllClear.Name = "btnAllClear";
-            this.btnAllClear.Size = new System.Drawing.Size(73, 54);
+            this.btnAllClear.Size = new System.Drawing.Size(71, 51);
             this.btnAllClear.TabIndex = 0;
             this.btnAllClear.Text = "AC";
             this.btnAllClear.UseVisualStyleBackColor = true;
@@ -223,10 +224,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn1.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btn1.Location = new System.Drawing.Point(1, 169);
+            this.btn1.Location = new System.Drawing.Point(1, 160);
             this.btn1.Margin = new System.Windows.Forms.Padding(1);
             this.btn1.Name = "btn1";
-            this.btn1.Size = new System.Drawing.Size(71, 54);
+            this.btn1.Size = new System.Drawing.Size(70, 51);
             this.btn1.TabIndex = 0;
             this.btn1.Text = "1";
             this.btn1.UseVisualStyleBackColor = true;
@@ -238,10 +239,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn2.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btn2.Location = new System.Drawing.Point(74, 169);
+            this.btn2.Location = new System.Drawing.Point(73, 160);
             this.btn2.Margin = new System.Windows.Forms.Padding(1);
             this.btn2.Name = "btn2";
-            this.btn2.Size = new System.Drawing.Size(71, 54);
+            this.btn2.Size = new System.Drawing.Size(70, 51);
             this.btn2.TabIndex = 0;
             this.btn2.Text = "2";
             this.btn2.UseVisualStyleBackColor = true;
@@ -253,10 +254,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn3.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btn3.Location = new System.Drawing.Point(147, 169);
+            this.btn3.Location = new System.Drawing.Point(145, 160);
             this.btn3.Margin = new System.Windows.Forms.Padding(1);
             this.btn3.Name = "btn3";
-            this.btn3.Size = new System.Drawing.Size(71, 54);
+            this.btn3.Size = new System.Drawing.Size(70, 51);
             this.btn3.TabIndex = 0;
             this.btn3.Text = "3";
             this.btn3.UseVisualStyleBackColor = true;
@@ -268,11 +269,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnEnter.Font = new System.Drawing.Font("メイリオ", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnEnter.Location = new System.Drawing.Point(220, 169);
+            this.btnEnter.Location = new System.Drawing.Point(217, 160);
             this.btnEnter.Margin = new System.Windows.Forms.Padding(1);
             this.btnEnter.Name = "btnEnter";
             this.tableLayoutPanel1.SetRowSpan(this.btnEnter, 2);
-            this.btnEnter.Size = new System.Drawing.Size(73, 110);
+            this.btnEnter.Size = new System.Drawing.Size(71, 104);
             this.btnEnter.TabIndex = 0;
             this.btnEnter.Text = "ENTER";
             this.btnEnter.UseVisualStyleBackColor = true;
@@ -284,10 +285,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btn0.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btn0.Location = new System.Drawing.Point(1, 225);
+            this.btn0.Location = new System.Drawing.Point(1, 213);
             this.btn0.Margin = new System.Windows.Forms.Padding(1);
             this.btn0.Name = "btn0";
-            this.btn0.Size = new System.Drawing.Size(71, 54);
+            this.btn0.Size = new System.Drawing.Size(70, 51);
             this.btn0.TabIndex = 0;
             this.btn0.Text = "0";
             this.btn0.UseVisualStyleBackColor = true;
@@ -299,10 +300,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPlus.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btnPlus.Location = new System.Drawing.Point(74, 225);
+            this.btnPlus.Location = new System.Drawing.Point(73, 213);
             this.btnPlus.Margin = new System.Windows.Forms.Padding(1);
             this.btnPlus.Name = "btnPlus";
-            this.btnPlus.Size = new System.Drawing.Size(71, 54);
+            this.btnPlus.Size = new System.Drawing.Size(70, 51);
             this.btnPlus.TabIndex = 0;
             this.btnPlus.Text = "+";
             this.btnPlus.UseVisualStyleBackColor = true;
@@ -314,10 +315,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnMinus.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btnMinus.Location = new System.Drawing.Point(147, 225);
+            this.btnMinus.Location = new System.Drawing.Point(145, 213);
             this.btnMinus.Margin = new System.Windows.Forms.Padding(1);
             this.btnMinus.Name = "btnMinus";
-            this.btnMinus.Size = new System.Drawing.Size(71, 54);
+            this.btnMinus.Size = new System.Drawing.Size(70, 51);
             this.btnMinus.TabIndex = 0;
             this.btnMinus.Text = "-";
             this.btnMinus.UseVisualStyleBackColor = true;
@@ -330,10 +331,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.btnIns, 2);
             this.btnIns.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btnIns.Location = new System.Drawing.Point(1, 281);
+            this.btnIns.Location = new System.Drawing.Point(1, 266);
             this.btnIns.Margin = new System.Windows.Forms.Padding(1);
             this.btnIns.Name = "btnIns";
-            this.btnIns.Size = new System.Drawing.Size(144, 57);
+            this.btnIns.Size = new System.Drawing.Size(142, 52);
             this.btnIns.TabIndex = 0;
             this.btnIns.Text = "INS";
             this.btnIns.UseVisualStyleBackColor = true;
@@ -346,10 +347,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.btnDel, 2);
             this.btnDel.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btnDel.Location = new System.Drawing.Point(147, 281);
+            this.btnDel.Location = new System.Drawing.Point(145, 266);
             this.btnDel.Margin = new System.Windows.Forms.Padding(1);
             this.btnDel.Name = "btnDel";
-            this.btnDel.Size = new System.Drawing.Size(146, 57);
+            this.btnDel.Size = new System.Drawing.Size(143, 52);
             this.btnDel.TabIndex = 0;
             this.btnDel.Text = "DEL";
             this.btnDel.UseVisualStyleBackColor = true;
@@ -364,7 +365,7 @@
             this.btnOrMore.Location = new System.Drawing.Point(1, 1);
             this.btnOrMore.Margin = new System.Windows.Forms.Padding(1);
             this.btnOrMore.Name = "btnOrMore";
-            this.btnOrMore.Size = new System.Drawing.Size(71, 54);
+            this.btnOrMore.Size = new System.Drawing.Size(70, 51);
             this.btnOrMore.TabIndex = 0;
             this.btnOrMore.Text = "≦";
             this.btnOrMore.UseVisualStyleBackColor = true;
@@ -375,10 +376,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOrLess.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btnOrLess.Location = new System.Drawing.Point(74, 1);
+            this.btnOrLess.Location = new System.Drawing.Point(73, 1);
             this.btnOrLess.Margin = new System.Windows.Forms.Padding(1);
             this.btnOrLess.Name = "btnOrLess";
-            this.btnOrLess.Size = new System.Drawing.Size(71, 54);
+            this.btnOrLess.Size = new System.Drawing.Size(70, 51);
             this.btnOrLess.TabIndex = 0;
             this.btnOrLess.Text = "≧";
             this.btnOrLess.UseVisualStyleBackColor = true;
@@ -389,10 +390,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLeft.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btnLeft.Location = new System.Drawing.Point(147, 1);
+            this.btnLeft.Location = new System.Drawing.Point(145, 1);
             this.btnLeft.Margin = new System.Windows.Forms.Padding(1);
             this.btnLeft.Name = "btnLeft";
-            this.btnLeft.Size = new System.Drawing.Size(71, 54);
+            this.btnLeft.Size = new System.Drawing.Size(70, 51);
             this.btnLeft.TabIndex = 0;
             this.btnLeft.Text = "←";
             this.btnLeft.UseVisualStyleBackColor = true;
@@ -404,10 +405,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRight.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.btnRight.Location = new System.Drawing.Point(220, 1);
+            this.btnRight.Location = new System.Drawing.Point(217, 1);
             this.btnRight.Margin = new System.Windows.Forms.Padding(1);
             this.btnRight.Name = "btnRight";
-            this.btnRight.Size = new System.Drawing.Size(73, 54);
+            this.btnRight.Size = new System.Drawing.Size(71, 51);
             this.btnRight.TabIndex = 0;
             this.btnRight.Text = "→";
             this.btnRight.UseVisualStyleBackColor = true;
@@ -418,17 +419,17 @@
             this.txtInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtInput.Font = new System.Drawing.Font("メイリオ", 14.25F);
-            this.txtInput.Location = new System.Drawing.Point(3, 4);
+            this.txtInput.Location = new System.Drawing.Point(4, 7);
             this.txtInput.Margin = new System.Windows.Forms.Padding(0);
             this.txtInput.MaxLength = 5;
             this.txtInput.Name = "txtInput";
-            this.txtInput.Size = new System.Drawing.Size(294, 36);
+            this.txtInput.Size = new System.Drawing.Size(288, 36);
             this.txtInput.TabIndex = 0;
             this.txtInput.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtInput.Click += new System.EventHandler(this.txtInput_Click);
             this.txtInput.Enter += new System.EventHandler(this.txtInput_Enter);
             // 
-            // InpttForm
+            // InputForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -436,9 +437,13 @@
             this.ClientSize = new System.Drawing.Size(300, 386);
             this.Controls.Add(this.txtInput);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Name = "InpttForm";
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(316, 425);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(316, 425);
+            this.Name = "InputForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Load += new System.EventHandler(this.InpttForm_Load);
+            this.Load += new System.EventHandler(this.InputForm_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

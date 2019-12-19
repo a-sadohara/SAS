@@ -1,31 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BeforeInspection
 {
-    public partial class InpttForm : Form
+    public partial class InputForm : Form
     {
+        // INSモードONOFF
         private bool bolIns = false; 
 
+        // 入力値
         public string strInput { get; set; }
 
-        public InpttForm(int intMaxLength = 0)
+        #region メソッド
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="intMaxLength">最大桁数</param>
+        public InputForm(int intMaxLength = 0)
         {
             InitializeComponent();
 
             txtInput.Select();
 
+            // 最大桁を設定
             if (intMaxLength > 0)
             {
                 txtInput.MaxLength = intMaxLength;
             }
+        }
+        #endregion
+
+        #region イベント
+        /// <summary>
+        /// フォームロード
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InputForm_Load(object sender, EventArgs e)
+        {
+            // 表示位置の調整
+            int intHeight = (int)((double)(Screen.PrimaryScreen.WorkingArea.Height));
+            int intY = (int)((double)(intHeight - this.Size.Height));
+
+            this.Location = new Point(0, intY);
         }
 
         /// <summary>
@@ -119,8 +138,6 @@ namespace BeforeInspection
 
             if (txtInput.Text.Substring(0, 1) == "-")
             {
-                // プラス
-
                 // 符号を削除
                 txtInput.Text = txtInput.Text.Remove(0, 1);
 
@@ -149,8 +166,6 @@ namespace BeforeInspection
 
             if (txtInput.Text.Substring(0, 1) != "-")
             {
-                // マイナス
-
                 // 最大桁調整
                 txtInput.MaxLength = txtInput.MaxLength + 1;
 
@@ -181,6 +196,8 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnDel_Click(object sender, EventArgs e)
         {
+            //右１文字を削除する
+
             int intSelIdx = txtInput.SelectionStart;
 
             // 後を削除
@@ -213,20 +230,6 @@ namespace BeforeInspection
             strInput = txtInput.Text;
             this.Close();
         }
-
-        /// <summary>
-        /// ロード
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void InpttForm_Load(object sender, EventArgs e)
-        {
-            int intHeight = (int)((double)(Screen.PrimaryScreen.WorkingArea.Height));
-            int intY = (int)((double)(intHeight - this.Size.Height));
-
-            this.Location = new Point(0, intY);
-        }
-
 
         /// <summary>
         /// BAKボタンクリック
@@ -281,14 +284,14 @@ namespace BeforeInspection
         }
 
         /// <summary>
-        /// テキストボックスアクティブイベント
+        /// 入力テキストボックス選択
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void txtInput_Enter(object sender, EventArgs e)
         {
             // マイナスより前は選択させない
-            if (txtInput.SelectionStart == 0 && txtInput.TextLength > 0 && txtInput.Text.Substring(0,1) == "-")
+            if (txtInput.SelectionStart == 0 && txtInput.TextLength > 0 && txtInput.Text.Substring(0, 1) == "-")
             {
                 txtInput.SelectionStart = 1;
             }
@@ -304,6 +307,11 @@ namespace BeforeInspection
             }
         }
 
+        /// <summary>
+        /// 入力テキストボックスクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtInput_Click(object sender, EventArgs e)
         {
             // マイナスより前は選択させない
@@ -312,5 +320,6 @@ namespace BeforeInspection
                 txtInput.SelectionStart = 1;
             }
         }
+        #endregion
     }
 }

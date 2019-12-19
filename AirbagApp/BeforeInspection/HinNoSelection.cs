@@ -1,94 +1,95 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
+using Npgsql;
+using static BeforeInspection.Common;
 
 namespace BeforeInspection
 {
     public partial class HinNoSelection : Form
     {
+        // 品名
+        public string strProductName { get; set; }
 
-        public string strHinNm;
-
+        #region メソッド
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public HinNoSelection()
         {
+            string strSQL = "";
+            DataTable dtData = new DataTable();
+
             InitializeComponent();
-            
+
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
 
-        }
+            dgvProductName.Rows.Clear();
 
-        private void SelectErrorReason_Load(object sender, EventArgs e)
-        {
-            // 行選択モードに変更
-            this.dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            // 新規行を追加させない
-            this.dgvData.AllowUserToAddRows = false;
-            // 読み取り専用
-            this.dgvData.ReadOnly = true;
-            this.dgvData.MultiSelect = false;
+            // SQL抽出
+            DbOpen();
 
+            NpgsqlCommand NpgsqlCom = null;
+            NpgsqlDataAdapter NpgsqlDtAd = null;
+            dtData = new DataTable();
+            strSQL += @"SELECT DISTINCT ";
+            strSQL += @"    0 AS cdk_select, ";
+            strSQL += @"    product_name ";
+            strSQL += @"FROM mst_product_info ";
+            strSQL += @"WHERE register_flg = 1 ";
+            NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
+            NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
+            NpgsqlDtAd.Fill(dtData);
 
-            dgvData.Rows.Clear();
-
-
-            foreach (string line in File.ReadLines("品名.TSV", Encoding.Default))
+            // データグリッドビューに反映
+            foreach (DataRow dr in dtData.Rows)
             {
-
-                // 改行コードを変換
-                string strLine = line.Replace("\\rn", Environment.NewLine);
-
-                string[] csv = strLine.Split('\t');
-                string[] data = new string[csv.Length];
-                Array.Copy(csv, 0, data, 0, data.Length);
-                this.dgvData.Rows.Add(data);
-                
+                this.dgvProductName.Rows.Add(dr.ItemArray);
             }
         }
+        #endregion
 
+        #region イベント
+        /// <summary>
+        /// OKボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnOK_Click(object sender, EventArgs e)
         {
-
-            foreach(DataGridViewRow row in dgvData.Rows)
+            // 選択行の品番をプロパティにセットする
+            foreach (DataGridViewRow row in dgvProductName.Rows)
             {
-
-                if(row.Cells[0].Value == null)
+                if (row.Cells[0].Value.Equals(true))
                 {
-                    continue;
-                }
-
-                if(row.Cells[0].Value.Equals(true))
-                {
-                    strHinNm = row.Cells[1].Value.ToString();
+                    strProductName = row.Cells[1].Value.ToString();
                     this.Close();
                 }
-
-                
             }
         }
 
-        private void DataGridView1_RowEnter(object sender, DataGridViewCellEventArgs e)
+        /// <summary>
+        /// 行選択イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dgvProductName_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
+            // 選択行にチェックを入れる
+            dgvProductName.Rows[e.RowIndex].Cells[0].Value = true;
+            dgvProductName.Rows[e.RowIndex].Cells[0].ReadOnly = true;
 
-            dgvData.Rows[e.RowIndex].Cells[0].Value = true;
-            dgvData.Rows[e.RowIndex].Cells[0].ReadOnly = true;
-
-            for (int rowIndex = 0; rowIndex < dgvData.Rows.Count; rowIndex++)
+            // 選択行以外のチェックを外す
+            for (int rowIndex = 0; rowIndex < dgvProductName.Rows.Count; rowIndex++)
             {
                 if (rowIndex != e.RowIndex)
                 {
-                    dgvData.Rows[rowIndex].Cells[0].Value = false;
-                    dgvData.Rows[rowIndex].Cells[0].ReadOnly = false;
+                    dgvProductName.Rows[rowIndex].Cells[0].Value = false;
+                    dgvProductName.Rows[rowIndex].Cells[0].ReadOnly = false;
                 }
             }
-
         }
+        #endregion
     }
 }
