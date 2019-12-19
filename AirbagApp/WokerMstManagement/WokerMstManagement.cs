@@ -102,7 +102,7 @@ namespace WokerMstManagement
                         try
                         {
                             // PostgreSQLへ接続
-                            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
+                            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
                             {
                                 NpgsqlCon.Open();
 
@@ -309,7 +309,7 @@ namespace WokerMstManagement
 
                 // 条件が指定されていない場合は抽出しない
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
                 {
                     NpgsqlCon.Open();
 

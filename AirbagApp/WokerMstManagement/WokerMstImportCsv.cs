@@ -129,7 +129,7 @@ namespace WokerMstManagement
                 using (StreamReader sr = new StreamReader(strFileName, Encoding.GetEncoding("Shift_JIS")))
                 {
                     // PostgreSQLへ接続
-                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
+                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
                     {
                         NpgsqlCon.Open();
 

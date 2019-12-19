@@ -100,7 +100,7 @@ namespace ImageChecker
                     throw new Exception("DB非接続モードです");
 
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
                 {
                     NpgsqlCon.Open();
 
@@ -108,13 +108,16 @@ namespace ImageChecker
                     NpgsqlCommand NpgsqlCom = null;
                     NpgsqlDataAdapter NpgsqlDtAd = null;
                     dtData = new DataTable();
-                    strSQL += "SELECT * FROM SAGYOSYA ";
+                    strSQL += "SELECT employee_num,  ";
+                    strSQL += "worker_name_sei || worker_name_mei AS worker_name, ";
+                    strSQL += "worker_name_sei_kana || worker_name_mei_kana AS worker_name_kana  ";
+                    strSQL += "FROM mst_worker ";
                     if (!string.IsNullOrEmpty(strKanaSta) && !string.IsNullOrEmpty(strKanaEnd))
                     {
-                        strSQL += "WHERE SUBSTRING(USERYOMIGANA,1,1) BETWEEN '" + strKanaSta + "' AND '" + strKanaEnd + "'";
+                        strSQL += "WHERE SUBSTRING(worker_name_sei_kana,1,1) BETWEEN '" + strKanaSta + "' AND '" + strKanaEnd + "'";
                     }
 
-                    strSQL += "ORDER BY USERNO ASC ";
+                    strSQL += "ORDER BY employee_num ASC ";
                     NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
                     NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
                     NpgsqlDtAd.Fill(dtData);

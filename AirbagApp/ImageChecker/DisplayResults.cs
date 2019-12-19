@@ -190,7 +190,7 @@ namespace ImageChecker
                         throw new Exception("DB非接続モードです");
 
                     // PostgreSQLへ接続
-                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(CON_DB_INFO))
+                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
                     {
                         NpgsqlCon.Open();
 
@@ -198,8 +198,11 @@ namespace ImageChecker
                         NpgsqlCommand NpgsqlCom = null;
                         NpgsqlDataAdapter NpgsqlDtAd = null;
                         dtData = new DataTable();
-                        strSQL += "SELECT USERNO,USERNAME,USERYOMIGANA FROM SAGYOSYA ";
-                        strSQL += "WHERE USERNO = '" + txtUserNm.Text + "'";
+                        strSQL += "SELECT employee_num,  ";
+                        strSQL += "worker_name_sei || worker_name_mei AS worker_name, ";
+                        strSQL += "worker_name_sei_kana || worker_name_mei_kana AS worker_name_kana  ";
+                        strSQL += "FROM mst_worker ";
+                        strSQL += "WHERE employee_num = '" + txtUserNm.Text + "'";
                         NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
                         NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
                         NpgsqlDtAd.Fill(dtData);

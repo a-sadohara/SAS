@@ -30,24 +30,37 @@ namespace BeforeInspection
         [STAThread]
         static void Main(string[] args)
         {
-            // 接続文字列をApp.configファイルから取得
-            ConnectionStringSettings setConStr = null;
-            setConStr = ConfigurationManager.ConnectionStrings["ConnectionString"];
-            if (setConStr == null)
+            try
+            {
+                // 接続文字列をApp.configファイルから取得
+                ConnectionStringSettings setConStr = null;
+                setConStr = ConfigurationManager.ConnectionStrings["ConnectionString"];
+                if (setConStr == null)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, "App.configの[ConnectionString]の設定値取得時にエラーが発生しました。");
+                    // メッセージ出力
+                    MessageBox.Show("App.configの[ConnectionString]の設定値取得に失敗しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+                else
+                {
+                    NpgsqlCon = new NpgsqlConnection(setConStr.ConnectionString);
+
+                    DbOpen();
+                }
+                g_ConnectionString = setConStr.ConnectionString;
+            }
+            catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "App.configの[ConnectionString]の設定値取得時にエラーが発生しました。");
+                WriteEventLog(g_CON_LEVEL_ERROR, "画面起動時にエラーが発生しました。\r\n" + ex.Message);
                 // メッセージ出力
-                // 接続文字列取得エラー
-                MessageBox.Show("App.configの[ConnectionString]の設定値取得に失敗しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                NpgsqlCon = new NpgsqlConnection(setConStr.ConnectionString);
+                MessageBox.Show("画面起動処理に失敗しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                DbOpen();
+                return;
             }
-            g_ConnectionString = setConStr.ConnectionString;
 
             // フォーム画面を起動
             Application.EnableVisualStyles();

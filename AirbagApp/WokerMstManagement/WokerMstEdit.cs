@@ -231,7 +231,7 @@ namespace WokerMstManagement
                     return true;
 
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
                 {
                     NpgsqlCon.Open();
 
@@ -315,7 +315,7 @@ namespace WokerMstManagement
                     return true;
 
                 // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_CON_DB_INFO))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
                 {
                     NpgsqlCon.Open();
 
