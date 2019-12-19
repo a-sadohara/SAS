@@ -2,13 +2,13 @@
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
-using static UserMasterMaintenance.Common;
+using static WokerMstManagement.Common;
 using Npgsql;
 using System.IO;
 
-namespace UserMasterMaintenance
+namespace WokerMstManagement
 {
-    public partial class UserMasterMaintenance : Form
+    public partial class WokerMstManagement : Form
     {
         #region 定数・変数
         private DataTable m_dtData;
@@ -25,7 +25,7 @@ namespace UserMasterMaintenance
         /// <summary>
         /// 初期表示
         /// </summary>
-        public UserMasterMaintenance()
+        public WokerMstManagement()
         {
             InitializeComponent();
 
@@ -43,7 +43,7 @@ namespace UserMasterMaintenance
         private void btnReg_Click(object sender, EventArgs e)
         {
             // 作業者登録画面を登録モードで表示する
-            UserEdit frmUserReg = new UserEdit(g_CON_EDITMODE_REG);
+            WokerMstEdit frmUserReg = new WokerMstEdit(g_CON_EDITMODE_REG);
             frmUserReg.ShowDialog();
             if(frmUserReg.g_intUpdateFlg == 1) 
             {
@@ -141,7 +141,7 @@ namespace UserMasterMaintenance
         /// <param name="e"></param>
         private void btnImportCsv_Click(object sender, EventArgs e)
         {
-            UserImportCsv frmUserImportCsv = new UserImportCsv();
+            WokerMstImportCsv frmUserImportCsv = new WokerMstImportCsv();
 
             if (System.Windows.Forms.DialogResult.OK == frmUserImportCsv.ShowDialog())
             {
@@ -194,7 +194,7 @@ namespace UserMasterMaintenance
         {
 
             // 作業者登録画面を更新モードで表示する
-            UserEdit frmUserReg = new UserEdit(g_CON_EDITMODE_UPD,
+            WokerMstEdit frmUserReg = new WokerMstEdit(g_CON_EDITMODE_UPD,
                                                dgvUser.Rows[e.RowIndex].Cells[0].Value.ToString(),
                                                dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString(),
                                                dgvUser.Rows[e.RowIndex].Cells[2].Value.ToString());

@@ -6,11 +6,11 @@ using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
 using Npgsql;
-using static UserMasterMaintenance.Common;
+using static WokerMstManagement.Common;
 
-namespace UserMasterMaintenance
+namespace WokerMstManagement
 {
-    public partial class UserImportCsv : Form
+    public partial class WokerMstImportCsv : Form
     {
         #region 変数・定数
         // CSVファイル配置情報
@@ -47,7 +47,7 @@ namespace UserMasterMaintenance
         /// <summary>
         /// 初期表示
         /// </summary>
-        public UserImportCsv()
+        public WokerMstImportCsv()
         {
             InitializeComponent();
 

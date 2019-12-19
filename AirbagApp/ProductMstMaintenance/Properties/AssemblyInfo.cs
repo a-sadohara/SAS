@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
 // 制御されます。アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更します。
-[assembly: AssemblyTitle("HinNoMasterMaintenance")]
+[assembly: AssemblyTitle("ProductMstMaintenance")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("HinNoMasterMaintenance")]
+[assembly: AssemblyProduct("ProductMstMaintenance")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

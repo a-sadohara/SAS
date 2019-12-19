@@ -1,6 +1,6 @@
-﻿namespace UserMasterMaintenance
+﻿namespace WokerMstManagement
 {
-    partial class UserEdit
+    partial class WokerMstEdit
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserEdit));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WokerMstEdit));
             this.txtUserNo = new System.Windows.Forms.TextBox();
             this.txtUserNm_Sei = new System.Windows.Forms.TextBox();
             this.txtUserYomiGana_Sei = new System.Windows.Forms.TextBox();

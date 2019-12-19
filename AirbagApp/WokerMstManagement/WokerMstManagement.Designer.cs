@@ -1,6 +1,6 @@
-﻿namespace UserMasterMaintenance
+﻿namespace WokerMstManagement
 {
-    partial class UserMasterMaintenance
+    partial class WokerMstManagement
     {
         /// <summary>
         /// 必要なデザイナー変数です。
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserMasterMaintenance));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WokerMstManagement));
             this.dgvUser = new System.Windows.Forms.DataGridView();
             this.btnReg = new System.Windows.Forms.Button();
             this.btnDel = new System.Windows.Forms.Button();
@@ -364,7 +364,7 @@
             this.YomiGana.Name = "YomiGana";
             this.YomiGana.ReadOnly = true;
             // 
-            // UserMasterMaintenance
+            // WokerMstManagement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -376,7 +376,7 @@
             this.Controls.Add(this.btnReg);
             this.Controls.Add(this.dgvUser);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "UserMasterMaintenance";
+            this.Name = "WokerMstManagement";
             this.Text = "作業者マスタメンテナンス";
             ((System.ComponentModel.ISupportInitialize)(this.dgvUser)).EndInit();
             this.gbxJoken.ResumeLayout(false);

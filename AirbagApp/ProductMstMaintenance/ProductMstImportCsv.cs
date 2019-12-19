@@ -13,9 +13,9 @@ using Npgsql;
 using System.Runtime.InteropServices;
 using System.Linq.Expressions;
 
-namespace HinNoMasterMaintenance
+namespace ProductMstMaintenance
 {
-    public partial class HinNoImportCsv : Form
+    public partial class ProductMstImportCsv : Form
     {
         #region 変数・定数
         // ファイル名指定
@@ -80,7 +80,7 @@ namespace HinNoMasterMaintenance
         /// <summary>
         /// 初期表示
         /// </summary>
-        public HinNoImportCsv()
+        public ProductMstImportCsv()
         {
             InitializeComponent();
 

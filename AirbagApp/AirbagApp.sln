@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageChecker", "ImageChecker\ImageChecker.csproj", "{9BCB317D-2EBA-4BFD-8D38-9F518B751FC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserMasterMaintenance", "UserMasterMaintenance\UserMasterMaintenance.csproj", "{07CA92F0-F8F8-4D27-A20E-14AA4DD8961D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WokerMstManagement", "WokerMstManagement\WokerMstManagement.csproj", "{07CA92F0-F8F8-4D27-A20E-14AA4DD8961D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeforeInspection", "BeforeInspection\BeforeInspection.csproj", "{437B6704-83F0-443E-97DB-562EC740BAFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HinNoMasterMaintenance", "HinNoMasterMaintenance\HinNoMasterMaintenance.csproj", "{758986CA-7E34-42A9-A31E-7F8FB6DE5682}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductMstMaintenance", "ProductMstMaintenance\ProductMstMaintenance.csproj", "{758986CA-7E34-42A9-A31E-7F8FB6DE5682}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace UserMasterMaintenance.Properties
+namespace WokerMstManagement.Properties
 {
 
 

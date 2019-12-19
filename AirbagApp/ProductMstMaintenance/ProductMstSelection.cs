@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
-namespace HinNoMasterMaintenance
+namespace ProductMstMaintenance
 {
-    public partial class HinNoSelection : Form
+    public partial class ProductMstSelection : Form
     {
 
         public string strHinNm;
 
-        public HinNoSelection()
+        public ProductMstSelection()
         {
             InitializeComponent();
             

@@ -9,11 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace HinNoMasterMaintenance
+namespace ProductMstMaintenance
 {
-    public partial class HinNoMasterMaintenance : Form
+    public partial class ProductMstMaintenance : Form
     {
-        public HinNoMasterMaintenance()
+        public ProductMstMaintenance()
         {
             InitializeComponent();
         }
@@ -29,7 +29,7 @@ namespace HinNoMasterMaintenance
             frmSelectErrorReason.ShowDialog(this);
         }
 
-        private void HinNoMasterMaintenance_Load(object sender, EventArgs e)
+        private void ProductMstMaintenance_Load(object sender, EventArgs e)
         {
             string strSQL = "";
 
@@ -105,19 +105,19 @@ namespace HinNoMasterMaintenance
 
         private void button2_Click(object sender, EventArgs e)
         {
-            HinNoImportCsv frmUserImportCsv = new HinNoImportCsv();
+            ProductMstImportCsv frmUserImportCsv = new ProductMstImportCsv();
             frmUserImportCsv.ShowDialog(this);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            HinNoSelection frmHinNoSelection = new HinNoSelection();
+            ProductMstSelection frmHinNoSelection = new ProductMstSelection();
             frmHinNoSelection.ShowDialog(this);
         }
 
         private void textBox5_Click(object sender, EventArgs e)
         {
-            HinNoSelection frmHinNoSelection = new HinNoSelection();
+            ProductMstSelection frmHinNoSelection = new ProductMstSelection();
             frmHinNoSelection.ShowDialog(this);
         }
     }

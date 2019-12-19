@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Npgsql;
 
-namespace UserMasterMaintenance
+namespace WokerMstManagement
 {
     static class Common
     {
@@ -82,7 +82,7 @@ namespace UserMasterMaintenance
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new UserMasterMaintenance());
+            Application.Run(new WokerMstManagement());
         }
     }
 }

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{07CA92F0-F8F8-4D27-A20E-14AA4DD8961D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>UserMasterMaintenance</RootNamespace>
-    <AssemblyName>UserMasterMaintenance</AssemblyName>
+    <RootNamespace>WokerMstManagement</RootNamespace>
+    <AssemblyName>WokerMstManagement</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -59,23 +59,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UserImportCsv.cs">
+    <Compile Include="WokerMstImportCsv.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UserImportCsv.Designer.cs">
-      <DependentUpon>UserImportCsv.cs</DependentUpon>
+    <Compile Include="WokerMstImportCsv.Designer.cs">
+      <DependentUpon>WokerMstImportCsv.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserEdit.cs">
+    <Compile Include="WokerMstEdit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UserEdit.Designer.cs">
-      <DependentUpon>UserEdit.cs</DependentUpon>
+    <Compile Include="WokerMstEdit.Designer.cs">
+      <DependentUpon>WokerMstEdit.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserMasterMaintenance.cs">
+    <Compile Include="WokerMstManagement.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UserMasterMaintenance.Designer.cs">
-      <DependentUpon>UserMasterMaintenance.cs</DependentUpon>
+    <Compile Include="WokerMstManagement.Designer.cs">
+      <DependentUpon>WokerMstManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="Common.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -88,14 +88,14 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UserImportCsv.resx">
-      <DependentUpon>UserImportCsv.cs</DependentUpon>
+    <EmbeddedResource Include="WokerMstImportCsv.resx">
+      <DependentUpon>WokerMstImportCsv.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserMasterMaintenance.resx">
-      <DependentUpon>UserMasterMaintenance.cs</DependentUpon>
+    <EmbeddedResource Include="WokerMstManagement.resx">
+      <DependentUpon>WokerMstManagement.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserEdit.resx">
-      <DependentUpon>UserEdit.cs</DependentUpon>
+    <EmbeddedResource Include="WokerMstEdit.resx">
+      <DependentUpon>WokerMstEdit.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

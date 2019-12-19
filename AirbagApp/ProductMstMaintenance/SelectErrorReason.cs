@@ -8,10 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-//using HinNoMasterMaintenance.DTO;
-//using static HinNoMasterMaintenance.Common;
+//using ProductMstMaintenance.DTO;
+//using static ProductMstMaintenance.Common;
 
-namespace HinNoMasterMaintenance
+namespace ProductMstMaintenance
 {
     public partial class SelectErrorReason : Form
     {

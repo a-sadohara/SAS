@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace HinNoMasterMaintenance
+namespace ProductMstMaintenance
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace HinNoMasterMaintenance
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new HinNoMasterMaintenance());
+            Application.Run(new ProductMstMaintenance());
         }
     }
 }

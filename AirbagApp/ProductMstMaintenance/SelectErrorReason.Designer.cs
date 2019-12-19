@@ -1,4 +1,4 @@
-﻿namespace HinNoMasterMaintenance
+﻿namespace ProductMstMaintenance
 {
     partial class SelectErrorReason
     {

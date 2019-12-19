@@ -2,13 +2,13 @@
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using static UserMasterMaintenance.Common;
+using static WokerMstManagement.Common;
 using System.Text.RegularExpressions;
 using Npgsql;
 
-namespace UserMasterMaintenance
+namespace WokerMstManagement
 {
-    public partial class UserEdit : Form
+    public partial class WokerMstEdit : Form
     {
         #region 定数・変数
         private int m_intEditMode;
@@ -107,7 +107,7 @@ namespace UserMasterMaintenance
         /// <param name="parUserNo">初期表示ユーザ番号</param>
         /// <param name="parUserNm">初期表示ユーザ名</param>
         /// <param name="parUserYomiGana">初期表示ユーザ名カナ</param>
-        public UserEdit(int parEditMode,
+        public WokerMstEdit(int parEditMode,
                         string parUserNo = "",
                         string parUserNm = "",
                         string parUserYomiGana = "")

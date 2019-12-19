@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{758986CA-7E34-42A9-A31E-7F8FB6DE5682}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>HinNoMasterMaintenance</RootNamespace>
-    <AssemblyName>HinNoMasterMaintenance</AssemblyName>
+    <RootNamespace>ProductMstMaintenance</RootNamespace>
+    <AssemblyName>ProductMstMaintenance</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -73,17 +73,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HinNoMasterMaintenance.cs">
+    <Compile Include="ProductMstMaintenance.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HinNoMasterMaintenance.Designer.cs">
-      <DependentUpon>HinNoMasterMaintenance.cs</DependentUpon>
+    <Compile Include="ProductMstMaintenance.Designer.cs">
+      <DependentUpon>ProductMstMaintenance.cs</DependentUpon>
     </Compile>
-    <Compile Include="HinNoSelection.cs">
+    <Compile Include="ProductMstSelection.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HinNoSelection.Designer.cs">
-      <DependentUpon>HinNoSelection.cs</DependentUpon>
+    <Compile Include="ProductMstSelection.Designer.cs">
+      <DependentUpon>ProductMstSelection.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,17 +93,17 @@
     <Compile Include="SelectErrorReason.Designer.cs">
       <DependentUpon>SelectErrorReason.cs</DependentUpon>
     </Compile>
-    <Compile Include="HinNoImportCsv.cs">
+    <Compile Include="ProductMstImportCsv.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HinNoImportCsv.Designer.cs">
-      <DependentUpon>HinNoImportCsv.cs</DependentUpon>
+    <Compile Include="ProductMstImportCsv.Designer.cs">
+      <DependentUpon>ProductMstImportCsv.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="HinNoMasterMaintenance.resx">
-      <DependentUpon>HinNoMasterMaintenance.cs</DependentUpon>
+    <EmbeddedResource Include="ProductMstMaintenance.resx">
+      <DependentUpon>ProductMstMaintenance.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HinNoSelection.resx">
-      <DependentUpon>HinNoSelection.cs</DependentUpon>
+    <EmbeddedResource Include="ProductMstSelection.resx">
+      <DependentUpon>ProductMstSelection.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -117,8 +117,8 @@
     <EmbeddedResource Include="SelectErrorReason.resx">
       <DependentUpon>SelectErrorReason.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HinNoImportCsv.resx">
-      <DependentUpon>HinNoImportCsv.cs</DependentUpon>
+    <EmbeddedResource Include="ProductMstImportCsv.resx">
+      <DependentUpon>ProductMstImportCsv.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

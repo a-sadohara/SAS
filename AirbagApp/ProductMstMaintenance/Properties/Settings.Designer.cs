@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HinNoMasterMaintenance.Properties
+namespace ProductMstMaintenance.Properties
 {
 
 

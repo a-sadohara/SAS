@@ -1,6 +1,6 @@
-﻿namespace HinNoMasterMaintenance
+﻿namespace ProductMstMaintenance
 {
-    partial class HinNoMasterMaintenance
+    partial class ProductMstMaintenance
     {
         /// <summary>
         /// 必要なデザイナー変数です。
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HinNoMasterMaintenance));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProductMstMaintenance));
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -1210,7 +1210,7 @@
             this.tableLayoutPanel4.Size = new System.Drawing.Size(929, 591);
             this.tableLayoutPanel4.TabIndex = 22;
             // 
-            // HinNoMasterMaintenance
+            // ProductMstMaintenance
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1220,10 +1220,10 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Font = new System.Drawing.Font("MS UI Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.Name = "HinNoMasterMaintenance";
+            this.Name = "ProductMstMaintenance";
             this.Text = "品名マスタメンテナンス";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.HinNoMasterMaintenance_Load);
+            this.Load += new System.EventHandler(this.ProductMstMaintenance_Load);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
