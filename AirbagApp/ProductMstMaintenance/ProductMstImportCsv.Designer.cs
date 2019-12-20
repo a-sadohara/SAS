@@ -73,7 +73,7 @@
             this.btnImport.UseVisualStyleBackColor = true;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
-            // HinNoImportCsv
+            // ProductMstImportCsv
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -83,7 +83,7 @@
             this.Controls.Add(this.lblTitleCsvFile);
             this.Controls.Add(this.txtFolder);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "HinNoImportCsv";
+            this.Name = "ProductMstImportCsv";
             this.Text = "品番マスタメンテナンス";
             this.ResumeLayout(false);
             this.PerformLayout();

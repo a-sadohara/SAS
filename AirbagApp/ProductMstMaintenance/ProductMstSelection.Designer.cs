@@ -162,7 +162,7 @@
             this.HinNo.MinimumWidth = 6;
             this.HinNo.Name = "HinNo";
             // 
-            // HinNoSelection
+            // ProductMstSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -175,7 +175,7 @@
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
-            this.Name = "HinNoSelection";
+            this.Name = "ProductMstSelection";
             this.Text = "品名選択";
             this.Load += new System.EventHandler(this.SelectErrorReason_Load);
             this.panel2.ResumeLayout(false);
