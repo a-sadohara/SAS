@@ -171,28 +171,11 @@ namespace BeforeInspection
         }
 
         /// <summary>
-        /// 登録・更新処理実行
+        /// システム設定情報から設定値を取得
         /// </summary>
-        /// <param name="nscCommand">実行SQLコマンド</param>
-        /// <param name="transaction">トランザクション情報</param>
-        /// <returns></returns>
-        public static Boolean ExecTranSQL(NpgsqlCommand nscCommand)
-        {
-            try
-            {
-                nscCommand.ExecuteNonQuery();
-                return true;
-            }
-            catch (NpgsqlException ex)
-            {
-                DbRollback();
-                MessageBox.Show("DB更新時にエラーが発生しました。"
-                              + Environment.NewLine
-                              + ex.Message);
-                return false;
-            }
-        }
-
+        /// <param name="strId">ID</param>
+        /// <param name="strValue">設定値</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
         public static bool bolGetSystemSettingValue(string strId, out string strValue)
         {
             string strSQL = "";
@@ -222,13 +205,36 @@ namespace BeforeInspection
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
                 // メッセージ出力
-                MessageBox.Show("システム設定の取得で例外が発生しました。", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("システム設定情報の取得で例外が発生しました。", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
             finally
             {
                 strValue = strGetValue;
+            }
+        }
+
+        /// <summary>
+        /// 登録・更新処理実行
+        /// </summary>
+        /// <param name="nscCommand">実行SQLコマンド</param>
+        /// <param name="transaction">トランザクション情報</param>
+        /// <returns></returns>
+        public static Boolean ExecTranSQL(NpgsqlCommand nscCommand)
+        {
+            try
+            {
+                nscCommand.ExecuteNonQuery();
+                return true;
+            }
+            catch (NpgsqlException ex)
+            {
+                DbRollback();
+                MessageBox.Show("DB更新時にエラーが発生しました。"
+                              + Environment.NewLine
+                              + ex.Message);
+                return false;
             }
         }
 

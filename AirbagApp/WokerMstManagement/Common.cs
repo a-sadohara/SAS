@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Npgsql;
 using System.Configuration;
 using log4net;
+using System.Data;
 
 namespace WokerMstManagement
 {
@@ -53,7 +54,6 @@ namespace WokerMstManagement
                 return objNValue.ToString();
             }
         }
-
 
         /// <summary>
         /// 登録・更新処理実行
@@ -124,6 +124,67 @@ namespace WokerMstManagement
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new WokerMstManagement());
+        }
+
+        /// <summary>
+        /// App.configファイルから設定値を取得
+        /// </summary>
+        /// <param name="strName">要素名</param>
+        /// <returns>null:設定なし(取得失敗) それ以外:設定あり(取得成功)</returns>
+        public static string strGetAppConfigValue(string strName)
+        {
+            string strValue = ConfigurationManager.AppSettings[strName];
+            if (strValue == null)
+                MessageBox.Show("App.configの[" + strName + "]の設定値取得に失敗しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return strValue;
+        }
+
+        /// <summary>
+        /// システム設定情報から設定値を取得
+        /// </summary>
+        /// <param name="strId">ID</param>
+        /// <param name="strValue">設定値</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        public static bool bolGetSystemSettingValue(string strId, out string strValue)
+        {
+            string strSQL = "";
+            DataTable dtData;
+            string strGetValue = "";
+
+            try
+            {
+                // SQL抽出から情報を取得
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
+                {
+                    NpgsqlCon.Open();
+
+                    NpgsqlCommand NpgsqlCom = null;
+                    NpgsqlDataAdapter NpgsqlDtAd = null;
+                    dtData = new DataTable();
+                    strSQL = @"SELECT value FROM system_setting_info WHERE id = '" + strId + "'; ";
+                    NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
+                    NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
+                    NpgsqlDtAd.Fill(dtData);
+
+                    //  検査番号
+                    strGetValue = dtData.Rows[0]["value"].ToString();
+                }
+
+                return true;
+            }
+            catch (NpgsqlException ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
+                // メッセージ出力
+                MessageBox.Show("システム設定情報の取得で例外が発生しました。", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+            finally
+            {
+                strValue = strGetValue;
+            }
         }
 
         /// <summary>
