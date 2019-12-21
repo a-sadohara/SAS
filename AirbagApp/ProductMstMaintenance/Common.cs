@@ -147,6 +147,27 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
+        /// NULLを0に変換
+        /// </summary>
+        /// <param name="objNValue"></param>
+        /// <returns></returns>
+        public static int NulltoInt(object objNValue)
+        {
+            if (objNValue == null)
+            {
+                return 0;
+            }
+            else if (objNValue.ToString() == "")
+            {
+                return 0;
+            }
+            else
+            {
+                return int.Parse(objNValue.ToString());
+            }
+        }
+
+        /// <summary>
         /// 登録・更新処理実行
         /// </summary>
         /// <param name="nscCommand">実行SQLコマンド</param>
@@ -210,5 +231,215 @@ namespace ProductMstMaintenance
                     break;
             }
         }
+
+        /// <summary>
+        /// 指定されたファイルがロックされているかどうかを返します。
+        /// </summary>
+        /// <param name="path">検証したいファイルへのフルパス</param>
+        /// <returns>ロックされているかどうか</returns>
+        public static Boolean IsFileLocked(string path)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch
+            {
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                {
+                    stream.Close();
+                }
+            }
+
+            return false;
+        }
+
+        #region SQL定数
+        // 品番情報更新SQL
+        public const string g_CON_INSERT_MST_PRODUCT_INFO =
+            @"INSERT INTO mst_product_info (file_num
+                                          , register_num
+                                          , register_flg
+                                          , selection_flg
+                                          , product_name
+                                          , inspection_param_num
+                                          , airbag_imagepath
+                                          , length
+                                          , width
+                                          , marker_color_flat
+                                          , marker_color_back
+                                          , auto_print
+                                          , auto_inspection_stop
+                                          , regimark_1_imagepath
+                                          , regimark_1_point_x
+                                          , regimark_1_point_y
+                                          , regimark_1_size_w
+                                          , regimark_1_size_h
+                                          , regimark_2_imagepath
+                                          , regimark_2_point_x
+                                          , regimark_2_point_y
+                                          , regimark_2_size_w
+                                          , regimark_2_size_h
+                                          , base_point_1_x
+                                          , base_point_1_y
+                                          , base_point_2_x
+                                          , base_point_2_y
+                                          , base_point_3_x
+                                          , base_point_3_y
+                                          , base_point_4_x
+                                          , base_point_4_y
+                                          , base_point_5_x
+                                          , base_point_5_y
+                                          , point_1_plus_direction_x
+                                          , point_1_plus_direction_y
+                                          , point_2_plus_direction_x
+                                          , point_2_plus_direction_y
+                                          , point_3_plus_direction_x
+                                          , point_3_plus_direction_y
+                                          , point_4_plus_direction_x
+                                          , point_4_plus_direction_y
+                                          , point_5_plus_direction_x
+                                          , point_5_plus_direction_y
+                                          , stretch_rate_x
+                                          , stretch_rate_y
+                                          , stretch_rate_x_upd
+                                          , stretch_rate_y_upd
+                                          , regimark_3_imagepath
+                                          , regimark_4_imagepath
+                                          , stretch_rate_auto_calc_flg
+                                          , width_coefficient
+                                          , correct_value
+                                          , black_thread_cnt_per_line
+                                          , measuring_black_thread_num
+                                          , camera_num
+                                         ) VALUES ( 
+                                            :file_num
+                                          , :register_num
+                                          , :RegistFlg
+                                          , :SelectFlg
+                                          , :Name
+                                          , :ParamNo
+                                          , :ImageFile
+                                          , :Length
+                                          , :Width
+                                          , :MarkerColor1
+                                          , :MarkerColor2
+                                          , :AutoPrint 
+                                          , :AutoStop
+                                          , :TempFile1
+                                          , :regimark_1_point_x
+                                          , :regimark_1_point_y
+                                          , :regimark_1_size_w
+                                          , :regimark_1_size_h
+                                          , :TempFile2
+                                          , :regimark_2_point_x
+                                          , :regimark_2_point_y
+                                          , :regimark_2_size_w
+                                          , :regimark_2_size_h
+                                          , :base_point_1_x
+                                          , :base_point_1_y
+                                          , :base_point_2_x
+                                          , :base_point_2_y
+                                          , :base_point_3_x
+                                          , :base_point_3_y
+                                          , :base_point_4_x
+                                          , :base_point_4_y
+                                          , :base_point_5_x
+                                          , :base_point_5_y
+                                          , :point_1_plus_direction_x
+                                          , :point_1_plus_direction_y
+                                          , :point_2_plus_direction_x
+                                          , :point_2_plus_direction_y
+                                          , :point_3_plus_direction_x
+                                          , :point_3_plus_direction_y
+                                          , :point_4_plus_direction_x
+                                          , :point_4_plus_direction_y
+                                          , :point_5_plus_direction_x
+                                          , :point_5_plus_direction_y
+                                          , :AreaMagX
+                                          , :AreaMagY
+                                          , :stretch_rate_x_upd
+                                          , :stretch_rate_y_upd
+                                          , :TempFile3
+                                          , :TempFile4
+                                          , :AutoCalcAreaMagFlg
+                                          , :AreaMagCoefficient
+                                          , :AreaMagCorrection
+                                          , :BThreadNum
+                                          , :BThreadNo
+                                          , :BTCamNo
+                                         ) ON CONFLICT (file_num)
+                                           DO UPDATE SET register_num = :register_num
+                                                       , register_flg = :RegistFlg
+                                                       , selection_flg = :SelectFlg
+                                                       , product_name = :Name
+                                                       , inspection_param_num = :ParamNo
+                                                       , airbag_imagepath = :ImageFile
+                                                       , length = :Length
+                                                       , width = :Width
+                                                       , marker_color_flat = :MarkerColor1
+                                                       , marker_color_back = :MarkerColor2
+                                                       , auto_print = :AutoPrint 
+                                                       , auto_inspection_stop = :AutoStop
+                                                       , regimark_1_imagepath = :TempFile1
+                                                       , regimark_1_point_x = :regimark_1_point_x
+                                                       , regimark_1_point_y = :regimark_1_point_y
+                                                       , regimark_1_size_w = :regimark_1_size_w
+                                                       , regimark_1_size_h = :regimark_1_size_h
+                                                       , regimark_2_imagepath = :TempFile2
+                                                       , regimark_2_point_x = :regimark_2_point_x
+                                                       , regimark_2_point_y = :regimark_2_point_y
+                                                       , regimark_2_size_w = :regimark_2_size_w
+                                                       , regimark_2_size_h = :regimark_2_size_h
+                                                       , base_point_1_x = :base_point_1_x
+                                                       , base_point_1_y = :base_point_1_y
+                                                       , base_point_2_x = :base_point_2_x
+                                                       , base_point_2_y = :base_point_2_y
+                                                       , base_point_3_x = :base_point_3_x
+                                                       , base_point_3_y = :base_point_3_y
+                                                       , base_point_4_x = :base_point_4_x
+                                                       , base_point_4_y = :base_point_4_y
+                                                       , base_point_5_x = :base_point_5_x
+                                                       , base_point_5_y = :base_point_5_y
+                                                       , point_1_plus_direction_x = :point_1_plus_direction_x
+                                                       , point_1_plus_direction_y = :point_1_plus_direction_y
+                                                       , point_2_plus_direction_x = :point_2_plus_direction_x
+                                                       , point_2_plus_direction_y = :point_2_plus_direction_y
+                                                       , point_3_plus_direction_x = :point_3_plus_direction_x
+                                                       , point_3_plus_direction_y = :point_3_plus_direction_y
+                                                       , point_4_plus_direction_x = :point_4_plus_direction_x
+                                                       , point_4_plus_direction_y = :point_4_plus_direction_y
+                                                       , point_5_plus_direction_x = :point_5_plus_direction_x
+                                                       , point_5_plus_direction_y = :point_5_plus_direction_y
+                                                       , stretch_rate_x = :AreaMagX
+                                                       , stretch_rate_y = :AreaMagY
+                                                       , stretch_rate_x_upd = :stretch_rate_x_upd
+                                                       , stretch_rate_y_upd = :stretch_rate_y_upd
+                                                       , regimark_3_imagepath = :TempFile3
+                                                       , regimark_4_imagepath = :TempFile4
+                                                       , stretch_rate_auto_calc_flg = :AutoCalcAreaMagFlg
+                                                       , width_coefficient = :AreaMagCoefficient
+                                                       , correct_value = :AreaMagCorrection
+                                                       , black_thread_cnt_per_line = :BThreadNum
+                                                       , measuring_black_thread_num = :BThreadNo
+                                                       , camera_num = :BTCamNo";
+
+        // PTC情報更新SQL
+        public const string g_CON_UPDATE_MST_PRODUCT_INFO_PTC =
+            @"UPDATE mst_product_info SET line_length = :LINE_LENGTH
+                                        , regimark_between_length = :MARK_INTERVAL
+                                    WHERE file_num = :KIND ";
+
+        // エアバッグ情報更新SQL
+        public const string g_CON_UPDATE_MST_PRODUCT_INFO_AIRBAG =
+            @"UPDATE mst_product_info SET column_cnt = :Number
+                                    WHERE file_num = :file_num ";
+        #endregion
     }
 }
