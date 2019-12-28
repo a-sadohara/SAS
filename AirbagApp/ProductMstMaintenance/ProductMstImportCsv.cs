@@ -48,11 +48,38 @@ namespace ProductMstMaintenance
         // エアバッグINI 取り込み時特殊対応項目
         private const string m_CON_COL_AIRBAG_NUMBER = "Number";
 
-        // CSVファイル配置情報
+        // カメラCSVファイル配置情報
         private const int m_CON_COL_PRODUCT_NAME = 0;
         private const int m_CON_COL_ILLUMINATION_INFORMATION = 1;
         private const int m_CON_COL_START_REGIMARK_CAMERA_NUM = 2;
         private const int m_CON_COL_END_REGIMARK_CAMERA_NUM = 3;
+
+        // 閾値CSVファイル配置情報
+        private const int m_CON_COL_PRODUCT_NAME_THRESHOLD = 0;
+        private const int m_CON_COL_TAKING_CAMERA_CNT = 1;
+        private const int m_CON_COL_COLUMN_THRESHOLD_01 = 2;
+        private const int m_CON_COL_COLUMN_THRESHOLD_02 = 3;
+        private const int m_CON_COL_COLUMN_THRESHOLD_03 = 4;
+        private const int m_CON_COL_COLUMN_THRESHOLD_04 = 5;
+        private const int m_CON_COL_LINE_THRESHOLD_A1 = 6;
+        private const int m_CON_COL_LINE_THRESHOLD_A2 = 7;
+        private const int m_CON_COL_LINE_THRESHOLD_B1 = 8;
+        private const int m_CON_COL_LINE_THRESHOLD_B2 = 9;
+        private const int m_CON_COL_LINE_THRESHOLD_C1 = 10;
+        private const int m_CON_COL_LINE_THRESHOLD_C2 = 11;
+        private const int m_CON_COL_LINE_THRESHOLD_D1 = 12;
+        private const int m_CON_COL_LINE_THRESHOLD_D2 = 13;
+        private const int m_CON_COL_LINE_THRESHOLD_E1 = 14;
+        private const int m_CON_COL_LINE_THRESHOLD_E2 = 15;
+        private const int m_CON_COL_TOP_POINT_A = 16;
+        private const int m_CON_COL_TOP_POINT_B = 17;
+        private const int m_CON_COL_TOP_POINT_C = 18;
+        private const int m_CON_COL_TOP_POINT_D = 19;
+        private const int m_CON_COL_TOP_POINT_E = 20;
+
+        // 判定理由CSVファイル配置情報
+        private const int m_CON_COL_REASON_CODE = 0;
+        private const int m_CON_COL_DECISION_REASON = 1;
 
         /// <summary>
         /// INIファイルのセパレータ
@@ -72,6 +99,18 @@ namespace ProductMstMaintenance
         // エアバッグの成功・失敗件数
         private static int m_intSuccesRegAirBag = 0;
         private static int m_intErrorRegAirBag = 0;
+
+        // カメラ情報登録の成功・失敗件数
+        private static int m_intSuccesCameraReg = 0;
+        private static int m_intErrorCameraReg = 0;
+
+        // 閾値情報登録の成功・失敗件数
+        private static int m_intSuccesThresholdReg = 0;
+        private static int m_intErrorThresholdReg = 0;
+
+        // 判定理由情報登録の成功・失敗件数
+        private static int m_intSuccesDecisionReasonReg = 0;
+        private static int m_intErrorDecisionReasonReg = 0;
 
         /// <summary>
         /// 特殊対応ディクショナリ
@@ -231,9 +270,46 @@ namespace ProductMstMaintenance
         public class CameraCsvInfo
         {
             public string strProductName { get; set; }
-            public string strIlluminationInformation { get; set; }
-            public string strStartRegimarkCameraNum { get; set; }
-            public string strEndRegimarkCameraNum { get; set; }
+            public int intIlluminationInformation { get; set; }
+            public int intStartRegimarkCameraNum { get; set; }
+            public int intEndRegimarkCameraNum { get; set; }
+        }
+
+        /// <summary>
+        /// 閾値情報CSVファイル
+        /// </summary>
+        public class ThresholdCsvInfo
+        {
+            public string strProductName { get; set; }
+            public int intTakingCameraCnt { get; set; }
+            public int intColumnThreshold01 { get; set; }
+            public int intColumnThreshold02 { get; set; }
+            public int intColumnThreshold03 { get; set; }
+            public int intColumnThreshold04 { get; set; }
+            public int intLineThresholda1 { get; set; }
+            public int intLineThresholda2 { get; set; }
+            public int intLineThresholdb1 { get; set; }
+            public int intLineThresholdb2 { get; set; }
+            public int intLineThresholdc1 { get; set; }
+            public int intLineThresholdc2 { get; set; }
+            public int intLineThresholdd1 { get; set; }
+            public int intLineThresholdd2 { get; set; }
+            public int intLineThresholde1 { get; set; }
+            public int intLineThresholde2 { get; set; }
+            public int intTopPointA { get; set; }
+            public int intTopPointB { get; set; }
+            public int intTopPointC { get; set; }
+            public int intTopPointD { get; set; }
+            public int intTopPointE { get; set; }
+        }
+
+        /// <summary>
+        /// 判定理由情報CSVファイル
+        /// </summary>
+        public class DecisionReasonCsvInfo
+        {
+            public int intReasonCode { get; set; }
+            public string strDecisionReason { get; set; }
         }
         #endregion
 
@@ -258,6 +334,9 @@ namespace ProductMstMaintenance
             List<IniDataRegister> lstDataRegistersToDB = new List<IniDataRegister>();
             List<IniConfigPLC> lstPLCDataToDB = new List<IniConfigPLC>();
             List<IniAirBagCoord> lstAirBagCoordToDB = new List<IniAirBagCoord>();
+            List<CameraCsvInfo> lstCamCsvInfo = new List<CameraCsvInfo>();
+            List<ThresholdCsvInfo> lstThresholdCsvInfo = new List<ThresholdCsvInfo>();
+            List<DecisionReasonCsvInfo> lstDecisionReasonCsvInfo = new List<DecisionReasonCsvInfo>();
 
             // 未入力チェック
             if (txtFolder.Text == "")
@@ -343,21 +422,42 @@ namespace ProductMstMaintenance
                         if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CAMERA_INFO + ".CSV") == true)
                         {
                             // CSVファイルを取り込み、カメラ情報を取得し登録する。
+                            lstCamCsvInfo = ImportCameraCsvData(Inputfile);
 
+                            // 読み込み行が存在する場合は登録を行う
+                            if (lstCamCsvInfo.Count > 0) 
+                            {
+                                // 読み込んだ値をDBに登録する
+                                UPDMstProductInfoInCamera(lstCamCsvInfo);
+                            }
                         }
 
                         // 閾値情報を判定する。
                         if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_THRESHOLD_INFO + ".CSV") == true)
                         {
                             // CSVファイルを取り込み、閾値情報を取得し登録する。
+                            lstThresholdCsvInfo = ImportThresholdCsvData(Inputfile);
 
+                            // 読み込み行が存在する場合は登録を行う
+                            if (lstThresholdCsvInfo.Count > 0)
+                            {
+                                // 読み込んだ値をDBに登録する
+                                UPDMstProductInfoInThreshold(lstThresholdCsvInfo);
+                            }
                         }
 
                         // 判定理由マスタを判定する。
                         if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REASON_JUDGMENT + ".CSV") == true)
                         {
                             // CSVファイルを取り込み、判定理由マスタを登録する
+                            lstDecisionReasonCsvInfo = ImportDecisionReasonCsvData(Inputfile);
 
+                            // 読み込み行が存在する場合は登録を行う
+                            if (lstDecisionReasonCsvInfo.Count > 0)
+                            {
+                                // 読み込んだ値をDBに登録する
+                                UPDMstProductInfoInDecisionReason(lstDecisionReasonCsvInfo);
+                            }
                         }
 
                         // マスタ画像を判定する。
@@ -1109,7 +1209,7 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="Inputfile">読み込みファイル情報</param>
         /// <returns></returns>
-        private static List<CameraCsvInfo> ImportCameraIniData(FileInfo Inputfile)
+        private static List<CameraCsvInfo> ImportCameraCsvData(FileInfo Inputfile)
         {
             List<CameraCsvInfo> lstCameraCsvInfo = new List<CameraCsvInfo>();
             // 読み込みデータ
@@ -1135,12 +1235,19 @@ namespace ProductMstMaintenance
                     }
 
                     // CSVファイル読み込み＆入力データチェックを行う
-                    if (ReadCsvData(strFileTextLine, intRowCount, Inputfile.Name, out cciCurrentData) == false)
+                    if (ReadCameraCsvData(strFileTextLine
+                                        , intRowCount
+                                        , Inputfile.Name
+                                        , out cciCurrentData) == false)
                     {
                         intErrorCount = intErrorCount + 1;
                         continue;
                     }
-
+                    else 
+                    {
+                        // csvのリストに現在行を追加
+                        lstCameraCsvInfo.Add(cciCurrentData);
+                    }
                 }
 
                 return lstCameraCsvInfo;
@@ -1148,15 +1255,15 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
-        /// CSVファイル読み込み
+        /// カメラCSVファイル読み込み
         /// </summary>
         /// <param name="strFileTextLine">CSVファイル行テキスト</param>
         /// <param name="lstUserData">CSVファイルデータ</param>
         /// <returns></returns>
-        private static Boolean ReadCsvData(string strFileTextLine
-                                         , int intRowCount
-                                         , string strFileName
-                                         , out CameraCsvInfo cciCurrentData)
+        private static Boolean ReadCameraCsvData(string strFileTextLine
+                                               , int intRowCount
+                                               , string strFileName
+                                               , out CameraCsvInfo cciCurrentData)
         {
             cciCurrentData = new CameraCsvInfo();
 
@@ -1169,7 +1276,7 @@ namespace ProductMstMaintenance
             }
 
             // 入力データチェックを行う
-            if (InputDataCheck(cciCurrentData, intRowCount) == false)
+            if (InputDataCheckCamera(cciCurrentData, intRowCount) == false)
             {
                 return false;
             }
@@ -1179,20 +1286,20 @@ namespace ProductMstMaintenance
 
 
         /// <summary>
-        /// /入力チェック
+        /// カメラ入力チェック
         /// </summary>
         /// <param name="cciCheckData">読み込みユーザ情報リスト</param>
         /// <param name="intRowCount">対象行番号</param>
         /// <returns></returns>
-        private static Boolean InputDataCheck(CameraCsvInfo cciCheckData
-                                            , int intRowCount)
+        private static Boolean InputDataCheckCamera(CameraCsvInfo cciCheckData
+                                                  , int intRowCount)
         {
 
 
             return true;
         }
         /// <summary>
-        /// ＣＳＶ→構造体格納（ユーザ情報CSV）
+        /// ＣＳＶ→構造体格納（カメラ情報CSV）
         /// </summary>
         /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
         /// <returns></returns>
@@ -1214,11 +1321,542 @@ namespace ProductMstMaintenance
 
             // CSVの各項目を構造体へ格納する
             cciData.strProductName = stArrayData[m_CON_COL_PRODUCT_NAME];
-            cciData.strIlluminationInformation = stArrayData[m_CON_COL_ILLUMINATION_INFORMATION];
-            cciData.strStartRegimarkCameraNum = stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM];
-            cciData.strEndRegimarkCameraNum = stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM];
+            cciData.intIlluminationInformation = NulltoInt(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION]);
+            cciData.intStartRegimarkCameraNum = NulltoInt(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM]);
+            cciData.intEndRegimarkCameraNum = NulltoInt(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM]);
 
             return true;
+        }
+
+        /// <summary>
+        /// カメラ情報テーブル登録処理
+        /// </summary>
+        /// <param name="lstDataPTCToDB"></param>
+        /// <returns></returns>
+        private static void UPDMstProductInfoInCamera(List<CameraCsvInfo> lstCameraCsvToDB)
+        {
+            // PostgreSQLへ接続
+            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
+            {
+                NpgsqlCon.Open();
+
+                using (var transaction = NpgsqlCon.BeginTransaction())
+                {
+
+                    foreach (CameraCsvInfo cciCurrentData in lstCameraCsvToDB)
+                    {
+                        // 登録処理実施
+                        if (ExecRegProductInfoCamera(cciCurrentData, NpgsqlCon, transaction) == true)
+                        {
+                            m_intSuccesCameraReg = m_intSuccesCameraReg + 1;
+                        }
+                        else
+                        {
+                            m_intErrorCameraReg = m_intErrorCameraReg + 1;
+                        }
+                    }
+
+                    // トランザクションコミット
+                    transaction.Commit();
+                }
+            }
+        }
+
+        /// <summary>
+        /// カメラ更新SQL処理
+        /// </summary>
+        /// <param name="lstUserData">読み込みデータ一覧</param>
+        /// <returns></returns>
+        private static Boolean ExecRegProductInfoCamera(CameraCsvInfo cciCurrentData
+                                                      , NpgsqlConnection NpgsqlCon
+                                                      , NpgsqlTransaction transaction)
+        {
+            try
+            {
+                // SQL文を作成する
+                string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_CAMERA;
+
+                // SQLコマンドに各パラメータを設定する
+                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+
+                // 各項目の値を取得する
+                // FieldInfoを取得する
+                Type typeOfMyStruct = typeof(CameraCsvInfo);
+                System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
+
+                // Iniファイルから各値を読み込む
+                foreach (var fieldInfo in fieldInfos)
+                {
+                    if (fieldInfo.FieldType == typeof(int))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
+                        { Value = NulltoInt(fieldInfo.GetValue(cciCurrentData)) });
+                    }
+                    else
+                    {
+                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.String)
+                        { Value = NulltoString(fieldInfo.GetValue(cciCurrentData)) });
+                    }
+                }
+
+                // sqlを実行する
+                if (ExecTranSQL(command, transaction) == false)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Camera更新時にエラーが発生しました。"
+                               + Environment.NewLine
+                               + ex.Message);
+                return false;
+            }
+        }
+        #endregion
+
+        #region 閾値情報CSV取り込む
+        /// <summary>
+        /// 閾値情報取り込み
+        /// </summary>
+        /// <param name="Inputfile">読み込みファイル情報</param>
+        /// <returns></returns>
+        private static List<ThresholdCsvInfo> ImportThresholdCsvData(FileInfo Inputfile)
+        {
+            List<ThresholdCsvInfo> lstThresholdCsvInfo = new List<ThresholdCsvInfo>();
+            // 読み込みデータ
+            ThresholdCsvInfo tciCurrentData = new ThresholdCsvInfo();
+
+            int intRowCount = 0;
+            int intErrorCount = 0;
+
+            // ファイル読み込み処理を行う
+            using (StreamReader sr = new StreamReader(Inputfile.FullName
+                                                    , Encoding.GetEncoding("Shift_JIS")))
+            {
+                string strFileTextLine = "";
+                // ストリームの末尾まで繰り返す
+                while (!sr.EndOfStream)
+                {
+                    // 閾値情報ファイルを１行読み込む
+                    strFileTextLine = sr.ReadLine();
+                    if (strFileTextLine == "")
+                    {
+                        // 空行（最終行）の場合読み飛ばす
+                        continue;
+                    }
+
+                    // CSVファイル読み込み＆入力データチェックを行う
+                    if (ReadThresholdCsvData(strFileTextLine
+                                           , intRowCount
+                                           , Inputfile.Name
+                                           , out tciCurrentData) == false)
+                    {
+                        intErrorCount = intErrorCount + 1;
+                        continue;
+                    }
+                    else
+                    {
+                        // csvのリストに現在行を追加
+                        lstThresholdCsvInfo.Add(tciCurrentData);
+                    }
+                }
+
+                return lstThresholdCsvInfo;
+            }
+        }
+
+        /// <summary>
+        /// 閾値CSVファイル読み込み
+        /// </summary>
+        /// <param name="strFileTextLine">CSVファイル行テキスト</param>
+        /// <param name="lstUserData">CSVファイルデータ</param>
+        /// <returns></returns>
+        private static Boolean ReadThresholdCsvData(string strFileTextLine
+                                                  , int intRowCount
+                                                  , string strFileName
+                                                  , out ThresholdCsvInfo tciCurrentData)
+        {
+            tciCurrentData = new ThresholdCsvInfo();
+
+            // CSVを読み込む
+            if (SetThresholdInfoCsv(strFileTextLine, out tciCurrentData) == false)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目の列数が不足しています", strFileName);
+                return false;
+            }
+
+            // 入力データチェックを行う
+            if (InputDataCheckThreshold(tciCurrentData, intRowCount) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 閾値入力チェック
+        /// </summary>
+        /// <param name="tciCheckData">読み込み閾値情報リスト</param>
+        /// <param name="intRowCount">対象行番号</param>
+        /// <returns></returns>
+        private static Boolean InputDataCheckThreshold(ThresholdCsvInfo tciCheckData
+                                                     , int intRowCount)
+        {
+
+
+            return true;
+        }
+
+        /// <summary>
+        /// ＣＳＶ→構造体格納（閾値情報CSV）
+        /// </summary>
+        /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
+        /// <returns></returns>
+        private static Boolean SetThresholdInfoCsv(string strFileReadLine
+                                                 , out ThresholdCsvInfo tciData)
+        {
+            string[] stArrayData;
+
+            tciData = new ThresholdCsvInfo();
+
+            // 半角スペース区切りで分割して配列に格納する
+            stArrayData = strFileReadLine.Split(',');
+
+            // 列数チェック
+            if (stArrayData.Length <= m_CON_COL_TOP_POINT_E)
+            {
+                return false;
+            }
+
+            // CSVの各項目を構造体へ格納する
+            tciData.strProductName = stArrayData[m_CON_COL_PRODUCT_NAME_THRESHOLD];
+            tciData.intTakingCameraCnt = NulltoInt(stArrayData[m_CON_COL_TAKING_CAMERA_CNT]);
+            tciData.intColumnThreshold01 = NulltoInt(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01]);
+            tciData.intColumnThreshold02 = NulltoInt(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02]);
+            tciData.intColumnThreshold03 = NulltoInt(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03]);
+            tciData.intColumnThreshold04 = NulltoInt(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04]);
+            tciData.intLineThresholda1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_A1]);
+            tciData.intLineThresholda2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_A2]);
+            tciData.intLineThresholdb1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_B1]);
+            tciData.intLineThresholdb2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_B2]);
+            tciData.intLineThresholdc1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_C1]);
+            tciData.intLineThresholdc2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_C2]);
+            tciData.intLineThresholdd1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_D1]);
+            tciData.intLineThresholdd2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_D2]);
+            tciData.intLineThresholde1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_E1]);
+            tciData.intLineThresholde2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_E2]);
+            tciData.intTopPointA = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_A]);
+            tciData.intTopPointB = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_B]);
+            tciData.intTopPointC = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_C]);
+            tciData.intTopPointD = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_D]);
+            tciData.intTopPointE = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_E]);
+
+
+            return true;
+        }
+
+        /// <summary>
+        /// 閾値情報テーブル登録処理
+        /// </summary>
+        /// <param name="lstDataPTCToDB"></param>
+        /// <returns></returns>
+        private static void UPDMstProductInfoInThreshold(List<ThresholdCsvInfo> lstThresholdCsvToDB)
+        {
+            // PostgreSQLへ接続
+            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
+            {
+                NpgsqlCon.Open();
+
+                using (var transaction = NpgsqlCon.BeginTransaction())
+                {
+
+                    foreach (ThresholdCsvInfo tciCurrentData in lstThresholdCsvToDB)
+                    {
+                        // 登録処理実施
+                        if (ExecRegProductInfoThreshold(tciCurrentData, NpgsqlCon, transaction) == true)
+                        {
+                            m_intSuccesThresholdReg = m_intSuccesThresholdReg + 1;
+                        }
+                        else
+                        {
+                            m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
+                        }
+                    }
+
+                    // トランザクションコミット
+                    transaction.Commit();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 閾値更新SQL処理
+        /// </summary>
+        /// <param name="lstUserData">読み込みデータ一覧</param>
+        /// <returns></returns>
+        private static Boolean ExecRegProductInfoThreshold(ThresholdCsvInfo tciCurrentData
+                                                         , NpgsqlConnection NpgsqlCon
+                                                         , NpgsqlTransaction transaction)
+        {
+            try
+            {
+                // SQL文を作成する
+                string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_THRESHOLD;
+
+                // SQLコマンドに各パラメータを設定する
+                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+
+                // 各項目の値を取得する
+                // FieldInfoを取得する
+                Type typeOfMyStruct = typeof(ThresholdCsvInfo);
+                System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
+
+                // Iniファイルから各値を読み込む
+                foreach (var fieldInfo in fieldInfos)
+                {
+                    if (fieldInfo.FieldType == typeof(int))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
+                        { Value = NulltoInt(fieldInfo.GetValue(tciCurrentData)) });
+                    }
+                    else
+                    {
+                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.String)
+                        { Value = NulltoString(fieldInfo.GetValue(tciCurrentData)) });
+                    }
+                }
+
+                // sqlを実行する
+                if (ExecTranSQL(command, transaction) == false)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Threshold更新時にエラーが発生しました。"
+                               + Environment.NewLine
+                               + ex.Message);
+                return false;
+            }
+        }
+        #endregion
+
+        #region 判定理由情報CSV取り込む
+        /// <summary>
+        /// 判定理由情報取り込み
+        /// </summary>
+        /// <param name="Inputfile">読み込みファイル情報</param>
+        /// <returns></returns>
+        private static List<DecisionReasonCsvInfo> ImportDecisionReasonCsvData(FileInfo Inputfile)
+        {
+            List<DecisionReasonCsvInfo> lstDecisionReasonCsvInfo = new List<DecisionReasonCsvInfo>();
+            // 読み込みデータ
+            DecisionReasonCsvInfo driCurrentData = new DecisionReasonCsvInfo();
+
+            int intRowCount = 0;
+            int intErrorCount = 0;
+
+            // ファイル読み込み処理を行う
+            using (StreamReader sr = new StreamReader(Inputfile.FullName
+                                                    , Encoding.GetEncoding("Shift_JIS")))
+            {
+                string strFileTextLine = "";
+                // ストリームの末尾まで繰り返す
+                while (!sr.EndOfStream)
+                {
+                    // 閾値情報ファイルを１行読み込む
+                    strFileTextLine = sr.ReadLine();
+                    if (strFileTextLine == "")
+                    {
+                        // 空行（最終行）の場合読み飛ばす
+                        continue;
+                    }
+
+                    // CSVファイル読み込み＆入力データチェックを行う
+                    if (ReadDecisionReasonCsvData(strFileTextLine
+                                                , intRowCount
+                                                , Inputfile.Name
+                                                , out driCurrentData) == false)
+                    {
+                        intErrorCount = intErrorCount + 1;
+                        continue;
+                    }
+                    else
+                    {
+                        // csvのリストに現在行を追加
+                        lstDecisionReasonCsvInfo.Add(driCurrentData);
+                    }
+                }
+
+                return lstDecisionReasonCsvInfo;
+            }
+        }
+
+        /// <summary>
+        /// 閾値CSVファイル読み込み
+        /// </summary>
+        /// <param name="strFileTextLine">CSVファイル行テキスト</param>
+        /// <param name="lstUserData">CSVファイルデータ</param>
+        /// <returns></returns>
+        private static Boolean ReadDecisionReasonCsvData(string strFileTextLine
+                                                       , int intRowCount
+                                                       , string strFileName
+                                                       , out DecisionReasonCsvInfo drcCurrentData)
+        {
+            drcCurrentData = new DecisionReasonCsvInfo();
+
+            // CSVを読み込む
+            if (SetDecisionReasonInfoCsv(strFileTextLine, out drcCurrentData) == false)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目の列数が不足しています", strFileName);
+                return false;
+            }
+
+            // 入力データチェックを行う
+            if (InputDataCheckDecisionReason(drcCurrentData, intRowCount) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 判定理由入力チェック
+        /// </summary>
+        /// <param name="tciCheckData">読み込み閾値情報リスト</param>
+        /// <param name="intRowCount">対象行番号</param>
+        /// <returns></returns>
+        private static Boolean InputDataCheckDecisionReason(DecisionReasonCsvInfo tciCheckData
+                                                          , int intRowCount)
+        {
+
+
+            return true;
+        }
+
+        /// <summary>
+        /// ＣＳＶ→構造体格納（閾値情報CSV）
+        /// </summary>
+        /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
+        /// <returns></returns>
+        private static Boolean SetDecisionReasonInfoCsv(string strFileReadLine
+                                                      , out DecisionReasonCsvInfo drcData)
+        {
+            string[] stArrayData;
+
+            drcData = new DecisionReasonCsvInfo();
+
+            // 半角スペース区切りで分割して配列に格納する
+            stArrayData = strFileReadLine.Split(',');
+
+            // 列数チェック
+            if (stArrayData.Length <= m_CON_COL_DECISION_REASON)
+            {
+                return false;
+            }
+
+            // CSVの各項目を構造体へ格納する
+            drcData.intReasonCode = NulltoInt(stArrayData[m_CON_COL_REASON_CODE]);
+            drcData.strDecisionReason = stArrayData[m_CON_COL_DECISION_REASON];
+
+            return true;
+        }
+
+        /// <summary>
+        /// 判定理由情報テーブル登録処理
+        /// </summary>
+        /// <param name="lstDataPTCToDB"></param>
+        /// <returns></returns>
+        private static void UPDMstProductInfoInDecisionReason(List<DecisionReasonCsvInfo> lstDecisionReasonCsvToDB)
+        {
+            // PostgreSQLへ接続
+            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
+            {
+                NpgsqlCon.Open();
+
+                using (var transaction = NpgsqlCon.BeginTransaction())
+                {
+                    foreach (DecisionReasonCsvInfo drcCurrentData in lstDecisionReasonCsvToDB)
+                    {
+                        // 登録処理実施
+                        if (ExecRegProductInfoDecisionReason(drcCurrentData, NpgsqlCon, transaction) == true)
+                        {
+                            m_intSuccesThresholdReg = m_intSuccesThresholdReg + 1;
+                        }
+                        else
+                        {
+                            m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
+                        }
+                    }
+
+                    // トランザクションコミット
+                    transaction.Commit();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 閾値更新SQL処理
+        /// </summary>
+        /// <param name="lstUserData">読み込みデータ一覧</param>
+        /// <returns></returns>
+        private static Boolean ExecRegProductInfoDecisionReason(DecisionReasonCsvInfo drcCurrentData
+                                                              , NpgsqlConnection NpgsqlCon
+                                                              , NpgsqlTransaction transaction)
+        {
+            try
+            {
+                // SQL文を作成する
+                string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_DECISION_REASON;
+
+                // SQLコマンドに各パラメータを設定する
+                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+
+                // 各項目の値を取得する
+                // FieldInfoを取得する
+                Type typeOfMyStruct = typeof(DecisionReasonCsvInfo);
+                System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
+
+                // Iniファイルから各値を読み込む
+                foreach (var fieldInfo in fieldInfos)
+                {
+                    if (fieldInfo.FieldType == typeof(int))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
+                        { Value = NulltoInt(fieldInfo.GetValue(drcCurrentData)) });
+                    }
+                    else
+                    {
+                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.String)
+                        { Value = NulltoString(fieldInfo.GetValue(drcCurrentData)) });
+                    }
+                }
+
+                // sqlを実行する
+                if (ExecTranSQL(command, transaction) == false)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("判定理由更新時にエラーが発生しました。"
+                               + Environment.NewLine
+                               + ex.Message);
+                return false;
+            }
         }
         #endregion
         #endregion

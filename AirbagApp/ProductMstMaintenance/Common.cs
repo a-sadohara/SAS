@@ -440,6 +440,42 @@ namespace ProductMstMaintenance
         public const string g_CON_UPDATE_MST_PRODUCT_INFO_AIRBAG =
             @"UPDATE mst_product_info SET column_cnt = :Number
                                     WHERE file_num = :file_num ";
+
+        // 品番カメラ更新SQL
+        public const string g_CON_UPDATE_MST_PRODUCT_INFO_CAMERA =
+            @"UPDATE mst_product_info SET illumination_information = :intIlluminationInformation
+                                        , start_regimark_camera_num = :intStartRegimarkCameraNum
+                                        , end_regimark_camera_num = :intEndRegimarkCameraNum
+                                    WHERE product_name = :strProductName ";
+
+        // 閾値マスタ更新SQL
+        public const string g_CON_UPDATE_MST_PRODUCT_INFO_THRESHOLD =
+            @"UPDATE mst_product_info SET taking_camera_cnt = :intTakingCameraCnt
+                                        , column_threshold_01 = :intColumnThreshold01
+                                        , column_threshold_02 = :intColumnThreshold02
+                                        , column_threshold_03 = :intColumnThreshold03
+                                        , column_threshold_04 = :intColumnThreshold04
+                                        , line_threshold_a1 = :intLineThresholda1
+                                        , line_threshold_a2 = :intLineThresholda2
+                                        , line_threshold_b1 = :intLineThresholdb1
+                                        , line_threshold_b2 = :intLineThresholdb2
+                                        , line_threshold_c1 = :intLineThresholdc1
+                                        , line_threshold_c2 = :intLineThresholdc2
+                                        , line_threshold_d1 = :intLineThresholdd1
+                                        , line_threshold_d2 = :intLineThresholdd2
+                                        , line_threshold_e1 = :intLineThresholde1
+                                        , line_threshold_e2 = :intLineThresholde2
+                                        , top_point_a = :intTopPointA
+                                        , top_point_b = :intTopPointB
+                                        , top_point_c = :intTopPointC
+                                        , top_point_d = :intTopPointD
+                                        , top_point_e = :intTopPointE
+                                    WHERE product_name = :strProductName ";
+
+        // 判定理由マスタ更新SQL
+        public const string g_CON_UPDATE_MST_PRODUCT_INFO_DECISION_REASON =
+            @"UPDATE mst_product_info SET reason_code = :intReasonCode
+                                        , decision_reason = :strDecisionReason";
         #endregion
     }
 }
