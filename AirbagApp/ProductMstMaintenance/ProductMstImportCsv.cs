@@ -81,10 +81,12 @@ namespace ProductMstMaintenance
         private const int m_CON_COL_REASON_CODE = 0;
         private const int m_CON_COL_DECISION_REASON = 1;
 
-        /// <summary>
-        /// INIファイルのセパレータ
-        /// </summary>
+        // INIファイルのセパレータ
         private const Char m_CON_SEPARATOR_XY = ' ';
+
+        // ログファイル出力先を設定
+        private const string m_CON_MASTER_IMAGE = "MasterImageDirectory";
+        private const string m_CON_LOG_OUT_DIRECTORY = "LogFileOutputDirectory";
         #endregion
 
         #region 変数
@@ -108,9 +110,16 @@ namespace ProductMstMaintenance
         private static int m_intSuccesThresholdReg = 0;
         private static int m_intErrorThresholdReg = 0;
 
+        // マスタ画像情報登録の成功・失敗件数
+        private static int m_intSuccesMasterImg = 0;
+        private static int m_intErrorMasterImg = 0;
+
         // 判定理由情報登録の成功・失敗件数
         private static int m_intSuccesDecisionReasonReg = 0;
         private static int m_intErrorDecisionReasonReg = 0;
+
+        // ログフォルダパス
+        private static string m_strOutPutLogFolder = "";
 
         /// <summary>
         /// 特殊対応ディクショナリ
@@ -185,89 +194,88 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 品番情報INI格納構造体
         /// </summary>
-        private class IniDataRegister
+        private struct IniDataRegister
         {
-            public string file_num { get; set; }
-            public string register_num { get; set; }
-            public int RegistFlg { get; set; }
-            public int SelectFlg { get; set; }
-            public string Name { get; set; }
-            public int ParamNo { get; set; }
-            public string ImageFile { get; set; }
-            public int Length { get; set; }
-            public int Width { get; set; }
-            public int MarkerColor1 { get; set; }
-            public int MarkerColor2 { get; set; }
-            public int AutoPrint { get; set; }
-            public int AutoStop { get; set; }
-            public string TempFile1 { get; set; }
-            public int regimark_1_point_x { get; set; }
-            public int regimark_1_point_y { get; set; }
-            public int regimark_1_size_w { get; set; }
-            public int regimark_1_size_h { get; set; }
-            public string TempFile2 { get; set; }
-            public int regimark_2_point_x { get; set; }
-            public int regimark_2_point_y { get; set; }
-            public int regimark_2_size_w { get; set; }
-            public int regimark_2_size_h { get; set; }
-            public int base_point_1_x { get; set; }
-            public int base_point_1_y { get; set; }
-            public int base_point_2_x { get; set; }
-            public int base_point_2_y { get; set; }
-            public int base_point_3_x { get; set; }
-            public int base_point_3_y { get; set; }
-            public int base_point_4_x { get; set; }
-            public int base_point_4_y { get; set; }
-            public int base_point_5_x { get; set; }
-            public int base_point_5_y { get; set; }
-            public int point_1_plus_direction_x { get; set; }
-            public int point_1_plus_direction_y { get; set; }
-            public int point_2_plus_direction_x { get; set; }
-            public int point_2_plus_direction_y { get; set; }
-            public int point_3_plus_direction_x { get; set; }
-            public int point_3_plus_direction_y { get; set; }
-            public int point_4_plus_direction_x { get; set; }
-            public int point_4_plus_direction_y { get; set; }
-            public int point_5_plus_direction_x { get; set; }
-            public int point_5_plus_direction_y { get; set; }
-            public int AreaMagX { get; set; }
-            public int AreaMagY { get; set; }
-            public int stretch_rate_x_upd { get; set; }
-            public int stretch_rate_y_upd { get; set; }
-            public string TempFile3 { get; set; }
-            public string TempFile4 { get; set; }
-            public int AutoCalcAreaMagFlg { get; set; }
-            public int AreaMagCoefficient { get; set; }
-            public int AreaMagCorrection { get; set; }
-            public int BThreadNum { get; set; }
-            public string BThreadNo { get; set; }
-            public int BTCamNo { get; set; }
-
+            public string file_num;
+            public string register_num;
+            public int RegistFlg;
+            public int SelectFlg;
+            public string Name;
+            public int ParamNo;
+            public string ImageFile;
+            public int Length;
+            public int Width;
+            public int MarkerColor1;
+            public int MarkerColor2;
+            public int AutoPrint;
+            public int AutoStop;
+            public string TempFile1;
+            public int regimark_1_point_x;
+            public int regimark_1_point_y;
+            public int regimark_1_size_w;
+            public int regimark_1_size_h;
+            public string TempFile2;
+            public int regimark_2_point_x;
+            public int regimark_2_point_y;
+            public int regimark_2_size_w;
+            public int regimark_2_size_h;
+            public int base_point_1_x;
+            public int base_point_1_y;
+            public int base_point_2_x;
+            public int base_point_2_y;
+            public int base_point_3_x;
+            public int base_point_3_y;
+            public int base_point_4_x;
+            public int base_point_4_y;
+            public int base_point_5_x;
+            public int base_point_5_y;
+            public int point_1_plus_direction_x;
+            public int point_1_plus_direction_y;
+            public int point_2_plus_direction_x;
+            public int point_2_plus_direction_y;
+            public int point_3_plus_direction_x;
+            public int point_3_plus_direction_y;
+            public int point_4_plus_direction_x;
+            public int point_4_plus_direction_y;
+            public int point_5_plus_direction_x;
+            public int point_5_plus_direction_y;
+            public int AreaMagX;
+            public int AreaMagY;
+            public int stretch_rate_x_upd;
+            public int stretch_rate_y_upd;
+            public string TempFile3;
+            public string TempFile4;
+            public int AutoCalcAreaMagFlg;
+            public int AreaMagCoefficient;
+            public int AreaMagCorrection;
+            public int BThreadNum;
+            public string BThreadNo;
+            public int BTCamNo;
         }
 
         /// <summary>
         /// PLCINI格納構造体
         /// </summary>
-        private class IniConfigPLC 
+        private struct IniConfigPLC 
         {
-            public string KIND { get; set; }
-            public int LINE_LENGTH { get; set; }
-            public int MARK_INTERVAL { get; set; }
+            public string KIND;
+            public int LINE_LENGTH;
+            public int MARK_INTERVAL;
         }
 
         /// <summary>
         /// エアバッグ領域設定INI構造体
         /// </summary>
-        private class IniAirBagCoord 
+        private struct IniAirBagCoord 
         {
-            public string file_num { get; set; }
-            public int Number { get; set; }
+            public string file_num;
+            public int Number;
         }
 
         /// <summary>
         /// カメラ情報CSVファイル
         /// </summary>
-        public class CameraCsvInfo
+        private class CameraCsvInfo
         {
             public string strProductName { get; set; }
             public int intIlluminationInformation { get; set; }
@@ -278,7 +286,7 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 閾値情報CSVファイル
         /// </summary>
-        public class ThresholdCsvInfo
+        private class ThresholdCsvInfo
         {
             public string strProductName { get; set; }
             public int intTakingCameraCnt { get; set; }
@@ -306,7 +314,7 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 判定理由情報CSVファイル
         /// </summary>
-        public class DecisionReasonCsvInfo
+        private class DecisionReasonCsvInfo
         {
             public int intReasonCode { get; set; }
             public string strDecisionReason { get; set; }
@@ -331,12 +339,6 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void btnImport_Click(object sender, EventArgs e)
         {
-            List<IniDataRegister> lstDataRegistersToDB = new List<IniDataRegister>();
-            List<IniConfigPLC> lstPLCDataToDB = new List<IniConfigPLC>();
-            List<IniAirBagCoord> lstAirBagCoordToDB = new List<IniAirBagCoord>();
-            List<CameraCsvInfo> lstCamCsvInfo = new List<CameraCsvInfo>();
-            List<ThresholdCsvInfo> lstThresholdCsvInfo = new List<ThresholdCsvInfo>();
-            List<DecisionReasonCsvInfo> lstDecisionReasonCsvInfo = new List<DecisionReasonCsvInfo>();
 
             // 未入力チェック
             if (txtFolder.Text == "")
@@ -350,134 +352,74 @@ namespace ProductMstMaintenance
                               , "確認"
                               , MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
+                // 出力先ログフォルダパスを取得する
+                if (bolGetSystemSettingValue(m_CON_LOG_OUT_DIRECTORY
+                                           , out m_strOutPutLogFolder) == true)
+                {
+                    // 対象フォルダなし
+                    if (Directory.Exists(m_strOutPutLogFolder) == false)
+                    {
+                        // フォルダ作成する
+                        Directory.CreateDirectory(m_strOutPutLogFolder);
+                    }
+                }
+                else 
+                {
+                    m_strOutPutLogFolder = System.IO.Directory.GetCurrentDirectory();
+                }
 
                 DirectoryInfo directorySearchFolder = new DirectoryInfo(txtFolder.Text);
 
-                FileInfo[] fileInfosInput = directorySearchFolder.GetFiles("*.*"
-                                                                         , SearchOption.AllDirectories);
-                if (fileInfosInput.Length > 0)
-                {
-                    // フォルダ内のファイルの数だけループする
-                    foreach (FileInfo Inputfile in fileInfosInput)
-                    {
-                        // 対象のファイルがロックされているか確認する
-                        if (IsFileLocked(Inputfile.FullName) == true)
-                        {
-                            // ファイルがロックされている場合、スキップする
-                            continue;
-                        }
+                FileInfo[] fiInputIni = directorySearchFolder.GetFiles("*.ini"
+                                                                     , SearchOption.AllDirectories);
+                FileInfo[] fiInputCsv = directorySearchFolder.GetFiles("*.csv"
+                                                                     , SearchOption.AllDirectories);
+                FileInfo[] fiInputPng = directorySearchFolder.GetFiles("*.png"
+                                                                     , SearchOption.AllDirectories);
 
-                        // 品番情報ファイルを判定する
-                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.INI") == true)
-                        {
-                            // 品番情報ファイルの場合、取り込みを行う
-                            lstDataRegistersToDB = ImportRegisterIniData(Inputfile);
+                // 品番マスタ情報取り込み
+                ProcessRegisterIni(fiInputIni);
 
-                            // 読み込んだ値に対してチェック処理を行う
-                            if (CheckRegisterIniData(lstDataRegistersToDB
-                                                   , Inputfile.Name) == false)
-                            {
-                                continue;
-                            }
+                // PLCマスタ情報取り込み
+                ProcessPLCIni(fiInputIni);
 
-                            // 読み込んだ値をDBに登録する
-                            InsertMstProductInfo(lstDataRegistersToDB);
-                        }
+                // エアバッグ情報取り込み
+                ProcessAirBagIni(fiInputIni);
 
-                        // PLC設定ファイルを判定する
-                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CONFIG_PLC + ".INI") == true)
-                        {
-                            // PLC設定より、レジマーク間距離を取得し登録する。
-                            lstPLCDataToDB = ImportPLCIniData(Inputfile);
+                // カメラ情報CSV取り込み
+                ProcessCameraCsv(fiInputCsv);
 
-                            // 読み込んだ値に対してチェック処理を行う
-                            if (CheckPLCIniData(lstPLCDataToDB
-                                              , Inputfile.Name) == false)
-                            {
-                                continue;
-                            }
+                // 閾値情報CSV取り込み
+                ProcessThresholdCsv(fiInputCsv);
 
-                            // 読み込んだ値をDBに登録する
-                            UPDMstProductInfoInPTC(lstPLCDataToDB);
-                        }
+                // マスタ画像取り込み
+                ProcessMasterPng(fiInputPng);
 
-                        // エアバック領域設定ファイルを判定する
-                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_AIRBAG_COORD + "[0-9][0-9]*.INI") == true)
-                        {
-                            // エアバック領域設定より、列数を取得し登録する。
-                            lstAirBagCoordToDB = ImportAirBagCoordIniData(Inputfile);
+                // 判定理由取り込み
+                ProcessDecisionReasonCsv(fiInputCsv);
 
-                            // 読み込んだ値に対してチェック処理を行う
-                            if (CheckAirbagIniData(lstAirBagCoordToDB
-                                                 , Inputfile.Name) == false)
-                            {
-                                continue;
-                            }
+                // 出力ファイル設定
+                string strOutPutFilePath = m_strOutPutLogFolder + @"\" 
+                                                                + m_CON_OUTLOGFILE_NAME
+                                                                + "_"
+                                                                + DateTime.Now.ToString("yyyyMMdd")
+                                                                + ".txt";
 
-                            // 読み込んだ値をDBに登録する
-                            UPDMstProductInfoInAirbag(lstAirBagCoordToDB);
-                        }
+                // 出力ダイアログメッセージを設定する
+                string strMsg = "取り込み処理が終了しました。" + Environment.NewLine + 
+                 "　品番登録　取り込み件数：" + (m_intSuccesRegProductInfo + m_intErrorRegProductInfo) + "件　正常：" + m_intSuccesRegProductInfo + "件　異常：" + m_intErrorRegProductInfo + "件 " + Environment.NewLine +
+                 "　PLC設定　取り込み件数：" + (m_intSuccesRegPTC + m_intErrorRegPTC) + "件　正常：" + m_intSuccesRegPTC + "件　異常：" + m_intErrorRegPTC + "件 " + Environment.NewLine +
+                 "　エアバッグ領域設定　取り込み件数：" + (m_intSuccesRegAirBag + m_intErrorRegAirBag) + "件　正常：" + m_intSuccesRegAirBag + "件　異常：" + m_intErrorRegAirBag + "件 " + Environment.NewLine +
+                 "　カメラ情報　取り込み件数：" + (m_intSuccesCameraReg + m_intErrorCameraReg) + "件　正常：" + m_intSuccesCameraReg + "件　異常：" + m_intErrorCameraReg + "件 " + Environment.NewLine +
+                 "　閾値情報　取り込み件数：" + (m_intSuccesThresholdReg + m_intErrorThresholdReg) + "件　正常：" + m_intSuccesThresholdReg + "件　異常：" + m_intErrorThresholdReg + "件 " + Environment.NewLine +
+                 "　マスタ画像　取り込み件数：" + (m_intSuccesMasterImg + m_intErrorMasterImg) + "件　正常：" + m_intSuccesMasterImg + "件　異常：" + m_intErrorMasterImg + "件 " + Environment.NewLine +
+                 "　判定理由マスタ　取り込み件数：" + (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg) + "件　正常：" + m_intSuccesDecisionReasonReg + "件　異常：" + m_intErrorDecisionReasonReg + "件 " + Environment.NewLine +
+                 "詳細は、下記のログファイルを参照ください。" + Environment.NewLine +
+                 "　" + strOutPutFilePath;
 
-                        // カメラ情報を判定する
-                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CAMERA_INFO + ".CSV") == true)
-                        {
-                            // CSVファイルを取り込み、カメラ情報を取得し登録する。
-                            lstCamCsvInfo = ImportCameraCsvData(Inputfile);
-
-                            // 読み込み行が存在する場合は登録を行う
-                            if (lstCamCsvInfo.Count > 0) 
-                            {
-                                // 読み込んだ値をDBに登録する
-                                UPDMstProductInfoInCamera(lstCamCsvInfo);
-                            }
-                        }
-
-                        // 閾値情報を判定する。
-                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_THRESHOLD_INFO + ".CSV") == true)
-                        {
-                            // CSVファイルを取り込み、閾値情報を取得し登録する。
-                            lstThresholdCsvInfo = ImportThresholdCsvData(Inputfile);
-
-                            // 読み込み行が存在する場合は登録を行う
-                            if (lstThresholdCsvInfo.Count > 0)
-                            {
-                                // 読み込んだ値をDBに登録する
-                                UPDMstProductInfoInThreshold(lstThresholdCsvInfo);
-                            }
-                        }
-
-                        // 判定理由マスタを判定する。
-                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REASON_JUDGMENT + ".CSV") == true)
-                        {
-                            // CSVファイルを取り込み、判定理由マスタを登録する
-                            lstDecisionReasonCsvInfo = ImportDecisionReasonCsvData(Inputfile);
-
-                            // 読み込み行が存在する場合は登録を行う
-                            if (lstDecisionReasonCsvInfo.Count > 0)
-                            {
-                                // 読み込んだ値をDBに登録する
-                                UPDMstProductInfoInDecisionReason(lstDecisionReasonCsvInfo);
-                            }
-                        }
-
-                        // マスタ画像を判定する。
-                        if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_COPY_PNG + ".PNG") == true)
-                        {
-                            // マスタ画像を取り込み先のフォルダにコピーする。
-
-                        }
-                    }
-
-                    MessageBox.Show("取込み処理が完了しました");
-                    this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                    this.Close();
-                }
-                else
-                {
-                    MessageBox.Show("フォルダ内にファイルが存在しません。");
-                    this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                    this.Close();
-                }
+                MessageBox.Show(strMsg, "取り込み結果", MessageBoxButtons.OK);
+                this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                this.Close();
             }
         }
 
@@ -538,6 +480,43 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 品番情報取り込み
         /// </summary>
+        /// <param name="fiInputIni">読み込みINIファイル全種類</param>
+        private static void ProcessRegisterIni(FileInfo[] fiInputIni)
+        {
+            List<IniDataRegister> lstDataRegistersToDB = new List<IniDataRegister>();
+
+            // フォルダ内のファイルの数だけループする
+            foreach (FileInfo Inputfile in fiInputIni)
+            {
+                // 対象のファイルがロックされているか確認する
+                if (IsFileLocked(Inputfile.FullName) == true)
+                {
+                    // ファイルがロックされている場合、スキップする
+                    continue;
+                }
+
+                // 品番情報ファイルを判定する
+                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.ini") == true)
+                {
+                    // 品番情報ファイルの場合、取り込みを行う
+                    lstDataRegistersToDB = ImportRegisterIniData(Inputfile);
+
+                    // 読み込んだ値に対してチェック処理を行う
+                    if (CheckRegisterIniData(lstDataRegistersToDB
+                                           , Inputfile.Name) == false)
+                    {
+                        continue;
+                    }
+
+                    // 読み込んだ値をDBに登録する
+                    InsertMstProductInfo(lstDataRegistersToDB);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 品番情報取り込み
+        /// </summary>
         /// <param name="Inputfile">読み込みファイル情報</param>
         /// <returns></returns>
         private static List<IniDataRegister> ImportRegisterIniData(FileInfo Inputfile)
@@ -566,8 +545,8 @@ namespace ProductMstMaintenance
                     {
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", "");
-                        strFileTextLineReplace = strFileTextLine.Replace("]", "");
-                        lstRegisterIniSection.Add(strFileTextLine);
+                        strFileTextLineReplace = strFileTextLineReplace.Replace("]", "");
+                        lstRegisterIniSection.Add(strFileTextLineReplace);
 
                     }
                 }
@@ -630,6 +609,9 @@ namespace ProductMstMaintenance
 
             string strTenmIniValue = "";
 
+            // 一旦構造体インスタンスをボックス化する(SetValueはobject型じゃないとできない)
+            object boxed = idrCurrentData;
+
             // Iniファイルから各値を読み込む
             foreach (var fieldInfo in fieldInfos)
             {
@@ -653,21 +635,21 @@ namespace ProductMstMaintenance
                     // 更新用項目は空文字
                     fieldInfo.SetValue(idrCurrentData, "");
                 }
-                else if (strUniKey != "")
+                else if (strUniKey is null == false)
                 {
                     // 特殊対応項目の場合は特殊対応して設定
                     strTenmIniValue = NulltoString(GetIniValue(Inputfile.FullName
                                                              , strRegister
-                                                             , GetName(() => strUniKey)));
+                                                             , strUniKey));
                     if (fieldInfo.FieldType == typeof(int))
                     {
-                        fieldInfo.SetValue(idrCurrentData
-                                         , NulltoString(strTenmIniValue.Split(m_CON_SEPARATOR_XY)[intUniSplitVal]));
+                        fieldInfo.SetValue(boxed
+                                         , NulltoInt(strTenmIniValue.Split(m_CON_SEPARATOR_XY)[intUniSplitVal]));
                     }
                     else
                     {
-                        fieldInfo.SetValue(idrCurrentData
-                                         , NulltoInt(strTenmIniValue.Split(m_CON_SEPARATOR_XY)[intUniSplitVal]));
+                        fieldInfo.SetValue(boxed
+                                         , NulltoString(strTenmIniValue.Split(m_CON_SEPARATOR_XY)[intUniSplitVal]));
                     }
                 }
                 else
@@ -675,21 +657,24 @@ namespace ProductMstMaintenance
                     if (fieldInfo.FieldType == typeof(int))
                     {
                         // それ以外の項目は普通に設定
-                        fieldInfo.SetValue(idrCurrentData
+                        fieldInfo.SetValue(boxed
                                          , NulltoInt(GetIniValue(Inputfile.FullName
                                                                , strRegister
-                                                               , GetName(() => fieldInfo.Name))));
+                                                               , fieldInfo.Name)));
                     }
                     else
                     {
                         // それ以外の項目は普通に設定
-                        fieldInfo.SetValue(idrCurrentData
+                        fieldInfo.SetValue(boxed
                                          , NulltoString(GetIniValue(Inputfile.FullName
                                                                   , strRegister
-                                                                  , GetName(() => fieldInfo.Name))));
+                                                                  , fieldInfo.Name)));
                     }
                 }
             }
+
+            // 型の復元
+            idrCurrentData = (IniDataRegister)boxed;
 
             return idrCurrentData;
         }
@@ -787,6 +772,43 @@ namespace ProductMstMaintenance
         /// <summary>
         /// PLC情報取り込み
         /// </summary>
+        /// <param name="fiInputIni">読み込みINIファイル全種類</param>
+        private static void ProcessPLCIni(FileInfo[] fiInputIni)
+        {
+            List<IniConfigPLC> lstPLCDataToDB = new List<IniConfigPLC>();
+
+            // フォルダ内のファイルの数だけループする
+            foreach (FileInfo Inputfile in fiInputIni)
+            {
+                // 対象のファイルがロックされているか確認する
+                if (IsFileLocked(Inputfile.FullName) == true)
+                {
+                    // ファイルがロックされている場合、スキップする
+                    continue;
+                }
+
+                // PLC設定ファイルを判定する
+                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CONFIG_PLC + ".ini") == true)
+                {
+                    // PLC設定より、レジマーク間距離を取得し登録する。
+                    lstPLCDataToDB = ImportPLCIniData(Inputfile);
+
+                    // 読み込んだ値に対してチェック処理を行う
+                    if (CheckPLCIniData(lstPLCDataToDB
+                                      , Inputfile.Name) == false)
+                    {
+                        continue;
+                    }
+
+                    // 読み込んだ値をDBに登録する
+                    UPDMstProductInfoInPTC(lstPLCDataToDB);
+                }
+            }
+        }
+
+        /// <summary>
+        /// PLC情報取り込み
+        /// </summary>
         /// <param name="Inputfile">読み込みファイル情報</param>
         /// <returns></returns>
         private static List<IniConfigPLC> ImportPLCIniData(FileInfo Inputfile)
@@ -815,8 +837,8 @@ namespace ProductMstMaintenance
                     {
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", "");
-                        strFileTextLineReplace = strFileTextLine.Replace("]", "");
-                        lstPLCIniSection.Add(strFileTextLine);
+                        strFileTextLineReplace = strFileTextLineReplace.Replace("]", "");
+                        lstPLCIniSection.Add(strFileTextLineReplace);
                     }
                 }
 
@@ -872,7 +894,7 @@ namespace ProductMstMaintenance
                         fieldInfo.SetValue(icpCurrentData
                                          , NulltoInt(GetIniValue(Inputfile.FullName
                                                                , strRegister
-                                                               , GetName(() => fieldInfo.Name))));
+                                                               , fieldInfo.Name)));
                     }
                     else
                     {
@@ -880,7 +902,7 @@ namespace ProductMstMaintenance
                         fieldInfo.SetValue(icpCurrentData
                                          , NulltoString(GetIniValue(Inputfile.FullName
                                                                   , strRegister
-                                                                  , GetName(() => fieldInfo.Name))));
+                                                                  , fieldInfo.Name)));
                     }
                 }
             }
@@ -998,6 +1020,43 @@ namespace ProductMstMaintenance
 
         #region エアバッグ領域設定取込み
         /// <summary>
+        /// エアバッグ情報取り込み
+        /// </summary>
+        /// <param name="fiInputIni">読み込みINIファイル全種類</param>
+        private static void ProcessAirBagIni(FileInfo[] fiInputIni)
+        {
+            List<IniAirBagCoord> lstAirBagCoordToDB = new List<IniAirBagCoord>();
+
+            // フォルダ内のファイルの数だけループする
+            foreach (FileInfo Inputfile in fiInputIni)
+            {
+                // 対象のファイルがロックされているか確認する
+                if (IsFileLocked(Inputfile.FullName) == true)
+                {
+                    // ファイルがロックされている場合、スキップする
+                    continue;
+                }
+
+                // エアバック領域設定ファイルを判定する
+                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_AIRBAG_COORD + "[0-9][0-9]*.ini") == true)
+                {
+                    // エアバック領域設定より、列数を取得し登録する。
+                    lstAirBagCoordToDB = ImportAirBagCoordIniData(Inputfile);
+
+                    // 読み込んだ値に対してチェック処理を行う
+                    if (CheckAirbagIniData(lstAirBagCoordToDB
+                                         , Inputfile.Name) == false)
+                    {
+                        continue;
+                    }
+
+                    // 読み込んだ値をDBに登録する
+                    UPDMstProductInfoInAirbag(lstAirBagCoordToDB);
+                }
+            }
+        }
+
+        /// <summary>
         /// エアバッグ領域設定取込み取り込み
         /// </summary>
         /// <param name="Inputfile">読み込みファイル情報</param>
@@ -1028,8 +1087,8 @@ namespace ProductMstMaintenance
                     {
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", "");
-                        strFileTextLineReplace = strFileTextLine.Replace("]", "");
-                        lstRegisterIniSection.Add(strFileTextLine);
+                        strFileTextLineReplace = strFileTextLineReplace.Replace("]", "");
+                        lstRegisterIniSection.Add(strFileTextLineReplace);
 
                     }
                 }
@@ -1081,7 +1140,7 @@ namespace ProductMstMaintenance
                     {
                         int intNumberValue = NulltoInt(GetIniValue(Inputfile.FullName
                                                                  , strRegister
-                                                                 , GetName(() => fieldInfo.Name)));
+                                                                 , fieldInfo.Name));
                         if (intNumberValue > 0) 
                         {
                             intRecordCount = intRecordCount + 1;
@@ -1204,6 +1263,40 @@ namespace ProductMstMaintenance
         #endregion
 
         #region カメラ情報CSV取り込み
+        /// <summary>
+        /// カメラ情報取り込み
+        /// </summary>
+        /// <param name="fiInputCsv">読み込みcsvファイル全種類</param>
+        private static void ProcessCameraCsv(FileInfo[] fiInputCsv)
+        {
+            List<CameraCsvInfo> lstCamCsvInfo = new List<CameraCsvInfo>();
+
+            // フォルダ内のファイルの数だけループする
+            foreach (FileInfo Inputfile in fiInputCsv)
+            {
+                // 対象のファイルがロックされているか確認する
+                if (IsFileLocked(Inputfile.FullName) == true)
+                {
+                    // ファイルがロックされている場合、スキップする
+                    continue;
+                }
+
+                // カメラ情報を判定する
+                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CAMERA_INFO + ".csv") == true)
+                {
+                    // CSVファイルを取り込み、カメラ情報を取得し登録する。
+                    lstCamCsvInfo = ImportCameraCsvData(Inputfile);
+
+                    // 読み込み行が存在する場合は登録を行う
+                    if (lstCamCsvInfo.Count > 0)
+                    {
+                        // 読み込んだ値をDBに登録する
+                        UPDMstProductInfoInCamera(lstCamCsvInfo);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// カメラ情報取り込み
         /// </summary>
@@ -1417,7 +1510,41 @@ namespace ProductMstMaintenance
         }
         #endregion
 
-        #region 閾値情報CSV取り込む
+        #region 閾値情報CSV取り込み
+        /// <summary>
+        /// 閾値情報取り込み
+        /// </summary>
+        /// <param name="fiInputCsv">読み込みcsvファイル全種類</param>
+        private static void ProcessThresholdCsv(FileInfo[] fiInputCsv)
+        {
+            List<ThresholdCsvInfo> lstThresholdCsvInfo = new List<ThresholdCsvInfo>();
+
+            // フォルダ内のファイルの数だけループする
+            foreach (FileInfo Inputfile in fiInputCsv)
+            {
+                // 対象のファイルがロックされているか確認する
+                if (IsFileLocked(Inputfile.FullName) == true)
+                {
+                    // ファイルがロックされている場合、スキップする
+                    continue;
+                }
+
+                // 閾値情報を判定する。
+                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_THRESHOLD_INFO + ".csv") == true)
+                {
+                    // CSVファイルを取り込み、閾値情報を取得し登録する。
+                    lstThresholdCsvInfo = ImportThresholdCsvData(Inputfile);
+
+                    // 読み込み行が存在する場合は登録を行う
+                    if (lstThresholdCsvInfo.Count > 0)
+                    {
+                        // 読み込んだ値をDBに登録する
+                        UPDMstProductInfoInThreshold(lstThresholdCsvInfo);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// 閾値情報取り込み
         /// </summary>
@@ -1649,7 +1776,93 @@ namespace ProductMstMaintenance
         }
         #endregion
 
+        #region マスタ画像取り込む
+        /// <summary>
+        /// 閾値情報取り込み
+        /// </summary>
+        /// <param name="fiInputCsv">読み込みcsvファイル全種類</param>
+        private static void ProcessMasterPng(FileInfo[] fiInputPng)
+        {
+            string strOutFilePath = "";
+
+            // フォルダ内のファイルの数だけループする
+            foreach (FileInfo Inputfile in fiInputPng)
+            {
+                // 対象のファイルがロックされているか確認する
+                if (IsFileLocked(Inputfile.FullName) == true)
+                {
+                    // ファイルがロックされている場合、スキップする
+                    continue;
+                }
+
+                // マスタ画像を判定する。
+                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_COPY_PNG + ".png") == true)
+                {
+                    // 出力先フォルダパスを取得する
+                    if (bolGetSystemSettingValue(m_CON_MASTER_IMAGE
+                                               , out strOutFilePath) == true)
+                    {
+                        // 対象フォルダなし
+                        if (Directory.Exists(strOutFilePath) == false) 
+                        {
+                            // フォルダ作成する
+                            Directory.CreateDirectory(strOutFilePath);
+                        }
+
+                        // マスタ画像を取り込み先のフォルダにコピーする。
+                        try
+                        {
+                            Inputfile.CopyTo(strOutFilePath + @"\" + Inputfile.Name);
+                            m_intSuccesMasterImg = m_intSuccesMasterImg + 1;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("マスタ画像コピー中にエラーが発生しました。"
+                                           + Environment.NewLine
+                                           + ex.Message);
+                            m_intErrorMasterImg = m_intErrorMasterImg + 1;
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
         #region 判定理由情報CSV取り込む
+        /// <summary>
+        /// 閾値情報取り込み
+        /// </summary>
+        /// <param name="fiInputCsv">読み込みcsvファイル全種類</param>
+        private static void ProcessDecisionReasonCsv(FileInfo[] fiInputCsv)
+        {
+            List<DecisionReasonCsvInfo> lstDecisionReasonCsvInfo = new List<DecisionReasonCsvInfo>();
+
+            // フォルダ内のファイルの数だけループする
+            foreach (FileInfo Inputfile in fiInputCsv)
+            {
+                // 対象のファイルがロックされているか確認する
+                if (IsFileLocked(Inputfile.FullName) == true)
+                {
+                    // ファイルがロックされている場合、スキップする
+                    continue;
+                }
+
+                // 判定理由マスタを判定する。
+                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REASON_JUDGMENT + ".csv") == true)
+                {
+                    // CSVファイルを取り込み、判定理由マスタを登録する
+                    lstDecisionReasonCsvInfo = ImportDecisionReasonCsvData(Inputfile);
+
+                    // 読み込み行が存在する場合は登録を行う
+                    if (lstDecisionReasonCsvInfo.Count > 0)
+                    {
+                        // 読み込んだ値をDBに登録する
+                        UPDMstProductInfoInDecisionReason(lstDecisionReasonCsvInfo);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// 判定理由情報取り込み
         /// </summary>
@@ -1791,11 +2004,11 @@ namespace ProductMstMaintenance
                         // 登録処理実施
                         if (ExecRegProductInfoDecisionReason(drcCurrentData, NpgsqlCon, transaction) == true)
                         {
-                            m_intSuccesThresholdReg = m_intSuccesThresholdReg + 1;
+                            m_intSuccesDecisionReasonReg = m_intSuccesDecisionReasonReg + 1;
                         }
                         else
                         {
-                            m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
+                            m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
                         }
                     }
 
@@ -1874,11 +2087,11 @@ namespace ProductMstMaintenance
             string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff");
 
             // 出力ファイル設定
-            strOutPutFilePath = System.IO.Directory.GetCurrentDirectory() + @"\"
-                                                                          + m_CON_OUTLOGFILE_NAME
-                                                                          + "_"
-                                                                          + DateTime.Now.ToString("yyyyMMdd")
-                                                                          + ".txt";
+            strOutPutFilePath = m_strOutPutLogFolder + @"\"
+                                                     + m_CON_OUTLOGFILE_NAME
+                                                     + "_"
+                                                     + DateTime.Now.ToString("yyyyMMdd")
+                                                     + ".txt";
 
             try
             {
