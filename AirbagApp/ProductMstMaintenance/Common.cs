@@ -262,10 +262,9 @@ namespace ProductMstMaintenance
         }
 
         #region SQL定数
-        // 品番情報更新SQL
+        //品番情報更新SQL
         public const string g_CON_INSERT_MST_PRODUCT_INFO =
             @"INSERT INTO mst_product_info (file_num
-                                          , register_num
                                           , register_flg
                                           , selection_flg
                                           , product_name
@@ -321,7 +320,6 @@ namespace ProductMstMaintenance
                                           , camera_num
                                          ) VALUES ( 
                                             :file_num
-                                          , :register_num
                                           , :RegistFlg
                                           , :SelectFlg
                                           , :Name
@@ -376,8 +374,7 @@ namespace ProductMstMaintenance
                                           , :BThreadNo
                                           , :BTCamNo
                                          ) ON CONFLICT (file_num)
-                                           DO UPDATE SET register_num = :register_num
-                                                       , register_flg = :RegistFlg
+                                           DO UPDATE SET register_flg = :RegistFlg
                                                        , selection_flg = :SelectFlg
                                                        , product_name = :Name
                                                        , inspection_param_num = :ParamNo
@@ -466,17 +463,21 @@ namespace ProductMstMaintenance
                                         , line_threshold_d2 = :intLineThresholdd2
                                         , line_threshold_e1 = :intLineThresholde1
                                         , line_threshold_e2 = :intLineThresholde2
-                                        , top_point_a = :intTopPointA
-                                        , top_point_b = :intTopPointB
-                                        , top_point_c = :intTopPointC
-                                        , top_point_d = :intTopPointD
-                                        , top_point_e = :intTopPointE
+                                        , top_point_a = :strTopPointA
+                                        , top_point_b = :strTopPointB
+                                        , top_point_c = :strTopPointC
+                                        , top_point_d = :strTopPointD
+                                        , top_point_e = :strTopPointE
                                     WHERE product_name = :strProductName ";
 
-        // 判定理由マスタ更新SQL
-        public const string g_CON_UPDATE_MST_PRODUCT_INFO_DECISION_REASON =
-            @"UPDATE mst_product_info SET reason_code = :intReasonCode
-                                        , decision_reason = :strDecisionReason";
+        // 判定理由マスタ登録SQL
+        public const string g_CON_INSERT_MST_PRODUCT_INFO_DECISION_REASON =
+            @"INSERT INTO mst_decision_reason (reason_code, decision_reason)
+                                       VALUES (:intReasonCode, :strDecisionReason)";
+
+        // 判定理由マスタ削除SQL
+        public const string g_CON_DELETE_MST_PRODUCT_INFO_DECISION_REASON =
+            @"DELETE FROM mst_decision_reason";
         #endregion
     }
 }

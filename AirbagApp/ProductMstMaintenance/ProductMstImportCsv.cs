@@ -197,7 +197,6 @@ namespace ProductMstMaintenance
         private struct IniDataRegister
         {
             public string file_num;
-            public string register_num;
             public int RegistFlg;
             public int SelectFlg;
             public string Name;
@@ -275,49 +274,49 @@ namespace ProductMstMaintenance
         /// <summary>
         /// カメラ情報CSVファイル
         /// </summary>
-        private class CameraCsvInfo
+        private struct CameraCsvInfo
         {
-            public string strProductName { get; set; }
-            public int intIlluminationInformation { get; set; }
-            public int intStartRegimarkCameraNum { get; set; }
-            public int intEndRegimarkCameraNum { get; set; }
+            public string strProductName;
+            public int intIlluminationInformation;
+            public int intStartRegimarkCameraNum;
+            public int intEndRegimarkCameraNum;
         }
 
         /// <summary>
         /// 閾値情報CSVファイル
         /// </summary>
-        private class ThresholdCsvInfo
+        private struct ThresholdCsvInfo
         {
-            public string strProductName { get; set; }
-            public int intTakingCameraCnt { get; set; }
-            public int intColumnThreshold01 { get; set; }
-            public int intColumnThreshold02 { get; set; }
-            public int intColumnThreshold03 { get; set; }
-            public int intColumnThreshold04 { get; set; }
-            public int intLineThresholda1 { get; set; }
-            public int intLineThresholda2 { get; set; }
-            public int intLineThresholdb1 { get; set; }
-            public int intLineThresholdb2 { get; set; }
-            public int intLineThresholdc1 { get; set; }
-            public int intLineThresholdc2 { get; set; }
-            public int intLineThresholdd1 { get; set; }
-            public int intLineThresholdd2 { get; set; }
-            public int intLineThresholde1 { get; set; }
-            public int intLineThresholde2 { get; set; }
-            public int intTopPointA { get; set; }
-            public int intTopPointB { get; set; }
-            public int intTopPointC { get; set; }
-            public int intTopPointD { get; set; }
-            public int intTopPointE { get; set; }
+            public string strProductName;
+            public int intTakingCameraCnt;
+            public int intColumnThreshold01;
+            public int intColumnThreshold02;
+            public int intColumnThreshold03;
+            public int intColumnThreshold04;
+            public int intLineThresholda1;
+            public int intLineThresholda2;
+            public int intLineThresholdb1;
+            public int intLineThresholdb2;
+            public int intLineThresholdc1;
+            public int intLineThresholdc2;
+            public int intLineThresholdd1;
+            public int intLineThresholdd2;
+            public int intLineThresholde1;
+            public int intLineThresholde2;
+            public string strTopPointA;
+            public string strTopPointB;
+            public string strTopPointC;
+            public string strTopPointD;
+            public string strTopPointE;
         }
 
         /// <summary>
         /// 判定理由情報CSVファイル
         /// </summary>
-        private class DecisionReasonCsvInfo
+        private struct DecisionReasonCsvInfo
         {
-            public int intReasonCode { get; set; }
-            public string strDecisionReason { get; set; }
+            public int intReasonCode;
+            public string strDecisionReason;
         }
         #endregion
 
@@ -371,11 +370,11 @@ namespace ProductMstMaintenance
                 DirectoryInfo directorySearchFolder = new DirectoryInfo(txtFolder.Text);
 
                 FileInfo[] fiInputIni = directorySearchFolder.GetFiles("*.ini"
-                                                                     , SearchOption.AllDirectories);
+                                                                     , SearchOption.TopDirectoryOnly);
                 FileInfo[] fiInputCsv = directorySearchFolder.GetFiles("*.csv"
-                                                                     , SearchOption.AllDirectories);
+                                                                     , SearchOption.TopDirectoryOnly);
                 FileInfo[] fiInputPng = directorySearchFolder.GetFiles("*.png"
-                                                                     , SearchOption.AllDirectories);
+                                                                     , SearchOption.TopDirectoryOnly);
 
                 // 品番マスタ情報取り込み
                 ProcessRegisterIni(fiInputIni);
@@ -604,8 +603,6 @@ namespace ProductMstMaintenance
             // ファイルナンバーの格納を行う
             idrCurrentData.file_num =
                 SubstringRight(System.IO.Path.GetFileNameWithoutExtension(Inputfile.Name), 2);
-            // セクションナンバーの格納を行う
-            idrCurrentData.register_num = SubstringRight(strRegister, 3);
 
             string strTenmIniValue = "";
 
@@ -632,8 +629,8 @@ namespace ProductMstMaintenance
                 else if (fieldInfo.Name == m_CON_COL_RATEXUPD ||
                          fieldInfo.Name == m_CON_COL_RATEYUPD)
                 {
-                    // 更新用項目は空文字
-                    fieldInfo.SetValue(idrCurrentData, "");
+                    // 更新用項目は"0"
+                    fieldInfo.SetValue(idrCurrentData, 0);
                 }
                 else if (strUniKey is null == false)
                 {
@@ -870,12 +867,15 @@ namespace ProductMstMaintenance
 
             // 各項目の値を取得する
             // FieldInfoを取得する
-            Type typeOfMyStruct = typeof(IniDataRegister);
+            Type typeOfMyStruct = typeof(IniConfigPLC);
             System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
 
             // セクションナンバーの格納を行う
             int intSection = NulltoInt(SubstringRight(strRegister, 2)) - 1;
             icpCurrentData.KIND = String.Format("{0:D2}", intSection);
+
+            // 一旦構造体インスタンスをボックス化する(SetValueはobject型じゃないとできない)
+            object boxed = icpCurrentData;
 
             // Iniファイルから各値を読み込む
             foreach (var fieldInfo in fieldInfos)
@@ -891,7 +891,7 @@ namespace ProductMstMaintenance
                     if (fieldInfo.FieldType == typeof(int))
                     {
                         // それ以外の項目は普通に設定
-                        fieldInfo.SetValue(icpCurrentData
+                        fieldInfo.SetValue(boxed
                                          , NulltoInt(GetIniValue(Inputfile.FullName
                                                                , strRegister
                                                                , fieldInfo.Name)));
@@ -899,13 +899,15 @@ namespace ProductMstMaintenance
                     else
                     {
                         // それ以外の項目は普通に設定
-                        fieldInfo.SetValue(icpCurrentData
+                        fieldInfo.SetValue(boxed
                                          , NulltoString(GetIniValue(Inputfile.FullName
                                                                   , strRegister
                                                                   , fieldInfo.Name)));
                     }
                 }
             }
+
+            icpCurrentData = (IniConfigPLC)boxed;
 
             return icpCurrentData;
         }
@@ -1147,7 +1149,7 @@ namespace ProductMstMaintenance
                         }
                     }
 
-                    fieldInfo.SetValue(iabCurrentData, intRecordCount);
+                    iabCurrentData.Number = intRecordCount;
                 }
             }
 
@@ -1677,11 +1679,11 @@ namespace ProductMstMaintenance
             tciData.intLineThresholdd2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_D2]);
             tciData.intLineThresholde1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_E1]);
             tciData.intLineThresholde2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_E2]);
-            tciData.intTopPointA = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_A]);
-            tciData.intTopPointB = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_B]);
-            tciData.intTopPointC = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_C]);
-            tciData.intTopPointD = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_D]);
-            tciData.intTopPointE = NulltoInt(stArrayData[m_CON_COL_TOP_POINT_E]);
+            tciData.strTopPointA = stArrayData[m_CON_COL_TOP_POINT_A];
+            tciData.strTopPointB = stArrayData[m_CON_COL_TOP_POINT_B];
+            tciData.strTopPointC = stArrayData[m_CON_COL_TOP_POINT_C];
+            tciData.strTopPointD = stArrayData[m_CON_COL_TOP_POINT_D];
+            tciData.strTopPointE = stArrayData[m_CON_COL_TOP_POINT_E];
 
 
             return true;
@@ -1795,33 +1797,29 @@ namespace ProductMstMaintenance
                     continue;
                 }
 
-                // マスタ画像を判定する。
-                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_COPY_PNG + ".png") == true)
+                // 出力先フォルダパスを取得する
+                if (bolGetSystemSettingValue(m_CON_MASTER_IMAGE
+                                           , out strOutFilePath) == true)
                 {
-                    // 出力先フォルダパスを取得する
-                    if (bolGetSystemSettingValue(m_CON_MASTER_IMAGE
-                                               , out strOutFilePath) == true)
+                    // 対象フォルダなし
+                    if (Directory.Exists(strOutFilePath) == false)
                     {
-                        // 対象フォルダなし
-                        if (Directory.Exists(strOutFilePath) == false) 
-                        {
-                            // フォルダ作成する
-                            Directory.CreateDirectory(strOutFilePath);
-                        }
+                        // フォルダ作成する
+                        Directory.CreateDirectory(strOutFilePath);
+                    }
 
-                        // マスタ画像を取り込み先のフォルダにコピーする。
-                        try
-                        {
-                            Inputfile.CopyTo(strOutFilePath + @"\" + Inputfile.Name);
-                            m_intSuccesMasterImg = m_intSuccesMasterImg + 1;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("マスタ画像コピー中にエラーが発生しました。"
-                                           + Environment.NewLine
-                                           + ex.Message);
-                            m_intErrorMasterImg = m_intErrorMasterImg + 1;
-                        }
+                    // マスタ画像を取り込み先のフォルダにコピーする。
+                    try
+                    {
+                        Inputfile.CopyTo(strOutFilePath + @"\" + Inputfile.Name);
+                        m_intSuccesMasterImg = m_intSuccesMasterImg + 1;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("マスタ画像コピー中にエラーが発生しました。"
+                                       + Environment.NewLine
+                                       + ex.Message);
+                        m_intErrorMasterImg = m_intErrorMasterImg + 1;
                     }
                 }
             }
@@ -1999,6 +1997,9 @@ namespace ProductMstMaintenance
 
                 using (var transaction = NpgsqlCon.BeginTransaction())
                 {
+                    // テーブルの全件削除を行う
+                    ExecDelProductInfoDecisionReason(NpgsqlCon, transaction);
+
                     foreach (DecisionReasonCsvInfo drcCurrentData in lstDecisionReasonCsvToDB)
                     {
                         // 登録処理実施
@@ -2019,7 +2020,41 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
-        /// 閾値更新SQL処理
+        /// 特別判定理由削除SQL処理
+        /// </summary>
+        /// <param name="NpgsqlCon"></param>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
+        private static Boolean ExecDelProductInfoDecisionReason(NpgsqlConnection NpgsqlCon
+                                                              , NpgsqlTransaction transaction)
+        {
+            try
+            {
+                // SQL文を作成する
+                string strCreateSql = g_CON_DELETE_MST_PRODUCT_INFO_DECISION_REASON;
+
+                // SQLコマンドに各パラメータを設定する
+                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+
+                // sqlを実行する
+                if (ExecTranSQL(command, transaction) == false)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("判定理由削除時にエラーが発生しました。"
+                               + Environment.NewLine
+                               + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 特別判定理由更新SQL処理
         /// </summary>
         /// <param name="lstUserData">読み込みデータ一覧</param>
         /// <returns></returns>
@@ -2030,7 +2065,7 @@ namespace ProductMstMaintenance
             try
             {
                 // SQL文を作成する
-                string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_DECISION_REASON;
+                string strCreateSql = g_CON_INSERT_MST_PRODUCT_INFO_DECISION_REASON;
 
                 // SQLコマンドに各パラメータを設定する
                 var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
@@ -2065,7 +2100,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                MessageBox.Show("判定理由更新時にエラーが発生しました。"
+                MessageBox.Show("判定理由登録時にエラーが発生しました。"
                                + Environment.NewLine
                                + ex.Message);
                 return false;
