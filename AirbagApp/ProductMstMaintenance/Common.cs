@@ -175,7 +175,8 @@ namespace ProductMstMaintenance
         /// <param name="transaction">トランザクション情報</param>
         /// <returns></returns>
         public static Boolean ExecTranSQL(NpgsqlCommand nscCommand
-                                        , NpgsqlTransaction transaction)
+                                        , NpgsqlTransaction transaction
+                                        , string strErrorMsg)
         {
             try
             {
@@ -184,10 +185,8 @@ namespace ProductMstMaintenance
             }
             catch (NpgsqlException ex)
             {
+                WriteEventLog(g_CON_LEVEL_ERROR, strErrorMsg + ex.Message);
                 transaction.Rollback();
-                MessageBox.Show("DB更新時にエラーが発生しました。"
-                              + Environment.NewLine
-                              + ex.Message);
                 return false;
             }
         }

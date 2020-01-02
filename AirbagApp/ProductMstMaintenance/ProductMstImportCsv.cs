@@ -491,19 +491,33 @@ namespace ProductMstMaintenance
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
+                    // ログファイルにエラー出力を行う
+                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
                     continue;
                 }
 
                 // 品番情報ファイルを判定する
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.ini") == true)
                 {
-                    // 品番情報ファイルの場合、取り込みを行う
-                    lstDataRegistersToDB = ImportRegisterIniData(Inputfile);
+                    try
+                    {
+                        // 品番情報ファイルの場合、取り込みを行う
+                        lstDataRegistersToDB = ImportRegisterIniData(Inputfile);
+                    }
+                    catch (Exception ex) 
+                    {
+                        // ログファイルにエラー出力を行う
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
+                        continue;
+                    }
 
                     // 読み込んだ値に対してチェック処理を行う
                     if (CheckRegisterIniData(lstDataRegistersToDB
                                            , Inputfile.Name) == false)
                     {
+                        m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
                         continue;
                     }
 
@@ -511,6 +525,14 @@ namespace ProductMstMaintenance
                     InsertMstProductInfo(lstDataRegistersToDB);
                 }
             }
+
+            // ログファイル結果出力を行う
+            WriteEventLog(g_CON_LEVEL_INFO,
+                "取り込み処理が終了しました。" 
+              + "品番登録　取り込み件数：" 
+              + (m_intSuccesRegProductInfo + m_intErrorRegProductInfo) + "件　正常：" 
+              + m_intSuccesRegProductInfo + "件　異常：" 
+              + m_intErrorRegProductInfo + "件 ");
         }
 
         /// <summary>
@@ -577,7 +599,7 @@ namespace ProductMstMaintenance
             // 入力項目が0件の場合エラー
             if (idrCurrentData.Count == 0)
             {
-                OutPutImportLog("品番ファイル内0件", strFileName);
+                OutPutImportLog("品番ファイルのデータが存在しません", strFileName);
                 return false;
             }
 
@@ -748,7 +770,9 @@ namespace ProductMstMaintenance
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command, transaction) == false)
+                if (ExecTranSQL(command
+                              , transaction
+                              , "品番登録情報テーブルの更新に失敗しました。") == false)
                 {
                     return false;
                 }
@@ -757,9 +781,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                MessageBox.Show("品番情報登録時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, "品番情報登録時にエラーが発生しました " + ex.Message);
                 return false;
             }
         }
@@ -781,19 +803,32 @@ namespace ProductMstMaintenance
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
+                    // ログファイルにエラー出力を行う
+                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    m_intErrorRegPTC = m_intErrorRegPTC + 1;
                     continue;
                 }
 
                 // PLC設定ファイルを判定する
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CONFIG_PLC + ".ini") == true)
                 {
-                    // PLC設定より、レジマーク間距離を取得し登録する。
-                    lstPLCDataToDB = ImportPLCIniData(Inputfile);
+                    try
+                    {
+                        // PLC設定より、レジマーク間距離を取得し登録する。
+                        lstPLCDataToDB = ImportPLCIniData(Inputfile);
+                    }
+                    catch (Exception ex) 
+                    {
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        m_intErrorRegPTC = m_intErrorRegPTC + 1;
+                        continue;
+                    }
 
                     // 読み込んだ値に対してチェック処理を行う
                     if (CheckPLCIniData(lstPLCDataToDB
                                       , Inputfile.Name) == false)
                     {
+                        m_intErrorRegPTC = m_intErrorRegPTC + 1;
                         continue;
                     }
 
@@ -801,6 +836,14 @@ namespace ProductMstMaintenance
                     UPDMstProductInfoInPTC(lstPLCDataToDB);
                 }
             }
+
+            // ログファイル結果出力を行う
+            WriteEventLog(g_CON_LEVEL_INFO,
+                "取り込み処理が終了しました。"
+              + "PLC設定　取り込み件数："
+              + (m_intSuccesRegPTC + m_intErrorRegPTC) + "件　正常："
+              + m_intSuccesRegPTC + "件　異常："
+              + m_intErrorRegPTC + "件 ");
         }
 
         /// <summary>
@@ -924,7 +967,7 @@ namespace ProductMstMaintenance
             // 入力項目が0件の場合エラー
             if (lstCurrentData.Count == 0)
             {
-                OutPutImportLog("PLCファイル内0件", strFileName);
+                OutPutImportLog("PLCファイルのデータが存在しません", strFileName);
                 return false;
             }
 
@@ -1003,7 +1046,9 @@ namespace ProductMstMaintenance
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command, transaction) == false)
+                if (ExecTranSQL(command
+                              , transaction
+                              , "品番登録情報テーブルの更新に失敗しました。") == false)
                 {
                     return false;
                 }
@@ -1012,9 +1057,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                MessageBox.Show("PTC更新時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, "PTC更新時にエラーが発生しました。" + ex.Message);
                 return false;
             }
         }
@@ -1036,19 +1079,32 @@ namespace ProductMstMaintenance
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
+                    // ログファイルにエラー出力を行う
+                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
                     continue;
                 }
 
                 // エアバック領域設定ファイルを判定する
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_AIRBAG_COORD + "[0-9][0-9]*.ini") == true)
                 {
-                    // エアバック領域設定より、列数を取得し登録する。
-                    lstAirBagCoordToDB = ImportAirBagCoordIniData(Inputfile);
+                    try
+                    {
+                        // エアバック領域設定より、列数を取得し登録する。
+                        lstAirBagCoordToDB = ImportAirBagCoordIniData(Inputfile);
+                    }
+                    catch (Exception ex)
+                    {
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
+                        continue;
+                    }
 
                     // 読み込んだ値に対してチェック処理を行う
                     if (CheckAirbagIniData(lstAirBagCoordToDB
                                          , Inputfile.Name) == false)
                     {
+                        m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
                         continue;
                     }
 
@@ -1056,6 +1112,14 @@ namespace ProductMstMaintenance
                     UPDMstProductInfoInAirbag(lstAirBagCoordToDB);
                 }
             }
+
+            // ログファイル結果出力を行う
+            WriteEventLog(g_CON_LEVEL_INFO,
+                "取り込み処理が終了しました。"
+              + "エアバッグ領域設定　取り込み件数："
+              + (m_intSuccesRegAirBag + m_intErrorRegAirBag) + "件　正常："
+              + m_intSuccesRegAirBag + "件　異常："
+              + m_intErrorRegAirBag + "件 ");
         }
 
         /// <summary>
@@ -1168,7 +1232,7 @@ namespace ProductMstMaintenance
             // 入力項目が0件の場合エラー
             if (lstCurrentData.Count == 0)
             {
-                OutPutImportLog("エアバッグファイル内0件", strFileName);
+                OutPutImportLog("エアバッグファイルのデータが存在しません", strFileName);
                 return false;
             }
 
@@ -1247,7 +1311,9 @@ namespace ProductMstMaintenance
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command, transaction) == false)
+                if (ExecTranSQL(command
+                              , transaction
+                              , "品番登録情報テーブルの更新に失敗しました。") == false)
                 {
                     return false;
                 }
@@ -1256,9 +1322,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                MessageBox.Show("エアバッグ更新時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, "エアバッグ更新時にエラーが発生しました。" + ex.Message);
                 return false;
             }
         }
@@ -1280,14 +1344,26 @@ namespace ProductMstMaintenance
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
+                    // ログファイルにエラー出力を行う
+                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    m_intErrorCameraReg = m_intErrorCameraReg + 1;
                     continue;
                 }
 
                 // カメラ情報を判定する
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CAMERA_INFO + ".csv") == true)
                 {
-                    // CSVファイルを取り込み、カメラ情報を取得し登録する。
-                    lstCamCsvInfo = ImportCameraCsvData(Inputfile);
+                    try
+                    {
+                        // CSVファイルを取り込み、カメラ情報を取得し登録する。
+                        lstCamCsvInfo = ImportCameraCsvData(Inputfile);
+                    }
+                    catch (Exception ex)
+                    {
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        m_intErrorCameraReg = m_intErrorCameraReg + 1;
+                        continue;
+                    }
 
                     // 読み込み行が存在する場合は登録を行う
                     if (lstCamCsvInfo.Count > 0)
@@ -1297,6 +1373,14 @@ namespace ProductMstMaintenance
                     }
                 }
             }
+
+            // ログファイル結果出力を行う
+            WriteEventLog(g_CON_LEVEL_INFO,
+                "取り込み処理が終了しました。"
+              + "カメラ情報　取り込み件数："
+              + (m_intSuccesCameraReg + m_intErrorCameraReg) + "件　正常："
+              + m_intSuccesCameraReg + "件　異常："
+              + m_intErrorCameraReg + "件 ");
         }
 
         /// <summary>
@@ -1311,7 +1395,6 @@ namespace ProductMstMaintenance
             CameraCsvInfo cciCurrentData = new CameraCsvInfo();
 
             int intRowCount = 0;
-            int intErrorCount = 0;
 
             // ファイル読み込み処理を行う
             using (StreamReader sr = new StreamReader(Inputfile.FullName
@@ -1335,7 +1418,7 @@ namespace ProductMstMaintenance
                                         , Inputfile.Name
                                         , out cciCurrentData) == false)
                     {
-                        intErrorCount = intErrorCount + 1;
+                        m_intErrorCameraReg = m_intErrorCameraReg + 1;
                         continue;
                     }
                     else 
@@ -1362,44 +1445,23 @@ namespace ProductMstMaintenance
         {
             cciCurrentData = new CameraCsvInfo();
 
-            // CSVを読み込む
-            if (SetCameraInfoCsv(strFileTextLine, out cciCurrentData) == false)
-            {
-                // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の列数が不足しています", strFileName);
-                return false;
-            }
-
-            // 入力データチェックを行う
-            if (InputDataCheckCamera(cciCurrentData, intRowCount) == false)
-            {
+            // データチェック＆CSVを読み込む
+            if (SetCameraInfoCsv(strFileTextLine, out cciCurrentData, intRowCount) == false)
+            { 
                 return false;
             }
 
             return true;
         }
 
-
-        /// <summary>
-        /// カメラ入力チェック
-        /// </summary>
-        /// <param name="cciCheckData">読み込みユーザ情報リスト</param>
-        /// <param name="intRowCount">対象行番号</param>
-        /// <returns></returns>
-        private static Boolean InputDataCheckCamera(CameraCsvInfo cciCheckData
-                                                  , int intRowCount)
-        {
-
-
-            return true;
-        }
         /// <summary>
         /// ＣＳＶ→構造体格納（カメラ情報CSV）
         /// </summary>
         /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
         /// <returns></returns>
         private static Boolean SetCameraInfoCsv(string strFileReadLine
-                                              , out CameraCsvInfo cciData)
+                                              , out CameraCsvInfo cciData
+                                              , int intRowCount)
         {
             string[] stArrayData;
 
@@ -1408,13 +1470,12 @@ namespace ProductMstMaintenance
             // 半角スペース区切りで分割して配列に格納する
             stArrayData = strFileReadLine.Split(',');
 
-            // 列数チェック
-            if (stArrayData.Length <= m_CON_COL_END_REGIMARK_CAMERA_NUM)
+            if (InputDataCheckCamera(stArrayData, intRowCount, strFileReadLine) == false) 
             {
                 return false;
             }
 
-            // CSVの各項目を構造体へ格納する
+            // データに問題がない場合、CSVの各項目を構造体へ格納する
             cciData.strProductName = stArrayData[m_CON_COL_PRODUCT_NAME];
             cciData.intIlluminationInformation = NulltoInt(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION]);
             cciData.intStartRegimarkCameraNum = NulltoInt(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM]);
@@ -1422,6 +1483,56 @@ namespace ProductMstMaintenance
 
             return true;
         }
+
+        /// <summary>
+        /// カメラ入力チェック
+        /// </summary>
+        /// <param name="cciCheckData">読み込みユーザ情報リスト</param>
+        /// <param name="intRowCount">対象行番号</param>
+        /// <returns></returns>
+        private static Boolean InputDataCheckCamera(string[] stArrayData
+                                                  , int intRowCount
+                                                  , string strFileReadLine)
+        {
+            // 各項目のチェックを行う
+            // 列数チェック
+            if (stArrayData.Length <= m_CON_COL_END_REGIMARK_CAMERA_NUM)
+            {
+                // ログファイルにエラー出力を行う
+                WriteEventLog(g_CON_LEVEL_ERROR, intRowCount + "行目のファイルレイアウトが不正です。" + strFileReadLine);
+                return false;
+            }
+
+            // 文字後列項目
+            // 必須入力チェック
+            if (CheckRequiredInput(stArrayData[m_CON_COL_PRODUCT_NAME], "品名", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION], "照度情報", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM], "開始レジマークカメラ番号", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM], "終了レジマークカメラ番号", intRowCount, strFileReadLine))
+            {
+                return false;
+            }
+
+            // 桁数入力チェック
+            if (CheckLengthInput(stArrayData[m_CON_COL_PRODUCT_NAME], "品名", intRowCount, 1, 16, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION], "照度情報", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM], "開始レジマークカメラ番号", intRowCount, 1, 2, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM], "終了レジマークカメラ番号", intRowCount, 1, 2, strFileReadLine) == false)
+            {
+                return false;
+            }
+
+            // 最大範囲入力チェック
+            if (CheckRangeInput(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION], "照度情報", intRowCount, 0, 255, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM], "開始レジマークカメラ番号", intRowCount, 1, 26, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM], "終了レジマークカメラ番号", intRowCount, 1, 26, strFileReadLine) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
 
         /// <summary>
         /// カメラ情報テーブル登録処理
@@ -1495,7 +1606,9 @@ namespace ProductMstMaintenance
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command, transaction) == false)
+                if (ExecTranSQL(command
+                              , transaction
+                              , "品番登録情報テーブルの更新に失敗しました。") == false)
                 {
                     return false;
                 }
@@ -1504,9 +1617,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Camera更新時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, "カメラ情報更新時にエラーが発生しました。" + ex.Message);
                 return false;
             }
         }
@@ -1528,14 +1639,26 @@ namespace ProductMstMaintenance
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
+                    // ログファイルにエラー出力を行う
+                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
                     continue;
                 }
 
                 // 閾値情報を判定する。
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_THRESHOLD_INFO + ".csv") == true)
                 {
-                    // CSVファイルを取り込み、閾値情報を取得し登録する。
-                    lstThresholdCsvInfo = ImportThresholdCsvData(Inputfile);
+                    try
+                    {
+                        // CSVファイルを取り込み、閾値情報を取得し登録する。
+                        lstThresholdCsvInfo = ImportThresholdCsvData(Inputfile);
+                    }
+                    catch (Exception ex) 
+                    {
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
+                        continue;
+                    }
 
                     // 読み込み行が存在する場合は登録を行う
                     if (lstThresholdCsvInfo.Count > 0)
@@ -1545,6 +1668,14 @@ namespace ProductMstMaintenance
                     }
                 }
             }
+
+            // ログファイル結果出力を行う
+            WriteEventLog(g_CON_LEVEL_INFO,
+                "取り込み処理が終了しました。"
+              + "閾値情報　取り込み件数："
+              + (m_intSuccesThresholdReg + m_intErrorThresholdReg) + "件　正常："
+              + m_intSuccesThresholdReg + "件　異常："
+              + m_intErrorThresholdReg + "件 ");
         }
 
         /// <summary>
@@ -1559,7 +1690,6 @@ namespace ProductMstMaintenance
             ThresholdCsvInfo tciCurrentData = new ThresholdCsvInfo();
 
             int intRowCount = 0;
-            int intErrorCount = 0;
 
             // ファイル読み込み処理を行う
             using (StreamReader sr = new StreamReader(Inputfile.FullName
@@ -1583,7 +1713,7 @@ namespace ProductMstMaintenance
                                            , Inputfile.Name
                                            , out tciCurrentData) == false)
                     {
-                        intErrorCount = intErrorCount + 1;
+                        m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
                         continue;
                     }
                     else
@@ -1611,15 +1741,7 @@ namespace ProductMstMaintenance
             tciCurrentData = new ThresholdCsvInfo();
 
             // CSVを読み込む
-            if (SetThresholdInfoCsv(strFileTextLine, out tciCurrentData) == false)
-            {
-                // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の列数が不足しています", strFileName);
-                return false;
-            }
-
-            // 入力データチェックを行う
-            if (InputDataCheckThreshold(tciCurrentData, intRowCount) == false)
+            if (SetThresholdInfoCsv(strFileTextLine, out tciCurrentData, intRowCount) == false)
             {
                 return false;
             }
@@ -1633,10 +1755,72 @@ namespace ProductMstMaintenance
         /// <param name="tciCheckData">読み込み閾値情報リスト</param>
         /// <param name="intRowCount">対象行番号</param>
         /// <returns></returns>
-        private static Boolean InputDataCheckThreshold(ThresholdCsvInfo tciCheckData
-                                                     , int intRowCount)
+        private static Boolean InputDataCheckThreshold(string[] stArrayData
+                                                     , int intRowCount
+                                                     , string strFileReadLine)
         {
+            // 各項目のチェックを行う
+            // 列数チェック
+            if (stArrayData.Length <= m_CON_COL_TOP_POINT_E)
+            {
+                // ログファイルにエラー出力を行う
+                WriteEventLog(g_CON_LEVEL_ERROR, intRowCount + "行目のファイルレイアウトが不正です。" + strFileReadLine);
+                return false;
+            }
 
+            // 文字後列項目
+            // 必須入力チェック
+            if (CheckRequiredInput(stArrayData[m_CON_COL_PRODUCT_NAME_THRESHOLD], "品名", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, strFileReadLine) == false)
+            {
+                return false;
+            }
+
+            // 桁数入力チェック
+            if (CheckLengthInput(stArrayData[m_CON_COL_PRODUCT_NAME_THRESHOLD], "品名", intRowCount, 1, 16, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 2, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04], "列閾値04", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A1], "行閾値A1", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A2], "行閾値A2", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B1], "行閾値B1", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B2], "行閾値B2", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C1], "行閾値C1", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C2], "行閾値C2", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D1], "行閾値D1", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D2], "行閾値D2", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E1], "行閾値E1", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E2], "行閾値E2", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_A], "頂点座標A", intRowCount, 1, 10, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_B], "頂点座標B", intRowCount, 1, 10, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_C], "頂点座標C", intRowCount, 1, 10, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_D], "頂点座標D", intRowCount, 1, 10, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_E], "頂点座標E", intRowCount, 1, 10, strFileReadLine) == false)
+            {
+                return false;
+            }
+
+            // 最大範囲入力チェック
+            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 26, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04], "列閾値04", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A1], "行閾値A1", intRowCount, 1, 740, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A2], "行閾値A2", intRowCount, 1, 740, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B1], "行閾値B1", intRowCount, 1, 740, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B2], "行閾値B2", intRowCount, 1, 740, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C1], "行閾値C1", intRowCount, 1, 740, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C2], "行閾値C2", intRowCount, 1, 740, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D1], "行閾値D1", intRowCount, 1, 740, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D2], "行閾値D2", intRowCount, 1, 740, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E1], "行閾値E1", intRowCount, 1, 740, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E2], "行閾値E2", intRowCount, 1, 740, strFileReadLine) == false)
+            {
+                return false;
+            }
 
             return true;
         }
@@ -1647,7 +1831,8 @@ namespace ProductMstMaintenance
         /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
         /// <returns></returns>
         private static Boolean SetThresholdInfoCsv(string strFileReadLine
-                                                 , out ThresholdCsvInfo tciData)
+                                                 , out ThresholdCsvInfo tciData
+                                                 , int intRowCount)
         {
             string[] stArrayData;
 
@@ -1656,8 +1841,8 @@ namespace ProductMstMaintenance
             // 半角スペース区切りで分割して配列に格納する
             stArrayData = strFileReadLine.Split(',');
 
-            // 列数チェック
-            if (stArrayData.Length <= m_CON_COL_TOP_POINT_E)
+            // 入力チェック
+            if (InputDataCheckThreshold(stArrayData, intRowCount, strFileReadLine) == false)
             {
                 return false;
             }
@@ -1684,7 +1869,6 @@ namespace ProductMstMaintenance
             tciData.strTopPointC = stArrayData[m_CON_COL_TOP_POINT_C];
             tciData.strTopPointD = stArrayData[m_CON_COL_TOP_POINT_D];
             tciData.strTopPointE = stArrayData[m_CON_COL_TOP_POINT_E];
-
 
             return true;
         }
@@ -1761,7 +1945,9 @@ namespace ProductMstMaintenance
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command, transaction) == false)
+                if (ExecTranSQL(command
+                              , transaction
+                              , "品番登録情報テーブルの更新に失敗しました。") == false)
                 {
                     return false;
                 }
@@ -1770,9 +1956,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Threshold更新時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, "閾値情報更新時にエラーが発生しました。" + ex.Message);
                 return false;
             }
         }
@@ -2144,6 +2328,112 @@ namespace ProductMstMaintenance
             {
                 return;
             }
+        }
+        #endregion
+
+        #region チェック処理
+        /// <summary>
+        /// 必須入力チェック
+        /// </summary>
+        /// <param name="strCheckData">チェック対象テキスト</param>
+        /// <param name="strItemName">チェック対象項目名</param>
+        /// <param name="intRowCount">チェック対象行番号</param>
+        /// <param name="intMaxLength">項目最大長</param>
+        /// <returns></returns>
+        private static Boolean CheckRequiredInput(String strCheckData
+                                                , String strItemName
+                                                , Int32 intRowCount
+                                                , string strTextLine)
+        {
+            // 必須入力チェック
+            if (strCheckData is null || strCheckData == "")
+            {
+                // ログファイルにエラー出力を行う
+                WriteEventLog(g_CON_LEVEL_ERROR, intRowCount + "行目　" 
+                                               + strItemName + "が未設定です。"
+                                               + strItemName + "を設定してください。"
+                                               + strTextLine);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 桁数チェック
+        /// </summary>
+        /// <param name="strCheckData">チェック対象テキスト</param>
+        /// <param name="strItemName">チェック対象項目名</param>
+        /// <param name="intRowCount">チェック対象行番号</param>
+        /// <param name="intMaxLength">項目最大長</param>
+        /// <returns></returns>
+        private static Boolean CheckLengthInput(String strCheckData
+                                              , String strItemName
+                                              , Int32 intRowCount
+                                              , Int32 intMinLength
+                                              , Int32 intMaxLength
+                                              , string strTextLine)
+        {
+            // 未入力データの場合はチェックしない
+            // ※未入力データは必須入力チェックではじく
+            if (strCheckData == "") 
+            {
+                return true;
+            }
+
+            // 桁数チェック
+            if (strCheckData.Length < intMinLength || strCheckData.Length > intMaxLength)
+            {
+                // ログファイルにエラー出力を行う
+                WriteEventLog(g_CON_LEVEL_ERROR, intRowCount + "行目　"
+                                               + strItemName + "の桁数が不正です。"
+                                               + intMinLength.ToString() + "～" + intMaxLength.ToString() 
+                                               + "の範囲で設定してください "
+                                               + strTextLine);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 範囲チェック
+        /// </summary>
+        /// <param name="strCheckData">チェック対象テキスト</param>
+        /// <param name="strItemName">チェック対象項目名</param>
+        /// <param name="intRowCount">チェック対象行番号</param>
+        /// <param name="intMinRange">項目最小範囲</param>
+        /// <param name="intMaxRange">項目最大範囲</param>
+        /// <returns></returns>
+        private static Boolean CheckRangeInput(String strCheckData
+                                             , String strItemName
+                                             , Int32 intRowCount
+                                             , Int32 intMinRange
+                                             , Int32 intMaxRange
+                                             , string strTextLine)
+        {
+            // 未入力データの場合はチェックしない
+            // ※未入力データは必須入力チェックではじく
+            if (strCheckData == "")
+            {
+                return true;
+            }
+
+            int intCheckData = NulltoInt(strCheckData);
+
+            // 桁数チェック
+            if (intCheckData < intMinRange || intCheckData > intMaxRange)
+            {
+                // ログファイルにエラー出力を行う
+                WriteEventLog(g_CON_LEVEL_ERROR, intRowCount + "行目　"
+                                               + strItemName + "の値が不正です。"
+                                               + intMinRange.ToString() + "～" + intMaxRange.ToString()
+                                               + "の範囲で設定してください "
+                                               + strTextLine);
+                return false;
+            }
+
+            return true;
         }
         #endregion
     }
