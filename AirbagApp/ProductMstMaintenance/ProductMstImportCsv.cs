@@ -527,12 +527,10 @@ namespace ProductMstMaintenance
             }
 
             // ログファイル結果出力を行う
-            WriteEventLog(g_CON_LEVEL_INFO,
-                "取り込み処理が終了しました。" 
-              + "品番登録　取り込み件数：" 
-              + (m_intSuccesRegProductInfo + m_intErrorRegProductInfo) + "件　正常：" 
-              + m_intSuccesRegProductInfo + "件　異常：" 
-              + m_intErrorRegProductInfo + "件 ");
+            WriteEventLog(g_CON_LEVEL_INFO, "取り込み処理が終了しました。" 
+                                          + "品番登録　取り込み件数：" + (m_intSuccesRegProductInfo + m_intErrorRegProductInfo) + "件　"
+                                          + "正常：" + m_intSuccesRegProductInfo + "件　" 
+                                          + "異常：" + m_intErrorRegProductInfo + "件 ");
         }
 
         /// <summary>
@@ -838,12 +836,10 @@ namespace ProductMstMaintenance
             }
 
             // ログファイル結果出力を行う
-            WriteEventLog(g_CON_LEVEL_INFO,
-                "取り込み処理が終了しました。"
-              + "PLC設定　取り込み件数："
-              + (m_intSuccesRegPTC + m_intErrorRegPTC) + "件　正常："
-              + m_intSuccesRegPTC + "件　異常："
-              + m_intErrorRegPTC + "件 ");
+            WriteEventLog(g_CON_LEVEL_INFO, "取り込み処理が終了しました。"
+                                          + "PLC設定　取り込み件数：" + (m_intSuccesRegPTC + m_intErrorRegPTC) + "件　"
+                                          + "正常：" + m_intSuccesRegPTC + "件　"
+                                          + "異常：" + m_intErrorRegPTC + "件 ");
         }
 
         /// <summary>
@@ -1114,12 +1110,10 @@ namespace ProductMstMaintenance
             }
 
             // ログファイル結果出力を行う
-            WriteEventLog(g_CON_LEVEL_INFO,
-                "取り込み処理が終了しました。"
-              + "エアバッグ領域設定　取り込み件数："
-              + (m_intSuccesRegAirBag + m_intErrorRegAirBag) + "件　正常："
-              + m_intSuccesRegAirBag + "件　異常："
-              + m_intErrorRegAirBag + "件 ");
+            WriteEventLog(g_CON_LEVEL_INFO, "取り込み処理が終了しました。"
+                                          + "エアバッグ領域設定　取り込み件数：" + (m_intSuccesRegAirBag + m_intErrorRegAirBag) + "件　"
+                                          + "正常：" + m_intSuccesRegAirBag + "件　"
+                                          + "異常：" + m_intErrorRegAirBag + "件 ");
         }
 
         /// <summary>
@@ -1375,12 +1369,10 @@ namespace ProductMstMaintenance
             }
 
             // ログファイル結果出力を行う
-            WriteEventLog(g_CON_LEVEL_INFO,
-                "取り込み処理が終了しました。"
-              + "カメラ情報　取り込み件数："
-              + (m_intSuccesCameraReg + m_intErrorCameraReg) + "件　正常："
-              + m_intSuccesCameraReg + "件　異常："
-              + m_intErrorCameraReg + "件 ");
+            WriteEventLog(g_CON_LEVEL_INFO, "取り込み処理が終了しました。"
+                                          + "カメラ情報　取り込み件数：" + (m_intSuccesCameraReg + m_intErrorCameraReg) + "件　" 
+                                          + "正常：" + m_intSuccesCameraReg + "件　"
+                                          + "異常：" + m_intErrorCameraReg + "件 ");
         }
 
         /// <summary>
@@ -1670,12 +1662,10 @@ namespace ProductMstMaintenance
             }
 
             // ログファイル結果出力を行う
-            WriteEventLog(g_CON_LEVEL_INFO,
-                "取り込み処理が終了しました。"
-              + "閾値情報　取り込み件数："
-              + (m_intSuccesThresholdReg + m_intErrorThresholdReg) + "件　正常："
-              + m_intSuccesThresholdReg + "件　異常："
-              + m_intErrorThresholdReg + "件 ");
+            WriteEventLog(g_CON_LEVEL_INFO, "取り込み処理が終了しました。"
+                                          + "閾値情報　取り込み件数：" + (m_intSuccesThresholdReg + m_intErrorThresholdReg) + "件　"
+                                          + "正常：" + m_intSuccesThresholdReg + "件　" 
+                                          + "異常：" + m_intErrorThresholdReg + "件 ");
         }
 
         /// <summary>
@@ -1970,14 +1960,20 @@ namespace ProductMstMaintenance
         private static void ProcessMasterPng(FileInfo[] fiInputPng)
         {
             string strOutFilePath = "";
+            int intFileCount = 0;
 
             // フォルダ内のファイルの数だけループする
             foreach (FileInfo Inputfile in fiInputPng)
             {
+                intFileCount = intFileCount + 1;
+
                 // 対象のファイルがロックされているか確認する
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
+                    // ログファイルにエラー出力を行う
+                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    m_intErrorMasterImg = m_intErrorMasterImg + 1;
                     continue;
                 }
 
@@ -2000,13 +1996,18 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("マスタ画像コピー中にエラーが発生しました。"
-                                       + Environment.NewLine
-                                       + ex.Message);
+                        OutPutImportLog(intFileCount + "件目のマスタ画像の取り込みで例外が発生しました。" + ex.Message, Inputfile.Name);
                         m_intErrorMasterImg = m_intErrorMasterImg + 1;
+                        continue;
                     }
                 }
             }
+
+            // ログファイル結果出力を行う
+            WriteEventLog(g_CON_LEVEL_INFO, "取り込み処理が終了しました。"
+                                          + "マスタ画像　取り込み件数：" + (m_intSuccesMasterImg + m_intErrorMasterImg) + "件　"
+                                          + "正常：" + m_intSuccesMasterImg + "件　" 
+                                          + "異常：" + m_intErrorMasterImg + "件 ");
         }
         #endregion
 
@@ -2026,14 +2027,26 @@ namespace ProductMstMaintenance
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
+                    // ログファイルにエラー出力を行う
+                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
                     continue;
                 }
 
                 // 判定理由マスタを判定する。
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REASON_JUDGMENT + ".csv") == true)
                 {
-                    // CSVファイルを取り込み、判定理由マスタを登録する
-                    lstDecisionReasonCsvInfo = ImportDecisionReasonCsvData(Inputfile);
+                    try
+                    {
+                        // CSVファイルを取り込み、判定理由マスタを登録する
+                        lstDecisionReasonCsvInfo = ImportDecisionReasonCsvData(Inputfile);
+                    }
+                    catch (Exception ex)
+                    {
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
+                        continue;
+                    }
 
                     // 読み込み行が存在する場合は登録を行う
                     if (lstDecisionReasonCsvInfo.Count > 0)
@@ -2043,6 +2056,12 @@ namespace ProductMstMaintenance
                     }
                 }
             }
+
+            // ログファイル結果出力を行う
+            WriteEventLog(g_CON_LEVEL_INFO, "取り込み処理が終了しました。"
+                                          + "判定理由マスタ　取り込み件数：" + (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg) + "件　"
+                                          + "正常：" + m_intSuccesDecisionReasonReg + "件　"
+                                          + "異常：" + m_intErrorDecisionReasonReg + "件 ");
         }
 
         /// <summary>
@@ -2057,7 +2076,6 @@ namespace ProductMstMaintenance
             DecisionReasonCsvInfo driCurrentData = new DecisionReasonCsvInfo();
 
             int intRowCount = 0;
-            int intErrorCount = 0;
 
             // ファイル読み込み処理を行う
             using (StreamReader sr = new StreamReader(Inputfile.FullName
@@ -2081,7 +2099,7 @@ namespace ProductMstMaintenance
                                                 , Inputfile.Name
                                                 , out driCurrentData) == false)
                     {
-                        intErrorCount = intErrorCount + 1;
+                        m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
                         continue;
                     }
                     else
@@ -2109,15 +2127,7 @@ namespace ProductMstMaintenance
             drcCurrentData = new DecisionReasonCsvInfo();
 
             // CSVを読み込む
-            if (SetDecisionReasonInfoCsv(strFileTextLine, out drcCurrentData) == false)
-            {
-                // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の列数が不足しています", strFileName);
-                return false;
-            }
-
-            // 入力データチェックを行う
-            if (InputDataCheckDecisionReason(drcCurrentData, intRowCount) == false)
+            if (SetDecisionReasonInfoCsv(strFileTextLine, out drcCurrentData, intRowCount) == false)
             {
                 return false;
             }
@@ -2131,10 +2141,39 @@ namespace ProductMstMaintenance
         /// <param name="tciCheckData">読み込み閾値情報リスト</param>
         /// <param name="intRowCount">対象行番号</param>
         /// <returns></returns>
-        private static Boolean InputDataCheckDecisionReason(DecisionReasonCsvInfo tciCheckData
-                                                          , int intRowCount)
+        private static Boolean InputDataCheckDecisionReason(string[] stArrayData
+                                                          , int intRowCount
+                                                          , string strFileReadLine)
         {
+            // 各項目のチェックを行う
+            // 列数チェック
+            if (stArrayData.Length <= m_CON_COL_TOP_POINT_E)
+            {
+                // ログファイルにエラー出力を行う
+                WriteEventLog(g_CON_LEVEL_ERROR, intRowCount + "行目のファイルレイアウトが不正です。" + strFileReadLine);
+                return false;
+            }
 
+            // 文字後列項目
+            // 必須入力チェック
+            if (CheckRequiredInput(stArrayData[m_CON_COL_REASON_CODE], "理由コード", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_DECISION_REASON], "判定理由", intRowCount, strFileReadLine) == false)
+            {
+                return false;
+            }
+
+            // 桁数入力チェック
+            if (CheckLengthInput(stArrayData[m_CON_COL_REASON_CODE], "理由コード", intRowCount, 1, 2, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_DECISION_REASON], "判定理由", intRowCount, 1, 300, strFileReadLine) == false)
+            {
+                return false;
+            }
+
+            // 最大範囲入力チェック
+            if (CheckRangeInput(stArrayData[m_CON_COL_REASON_CODE], "理由コード", intRowCount, 1, 99, strFileReadLine) == false)
+            {
+                return false;
+            }
 
             return true;
         }
@@ -2145,7 +2184,8 @@ namespace ProductMstMaintenance
         /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
         /// <returns></returns>
         private static Boolean SetDecisionReasonInfoCsv(string strFileReadLine
-                                                      , out DecisionReasonCsvInfo drcData)
+                                                      , out DecisionReasonCsvInfo drcData
+                                                      , int intRowCount)
         {
             string[] stArrayData;
 
@@ -2154,8 +2194,8 @@ namespace ProductMstMaintenance
             // 半角スペース区切りで分割して配列に格納する
             stArrayData = strFileReadLine.Split(',');
 
-            // 列数チェック
-            if (stArrayData.Length <= m_CON_COL_DECISION_REASON)
+            // 入力データチェックを行う
+            if (InputDataCheckDecisionReason(stArrayData, intRowCount, strFileReadLine) == false)
             {
                 return false;
             }
@@ -2221,7 +2261,9 @@ namespace ProductMstMaintenance
                 var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
 
                 // sqlを実行する
-                if (ExecTranSQL(command, transaction) == false)
+                if (ExecTranSQL(command
+                              , transaction
+                              , "判定理由マスタテーブルの削除に失敗しました。") == false)
                 {
                     return false;
                 }
@@ -2230,9 +2272,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                MessageBox.Show("判定理由削除時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, "判定理由削除時にエラーが発生しました。" + ex.Message);
                 return false;
             }
         }
@@ -2275,7 +2315,9 @@ namespace ProductMstMaintenance
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command, transaction) == false)
+                if (ExecTranSQL(command
+                              , transaction
+                              , "判定理由マスタの登録に失敗しました。") == false)
                 {
                     return false;
                 }
@@ -2284,9 +2326,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                MessageBox.Show("判定理由登録時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, "判定理由登録時にエラーが発生しました。" + ex.Message);
                 return false;
             }
         }
