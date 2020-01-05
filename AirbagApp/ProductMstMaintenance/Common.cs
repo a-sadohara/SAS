@@ -17,7 +17,7 @@ namespace ProductMstMaintenance
         public static string g_ConnectionString;
 
         // イベントログ出力関連
-        private static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        public static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public const int g_CON_LEVEL_FATAL = 1;
         public const int g_CON_LEVEL_ERROR = 2;
         public const int g_CON_LEVEL_WARN = 3;

@@ -26,7 +26,6 @@ namespace ProductMstMaintenance
         private const string m_CON_FILE_NAME_CAMERA_INFO = "カメラ情報";
         private const string m_CON_FILE_NAME_THRESHOLD_INFO = "閾値情報";
         private const string m_CON_FILE_NAME_REASON_JUDGMENT = "判定理由マスタ";
-        private const string m_CON_FILE_NAME_COPY_PNG = "*";
 
         // INIファイルのセクション
         private const string m_CON_INI_SECTION_REGISTER = "REGISTER";
@@ -1500,7 +1499,7 @@ namespace ProductMstMaintenance
             if (CheckRequiredInput(stArrayData[m_CON_COL_PRODUCT_NAME], "品名", intRowCount, strFileReadLine) == false ||
                 CheckRequiredInput(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION], "照度情報", intRowCount, strFileReadLine) == false ||
                 CheckRequiredInput(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM], "開始レジマークカメラ番号", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM], "終了レジマークカメラ番号", intRowCount, strFileReadLine))
+                CheckRequiredInput(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM], "終了レジマークカメラ番号", intRowCount, strFileReadLine) == false)
             {
                 return false;
             }
@@ -2114,7 +2113,7 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
-        /// 閾値CSVファイル読み込み
+        /// 判定理由csvファイル読み込み
         /// </summary>
         /// <param name="strFileTextLine">CSVファイル行テキスト</param>
         /// <param name="lstUserData">CSVファイルデータ</param>
@@ -2147,7 +2146,7 @@ namespace ProductMstMaintenance
         {
             // 各項目のチェックを行う
             // 列数チェック
-            if (stArrayData.Length <= m_CON_COL_TOP_POINT_E)
+            if (stArrayData.Length <= m_CON_COL_DECISION_REASON)
             {
                 // ログファイルにエラー出力を行う
                 WriteEventLog(g_CON_LEVEL_ERROR, intRowCount + "行目のファイルレイアウトが不正です。" + strFileReadLine);

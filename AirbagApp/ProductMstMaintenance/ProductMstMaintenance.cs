@@ -175,6 +175,7 @@ namespace ProductMstMaintenance
         {
             ProductMstImportCsv frmUserImportCsv = new ProductMstImportCsv();
             frmUserImportCsv.ShowDialog(this);
+            frmUserImportCsv.Dispose();
         }
 
         private void button4_Click(object sender, EventArgs e)
