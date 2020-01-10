@@ -39,6 +39,8 @@
             this.label24 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
+            this.label36 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.label5 = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
@@ -137,8 +139,7 @@
             this.label68 = new System.Windows.Forms.Label();
             this.label74 = new System.Windows.Forms.Label();
             this.label75 = new System.Windows.Forms.Label();
-            this.label36 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.tableLayoutPanel12.SuspendLayout();
             this.tableLayoutPanel13.SuspendLayout();
@@ -231,7 +232,7 @@
             this.tableLayoutPanel13.Controls.Add(this.textBox4, 1, 1);
             this.tableLayoutPanel13.Controls.Add(this.label36, 0, 4);
             this.tableLayoutPanel13.Controls.Add(this.textBox2, 1, 4);
-            this.tableLayoutPanel13.Location = new System.Drawing.Point(21, 180);
+            this.tableLayoutPanel13.Location = new System.Drawing.Point(21, 181);
             this.tableLayoutPanel13.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel13.Name = "tableLayoutPanel13";
             this.tableLayoutPanel13.RowCount = 6;
@@ -241,7 +242,7 @@
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(296, 145);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(296, 144);
             this.tableLayoutPanel13.TabIndex = 22;
             // 
             // label17
@@ -305,6 +306,24 @@
             this.textBox4.Text = "100.18";
             this.textBox4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(3, 104);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(91, 19);
+            this.label36.TabIndex = 14;
+            this.label36.Text = "AIモデル名";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(196, 104);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(0);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 26);
+            this.textBox2.TabIndex = 15;
+            this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // tableLayoutPanel11
             // 
             this.tableLayoutPanel11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -335,7 +354,7 @@
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
-            this.tableLayoutPanel11.Size = new System.Drawing.Size(296, 180);
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(296, 181);
             this.tableLayoutPanel11.TabIndex = 21;
             // 
             // label5
@@ -423,7 +442,7 @@
             this.button2.Location = new System.Drawing.Point(12, 590);
             this.button2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(313, 51);
+            this.button2.Size = new System.Drawing.Size(269, 51);
             this.button2.TabIndex = 18;
             this.button2.Text = "品番情報取り込み";
             this.button2.UseVisualStyleBackColor = true;
@@ -620,10 +639,10 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(959, 590);
+            this.button1.Location = new System.Drawing.Point(1003, 590);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(313, 51);
+            this.button1.Size = new System.Drawing.Size(269, 51);
             this.button1.TabIndex = 18;
             this.button1.Text = "更新";
             this.button1.UseVisualStyleBackColor = true;
@@ -631,10 +650,10 @@
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button3.Location = new System.Drawing.Point(336, 590);
+            this.button3.Location = new System.Drawing.Point(287, 590);
             this.button3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(313, 51);
+            this.button3.Size = new System.Drawing.Size(269, 51);
             this.button3.TabIndex = 18;
             this.button3.Text = "判定理由マスタ";
             this.button3.UseVisualStyleBackColor = true;
@@ -696,7 +715,7 @@
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 24.86188F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.70888F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.07187F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 52F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 54F));
             this.tableLayoutPanel5.Controls.Add(this.label46, 1, 1);
             this.tableLayoutPanel5.Controls.Add(this.label49, 1, 4);
             this.tableLayoutPanel5.Controls.Add(this.label48, 2, 3);
@@ -761,18 +780,18 @@
             // label50
             // 
             this.label50.AutoSize = true;
-            this.label50.Location = new System.Drawing.Point(198, 35);
+            this.label50.Location = new System.Drawing.Point(197, 35);
             this.label50.Name = "label50";
-            this.label50.Size = new System.Drawing.Size(12, 19);
+            this.label50.Size = new System.Drawing.Size(11, 19);
             this.label50.TabIndex = 0;
             this.label50.Text = "9";
             // 
             // label51
             // 
             this.label51.AutoSize = true;
-            this.label51.Location = new System.Drawing.Point(198, 60);
+            this.label51.Location = new System.Drawing.Point(197, 60);
             this.label51.Name = "label51";
-            this.label51.Size = new System.Drawing.Size(12, 19);
+            this.label51.Size = new System.Drawing.Size(11, 19);
             this.label51.TabIndex = 0;
             this.label51.Text = "8";
             // 
@@ -797,7 +816,7 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 63.04348F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 36.95652F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 88F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 89F));
             this.tableLayoutPanel6.Controls.Add(this.label11, 1, 1);
             this.tableLayoutPanel6.Controls.Add(this.label15, 1, 2);
             this.tableLayoutPanel6.Controls.Add(this.label25, 1, 3);
@@ -867,7 +886,7 @@
             this.txtColumnThreshold01.Location = new System.Drawing.Point(131, 15);
             this.txtColumnThreshold01.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThreshold01.Name = "txtColumnThreshold01";
-            this.txtColumnThreshold01.Size = new System.Drawing.Size(47, 26);
+            this.txtColumnThreshold01.Size = new System.Drawing.Size(46, 26);
             this.txtColumnThreshold01.TabIndex = 15;
             this.txtColumnThreshold01.Text = "124";
             this.txtColumnThreshold01.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -880,7 +899,7 @@
             this.txtColumnThreshold02.Location = new System.Drawing.Point(131, 47);
             this.txtColumnThreshold02.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThreshold02.Name = "txtColumnThreshold02";
-            this.txtColumnThreshold02.Size = new System.Drawing.Size(47, 26);
+            this.txtColumnThreshold02.Size = new System.Drawing.Size(46, 26);
             this.txtColumnThreshold02.TabIndex = 15;
             this.txtColumnThreshold02.Text = "240";
             this.txtColumnThreshold02.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -893,7 +912,7 @@
             this.txtColumnThreshold03.Location = new System.Drawing.Point(131, 79);
             this.txtColumnThreshold03.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThreshold03.Name = "txtColumnThreshold03";
-            this.txtColumnThreshold03.Size = new System.Drawing.Size(47, 26);
+            this.txtColumnThreshold03.Size = new System.Drawing.Size(46, 26);
             this.txtColumnThreshold03.TabIndex = 15;
             this.txtColumnThreshold03.Text = "357";
             this.txtColumnThreshold03.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -906,7 +925,7 @@
             this.txtColumnThreshold04.Location = new System.Drawing.Point(131, 111);
             this.txtColumnThreshold04.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThreshold04.Name = "txtColumnThreshold04";
-            this.txtColumnThreshold04.Size = new System.Drawing.Size(47, 26);
+            this.txtColumnThreshold04.Size = new System.Drawing.Size(46, 26);
             this.txtColumnThreshold04.TabIndex = 15;
             this.txtColumnThreshold04.Text = "357";
             this.txtColumnThreshold04.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -935,7 +954,7 @@
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.7843F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 19.4505F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.78001F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 49F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
             this.tableLayoutPanel7.Controls.Add(this.label57, 1, 1);
             this.tableLayoutPanel7.Controls.Add(this.label30, 1, 5);
             this.tableLayoutPanel7.Controls.Add(this.label58, 1, 2);
@@ -1016,7 +1035,7 @@
             this.lblADash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblADash.Location = new System.Drawing.Point(143, 19);
+            this.lblADash.Location = new System.Drawing.Point(142, 19);
             this.lblADash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
             this.lblADash.Name = "lblADash";
             this.lblADash.Size = new System.Drawing.Size(28, 26);
@@ -1039,7 +1058,7 @@
             this.lblBDash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblBDash.Location = new System.Drawing.Point(143, 49);
+            this.lblBDash.Location = new System.Drawing.Point(142, 49);
             this.lblBDash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
             this.lblBDash.Name = "lblBDash";
             this.lblBDash.Size = new System.Drawing.Size(28, 26);
@@ -1052,7 +1071,7 @@
             this.lblCDash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblCDash.Location = new System.Drawing.Point(143, 79);
+            this.lblCDash.Location = new System.Drawing.Point(142, 79);
             this.lblCDash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
             this.lblCDash.Name = "lblCDash";
             this.lblCDash.Size = new System.Drawing.Size(28, 26);
@@ -1065,7 +1084,7 @@
             this.lblDDash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDDash.Location = new System.Drawing.Point(143, 109);
+            this.lblDDash.Location = new System.Drawing.Point(142, 109);
             this.lblDDash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
             this.lblDDash.Name = "lblDDash";
             this.lblDDash.Size = new System.Drawing.Size(28, 26);
@@ -1080,7 +1099,7 @@
             this.txtLineThresholdE1.Location = new System.Drawing.Point(98, 135);
             this.txtLineThresholdE1.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdE1.Name = "txtLineThresholdE1";
-            this.txtLineThresholdE1.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdE1.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdE1.TabIndex = 15;
             this.txtLineThresholdE1.Text = "23";
             this.txtLineThresholdE1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1093,7 +1112,7 @@
             this.txtLineThresholdD1.Location = new System.Drawing.Point(98, 105);
             this.txtLineThresholdD1.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdD1.Name = "txtLineThresholdD1";
-            this.txtLineThresholdD1.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdD1.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdD1.TabIndex = 15;
             this.txtLineThresholdD1.Text = "23";
             this.txtLineThresholdD1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1106,7 +1125,7 @@
             this.txtLineThresholdC1.Location = new System.Drawing.Point(98, 75);
             this.txtLineThresholdC1.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdC1.Name = "txtLineThresholdC1";
-            this.txtLineThresholdC1.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdC1.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdC1.TabIndex = 15;
             this.txtLineThresholdC1.Text = "258";
             this.txtLineThresholdC1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1119,7 +1138,7 @@
             this.txtLineThresholdB1.Location = new System.Drawing.Point(98, 45);
             this.txtLineThresholdB1.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdB1.Name = "txtLineThresholdB1";
-            this.txtLineThresholdB1.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdB1.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdB1.TabIndex = 15;
             this.txtLineThresholdB1.Text = "168";
             this.txtLineThresholdB1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1132,7 +1151,7 @@
             this.txtLineThresholdA1.Location = new System.Drawing.Point(98, 15);
             this.txtLineThresholdA1.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdA1.Name = "txtLineThresholdA1";
-            this.txtLineThresholdA1.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdA1.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdA1.TabIndex = 15;
             this.txtLineThresholdA1.Text = "40";
             this.txtLineThresholdA1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1142,10 +1161,10 @@
             // 
             this.txtLineThresholdA2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLineThresholdA2.Location = new System.Drawing.Point(174, 15);
+            this.txtLineThresholdA2.Location = new System.Drawing.Point(173, 15);
             this.txtLineThresholdA2.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdA2.Name = "txtLineThresholdA2";
-            this.txtLineThresholdA2.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdA2.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdA2.TabIndex = 15;
             this.txtLineThresholdA2.Text = "398";
             this.txtLineThresholdA2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1155,10 +1174,10 @@
             // 
             this.txtLineThresholdB2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLineThresholdB2.Location = new System.Drawing.Point(174, 45);
+            this.txtLineThresholdB2.Location = new System.Drawing.Point(173, 45);
             this.txtLineThresholdB2.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdB2.Name = "txtLineThresholdB2";
-            this.txtLineThresholdB2.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdB2.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdB2.TabIndex = 15;
             this.txtLineThresholdB2.Text = "526";
             this.txtLineThresholdB2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1168,10 +1187,10 @@
             // 
             this.txtLineThresholdC2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLineThresholdC2.Location = new System.Drawing.Point(174, 75);
+            this.txtLineThresholdC2.Location = new System.Drawing.Point(173, 75);
             this.txtLineThresholdC2.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdC2.Name = "txtLineThresholdC2";
-            this.txtLineThresholdC2.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdC2.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdC2.TabIndex = 15;
             this.txtLineThresholdC2.Text = "616";
             this.txtLineThresholdC2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1181,10 +1200,10 @@
             // 
             this.txtLineThresholdD2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLineThresholdD2.Location = new System.Drawing.Point(174, 105);
+            this.txtLineThresholdD2.Location = new System.Drawing.Point(173, 105);
             this.txtLineThresholdD2.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdD2.Name = "txtLineThresholdD2";
-            this.txtLineThresholdD2.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdD2.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdD2.TabIndex = 15;
             this.txtLineThresholdD2.Text = "381";
             this.txtLineThresholdD2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1194,10 +1213,10 @@
             // 
             this.txtLineThresholdE2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtLineThresholdE2.Location = new System.Drawing.Point(174, 135);
+            this.txtLineThresholdE2.Location = new System.Drawing.Point(173, 135);
             this.txtLineThresholdE2.Margin = new System.Windows.Forms.Padding(0);
             this.txtLineThresholdE2.Name = "txtLineThresholdE2";
-            this.txtLineThresholdE2.Size = new System.Drawing.Size(42, 26);
+            this.txtLineThresholdE2.Size = new System.Drawing.Size(41, 26);
             this.txtLineThresholdE2.TabIndex = 15;
             this.txtLineThresholdE2.Text = "381";
             this.txtLineThresholdE2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -1208,7 +1227,7 @@
             this.lblEDash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblEDash.Location = new System.Drawing.Point(143, 139);
+            this.lblEDash.Location = new System.Drawing.Point(142, 139);
             this.lblEDash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
             this.lblEDash.Name = "lblEDash";
             this.lblEDash.Size = new System.Drawing.Size(28, 26);
@@ -1239,7 +1258,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 31.49847F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.82891F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18.87906F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 52F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 54F));
             this.tableLayoutPanel2.Controls.Add(this.label73, 1, 5);
             this.tableLayoutPanel2.Controls.Add(this.label22, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.label28, 1, 4);
@@ -1320,7 +1339,7 @@
             // label40
             // 
             this.label40.AutoSize = true;
-            this.label40.Location = new System.Drawing.Point(261, 97);
+            this.label40.Location = new System.Drawing.Point(260, 97);
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(66, 19);
             this.label40.TabIndex = 0;
@@ -1329,7 +1348,7 @@
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(261, 19);
+            this.label32.Location = new System.Drawing.Point(260, 19);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(66, 19);
             this.label32.TabIndex = 0;
@@ -1365,7 +1384,7 @@
             // label39
             // 
             this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(261, 71);
+            this.label39.Location = new System.Drawing.Point(260, 71);
             this.label39.Name = "label39";
             this.label39.Size = new System.Drawing.Size(66, 19);
             this.label39.TabIndex = 0;
@@ -1374,7 +1393,7 @@
             // label38
             // 
             this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(261, 45);
+            this.label38.Location = new System.Drawing.Point(260, 45);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(66, 19);
             this.label38.TabIndex = 0;
@@ -1392,7 +1411,7 @@
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(338, 19);
+            this.label37.Location = new System.Drawing.Point(336, 19);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(47, 19);
             this.label37.TabIndex = 0;
@@ -1401,7 +1420,7 @@
             // label42
             // 
             this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(338, 45);
+            this.label42.Location = new System.Drawing.Point(336, 45);
             this.label42.Name = "label42";
             this.label42.Size = new System.Drawing.Size(47, 19);
             this.label42.TabIndex = 0;
@@ -1410,7 +1429,7 @@
             // label43
             // 
             this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(338, 71);
+            this.label43.Location = new System.Drawing.Point(336, 71);
             this.label43.Name = "label43";
             this.label43.Size = new System.Drawing.Size(47, 19);
             this.label43.TabIndex = 0;
@@ -1419,7 +1438,7 @@
             // label44
             // 
             this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(338, 97);
+            this.label44.Location = new System.Drawing.Point(336, 97);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(47, 19);
             this.label44.TabIndex = 0;
@@ -1589,23 +1608,16 @@
             this.label75.Text = "26";
             this.label75.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label36
+            // button4
             // 
-            this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(3, 104);
-            this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(112, 19);
-            this.label36.TabIndex = 14;
-            this.label36.Text = "検査モデル名";
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(196, 104);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(0);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 26);
-            this.textBox2.TabIndex = 15;
-            this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button4.Location = new System.Drawing.Point(728, 590);
+            this.button4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(269, 51);
+            this.button4.TabIndex = 18;
+            this.button4.Text = "削除";
+            this.button4.UseVisualStyleBackColor = true;
             // 
             // ProductMstMaintenance
             // 
@@ -1615,6 +1627,7 @@
             this.Controls.Add(this.tableLayoutPanel4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.button1);
             this.Font = new System.Drawing.Font("MS UI Gothic", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -1769,6 +1782,7 @@
         private System.Windows.Forms.Panel pnlMasterImage;
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button button4;
     }
 }
 
