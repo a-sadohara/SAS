@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using static WokerMstManagement.Common;
-using System.Text.RegularExpressions;
-using Npgsql;
 
 namespace WokerMstManagement
 {
@@ -22,7 +22,7 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnFix_Click(object sender, EventArgs e)
+        private void btnDecision_Click(object sender, EventArgs e)
         {
             // 入力チェックを行う
             if (InputDataCheck() == false)
@@ -36,7 +36,6 @@ namespace WokerMstManagement
                 if (RegistrationUser() == true)
                 {
                     g_intUpdateFlg = 1;
-                    MessageBox.Show("登録しました");
                 }
                 else 
                 {
@@ -49,7 +48,6 @@ namespace WokerMstManagement
                 if (UpdateUser() == true)
                 {
                     g_intUpdateFlg = 1;
-                    MessageBox.Show("更新しました");
                 }
                 else 
                 {
@@ -65,7 +63,7 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtUserNo_KeyPress(object sender, KeyPressEventArgs e)
+        private void txtEmployeeNum_KeyPress(object sender, KeyPressEventArgs e)
         {
             //0～9と、バックスペース以外の時は、イベントをキャンセルする
             if ((e.KeyChar < '0' || '9' < e.KeyChar) && e.KeyChar != '\b')
@@ -79,22 +77,11 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtUserNo_Leave(object sender, EventArgs e)
+        private void txtEmployeeNum_Leave(object sender, EventArgs e)
         {
-            int intUserNo = 0;
-
-            if (txtUserNo.TextLength > 0)
+            if (txtEmployeeNum.TextLength > 0)
             {
-                if (Int32.TryParse(txtUserNo.Text, out intUserNo) == false)
-                {
-                    MessageBox.Show("数値のみ入力してください。");
-                    txtUserNo.Focus();
-                    return;
-                }
-                else
-                {
-                    txtUserNo.Text = String.Format("{0:D4}", intUserNo);
-                }
+                txtEmployeeNum.Text = String.Format("{0:D4}", int.Parse(txtEmployeeNum.Text));
             }
         }
         #endregion
@@ -108,9 +95,9 @@ namespace WokerMstManagement
         /// <param name="parUserNm">初期表示ユーザ名</param>
         /// <param name="parUserYomiGana">初期表示ユーザ名カナ</param>
         public WokerMstEdit(int parEditMode,
-                        string parUserNo = "",
-                        string parUserNm = "",
-                        string parUserYomiGana = "")
+                            string parUserNo = "",
+                            string parUserNm = "",
+                            string parUserYomiGana = "")
         {
             InitializeComponent();
 
@@ -123,45 +110,45 @@ namespace WokerMstManagement
             {
                 this.Text = "更新";
                 // 社員番号
-                txtUserNo.Text = parUserNo;
-                txtUserNo.Enabled = false;
+                txtEmployeeNum.Text = parUserNo;
+                txtEmployeeNum.Enabled = false;
                 // 作業者名
                 if (parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE)).Count() == 2)
                 {
-                    txtUserNm_Sei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
-                    txtUserNm_Mei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
+                    txtWorkerNameSei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
+                    txtWorkerNameMei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
                 }
                 else
                 {
-                    if (txtUserNm_Sei.MaxLength < parUserNm.Length)
+                    if (txtWorkerNameSei.MaxLength < parUserNm.Length)
                     {
-                        txtUserNm_Sei.MaxLength = parUserNm.Length;
+                        txtWorkerNameSei.MaxLength = parUserNm.Length;
                     }
-                    txtUserNm_Sei.Text = parUserNm;
+                    txtWorkerNameSei.Text = parUserNm;
                 }
-                // 読み仮名
+                // 読みカナ
                 if (parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE)).Count() == 2)
                 {
-                    txtUserYomiGana_Sei.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
-                    txtUserYomiGana_Mei.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
+                    txtWorkerNameSeiKana.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
+                    txtWorkerNameMeiKana.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
                 }
                 else
                 {
-                    if (txtUserYomiGana_Sei.MaxLength < parUserYomiGana.Length)
+                    if (txtWorkerNameSeiKana.MaxLength < parUserYomiGana.Length)
                     {
-                        txtUserYomiGana_Sei.MaxLength = parUserYomiGana.Length;
+                        txtWorkerNameSeiKana.MaxLength = parUserYomiGana.Length;
                     }
-                    txtUserYomiGana_Sei.Text = parUserYomiGana;
+                    txtWorkerNameSeiKana.Text = parUserYomiGana;
                 }
             }
             else
             {
                 this.Text = "登録";
                 // 登録モードで起動された場合、画面の各項目を空白で表示する
-                txtUserNo.Clear();
-                txtUserNm_Sei.Clear();
-                txtUserNm_Mei.Clear();
-                txtUserYomiGana_Sei.Clear();
+                txtEmployeeNum.Clear();
+                txtWorkerNameSei.Clear();
+                txtWorkerNameMei.Clear();
+                txtWorkerNameSeiKana.Clear();
             }
         }
 
@@ -172,30 +159,14 @@ namespace WokerMstManagement
         private Boolean InputDataCheck() 
         {
             // 必須入力チェック
-            if (CheckRequiredInput(txtUserNo, "社員番号") == false ||
-                CheckRequiredInput(txtUserNm_Sei, "作業者名") == false ||
-                CheckRequiredInput(txtUserNm_Mei, "作業者名") == false ||
-                CheckRequiredInput(txtUserYomiGana_Sei, "読み仮名") == false ||
-                CheckRequiredInput(txtUserYomiGana_Mei, "読み仮名") == false) 
+            if (CheckRequiredInput(txtEmployeeNum, "社員番号") == false ||
+                CheckRequiredInput(txtWorkerNameSei, "作業者名") == false ||
+                CheckRequiredInput(txtWorkerNameMei, "作業者名") == false ||
+                CheckRequiredInput(txtWorkerNameSeiKana, "読みカナ") == false ||
+                CheckRequiredInput(txtWorkerNameMeiKana, "読みカナ") == false) 
             {
                 return false;
             }
-
-
-            // カナ入力チェック
-            if (Regex.IsMatch(txtUserYomiGana_Sei.Text, "^[ァ-ヶー]*$") == false) 
-            {
-                MessageBox.Show("全角カナのみ入力してください。");
-                txtUserYomiGana_Sei.Focus();
-                return false;
-            }
-            if (Regex.IsMatch(txtUserYomiGana_Mei.Text, "^[ァ-ヶー]*$") == false)
-            {
-                MessageBox.Show("全角カナのみ入力してください。");
-                txtUserYomiGana_Mei.Focus();
-                return false;
-            }
-
 
             return true;
         }
@@ -211,7 +182,7 @@ namespace WokerMstManagement
             // 必須入力チェック
             if (tbxCheckData.Text == "")
             {
-                MessageBox.Show(strItemName + "は必須入力の項目です。");
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0007, strItemName), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 tbxCheckData.Focus();
                 return false;
             }
@@ -227,179 +198,127 @@ namespace WokerMstManagement
         {
             try
             {
-                if (g_bolModeNonDBCon == true)
-                    return true;
+                // SQL文を作成する
+                string strCreateSql = @"INSERT INTO mst_Worker (
+                                                        employee_num
+                                                      , worker_name_sei
+                                                      , worker_name_mei
+                                                      , worker_name_sei_kana
+                                                      , worker_name_mei_kana
+                                                      , del_flg
+                                                      )VALUES(
+                                                       :UserNo
+                                                      ,:UserSurname
+                                                      ,:UserName
+                                                      ,:UserSurnameKana
+                                                      ,:UserNameKana
+                                                      , 0)";
 
-                // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
-                {
-                    NpgsqlCon.Open();
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserNo", DbType = DbType.String, Value = txtEmployeeNum.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserSurname", DbType = DbType.String, Value = txtWorkerNameSei.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserName", DbType = DbType.String, Value = txtWorkerNameMei.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserSurnameKana", DbType = DbType.String, Value = txtWorkerNameSeiKana.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserNameKana", DbType = DbType.String, Value = txtWorkerNameMeiKana.Text });
 
-                    // SQL文を作成する
-                    string strSelSql = @"SELECT 
-                                             *
-                                         FROM
-                                             mst_Worker 
-                                         WHERE
-                                             employee_num = '" + txtUserNo.Text + "'";
+                // sqlを実行する
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
-                    // 重複チェックを行う
-                    if (KeyDuplicateCheck(strSelSql, NpgsqlCon, "社員番号") == false)
-                    {
-                        txtUserNo.Focus();
-                        return false;
-                    }
-                    else 
-                    {
-                        using (var transaction = NpgsqlCon.BeginTransaction())
-                        {
-                            // SQL文を作成する
-                            string strCreateSql = @"INSERT INTO mst_Worker (
-                                                                    employee_num
-                                                                  , worker_name_sei
-                                                                  , worker_name_mei
-                                                                  , worker_name_sei_kana
-                                                                  , worker_name_mei_kana
-                                                                  , del_flg
-                                                                  )VALUES(
-                                                                   :UserNo
-                                                                  ,:UserSurname
-                                                                  ,:UserName
-                                                                  ,:UserSurnameKana
-                                                                  ,:UserNameKana
-                                                                  , 0)";
+                g_clsConnectionNpgsql.DbCommit();
 
-                            // SQLコマンドに各パラメータを設定する
-                            var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
-
-                            command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = txtUserNo.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserSurname", DbType.String) { Value = txtUserNm_Sei.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Mei.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserSurnameKana", DbType.String) { Value = txtUserYomiGana_Sei.Text });
-                            command.Parameters.Add(new NpgsqlParameter("UserNameKana", DbType.String) { Value = txtUserYomiGana_Mei.Text });
-
-                            // sqlを実行する
-                            if (ExecTranSQL(command, transaction) == false)
-                            {
-                                return false;
-                            }
-
-                            transaction.Commit();
-
-                            g_strRegWorkerNo = txtUserNo.Text;
-                        }
-                    }
-                }
+                g_strRegWorkerNo = txtEmployeeNum.Text;
 
                 return true;
-
             }
             catch (Exception ex) 
             {
-                MessageBox.Show("登録時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+
+                if (((Npgsql.PostgresException)ex).SqlState == "23505")
+                {
+                    // 重複の例外時
+
+                    // メッセージ出力
+                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0008, "社員番号"), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    // それ以外の例外時
+
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0004, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
                 return false;
+            }
+            finally
+            {
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
         /// <summary>
         /// 更新処理
         /// </summary>
-        /// <returns></returns>
+        /// <returns>true:正常終了 false:異常終了</returns>
         private Boolean UpdateUser()
         {
             try
             {
-                if (g_bolModeNonDBCon == true)
-                    return true;
+                // SQL文を作成する
+                string strUpdateSql = @"UPDATE mst_Worker
+                                           SET worker_name_sei = :UserSurname
+                                             , worker_name_mei = :UserName
+                                             , worker_name_sei_kana = :UserSurnameKana
+                                             , worker_name_mei_kana = :UserNameKana
+                                         WHERE employee_num = :UserNo";
 
-                // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
-                {
-                    NpgsqlCon.Open();
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserSurname", DbType = DbType.String, Value = txtWorkerNameSei.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserName", DbType = DbType.String, Value = txtWorkerNameMei.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserSurnameKana", DbType = DbType.String, Value = txtWorkerNameSeiKana.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserNameKana", DbType = DbType.String, Value = txtWorkerNameMeiKana.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserNo", DbType = DbType.String, Value = txtEmployeeNum.Text });
 
-                    using (var transaction = NpgsqlCon.BeginTransaction())
-                    {
-                        // SQL文を作成する
-                        string strUpdateSql = @"UPDATE mst_Worker
-                                                   SET worker_name_sei = :UserSurname
-                                                     , worker_name_mei = :UserName
-                                                     , worker_name_sei_kana = :UserSurnameKana
-                                                     , worker_name_mei_kana = :UserNameKana
-                                                 WHERE employee_num = :UserNo";
+                // sqlを実行する
+                g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
 
-                        // SQLコマンドに各パラメータを設定する
-                        var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);
+                g_clsConnectionNpgsql.DbCommit();
 
-                        command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = txtUserNo.Text });
-                        command.Parameters.Add(new NpgsqlParameter("UserSurname", DbType.String){ Value = txtUserNm_Sei.Text });
-                        command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = txtUserNm_Mei.Text });
-                        command.Parameters.Add(new NpgsqlParameter("UserSurnameKana", DbType.String) { Value = txtUserYomiGana_Sei.Text });
-                        command.Parameters.Add(new NpgsqlParameter("UserNameKana", DbType.String) { Value = txtUserYomiGana_Mei.Text });
-
-
-                        // sqlを実行する
-                        if (ExecTranSQL(command, transaction) == false)
-                        {
-                            return false;
-                        }
-
-                        transaction.Commit();
-
-                        g_strRegWorkerNo = txtUserNo.Text;
-                    }
-                }
+                g_strRegWorkerNo = txtEmployeeNum.Text;
 
                 return true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("更新時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0005, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                 return false;
+            }
+            finally
+            {
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
         /// <summary>
-        /// キー重複チェック
+        /// 読みカナ入力イベント
         /// </summary>
-        /// <param name="strSql"></param>
-        /// <param name="NpgsqlCon"></param>
-        /// <returns></returns>
-        public static Boolean KeyDuplicateCheck(string strSql
-                                              , NpgsqlConnection NpgsqlCon
-                                              , String strItemName) 
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtWorkerNameKana_KeyPress(object sender, KeyPressEventArgs e)
         {
-
-            try
+            //カタカナ以外の時は、イベントをキャンセルする
+            if (Regex.IsMatch(e.KeyChar.ToString(), @"^\p{IsKatakana}*$") == false && e.KeyChar != '\b')
             {
-                var dataAdapter = new NpgsqlDataAdapter();
-                dataAdapter = new NpgsqlDataAdapter(strSql, NpgsqlCon);
-                // 作成したSQLを実行する
-                var dataSet = new DataSet();
-                dataAdapter.Fill(dataSet);
-
-                // 取得件数が0件の場合は登録OK
-                if (dataSet.Tables[0].Rows.Count == 0)
-                {
-                    return true;
-                }
-                else 
-                {
-                    MessageBox.Show(strItemName + "は既に使用されています。");
-                    return false;
-                }    
+                e.Handled = true;
             }
-            catch (Exception ex) 
-            {
-                MessageBox.Show("重複チェック時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
-                return false;
-            }
-
         }
         #endregion
     }

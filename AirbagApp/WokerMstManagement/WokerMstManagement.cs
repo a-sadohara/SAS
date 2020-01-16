@@ -1,10 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using static WokerMstManagement.Common;
-using Npgsql;
-using System.IO;
 
 namespace WokerMstManagement
 {
@@ -23,6 +21,36 @@ namespace WokerMstManagement
 
         #region イベント
         /// <summary>
+        /// フォームロード
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void WokerMstManagement_Load(object sender, EventArgs e)
+        {
+            bool bolProcOkNg = false;
+
+            try
+            {
+                // 初期表示モードで明細表示を呼び出し
+                dispDataGridView(0, "0000", 0);
+
+                bolProcOkNg = true;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (bolProcOkNg == false)
+                    this.Close();
+            }
+        }
+
+        /// <summary>
         /// 初期表示
         /// </summary>
         public WokerMstManagement()
@@ -30,9 +58,6 @@ namespace WokerMstManagement
             InitializeComponent();
 
             this.StartPosition = FormStartPosition.CenterScreen;
-
-            // 初期表示モードで明細表示を呼び出し
-            dispDataGridView(0, "0000", 0);
         }
 
         /// <summary>
@@ -40,15 +65,26 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnReg_Click(object sender, EventArgs e)
+        private void btnRegistration_Click(object sender, EventArgs e)
         {
             // 作業者登録画面を登録モードで表示する
             WokerMstEdit frmUserReg = new WokerMstEdit(g_CON_EDITMODE_REG);
             frmUserReg.ShowDialog();
+
             if(frmUserReg.g_intUpdateFlg == 1) 
             {
-                // 登録表示モードで明細表示を呼び出し
-                dispDataGridView(1, frmUserReg.g_strRegWorkerNo, 0);
+                try
+                {
+                    // 登録表示モードで明細表示を呼び出し
+                    dispDataGridView(1, frmUserReg.g_strRegWorkerNo, 0);
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -57,78 +93,47 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnDel_Click(object sender, EventArgs e)
+        private void btnDelete_Click(object sender, EventArgs e)
         {
             string strSelUserNo = "";
             string strSelUserName = "";
             string strSelUserNameKana = "";
             int intSelRow = 0;
 
-            if (dgvUser.SelectedRows.Count == 0)
+            foreach (DataGridViewRow r in dgvWorker.SelectedRows)
             {
-                MessageBox.Show("削除する行を選択してください");
-                return;
-            }
-            else
-            {
-                foreach (DataGridViewRow r in dgvUser.SelectedRows)
+                strSelUserNo = NulltoString(r.Cells[m_CON_COL_USERNO].Value);
+                strSelUserName = NulltoString(r.Cells[m_CON_COL_USERNAME].Value);
+                strSelUserNameKana = NulltoString(r.Cells[m_CON_COL_USERNAMEKANA].Value);
+                // 削除後の選択行
+                if (r.Index == dgvWorker.Rows.Count - 1)
                 {
-                    strSelUserNo = NulltoString(r.Cells[m_CON_COL_USERNO].Value);
-                    strSelUserName = NulltoString(r.Cells[m_CON_COL_USERNAME].Value);
-                    strSelUserNameKana = NulltoString(r.Cells[m_CON_COL_USERNAMEKANA].Value);
-                    // 削除後の選択行
-                    if (r.Index == dgvUser.Rows.Count - 1)
-                    {
-                        intSelRow = r.Index - 1;
-                    }
-                    else 
-                    {
-                        intSelRow = r.Index;
-                    }
+                    intSelRow = r.Index - 1;
                 }
-
-                if (MessageBox.Show("選択されている行（データ）を削除しますか？"
-                                   + Environment.NewLine
-                                   + "社員番号：" + strSelUserNo + " 作業者名：" + strSelUserName + " 読み仮名：" + strSelUserNameKana
-                                   , "確認"
-                                   , MessageBoxButtons.YesNo) == DialogResult.Yes)
+                else
                 {
-                    if (g_bolModeNonDBCon == true)
+                    intSelRow = r.Index;
+                }
+            }
+
+            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0001, strSelUserNo, strSelUserName, strSelUserNameKana)
+                               , "確認"
+                               , MessageBoxButtons.YesNo
+                               , MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                if (DelUser(strSelUserNo) == true)
+                {
+                    try
                     {
-                        MessageBox.Show("削除しました");
+                        // 更新表示モードで明細表示を呼び出し
+                        dispDataGridView(0, "0000", intSelRow);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            // PostgreSQLへ接続
-                            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
-                            {
-                                NpgsqlCon.Open();
-
-                                using (var transaction = NpgsqlCon.BeginTransaction())
-                                {
-                                    if (DelUser(NpgsqlCon, transaction, strSelUserNo) == true)
-                                    {
-                                        transaction.Commit();
-                                        MessageBox.Show("削除しました");
-
-                                        // 更新表示モードで明細表示を呼び出し
-                                        dispDataGridView(2, "0000", intSelRow);
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("削除に失敗したためロールバックします");
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("削除時にエラーが発生しました。"
-                                           + Environment.NewLine
-                                           + ex.Message);
-                        }
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -145,8 +150,18 @@ namespace WokerMstManagement
 
             if (System.Windows.Forms.DialogResult.OK == frmUserImportCsv.ShowDialog())
             {
-                // 初期表示モードで明細表示を呼び出し
-                dispDataGridView(0, "0000", 0);
+                try
+                {
+                    // 初期表示モードで明細表示を呼び出し
+                    dispDataGridView(0, "0000", 0);
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -157,22 +172,22 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void llk_Click(dynamic sender, EventArgs e)
         {
-            if (sender == llkア) { m_strKanaSta = "ア"; m_strKanaEnd = "オ"; }
-            if (sender == llkカ) { m_strKanaSta = "カ"; m_strKanaEnd = "コ"; }
-            if (sender == llkサ) { m_strKanaSta = "サ"; m_strKanaEnd = "ソ"; }
-            if (sender == llkタ) { m_strKanaSta = "タ"; m_strKanaEnd = "ト"; }
-            if (sender == llkナ) { m_strKanaSta = "ナ"; m_strKanaEnd = "ノ"; }
-            if (sender == llkハ) { m_strKanaSta = "ハ"; m_strKanaEnd = "ホ"; }
-            if (sender == llkマ) { m_strKanaSta = "マ"; m_strKanaEnd = "モ"; }
-            if (sender == llkヤ) { m_strKanaSta = "ヤ"; m_strKanaEnd = "ヨ"; }
-            if (sender == llkラ) { m_strKanaSta = "ラ"; m_strKanaEnd = "ロ"; }
-            if (sender == llkワ) { m_strKanaSta = "ワ"; m_strKanaEnd = "ン"; }
-            if (sender == llkEtc) { m_strKanaSta = "！"; m_strKanaEnd = "！"; }
-            if (sender == llkNon) { m_strKanaSta = ""; m_strKanaEnd = ""; }
+            if (sender == lblWorkerNameKanaア) { m_strKanaSta = "ア"; m_strKanaEnd = "オ"; }
+            else if (sender == lblWorkerNameKanaカ) { m_strKanaSta = "カ"; m_strKanaEnd = "コ"; }
+            else if (sender == lblWorkerNameKanaサ) { m_strKanaSta = "サ"; m_strKanaEnd = "ソ"; }
+            else if (sender == lblWorkerNameKanaタ) { m_strKanaSta = "タ"; m_strKanaEnd = "ト"; }
+            else if (sender == lblWorkerNameKanaナ) { m_strKanaSta = "ナ"; m_strKanaEnd = "ノ"; }
+            else if (sender == lblWorkerNameKanaハ) { m_strKanaSta = "ハ"; m_strKanaEnd = "ホ"; }
+            else if (sender == lblWorkerNameKanaマ) { m_strKanaSta = "マ"; m_strKanaEnd = "モ"; }
+            else if (sender == lblWorkerNameKanaヤ) { m_strKanaSta = "ヤ"; m_strKanaEnd = "ヨ"; }
+            else if (sender == lblWorkerNameKanaラ) { m_strKanaSta = "ラ"; m_strKanaEnd = "ロ"; }
+            else if (sender == lblWorkerNameKanaワ) { m_strKanaSta = "ワ"; m_strKanaEnd = "ン"; }
+            else if (sender == lblWorkerNameKanaEtc) { m_strKanaSta = "！"; m_strKanaEnd = "！"; }
+            else if (sender == lblWorkerNameKanaNonCondition) { m_strKanaSta = ""; m_strKanaEnd = ""; }
 
-            foreach (Label lbl in new Label[] { llkア, llkカ, llkサ, llkタ, llkナ,
-                                                llkハ, llkマ, llkヤ, llkラ, llkワ,
-                                                llkEtc, llkNon })
+            foreach (Label lbl in new Label[] { lblWorkerNameKanaア, lblWorkerNameKanaカ, lblWorkerNameKanaサ, lblWorkerNameKanaタ, lblWorkerNameKanaナ,
+                                                lblWorkerNameKanaハ, lblWorkerNameKanaマ, lblWorkerNameKanaヤ, lblWorkerNameKanaラ, lblWorkerNameKanaワ,
+                                                lblWorkerNameKanaEtc, lblWorkerNameKanaNonCondition })
             {
                 if (sender == lbl)
                 {
@@ -190,19 +205,29 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void dgvUser_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvWorker_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
 
             // 作業者登録画面を更新モードで表示する
             WokerMstEdit frmUserReg = new WokerMstEdit(g_CON_EDITMODE_UPD,
-                                               dgvUser.Rows[e.RowIndex].Cells[0].Value.ToString(),
-                                               dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString(),
-                                               dgvUser.Rows[e.RowIndex].Cells[2].Value.ToString());
+                                                       dgvWorker.Rows[e.RowIndex].Cells[0].Value.ToString(),
+                                                       dgvWorker.Rows[e.RowIndex].Cells[1].Value.ToString(),
+                                                       dgvWorker.Rows[e.RowIndex].Cells[2].Value.ToString());
             frmUserReg.ShowDialog();
             if (frmUserReg.g_intUpdateFlg == 1)
             {
-                // 更新表示モードで明細表示を呼び出し
-                dispDataGridView(2, "0000", e.RowIndex);
+                try
+                {
+                    // 更新表示モードで明細表示を呼び出し
+                    dispDataGridView(1, "0000", e.RowIndex);
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -213,16 +238,26 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            // 初期表示モードで明細表示を呼び出し
-            dispDataGridView(0, "0000", 0);
+            try
+            {
+                // 初期表示モードで明細表示を呼び出し
+                dispDataGridView(0, "0000", 0);
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
-        /// 作業者番号From入力イベント
+        /// 作業者番号入力イベント
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtUserNo_KeyPress(object sender, KeyPressEventArgs e)
+        private void txtEmployeeNum_KeyPress(object sender, KeyPressEventArgs e)
         {
             //0～9と、バックスペース以外の時は、イベントをキャンセルする
             if ((e.KeyChar < '0' || '9' < e.KeyChar) && e.KeyChar != '\b')
@@ -236,45 +271,23 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtUserNo_From_Leave(object sender, EventArgs e)
+        private void txtEmployeeNum_Leave(object sender, EventArgs e)
         {
             int intUserNo = 0;
 
-            if (txtUserNo_From.TextLength > 0)
+            TextBox tb = (TextBox)sender;
+
+            if (tb.TextLength > 0)
             {
-                if (Int32.TryParse(txtUserNo_From.Text, out intUserNo) == false)
+                if (Int32.TryParse(tb.Text, out intUserNo) == false)
                 {
                     MessageBox.Show("数値のみ入力してください。");
-                    txtUserNo_From.Focus();
+                    tb.Focus();
                     return;
                 }
                 else
                 {
-                    txtUserNo_From.Text = String.Format("{0:D4}", intUserNo);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 作業者番号Toフォーカス消失
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void txtUserNo_To_Leave(object sender, EventArgs e)
-        {
-            int intUserNo = 0;
-
-            if (txtUserNo_To.TextLength > 0)
-            {
-                if (Int32.TryParse(txtUserNo_To.Text, out intUserNo) == false)
-                {
-                    MessageBox.Show("数値のみ入力してください。");
-                    txtUserNo_To.Focus();
-                    return;
-                }
-                else
-                {
-                    txtUserNo_To.Text = String.Format("{0:D4}", intUserNo);
+                    tb.Text = String.Format("{0:D4}", intUserNo);
                 }
             }
         }
@@ -285,7 +298,7 @@ namespace WokerMstManagement
         /// データグリッドビュー表示処理
         /// </summary>
         /// <param name="intExecMode">検索モード
-        ///   0：初期表示＆検索
+        ///   0：初期表示＆検索＆削除
         ///   1：登録
         ///   2：更新
         /// </param>
@@ -297,33 +310,59 @@ namespace WokerMstManagement
         {
             string strSQL = "";
 
-            dgvUser.Rows.Clear();
+            dgvWorker.Rows.Clear();
 
             int intUserNoSta = 0;
             int intUserNoEnd = 0;
 
             try
             {
-                if (g_bolModeNonDBCon == true)
-                    throw new Exception("DB非接続モードです");
-
                 // 条件が指定されていない場合は抽出しない
-                // PostgreSQLへ接続
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
-                {
-                    NpgsqlCon.Open();
-
-                    // SQL抽出
-                    NpgsqlCommand NpgsqlCom = null;
-                    NpgsqlDataAdapter NpgsqlDtAd = null;
-                    m_dtData = new DataTable();
-                    strSQL += @"SELECT 
-                                    employee_num
-                                  , worker_name_sei || '" + g_CON_NAME_SEPARATE + @"' || worker_name_mei as worker_name
-                                  , worker_name_sei_kana || '" + g_CON_NAME_SEPARATE + @"' || worker_name_mei_kana as worker_name_kana
-                                FROM 
+                // SQL抽出
+                m_dtData = new DataTable();
+                strSQL += @"SELECT 
+                                employee_num
+                              , worker_name_sei || '" + g_CON_NAME_SEPARATE + @"' || worker_name_mei as worker_name
+                              , worker_name_sei_kana || '" + g_CON_NAME_SEPARATE + @"' || worker_name_mei_kana as worker_name_kana
+                            FROM 
                                     mst_Worker ";
-                    strSQL += "WHERE del_flg = 0 ";
+                strSQL += "WHERE del_flg = 0 ";
+                if (m_strKanaSta == "！" && m_strKanaEnd == "！")
+                {
+                    strSQL += @"AND NOT(
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ア' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'オ') 
+                                   OR 
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'カ' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'コ') 
+                                   OR 
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'サ' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'ソ') 
+                                   OR 
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'タ' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'ト') 
+                                   OR 
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ナ' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'ノ') 
+                                   OR 
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ハ' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'ホ') 
+                                   OR 
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'マ' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'モ') 
+                                   OR 
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ヤ' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'ヨ') 
+                                   OR 
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ラ' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'ロ') 
+                                   OR 
+                                   ( SUBSTRING(worker_name_sei_kana,1,1) >= 'ワ' AND 
+                                     SUBSTRING(worker_name_sei_kana,1,1) <= 'ン') 
+                               ) ";
+                }
+                else
+                {
                     if (!string.IsNullOrEmpty(m_strKanaSta))
                     {
                         strSQL += "AND SUBSTRING(worker_name_sei_kana,1,1) >= '" + m_strKanaSta + "' ";
@@ -332,63 +371,49 @@ namespace WokerMstManagement
                     {
                         strSQL += "AND SUBSTRING(worker_name_sei_kana,1,1) <= '" + m_strKanaEnd + "' ";
                     }
-                    if (txtUserNo_From.Text != "")
+                    if (txtEmployeeNumFrom.Text != "")
                     {
-                        Int32.TryParse(txtUserNo_From.Text, out intUserNoSta);
+                        Int32.TryParse(txtEmployeeNumFrom.Text, out intUserNoSta);
                         strSQL += "AND TO_NUMBER(employee_num, '0000') >= " + intUserNoSta + " ";
                     }
-                    if (txtUserNo_To.Text != "")
+                    if (txtEmployeeNumTo.Text != "")
                     {
-                        Int32.TryParse(txtUserNo_To.Text, out intUserNoEnd);
+                        Int32.TryParse(txtEmployeeNumTo.Text, out intUserNoEnd);
                         strSQL += "AND TO_NUMBER(employee_num, '0000') <= " + intUserNoEnd + " ";
                     }
-                    strSQL += "ORDER BY employee_num ASC ;";
-                    NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                    NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                    NpgsqlDtAd.Fill(m_dtData);
-
-                    // データグリッドビューに反映
-                    foreach (DataRow row in m_dtData.Rows)
-                    {
-                        this.dgvUser.Rows.Add(row.ItemArray);
-                    }
                 }
-            }
-            catch (Exception e)
-            {
-                string strErrMsg = "";
-                strErrMsg = e.Message;
 
-                // 後々この処理は消す
-                foreach (string line in File.ReadLines("作業者.tsv", Encoding.Default))
+                strSQL += "ORDER BY employee_num ASC ;";
+                g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL);
+
+                // データグリッドビューに反映
+                foreach (DataRow row in m_dtData.Rows)
                 {
-                    // 改行コードを変換
-                    string strLine = line.Replace("\\rn", Environment.NewLine);
-
-                    string[] csv = strLine.Split('\t');
-                    string[] data = new string[csv.Length];
-                    Array.Copy(csv, 0, data, 0, data.Length);
-                    this.dgvUser.Rows.Add(data);
+                    this.dgvWorker.Rows.Add(row.ItemArray);
                 }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
-            dgvUser.CurrentCell = null;
+            dgvWorker.CurrentCell = null;
 
-            if (dgvUser.Rows.Count > 0)
+            if (dgvWorker.Rows.Count > 0)
             {
                 // 表示モードが初期表示の場合
                 if (intExecMode == 0)
                 {
                     // 0行目表示
-                    dgvUser.Rows[0].Selected = true;
-                    dgvUser.FirstDisplayedScrollingRowIndex = 0;
+                    dgvWorker.Rows[0].Selected = true;
+                    dgvWorker.FirstDisplayedScrollingRowIndex = 0;
                 }
                 else if (intExecMode == 1) 
                 {
                     int intSelRow = 0;
 
                     // 対象の選択行を探す
-                    foreach (DataGridViewRow r in dgvUser.Rows)
+                    foreach (DataGridViewRow r in dgvWorker.Rows)
                     {
                         if (strSelWorkerNo == NulltoString(r.Cells[m_CON_COL_USERNO].Value)) 
                         {
@@ -398,26 +423,26 @@ namespace WokerMstManagement
                     }
 
                     // 更新行表示
-                    dgvUser.Rows[intSelRow].Selected = true;
+                    dgvWorker.Rows[intSelRow].Selected = true;
                     // 対象行が既に画面内に表示されている時は何もしない
-                    if (dgvUser.SelectedRows[0].Displayed)
+                    if (dgvWorker.SelectedRows[0].Displayed)
                     {
                         return;
                     }
-                    dgvUser.FirstDisplayedScrollingRowIndex = intSelRow;
+                    dgvWorker.FirstDisplayedScrollingRowIndex = intSelRow;
                 }
                 // 表示モードが更新表示の場合
                 else if (intExecMode == 2)
                 {
                     // 更新行表示
-                    dgvUser.Rows[intLastTimeSelLine].Selected = true;
+                    dgvWorker.Rows[intLastTimeSelLine].Selected = true;
 
                     // 対象行が既に画面内に表示されている時は何もしない
-                    if (dgvUser.SelectedRows[0].Displayed)
+                    if (dgvWorker.SelectedRows[0].Displayed)
                     {
                         return;
                     }
-                    dgvUser.FirstDisplayedScrollingRowIndex = intLastTimeSelLine;
+                    dgvWorker.FirstDisplayedScrollingRowIndex = intLastTimeSelLine;
                 }
             }
         }
@@ -428,24 +453,34 @@ namespace WokerMstManagement
         /// <param name="NpgsqlCon">接続子</param>
         /// <param name="transaction">トランザクション</param>
         /// <returns></returns>
-        private Boolean DelUser(NpgsqlConnection NpgsqlCon
-                              , NpgsqlTransaction transaction
-                              , string strSelUserNo)
+        private Boolean DelUser(string strSelUserNo)
         {
-            // SQL文を作成する
-            string strUpdateSql = @"UPDATE mst_Worker
-                                           SET del_flg = 1
-                                         WHERE employee_num = :UserNo";
-
-            // SQLコマンドに各パラメータを設定する
-            var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);
-
-            command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = strSelUserNo });
-
-            // sqlを実行する
-            if (ExecTranSQL(command, transaction) == false)
+            try
             {
-                return false;
+                // SQL文を作成する
+                string strUpdateSql = @"UPDATE mst_Worker
+                                       SET del_flg = 1
+                                     WHERE employee_num = :UserNo";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserNo", DbType = DbType.String, Value = strSelUserNo });
+
+                // sqlを実行する
+                g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
+
+                g_clsConnectionNpgsql.DbCommit();
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0006, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally 
+            {
+                g_clsConnectionNpgsql.DbClose();
             }
 
             return true;

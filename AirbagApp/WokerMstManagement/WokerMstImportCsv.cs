@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
-using Npgsql;
+using System.Windows.Forms;
 using static WokerMstManagement.Common;
 
 namespace WokerMstManagement
@@ -14,32 +13,30 @@ namespace WokerMstManagement
     {
         #region 変数・定数
         // CSVファイル配置情報
-        private const int m_CON_COL_USER_INFO_PROCESS_TYPE = 0;
-        private const int m_CON_COL_USER_INFO_NO = 1;
-        private const int m_CON_COL_USER_INFO_NAME_SEI = 2;
-        private const int m_CON_COL_USER_INFO_NAME_MEI = 3;
-        private const int m_CON_COL_USER_INFO_KANA_SEI = 4;
-        private const int m_CON_COL_USER_INFO_KANA_MEI = 5;
+        private const int m_CON_COL_WORKER_INFO_PROCESS_TYPE = 0;
+        private const int m_CON_COL_WORKER_INFO_NO = 1;
+        private const int m_CON_COL_WORKER_INFO_NAME_SEI = 2;
+        private const int m_CON_COL_WORKER_INFO_NAME_MEI = 3;
+        private const int m_CON_COL_WORKER_INFO_KANA_SEI = 4;
+        private const int m_CON_COL_WORKER_INFO_KANA_MEI = 5;
 
-        private const string m_CON_COL_PROCESS_TYPE_REG = "C";
-        private const string m_CON_COL_PROCESS_TYPE_UPD = "U";
-        private const string m_CON_COL_PROCESS_TYPE_DEL = "D";
-
-        private const string m_CON_OUTLOGFILE_NAME = "UserImportLog";
+        private const string m_CON_OUTLOGFILE_NAME = "WorkerImportLog";
 
         private static string m_strInputFileName = "";
+
+        private static string m_strOutPutFilePath = "";
 
         /// <summary>
         /// 作業者登録CSVファイル
         /// </summary>
-        public class UserCsvInfo
+        public class WorkerCsvInfo
         {
             public string strProcessType { get; set; }
-            public string strUserID { get; set; }
-            public string strUserNameSei { get; set; }
-            public string strUserNameMei { get; set; }
-            public string strUserKanaSei { get; set; }
-            public string strUserKanaMei { get; set; }
+            public string strWorkerID { get; set; }
+            public string strWorkerNameSei { get; set; }
+            public string strWorkerNameMei { get; set; }
+            public string strWorkerKanaSei { get; set; }
+            public string strWorkerKanaMei { get; set; }
         }
         #endregion
 
@@ -59,7 +56,7 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CsvFile_Click(object sender, EventArgs e)
+        private void SelectImportFile_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofDialog = new OpenFileDialog();
 
@@ -76,12 +73,8 @@ namespace WokerMstManagement
             {
                 Console.WriteLine(ofDialog.FileName);
             }
-            else
-            {
-                Console.WriteLine("キャンセルされました");
-            }
 
-            txtCsvFile.Text = ofDialog.FileName;
+            txtImportFilePath.Text = ofDialog.FileName;
 
             // オブジェクトを破棄する
             ofDialog.Dispose();
@@ -95,102 +88,163 @@ namespace WokerMstManagement
         private void btnImport_Click(object sender, EventArgs e)
         {
             // 読み込みデータ
-            UserCsvInfo uciUserData = new UserCsvInfo();
-            int intReadData = 0;
+            WorkerCsvInfo uciWorkerData = new WorkerCsvInfo();
+            bool bolTitleRow = true;
+            int intRowCount = 0;
+            int intImpCount = 0;
+            int intImpOkCount = 0;
+            int intImpNgCount = 0;
+            int intCCount = 0;
+            int intCOkCount = 0;
+            int intCNgCount = 0;
+            int intUCount = 0;
+            int intUOkCount = 0;
+            int intUNgCount = 0;
+            int intDCount = 0;
+            int intDOkCount = 0;
+            int intDNgCount = 0;
 
             // 未入力チェック
-            if (txtCsvFile.Text == "")
+            if (txtImportFilePath.Text == "")
             {
-                MessageBox.Show("CSVファイルを選択してください");
-                btnCsvFile.Focus();
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0009, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnSelectImportFile.Focus();
                 return;
             }
 
-            if (MessageBox.Show("指定したCSVファイルを取込みます。\r\nよろしいですか？"
+            if (MessageBox.Show(g_clsMessageInfo.strMsgQ0004
                               , "確認"
-                              , MessageBoxButtons.YesNo) == DialogResult.Yes)
+                              , MessageBoxButtons.YesNo
+                              , MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                // ファイル存在チェック
-                string strFileName = txtCsvFile.Text;
-                if (System.IO.File.Exists(strFileName) == false)
-                {
-                    MessageBox.Show("指定されたcsvファイルが存在しません。"
-                                   + Environment.NewLine
-                                   + strFileName);
-                    return;
-                }
-
+                string strFileName = txtImportFilePath.Text;
                 m_strInputFileName = strFileName;
 
-                int intRowCount = 0;
-                int intErrorCount = 0;
-
                 // 選択ファイル読み込み
-                using (StreamReader sr = new StreamReader(strFileName, Encoding.GetEncoding("Shift_JIS")))
+                try
                 {
-                    // PostgreSQLへ接続
-                    using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
+                    using (StreamReader sr = new StreamReader(strFileName, Encoding.GetEncoding("Shift_JIS")))
                     {
-                        NpgsqlCon.Open();
 
-                        using (var transaction = NpgsqlCon.BeginTransaction())
+                        // ストリームの末尾まで繰り返す
+                        while (!sr.EndOfStream)
                         {
-                            // ストリームの末尾まで繰り返す
-                            while (!sr.EndOfStream)
+                            intRowCount++;
+
+                            // マーカCSVファイルを１行読み込む
+                            string strFileTextLine = sr.ReadLine();
+                            if (strFileTextLine == "" || bolTitleRow == true)
                             {
-                                intRowCount = intRowCount + 1;
-
-                                // マーカCSVファイルを１行読み込む
-                                string strFileTextLine = sr.ReadLine();
-                                if (strFileTextLine == "" || intRowCount == 1)
-                                {
-                                    // ヘッダ行(1行目)または空行（最終行）の場合読み飛ばす
-                                    continue;
-                                }
-
-                                // CSVファイル読み込み＆入力データチェックを行う
-                                if (ReadCsvData(strFileTextLine, intRowCount, out uciUserData) == false)
-                                {
-                                    intErrorCount = intErrorCount + 1;
-                                    continue;
-                                }
-
-                                // 登録処理実施
-                                if (RegistrationUser(uciUserData, NpgsqlCon, transaction) == true)
-                                {
-                                    intReadData = intReadData + 1;
-                                }
-                                else
-                                {
-                                    return;
-                                }
+                                // ヘッダ行(1行目)または空行（最終行）の場合読み飛ばす
+                                bolTitleRow = false;
+                                continue;
                             }
 
-                            // トランザクションコミット
-                            transaction.Commit();
-                        }
-                    }
+                            // 件数
+                            intImpCount++;
 
-                    if (intRowCount == 1)
-                    {
-                        MessageBox.Show("CSVのデータが0件です");
-                        // ログファイルにエラー出力を行う
-                        OutPutImportLog("取り込み件数0件");
-                        this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                        this.Close();
-                        return;
+                            // 件数(登録,更新,削除)
+                            if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeCre)
+                                intCCount++;
+                            else if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeUpd)
+                                intUCount++;
+                            else if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeDel)
+                                intDCount++;
+
+                            // CSVファイル読み込み＆入力データチェックを行う
+                            if (ReadCsvData(strFileTextLine, intRowCount, out uciWorkerData) == false)
+                            {
+                                // NG件数(登録,更新,削除)
+                                if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeCre)
+                                    intCNgCount++;
+                                else if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeUpd)
+                                    intUNgCount++;
+                                else if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeDel)
+                                    intDNgCount++;
+
+                                intImpNgCount++;
+
+                                continue;
+                            }
+
+                            // 登録処理実施
+                            if (RegistrationWorker(uciWorkerData) == true)
+                            {
+                                // OK件数(登録,更新,削除)
+                                if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeCre)
+                                    intCOkCount++;
+                                else if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeUpd)
+                                    intUOkCount++;
+                                else if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeDel)
+                                    intUOkCount++;
+
+                                intImpOkCount++;
+                            }
+                            else
+                            {
+                                // NG件数(登録,更新,削除)
+                                if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeCre)
+                                    intCNgCount++;
+                                else if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeUpd)
+                                    intUNgCount++;
+                                else if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeDel)
+                                    intDNgCount++;
+
+                                intImpNgCount++;
+                            }
+
+                        }
+
+                        // トランザクションコミット
+                        g_clsConnectionNpgsql.DbCommit();
                     }
                 }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
 
-                intRowCount = intRowCount - 1;
-                MessageBox.Show("取込み処理が完了しました。"
-                                 + Environment.NewLine + "読み込み行数：" + intRowCount + "件"
-                                 + Environment.NewLine + "取り込み件数：" + intReadData + "件"
-                                 + Environment.NewLine + "エラー件数：" + intErrorCount + "件"
-                                 + Environment.NewLine + "エラーの詳細はログファイルを参照してください");
-                OutPutImportLog("取込み処理が完了しました。読み込み行数：" + intRowCount + "件"
-                                                       + " 取り込み件数：" + intReadData + "件"
-                                                       + " エラー件数：" + intErrorCount + "件");
+                    OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message + "\"");
+
+                    intImpNgCount++;
+                }
+                finally
+                {
+                    g_clsConnectionNpgsql.DbClose();
+                }
+
+                if (intImpNgCount > 0 || intCNgCount > 0 || intUNgCount > 0 || intDNgCount > 0)
+                {
+                    OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgW0001,
+                                                         intImpCount, intImpOkCount, intImpNgCount,
+                                                         intCCount, intCOkCount, intCNgCount,
+                                                         intUCount, intUOkCount, intUNgCount,
+                                                         intDCount, intDOkCount, intDNgCount) + "\"");
+                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0001,
+                                                  intImpCount, intImpOkCount, intImpNgCount,
+                                                  intCCount, intCOkCount, intCNgCount,
+                                                  intUCount, intUOkCount, intUNgCount,
+                                                  intDCount, intDOkCount, intDNgCount) + "\n" +
+                                    string.Format(g_clsMessageInfo.strMsgI0002, m_strOutPutFilePath),
+                                    "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgI0001,
+                                                         intImpCount, intImpOkCount, intImpNgCount,
+                                                         intCCount, intCOkCount, intCNgCount,
+                                                         intUCount, intUOkCount, intUNgCount,
+                                                         intDCount, intDOkCount, intDNgCount) + "\"");
+                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgI0001,
+                                                  intImpCount, intImpOkCount, intImpNgCount,
+                                                  intCCount, intCOkCount, intCNgCount,
+                                                  intUCount, intUOkCount, intUNgCount,
+                                                  intDCount, intDOkCount, intDNgCount) + "\n" +
+                                    string.Format(g_clsMessageInfo.strMsgI0002, m_strOutPutFilePath),
+                                    "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
                 this.Close();
             }
@@ -202,24 +256,31 @@ namespace WokerMstManagement
         /// CSVファイル読み込み
         /// </summary>
         /// <param name="strFileTextLine">CSVファイル行テキスト</param>
-        /// <param name="lstUserData">CSVファイルデータ</param>
+        /// <param name="lstWorkerData">CSVファイルデータ</param>
         /// <returns></returns>
         private Boolean ReadCsvData(string strFileTextLine
                                   , int intRowCount
-                                  , out UserCsvInfo uciUserData)
+                                  , out WorkerCsvInfo uciWorkerData)
         {
-            uciUserData = new UserCsvInfo();
+            uciWorkerData = new WorkerCsvInfo();
+            String strData = string.Join(",",
+                             uciWorkerData.strProcessType,
+                             uciWorkerData.strWorkerID,
+                             uciWorkerData.strWorkerNameSei,
+                             uciWorkerData.strWorkerNameMei,
+                             uciWorkerData.strWorkerKanaSei,
+                             uciWorkerData.strWorkerKanaMei);
 
             // CSVを読み込む
-            if (SetUserInfoCsv(strFileTextLine, out uciUserData) == false)
+            if (SetWorkerInfoCsv(strFileTextLine, out uciWorkerData) == false)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の列数が不足しています");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0010, intRowCount) + ",\"" + strFileTextLine + "\"");
                 return false;
             }
 
             // 入力データチェックを行う
-            if (InputDataCheck(uciUserData, intRowCount) == false)
+            if (InputDataCheck(uciWorkerData, intRowCount) == false)
             {
                 return false;
             }
@@ -232,29 +293,29 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
         /// <returns></returns>
-        private static Boolean SetUserInfoCsv(string strFileReadLine
-                                             , out UserCsvInfo uciData)
+        private static Boolean SetWorkerInfoCsv(string strFileReadLine
+                                             , out WorkerCsvInfo uciData)
         {
             string[] stArrayData;
 
-            uciData = new UserCsvInfo();
+            uciData = new WorkerCsvInfo();
 
             // 半角スペース区切りで分割して配列に格納する
             stArrayData = strFileReadLine.Split(',');
 
             // 列数チェック
-            if (stArrayData.Length <= m_CON_COL_USER_INFO_KANA_MEI)
+            if (stArrayData.Length - 1 != m_CON_COL_WORKER_INFO_KANA_MEI)
             {
                 return false;
             }
 
             // CSVの各項目を構造体へ格納する
-            uciData.strProcessType = stArrayData[m_CON_COL_USER_INFO_PROCESS_TYPE];
-            uciData.strUserID = stArrayData[m_CON_COL_USER_INFO_NO];
-            uciData.strUserNameSei = stArrayData[m_CON_COL_USER_INFO_NAME_SEI];
-            uciData.strUserNameMei = stArrayData[m_CON_COL_USER_INFO_NAME_MEI];
-            uciData.strUserKanaSei = stArrayData[m_CON_COL_USER_INFO_KANA_SEI];
-            uciData.strUserKanaMei = stArrayData[m_CON_COL_USER_INFO_KANA_MEI];
+            uciData.strProcessType = stArrayData[m_CON_COL_WORKER_INFO_PROCESS_TYPE];
+            uciData.strWorkerID = stArrayData[m_CON_COL_WORKER_INFO_NO];
+            uciData.strWorkerNameSei = stArrayData[m_CON_COL_WORKER_INFO_NAME_SEI];
+            uciData.strWorkerNameMei = stArrayData[m_CON_COL_WORKER_INFO_NAME_MEI];
+            uciData.strWorkerKanaSei = stArrayData[m_CON_COL_WORKER_INFO_KANA_SEI];
+            uciData.strWorkerKanaMei = stArrayData[m_CON_COL_WORKER_INFO_KANA_MEI];
 
             return true;
         }
@@ -265,51 +326,58 @@ namespace WokerMstManagement
         /// <param name="uciCheckData">読み込みユーザ情報リスト</param>
         /// <param name="intRowCount">対象行番号</param>
         /// <returns></returns>
-        private Boolean InputDataCheck(UserCsvInfo uciCheckData
+        private Boolean InputDataCheck(WorkerCsvInfo uciCheckData
                                      , int intRowCount)
         {
-            Int32 intUserNo = 0;
+            Int32 intWorkerNo = 0;
+            String strData = string.Join(",",
+                                         uciCheckData.strProcessType,
+                                         uciCheckData.strWorkerID,
+                                         uciCheckData.strWorkerNameSei,
+                                         uciCheckData.strWorkerNameMei,
+                                         uciCheckData.strWorkerKanaSei,
+                                         uciCheckData.strWorkerKanaMei);
 
             // 必須入力チェック
-            if (CheckRequiredInput(uciCheckData.strProcessType, "処理区分", intRowCount, 1) == false ||
-                CheckRequiredInput(uciCheckData.strUserID, "社員番号", intRowCount, 4) == false ||
-                CheckRequiredInput(uciCheckData.strUserNameSei, "作業者名 性", intRowCount, 10) == false ||
-                CheckRequiredInput(uciCheckData.strUserNameMei, "作業者名 名", intRowCount, 10) == false ||
-                CheckRequiredInput(uciCheckData.strUserKanaSei, "読み仮名 性", intRowCount, 10) == false ||
-                CheckRequiredInput(uciCheckData.strUserKanaMei, "読み仮名 名", intRowCount, 10) == false)
+            if (CheckRequiredInput(uciCheckData.strProcessType, "処理区分", intRowCount, strData, 1, 1 , "", "") == false ||
+                CheckRequiredInput(uciCheckData.strWorkerID, "社員番号", intRowCount, strData, 4, 4, "0001", "0009") == false ||
+                CheckRequiredInput(uciCheckData.strWorkerNameSei, "作業者名 性", intRowCount, strData, 1, 10, "", "") == false ||
+                CheckRequiredInput(uciCheckData.strWorkerNameMei, "作業者名 名", intRowCount, strData, 1, 10, "", "") == false ||
+                CheckRequiredInput(uciCheckData.strWorkerKanaSei, "読みカナ 性", intRowCount, strData, 1, 10, "", "") == false ||
+                CheckRequiredInput(uciCheckData.strWorkerKanaMei, "読みカナ 名", intRowCount, strData, 1, 10, "", "") == false)
             {
                 return false;
             }
 
             // 文字入力チェック
-            if (uciCheckData.strProcessType != m_CON_COL_PROCESS_TYPE_REG &&
-                uciCheckData.strProcessType != m_CON_COL_PROCESS_TYPE_UPD &&
-                uciCheckData.strProcessType != m_CON_COL_PROCESS_TYPE_DEL)
+            if (uciCheckData.strProcessType != g_clsSystemSettingInfo.strProcessTypeCre &&
+                uciCheckData.strProcessType != g_clsSystemSettingInfo.strProcessTypeUpd &&
+                uciCheckData.strProcessType != g_clsSystemSettingInfo.strProcessTypeDel)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の処理区分は「C,U,D」のいずれかを指定してください。");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "処理区分", "C/U/D") + ",\"" + strData + "\"");
                 return false;
             }
 
             // 数値入力チェック
-            if (Int32.TryParse(uciCheckData.strUserID, out intUserNo) == false)
+            if (Int32.TryParse(uciCheckData.strWorkerID, out intWorkerNo) == false)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の社員番号は数字のみ入力してください。");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0013, "社員番号", "0001", "0009") + ",\"" + strData + "\"");
                 return false;
             }
 
             // カナ入力チェック
-            if (Regex.IsMatch(uciCheckData.strUserKanaSei, "^[ァ-ヶー]*$") == false)
+            if (Regex.IsMatch(uciCheckData.strWorkerKanaSei, "^[ァ-ヶー]*$") == false)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の読み仮名 性は全角カナのみ入力してください。");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "読みカナ 性", "全角カナ") + ",\"" + strData + "\"");
                 return false;
             }
-            if (Regex.IsMatch(uciCheckData.strUserKanaMei, "^[ァ-ヶー]*$") == false)
+            if (Regex.IsMatch(uciCheckData.strWorkerKanaMei, "^[ァ-ヶー]*$") == false)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の読み仮名 名は全角カナのみ入力してください。");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "読みカナ 名", "全角カナ") + ",\"" + strData + "\"");
                 return false;
             }
 
@@ -322,24 +390,32 @@ namespace WokerMstManagement
         /// <param name="strCheckData">チェック対象テキスト</param>
         /// <param name="strItemName">チェック対象項目名</param>
         /// <param name="intRowCount">チェック対象行番号</param>
+        /// <param name="strData">データ文字列</param>
+        /// <param name="intMinLength">項目最小長</param>
         /// <param name="intMaxLength">項目最大長</param>
+        /// <param name="strMinValue">項目最小値</param>
+        /// <param name="strMaxValue">項目最大値</param>
         /// <returns></returns>
         private Boolean CheckRequiredInput(String strCheckData
                                          , String strItemName
                                          , Int32 intRowCount
-                                         , Int32 intMaxLength)
+                                         , String strData
+                                         , Int32 intMinLength
+                                         , Int32 intMaxLength
+                                         , String strMinValue
+                                         , String strMaxValue)
         {
             // 必須入力チェック
             if (strCheckData == "")
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の" + strItemName + "は必須入力の項目です。");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0011 , strItemName) + ",\"" + strData + "\"");
                 return false;
             }
-            else if (strCheckData.Length > intMaxLength)
+            else if (strCheckData.Length < intMinLength || strCheckData.Length > intMaxLength)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目の" + strItemName + "が最大長を超えています。");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0012, strItemName, intMinLength, intMaxLength) + ",\"" + strData + "\"");
                 return false;
             }
 
@@ -349,53 +425,44 @@ namespace WokerMstManagement
         /// <summary>
         /// 登録処理
         /// </summary>
-        /// <param name="lstUserData">読み込みデータ一覧</param>
+        /// <param name="lstWorkerData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private Boolean RegistrationUser(UserCsvInfo uciCheckData
-                                       , NpgsqlConnection NpgsqlCon
-                                       , NpgsqlTransaction transaction)
+        private Boolean RegistrationWorker(WorkerCsvInfo uciCheckData)
         {
             try
             {
-                if (g_bolModeNonDBCon == true)
-                    return true;
-
                 // 登録・更新
-                if (uciCheckData.strProcessType == m_CON_COL_PROCESS_TYPE_REG ||
-                    uciCheckData.strProcessType == m_CON_COL_PROCESS_TYPE_UPD)
+                if (uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeCre ||
+                    uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeUpd)
                 {
                     // SQL文を作成する
                     string strCreateSql = @"INSERT INTO mst_Worker (employee_num, worker_name_sei, worker_name_mei, worker_name_sei_kana, worker_name_mei_kana, del_flg)
-                                                                    VALUES (:UserNo, :UserSurname, :UserName, :UserSurnameKana, :UserNameKana, 0)
+                                                                    VALUES (:WorkerNo, :WorkerSurname, :WorkerName, :WorkerSurnameKana, :WorkerNameKana, 0)
                                                                ON CONFLICT (employee_num)
-                                                             DO UPDATE SET worker_name_sei = :UserSurname
-                                                                         , worker_name_mei = :UserName
-                                                                         , worker_name_sei_kana = :UserSurnameKana
-                                                                         , worker_name_mei_kana = :UserNameKana
+                                                             DO UPDATE SET worker_name_sei = :WorkerSurname
+                                                                         , worker_name_mei = :WorkerName
+                                                                         , worker_name_sei_kana = :WorkerSurnameKana
+                                                                         , worker_name_mei_kana = :WorkerNameKana
                                                                      WHERE mst_Worker.del_flg = 0 ";
 
                     // SQLコマンドに各パラメータを設定する
-                    var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
-
-                    command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = String.Format("{0:D4}", Int32.Parse(uciCheckData.strUserID)) });
-                    command.Parameters.Add(new NpgsqlParameter("UserSurname", DbType.String) { Value = uciCheckData.strUserNameSei });
-                    command.Parameters.Add(new NpgsqlParameter("UserName", DbType.String) { Value = uciCheckData.strUserNameMei });
-                    command.Parameters.Add(new NpgsqlParameter("UserSurnameKana", DbType.String) { Value = uciCheckData.strUserKanaSei });
-                    command.Parameters.Add(new NpgsqlParameter("UserNameKana", DbType.String) { Value = uciCheckData.strUserKanaMei });
+                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNo", DbType = DbType.String, Value = String.Format("{0:D4}", Int32.Parse(uciCheckData.strWorkerID)) });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerSurname", DbType = DbType.String, Value = uciCheckData.strWorkerNameSei });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerName", DbType = DbType.String, Value = uciCheckData.strWorkerNameMei });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerSurnameKana", DbType = DbType.String, Value = uciCheckData.strWorkerKanaSei });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNameKana", DbType = DbType.String, Value = uciCheckData.strWorkerKanaMei });
 
                     // sqlを実行する
-                    if (ExecTranSQL(command, transaction) == false)
-                    {
-                        return false;
-                    }
+                    g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
                 }
                 // 削除
-                else if (uciCheckData.strProcessType == m_CON_COL_PROCESS_TYPE_DEL)
+                else if (uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeDel)
                 {
-                    string strSelUserNo = String.Format("{0:D4}", Int32.Parse(uciCheckData.strUserID));
+                    string strSelWorkerNo = String.Format("{0:D4}", Int32.Parse(uciCheckData.strWorkerID));
 
                     // ユーザ削除
-                    if (DelUser(NpgsqlCon, transaction, strSelUserNo) == false)
+                    if (DelWorker(strSelWorkerNo) == false)
                     {
                         return false;
                     }
@@ -405,9 +472,9 @@ namespace WokerMstManagement
             }
             catch (Exception ex)
             {
-                MessageBox.Show("登録時にエラーが発生しました。"
-                               + Environment.NewLine
-                               + ex.Message);
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0017 + "\r\n" + ex.Message);
+
                 return false;
             }
         }
@@ -418,25 +485,19 @@ namespace WokerMstManagement
         /// <param name="NpgsqlCon">接続子</param>
         /// <param name="transaction">トランザクション</param>
         /// <returns></returns>
-        private Boolean DelUser(NpgsqlConnection NpgsqlCon
-                              , NpgsqlTransaction transaction
-                              , string strSelUserNo)
+        private Boolean DelWorker(string strSelWorkerNo)
         {
             // SQL文を作成する
             string strUpdateSql = @"UPDATE mst_Worker
                                        SET del_flg = 1
-                                     WHERE employee_num = :UserNo";
+                                     WHERE employee_num = :WorkerNo";
 
             // SQLコマンドに各パラメータを設定する
-            var command = new NpgsqlCommand(strUpdateSql, NpgsqlCon, transaction);
-
-            command.Parameters.Add(new NpgsqlParameter("UserNo", DbType.String) { Value = strSelUserNo });
+            List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNo", DbType = DbType.String, Value = strSelWorkerNo });
 
             // sqlを実行する
-            if (ExecTranSQL(command, transaction) == false)
-            {
-                return false;
-            }
+            g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
 
             return true;
         }
@@ -446,30 +507,33 @@ namespace WokerMstManagement
         /// </summary>
         private static void OutPutImportLog(string strLogText)
         {
-            string strOutPutFilePath = "";
-            string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff");
+            string time = DateTime.Now.ToString("yyyy/M/d H:m:s");
 
             // 出力ファイル設定
-            strOutPutFilePath = System.IO.Directory.GetCurrentDirectory() + @"\"
-                                                                          + m_CON_OUTLOGFILE_NAME
-                                                                          + "_"
-                                                                          + DateTime.Now.ToString("yyyyMMdd")
-                                                                          + ".txt";
+            m_strOutPutFilePath = System.IO.Directory.GetCurrentDirectory() + @"\"
+                                                                            + m_CON_OUTLOGFILE_NAME
+                                                                            + "_"
+                                                                            + DateTime.Now.ToString("yyyyMMdd")
+                                                                            + ".csv";
 
             try
             {
                 //Shift JISで書き込む
                 //書き込むファイルが既に存在している場合は、上書きする
-                using (StreamWriter sw = new StreamWriter(strOutPutFilePath
+                using (StreamWriter sw = new StreamWriter(m_strOutPutFilePath
                                                         , true
                                                         , Encoding.GetEncoding("shift_jis")))
                 {
                     // １行ずつ出力を行う
-                    sw.WriteLine(time + " " + m_strInputFileName + ":" + strLogText);
+                    sw.WriteLine(time + "," + strLogText);
                 }
+                
             }
-            catch
+            catch (Exception ex)
             {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+
                 return;
             }
         }
