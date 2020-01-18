@@ -31,9 +31,14 @@ namespace ProductMstMaintenance
         private const string m_CON_INI_SECTION_REGISTER = "REGISTER";
         private const string m_CON_INI_SECTION_KIND = "KIND";
         private const string m_CON_INI_SECTION_AIRBAG = "AIRBAG";
+        private const string m_CON_INI_SECTION_AIRBAG_POINT_A = "000";
+        private const string m_CON_INI_SECTION_AIRBAG_POINT_B = "001";
+        private const string m_CON_INI_SECTION_AIRBAG_POINT_C = "002";
+        private const string m_CON_INI_SECTION_AIRBAG_POINT_D = "003";
+        private const string m_CON_INI_SECTION_AIRBAG_POINT_E = "004";
 
         // ログファイルの出力アプリ名
-        private const string m_CON_OUTLOGFILE_NAME = "HinNoImportLog";
+        private const string m_CON_OUTLOGFILE_NAME = "品番情報取り込みログ";
 
         // 品番情報INI 取り込み時特殊対応項目
         private const string m_CON_COL_FILE_NUM = "file_num";
@@ -46,6 +51,7 @@ namespace ProductMstMaintenance
 
         // エアバッグINI 取り込み時特殊対応項目
         private const string m_CON_COL_AIRBAG_NUMBER = "Number";
+        private const string m_CON_COL_AIRBAG_COORD = "Coord";
 
         // カメラCSVファイル配置情報
         private const int m_CON_COL_PRODUCT_NAME = 0;
@@ -70,11 +76,7 @@ namespace ProductMstMaintenance
         private const int m_CON_COL_LINE_THRESHOLD_D2 = 13;
         private const int m_CON_COL_LINE_THRESHOLD_E1 = 14;
         private const int m_CON_COL_LINE_THRESHOLD_E2 = 15;
-        private const int m_CON_COL_TOP_POINT_A = 16;
-        private const int m_CON_COL_TOP_POINT_B = 17;
-        private const int m_CON_COL_TOP_POINT_C = 18;
-        private const int m_CON_COL_TOP_POINT_D = 19;
-        private const int m_CON_COL_TOP_POINT_E = 20;
+        private const int m_CON_COL_AI_MODEL_NAME = 16;
 
         // 判定理由CSVファイル配置情報
         private const int m_CON_COL_REASON_CODE = 0;
@@ -82,6 +84,7 @@ namespace ProductMstMaintenance
 
         // INIファイルのセパレータ
         private const Char m_CON_SEPARATOR_XY = ' ';
+        private const Char m_CON_SEPARATOR_AIRBAG_COORD = ' ';
 
         // ログファイル出力先を設定
         private const string m_CON_MASTER_IMAGE = "MasterImageDirectory";
@@ -119,6 +122,9 @@ namespace ProductMstMaintenance
 
         // ログフォルダパス
         private static string m_strOutPutLogFolder = "";
+
+        // エラー出力用ファイル名
+        private static string m_strErrorOutFileName = "";
 
         /// <summary>
         /// 特殊対応ディクショナリ
@@ -268,6 +274,11 @@ namespace ProductMstMaintenance
         {
             public string file_num;
             public int Number;
+            public string strTopPointA;
+            public string strTopPointB;
+            public string strTopPointC;
+            public string strTopPointD;
+            public string strTopPointE;
         }
 
         /// <summary>
@@ -302,11 +313,7 @@ namespace ProductMstMaintenance
             public int intLineThresholdd2;
             public int intLineThresholde1;
             public int intLineThresholde2;
-            public string strTopPointA;
-            public string strTopPointB;
-            public string strTopPointC;
-            public string strTopPointD;
-            public string strTopPointE;
+            public string strAiModelName;
         }
 
         /// <summary>
@@ -372,8 +379,11 @@ namespace ProductMstMaintenance
                                                                      , SearchOption.TopDirectoryOnly);
                 FileInfo[] fiInputCsv = directorySearchFolder.GetFiles("*.csv"
                                                                      , SearchOption.TopDirectoryOnly);
-                FileInfo[] fiInputPng = directorySearchFolder.GetFiles("*.png"
+                FileInfo[] fiInputPng = directorySearchFolder.GetFiles("*.bmp"
                                                                      , SearchOption.TopDirectoryOnly);
+
+                // マスタ画像取り込み
+                ProcessMasterPng(fiInputPng);
 
                 // 品番マスタ情報取り込み
                 ProcessRegisterIni(fiInputIni);
@@ -390,18 +400,13 @@ namespace ProductMstMaintenance
                 // 閾値情報CSV取り込み
                 ProcessThresholdCsv(fiInputCsv);
 
-                // マスタ画像取り込み
-                ProcessMasterPng(fiInputPng);
-
                 // 判定理由取り込み
                 ProcessDecisionReasonCsv(fiInputCsv);
 
                 // 出力ファイル設定
                 string strOutPutFilePath = m_strOutPutLogFolder + @"\" 
                                                                 + m_CON_OUTLOGFILE_NAME
-                                                                + "_"
-                                                                + DateTime.Now.ToString("yyyyMMdd")
-                                                                + ".txt";
+                                                                + ".csv";
 
                 // 出力ダイアログメッセージを設定する
                 string strMsg = "取り込み処理が終了しました。" + Environment.NewLine + 
@@ -415,7 +420,21 @@ namespace ProductMstMaintenance
                  "詳細は、下記のログファイルを参照ください。" + Environment.NewLine +
                  "　" + strOutPutFilePath;
 
-                MessageBox.Show(strMsg, "取り込み結果", MessageBoxButtons.OK);
+                // エラーが一つでもある場合は警告表示する
+                if (m_intErrorRegProductInfo > 0 ||
+                    m_intErrorRegPTC > 0 ||
+                    m_intErrorRegAirBag > 0 ||
+                    m_intErrorCameraReg > 0 ||
+                    m_intErrorThresholdReg > 0 ||
+                    m_intErrorMasterImg > 0 ||
+                    m_intErrorDecisionReasonReg > 0)
+                {
+                    MessageBox.Show(strMsg, "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else 
+                {
+                    MessageBox.Show(strMsg, "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
                 this.Close();
             }
@@ -486,12 +505,13 @@ namespace ProductMstMaintenance
             // フォルダ内のファイルの数だけループする
             foreach (FileInfo Inputfile in fiInputIni)
             {
+                m_strErrorOutFileName = Inputfile.Name;
                 // 対象のファイルがロックされているか確認する
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
                     // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    OutPutImportLog("ファイルがロックされています");
                     m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
                     continue;
                 }
@@ -507,8 +527,9 @@ namespace ProductMstMaintenance
                     catch (Exception ex) 
                     {
                         // ログファイルにエラー出力を行う
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        WriteEventLog(g_CON_LEVEL_ERROR, "ファイルOPENに失敗しました " + ex.Message);
                         m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
                         continue;
                     }
 
@@ -596,7 +617,7 @@ namespace ProductMstMaintenance
             // 入力項目が0件の場合エラー
             if (idrCurrentData.Count == 0)
             {
-                OutPutImportLog("品番ファイルのデータが存在しません", strFileName);
+                OutPutImportLog("品番ファイルのデータが存在しません");
                 return false;
             }
 
@@ -796,12 +817,13 @@ namespace ProductMstMaintenance
             // フォルダ内のファイルの数だけループする
             foreach (FileInfo Inputfile in fiInputIni)
             {
+                m_strErrorOutFileName = Inputfile.Name;
                 // 対象のファイルがロックされているか確認する
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
                     // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    OutPutImportLog("ファイルがロックされています");
                     m_intErrorRegPTC = m_intErrorRegPTC + 1;
                     continue;
                 }
@@ -816,7 +838,7 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex) 
                     {
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
                         m_intErrorRegPTC = m_intErrorRegPTC + 1;
                         continue;
                     }
@@ -962,7 +984,7 @@ namespace ProductMstMaintenance
             // 入力項目が0件の場合エラー
             if (lstCurrentData.Count == 0)
             {
-                OutPutImportLog("PLCファイルのデータが存在しません", strFileName);
+                OutPutImportLog("PLCファイルのデータが存在しません");
                 return false;
             }
 
@@ -1070,12 +1092,13 @@ namespace ProductMstMaintenance
             // フォルダ内のファイルの数だけループする
             foreach (FileInfo Inputfile in fiInputIni)
             {
+                m_strErrorOutFileName = Inputfile.Name;
                 // 対象のファイルがロックされているか確認する
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
                     // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    OutPutImportLog("ファイルがロックされています");
                     m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
                     continue;
                 }
@@ -1090,7 +1113,7 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
                         m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
                         continue;
                     }
@@ -1174,6 +1197,12 @@ namespace ProductMstMaintenance
 
             int intRecordCount = 0;
 
+            string strTopPointATran = "";
+            string strTopPointBTran = "";
+            string strTopPointCTran = "";
+            string strTopPointDTran = "";
+            string strTopPointETran = "";
+
             // 各項目の値を取得する
             // FieldInfoを取得する
             Type typeOfMyStruct = typeof(IniAirBagCoord);
@@ -1192,7 +1221,7 @@ namespace ProductMstMaintenance
                     // ファイル名セクション名は設定済みのためスキップ
                     continue;
                 }
-                else if(fieldInfo.Name == m_CON_COL_AIRBAG_NUMBER)
+                else if (fieldInfo.Name == m_CON_COL_AIRBAG_NUMBER)
                 {
                     // セクションの数だけループする
                     foreach (string strRegister in lstRegisterIniSection)
@@ -1200,13 +1229,77 @@ namespace ProductMstMaintenance
                         int intNumberValue = NulltoInt(GetIniValue(Inputfile.FullName
                                                                  , strRegister
                                                                  , fieldInfo.Name));
-                        if (intNumberValue > 0) 
+                        if (intNumberValue > 0)
                         {
                             intRecordCount = intRecordCount + 1;
+
+                            string strTopPoint = "";
+                            // 頂点座標の設定を行う
+                            for (int i = 0; i < intNumberValue; i++)
+                            {
+                                string strPointValue = GetIniValue(Inputfile.FullName
+                                                                 , strRegister
+                                                                 , m_CON_COL_AIRBAG_COORD + String.Format("{0:00}", i));
+
+                                if (strTopPoint != "")
+                                {
+                                    strTopPoint = strTopPoint + ",";
+                                }
+
+                                if (strPointValue == "")
+                                {
+                                    strTopPoint = strTopPoint + "(,)";
+                                }
+                                else
+                                {
+                                    string[] strPointValueSplit = strPointValue.Split(m_CON_SEPARATOR_AIRBAG_COORD);
+                                    if (strPointValueSplit.Length == 1)
+                                    {
+                                        strTopPoint = strTopPoint + "(" + strPointValueSplit[1] + ",)";
+                                    }
+                                    else
+                                    {
+                                        strTopPoint = strTopPoint + "(" + strPointValueSplit[0] + "," + strPointValueSplit[1] + ")";
+                                    }
+
+                                }
+                            }
+
+                            // セクションによって頂点座標の値を設定する
+                            switch (strRegister)
+                            {
+                                case m_CON_INI_SECTION_AIRBAG + m_CON_INI_SECTION_AIRBAG_POINT_A:
+                                    strTopPointATran = strTopPoint;
+                                    break;
+                                case m_CON_INI_SECTION_AIRBAG + m_CON_INI_SECTION_AIRBAG_POINT_B:
+                                    strTopPointBTran = strTopPoint;
+                                    break;
+                                case m_CON_INI_SECTION_AIRBAG + m_CON_INI_SECTION_AIRBAG_POINT_C:
+                                    strTopPointCTran = strTopPoint;
+                                    break;
+                                case m_CON_INI_SECTION_AIRBAG + m_CON_INI_SECTION_AIRBAG_POINT_D:
+                                    strTopPointDTran = strTopPoint;
+                                    break;
+                                case m_CON_INI_SECTION_AIRBAG + m_CON_INI_SECTION_AIRBAG_POINT_E:
+                                    strTopPointETran = strTopPoint;
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
 
+                    // 構造体に値を格納する
                     iabCurrentData.Number = intRecordCount;
+                    iabCurrentData.strTopPointA = strTopPointATran;
+                    iabCurrentData.strTopPointB = strTopPointBTran;
+                    iabCurrentData.strTopPointC = strTopPointCTran;
+                    iabCurrentData.strTopPointD = strTopPointDTran;
+                    iabCurrentData.strTopPointE = strTopPointETran;
+                }
+                else 
+                {
+                    continue;
                 }
             }
 
@@ -1225,7 +1318,7 @@ namespace ProductMstMaintenance
             // 入力項目が0件の場合エラー
             if (lstCurrentData.Count == 0)
             {
-                OutPutImportLog("エアバッグファイルのデータが存在しません", strFileName);
+                OutPutImportLog("エアバッグファイルのデータが存在しません");
                 return false;
             }
 
@@ -1333,12 +1426,13 @@ namespace ProductMstMaintenance
             // フォルダ内のファイルの数だけループする
             foreach (FileInfo Inputfile in fiInputCsv)
             {
+                m_strErrorOutFileName = Inputfile.Name;
                 // 対象のファイルがロックされているか確認する
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
                     // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    OutPutImportLog("ファイルがロックされています");
                     m_intErrorCameraReg = m_intErrorCameraReg + 1;
                     continue;
                 }
@@ -1353,7 +1447,7 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
                         m_intErrorCameraReg = m_intErrorCameraReg + 1;
                         continue;
                     }
@@ -1626,12 +1720,13 @@ namespace ProductMstMaintenance
             // フォルダ内のファイルの数だけループする
             foreach (FileInfo Inputfile in fiInputCsv)
             {
+                m_strErrorOutFileName = Inputfile.Name;
                 // 対象のファイルがロックされているか確認する
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
                     // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    OutPutImportLog("ファイルがロックされています");
                     m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
                     continue;
                 }
@@ -1646,7 +1741,7 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex) 
                     {
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
                         m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
                         continue;
                     }
@@ -1750,17 +1845,31 @@ namespace ProductMstMaintenance
         {
             // 各項目のチェックを行う
             // 列数チェック
-            if (stArrayData.Length <= m_CON_COL_TOP_POINT_E)
+            if (stArrayData.Length <= m_CON_COL_AI_MODEL_NAME)
             {
                 // ログファイルにエラー出力を行う
                 WriteEventLog(g_CON_LEVEL_ERROR, intRowCount + "行目のファイルレイアウトが不正です。" + strFileReadLine);
                 return false;
             }
 
-            // 文字後列項目
             // 必須入力チェック
             if (CheckRequiredInput(stArrayData[m_CON_COL_PRODUCT_NAME_THRESHOLD], "品名", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, strFileReadLine) == false)
+                CheckRequiredInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04], "列閾値04", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A1], "行閾値A1", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A2], "行閾値A2", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B1], "行閾値B1", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B2], "行閾値B2", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C1], "行閾値C1", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C2], "行閾値C2", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D1], "行閾値D1", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D2], "行閾値D2", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E1], "行閾値E1", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E2], "行閾値E2", intRowCount, strFileReadLine) == false ||
+                CheckRequiredInput(stArrayData[m_CON_COL_AI_MODEL_NAME], "AIモデル名", intRowCount, strFileReadLine) == false)
             {
                 return false;
             }
@@ -1782,11 +1891,7 @@ namespace ProductMstMaintenance
                 CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D2], "行閾値D2", intRowCount, 1, 3, strFileReadLine) == false ||
                 CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E1], "行閾値E1", intRowCount, 1, 3, strFileReadLine) == false ||
                 CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E2], "行閾値E2", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_A], "頂点座標A", intRowCount, 1, 10, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_B], "頂点座標B", intRowCount, 1, 10, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_C], "頂点座標C", intRowCount, 1, 10, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_D], "頂点座標D", intRowCount, 1, 10, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_TOP_POINT_E], "頂点座標E", intRowCount, 1, 10, strFileReadLine) == false)
+                CheckLengthInput(stArrayData[m_CON_COL_AI_MODEL_NAME], "AIモデル名", intRowCount, 1, 256, strFileReadLine) == false)
             {
                 return false;
             }
@@ -1853,11 +1958,7 @@ namespace ProductMstMaintenance
             tciData.intLineThresholdd2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_D2]);
             tciData.intLineThresholde1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_E1]);
             tciData.intLineThresholde2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_E2]);
-            tciData.strTopPointA = stArrayData[m_CON_COL_TOP_POINT_A];
-            tciData.strTopPointB = stArrayData[m_CON_COL_TOP_POINT_B];
-            tciData.strTopPointC = stArrayData[m_CON_COL_TOP_POINT_C];
-            tciData.strTopPointD = stArrayData[m_CON_COL_TOP_POINT_D];
-            tciData.strTopPointE = stArrayData[m_CON_COL_TOP_POINT_E];
+            tciData.strAiModelName = stArrayData[m_CON_COL_AI_MODEL_NAME];
 
             return true;
         }
@@ -1964,6 +2065,7 @@ namespace ProductMstMaintenance
             // フォルダ内のファイルの数だけループする
             foreach (FileInfo Inputfile in fiInputPng)
             {
+                m_strErrorOutFileName = Inputfile.Name;
                 intFileCount = intFileCount + 1;
 
                 // 対象のファイルがロックされているか確認する
@@ -1971,7 +2073,7 @@ namespace ProductMstMaintenance
                 {
                     // ファイルがロックされている場合、スキップする
                     // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    OutPutImportLog("ファイルがロックされています");
                     m_intErrorMasterImg = m_intErrorMasterImg + 1;
                     continue;
                 }
@@ -1995,7 +2097,7 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        OutPutImportLog(intFileCount + "件目のマスタ画像の取り込みで例外が発生しました。" + ex.Message, Inputfile.Name);
+                        OutPutImportLog(intFileCount + "件目のマスタ画像の取り込みで例外が発生しました。" + ex.Message);
                         m_intErrorMasterImg = m_intErrorMasterImg + 1;
                         continue;
                     }
@@ -2003,10 +2105,11 @@ namespace ProductMstMaintenance
             }
 
             // ログファイル結果出力を行う
-            WriteEventLog(g_CON_LEVEL_INFO, "取り込み処理が終了しました。"
-                                          + "マスタ画像　取り込み件数：" + (m_intSuccesMasterImg + m_intErrorMasterImg) + "件　"
-                                          + "正常：" + m_intSuccesMasterImg + "件　" 
-                                          + "異常：" + m_intErrorMasterImg + "件 ");
+            string strOutMsg = "取り込み処理が終了しました。"
+                             + "マスタ画像　取り込み件数：" + (m_intSuccesMasterImg + m_intErrorMasterImg) + "件　"
+                             + "正常：" + m_intSuccesMasterImg + "件　"
+                             + "異常：" + m_intErrorMasterImg + "件 ";
+            OutPutImportLog(strOutMsg);
         }
         #endregion
 
@@ -2022,12 +2125,13 @@ namespace ProductMstMaintenance
             // フォルダ内のファイルの数だけループする
             foreach (FileInfo Inputfile in fiInputCsv)
             {
+                m_strErrorOutFileName = Inputfile.Name;
                 // 対象のファイルがロックされているか確認する
                 if (IsFileLocked(Inputfile.FullName) == true)
                 {
                     // ファイルがロックされている場合、スキップする
                     // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています", Inputfile.Name);
+                    OutPutImportLog("ファイルがロックされています");
                     m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
                     continue;
                 }
@@ -2042,7 +2146,7 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message, Inputfile.Name);
+                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
                         m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
                         continue;
                     }
@@ -2332,40 +2436,28 @@ namespace ProductMstMaintenance
         #endregion
         #endregion
 
-        #region ログ出力
+        #region 登録実行
         /// <summary>
-        /// インポートログ出力
+        /// 登録・更新処理実行
         /// </summary>
-        /// <param name="strLogText">ログのテキスト</param>
-        /// <param name="strFileName">ログ対象ファイル名</param>
-        private static void OutPutImportLog(string strLogText
-                                          , string strFileName)
+        /// <param name="nscCommand">実行SQLコマンド</param>
+        /// <param name="transaction">トランザクション情報</param>
+        /// <returns></returns>
+        public static Boolean ExecTranSQL(NpgsqlCommand nscCommand
+                                        , NpgsqlTransaction transaction
+                                        , string strErrorMsg)
         {
-            string strOutPutFilePath = "";
-            string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff");
-
-            // 出力ファイル設定
-            strOutPutFilePath = m_strOutPutLogFolder + @"\"
-                                                     + m_CON_OUTLOGFILE_NAME
-                                                     + "_"
-                                                     + DateTime.Now.ToString("yyyyMMdd")
-                                                     + ".txt";
-
             try
             {
-                //Shift JISで書き込む
-                //書き込むファイルが既に存在している場合は、上書きする
-                using (StreamWriter sw = new StreamWriter(strOutPutFilePath
-                                                        , true
-                                                        , Encoding.GetEncoding("shift_jis")))
-                {
-                    // １行ずつ出力を行う
-                    sw.WriteLine(time + " " + strFileName + ":" + strLogText);
-                }
+                nscCommand.ExecuteNonQuery();
+                return true;
             }
-            catch
+            catch (NpgsqlException ex)
             {
-                return;
+                WriteEventLog(g_CON_LEVEL_ERROR, strErrorMsg + ex.Message);
+                OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
+                transaction.Rollback();
+                return false;
             }
         }
         #endregion
@@ -2473,6 +2565,43 @@ namespace ProductMstMaintenance
             }
 
             return true;
+        }
+        #endregion
+
+        #region ログ出力
+        /// <summary>
+        /// インポートログ出力
+        /// </summary>
+        /// <param name="strLogText">ログのテキスト</param>
+        /// <param name="strFileName">ログ対象ファイル名</param>
+        private static void OutPutImportLog(string strLogText)
+        {
+            string strOutPutFilePath = "";
+            string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+
+            // 出力ファイル設定
+            strOutPutFilePath = m_strOutPutLogFolder + @"\"
+                                                     + m_CON_OUTLOGFILE_NAME
+                                                     + ".csv";
+
+            try
+            {
+                //Shift JISで書き込む
+                //書き込むファイルが既に存在している場合は、上書きする
+                using (StreamWriter sw = new StreamWriter(strOutPutFilePath
+                                                        , true
+                                                        , Encoding.GetEncoding("shift_jis")))
+                {
+                    // １行ずつ出力を行う
+                    sw.WriteLine(time + "," + strLogText + "," + m_strErrorOutFileName);
+                }
+            }
+            catch(Exception ex)
+            {
+                // ログファイル結果出力を行う
+                WriteEventLog(g_CON_LEVEL_ERROR, "ログファイルの出力でエラーが発生しました。" + ex.Message);
+                return;
+            }
         }
         #endregion
     }

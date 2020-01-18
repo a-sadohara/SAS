@@ -167,30 +167,7 @@ namespace ProductMstMaintenance
                 return int.Parse(objNValue.ToString());
             }
         }
-
-        /// <summary>
-        /// 登録・更新処理実行
-        /// </summary>
-        /// <param name="nscCommand">実行SQLコマンド</param>
-        /// <param name="transaction">トランザクション情報</param>
-        /// <returns></returns>
-        public static Boolean ExecTranSQL(NpgsqlCommand nscCommand
-                                        , NpgsqlTransaction transaction
-                                        , string strErrorMsg)
-        {
-            try
-            {
-                nscCommand.ExecuteNonQuery();
-                return true;
-            }
-            catch (NpgsqlException ex)
-            {
-                WriteEventLog(g_CON_LEVEL_ERROR, strErrorMsg + ex.Message);
-                transaction.Rollback();
-                return false;
-            }
-        }
-
+        
         /// <summary>
         /// 文字列からの部分文字列の抽出を右から行います
         /// </summary>
@@ -436,6 +413,11 @@ namespace ProductMstMaintenance
         // エアバッグ情報更新SQL
         public const string g_CON_UPDATE_MST_PRODUCT_INFO_AIRBAG =
             @"UPDATE mst_product_info SET column_cnt = :Number
+                                        , top_point_a = :strTopPointA
+                                        , top_point_b = :strTopPointB
+                                        , top_point_c = :strTopPointC
+                                        , top_point_d = :strTopPointD
+                                        , top_point_e = :strTopPointE
                                     WHERE file_num = :file_num ";
 
         // 品番カメラ更新SQL
@@ -462,11 +444,7 @@ namespace ProductMstMaintenance
                                         , line_threshold_d2 = :intLineThresholdd2
                                         , line_threshold_e1 = :intLineThresholde1
                                         , line_threshold_e2 = :intLineThresholde2
-                                        , top_point_a = :strTopPointA
-                                        , top_point_b = :strTopPointB
-                                        , top_point_c = :strTopPointC
-                                        , top_point_d = :strTopPointD
-                                        , top_point_e = :strTopPointE
+                                        , ai_model_name = :strAiModelName
                                     WHERE product_name = :strProductName ";
 
         // 判定理由マスタ登録SQL
