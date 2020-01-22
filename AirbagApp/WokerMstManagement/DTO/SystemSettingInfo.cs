@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Text;
 using System.Windows.Forms;
 using static WokerMstManagement.Common;
 
@@ -16,7 +16,7 @@ namespace WokerMstManagement.DTO
         private DataTable m_dtSystemSettingInfo = new DataTable();
 
         // エラーメッセージ格納用
-        private List<String> lststrErrorMessage = new List<String>();
+        private StringBuilder m_sbErrMessage = new StringBuilder();
 
         //==============
         // App.Config
@@ -42,22 +42,13 @@ namespace WokerMstManagement.DTO
                 GetSystemSettingValue();
 
                 // システム設定から情報を取得
-                GetAppConfigValue("LogFileOutputDirectory", ref strLogFileOutputDirectory);
-                GetAppConfigValue("ProcessTypeCre", ref strProcessTypeCre);
-                GetAppConfigValue("ProcessTypeUpd", ref strProcessTypeUpd);
-                GetAppConfigValue("ProcessTypeDel", ref strProcessTypeDel);
+                GetSystemSettingValue("LogFileOutputDirectory", ref strLogFileOutputDirectory);
+                GetSystemSettingValue("ProcessTypeCre", ref strProcessTypeCre);
+                GetSystemSettingValue("ProcessTypeUpd", ref strProcessTypeUpd);
+                GetSystemSettingValue("ProcessTypeDel", ref strProcessTypeDel);
 
-                if (lststrErrorMessage.Count > 0)
-                {
-                    foreach (string Message in lststrErrorMessage)
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, "システム設定取得時にエラーが発生しました。" + "\r\n" + Message);
-
-                    // メッセージ出力
-                    MessageBox.Show("システム設定取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return;
-                }
+                if (m_sbErrMessage.Length > 0)
+                    throw new Exception(m_sbErrMessage.ToString());
 
                 bolNormalEnd = true;
             }
@@ -81,7 +72,7 @@ namespace WokerMstManagement.DTO
             strValue = ConfigurationManager.AppSettings[strKey];
             if (strValue == null)
             {
-                lststrErrorMessage.Add("Key[" + strKey + "] AppConfigに存在しません。");
+                m_sbErrMessage.AppendLine("Key[" + strKey + "] AppConfigに存在しません。");
             }
         }
 
@@ -102,7 +93,7 @@ namespace WokerMstManagement.DTO
             }
             catch (Exception ex)
             {
-                lststrErrorMessage.Add("Key[" + strKey + "] " + ex.Message);
+                m_sbErrMessage.AppendLine("Key[" + strKey + "] " + ex.Message);
             }
         }
 
@@ -145,7 +136,7 @@ namespace WokerMstManagement.DTO
             }
             catch (Exception ex)
             {
-                lststrErrorMessage.Add("Id[" + strId + "] " + ex.Message);
+                m_sbErrMessage.AppendLine("Id[" + strId + "] " + ex.Message);
             }
         }
 
@@ -164,7 +155,7 @@ namespace WokerMstManagement.DTO
             }
             else
             {
-                lststrErrorMessage.Add("Id[" + strId + "] システム情報設定テーブルに存在しません。");
+                m_sbErrMessage.AppendLine("Id[" + strId + "] システム情報設定テーブルに存在しません。");
             }
         }
     }

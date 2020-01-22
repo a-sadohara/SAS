@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.Configuration;
+using System.Text;
 using System.Windows.Forms;
 using WokerMstManagement.DTO;
 
@@ -8,6 +9,15 @@ namespace WokerMstManagement
 {
     static class Common
     {
+        // 接続情報情報
+        public static string g_strConnectionString = "";
+        private const string g_CON_CONNECTION_STRING = "Server={0};Port={1};User ID={2};Database={3};Password={4};Enlist=true";
+        public static string g_strDBName = "";
+        public static string g_strDBUser = "";
+        public static string g_strDBUserPassword = "";
+        public static string g_strDBServerName = "";
+        public static string g_strDBPort = "";
+
         // コネクションクラス
         public static ConnectionNpgsql g_clsConnectionNpgsql;
 
@@ -16,6 +26,9 @@ namespace WokerMstManagement
 
         // メッセージ情報クラス
         public static MessageInfo g_clsMessageInfo;
+
+        // システム設定情報取得時のエラーメッセージ格納用
+        private static StringBuilder m_sbErrMessage = new StringBuilder();
 
         // 空白
         public const string g_CON_NAME_SEPARATE = "　";
@@ -41,23 +54,31 @@ namespace WokerMstManagement
             try
             {
                 // 接続文字列をApp.configファイルから取得
-                ConnectionStringSettings setConStr = null;
-                setConStr = ConfigurationManager.ConnectionStrings["ConnectionString"];
-                if (setConStr == null)
+                GetAppConfigValue("DBName", ref g_strDBName);
+                GetAppConfigValue("DBUser", ref g_strDBUser);
+                GetAppConfigValue("DBUserPassword", ref g_strDBUserPassword);
+                GetAppConfigValue("DBServerName", ref g_strDBServerName);
+                GetAppConfigValue("DBPort", ref g_strDBPort);
+
+                if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, "接続文字列取得時にエラーが発生しました。\r\nConnectionStringが存在しません。");
+                    WriteEventLog(g_CON_LEVEL_ERROR, "接続文字列取得時にエラーが発生しました。\r\n" + m_sbErrMessage.ToString());
                     // メッセージ出力
                     System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
-                else
-                {
-                    g_clsConnectionNpgsql = new ConnectionNpgsql(setConStr.ConnectionString);
-                    g_clsConnectionNpgsql.DbOpen();
-                    g_clsConnectionNpgsql.DbClose();
-                }
+
+                g_strConnectionString = string.Format(g_CON_CONNECTION_STRING, g_strDBServerName,
+                                                                               g_strDBPort,
+                                                                               g_strDBUser,
+                                                                               g_strDBName,
+                                                                               g_strDBUserPassword);
+                // 接続確認
+                g_clsConnectionNpgsql = new ConnectionNpgsql(g_strConnectionString);
+                g_clsConnectionNpgsql.DbOpen();
+                g_clsConnectionNpgsql.DbClose();
 
                 // システム設定情報取得
                 g_clsSystemSettingInfo = new SystemSettingInfo();
@@ -80,7 +101,10 @@ namespace WokerMstManagement
             }
             finally
             {
-                g_clsConnectionNpgsql.DbClose();
+                if (g_clsConnectionNpgsql != null)
+                {
+                    g_clsConnectionNpgsql.DbClose();
+                }
             }
 
             // フォーム画面を起動
@@ -137,6 +161,21 @@ namespace WokerMstManagement
                 case g_CON_LEVEL_DEBUG:
                     log.Debug(strMessage);
                     break;
+            }
+        }
+
+        /// <summary>
+        /// App.configファイルから設定値を取得
+        /// </summary>
+        /// <param name="strKey">キー</param>
+        /// <param name="strValue">設定値</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        private static void GetAppConfigValue(string strKey, ref string strValue)
+        {
+            strValue = ConfigurationManager.AppSettings[strKey];
+            if (strValue == null)
+            {
+                m_sbErrMessage.AppendLine("Key[" + strKey + "] AppConfigに存在しません。");
             }
         }
     }

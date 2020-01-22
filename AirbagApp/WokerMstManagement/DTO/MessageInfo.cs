@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
+using System.Text;
 using System.Windows.Forms;
 using static WokerMstManagement.Common;
 
@@ -16,7 +15,7 @@ namespace WokerMstManagement.DTO
         private DataTable m_dtMessageInfo = new DataTable();
 
         // エラーメッセージ格納用
-        private List<String> lststrErrorMessage = new List<String>();
+        private StringBuilder m_sbErrMessage = new StringBuilder();
 
         //==============================
         // メッセージ内容
@@ -88,17 +87,8 @@ namespace WokerMstManagement.DTO
                 GetMessageContent("Q0004", ref strMsgQ0004);
                 GetMessageContent("W0001", ref strMsgW0001);
 
-                if (lststrErrorMessage.Count > 0)
-                {
-                    foreach (string Message in lststrErrorMessage)
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, "メッセージ情報取得時にエラーが発生しました。" + "\r\n" + Message);
-
-                    // メッセージ出力
-                    MessageBox.Show("メッセージ情報取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return;
-                }
+                if (m_sbErrMessage.Length > 0)
+                    throw new Exception(m_sbErrMessage.ToString());
 
                 bolNormalEnd = true;
             }
@@ -148,7 +138,7 @@ namespace WokerMstManagement.DTO
             }
             else
             {
-                lststrErrorMessage.Add("Id[" + strId + "] メッセージ情報テーブルに存在しません。");
+                m_sbErrMessage.AppendLine("Id[" + strId + "] メッセージ情報テーブルに存在しません。");
             }
         }
     }

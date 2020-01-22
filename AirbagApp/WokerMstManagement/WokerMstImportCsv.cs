@@ -510,11 +510,11 @@ namespace WokerMstManagement
             string time = DateTime.Now.ToString("yyyy/M/d H:m:s");
 
             // 出力ファイル設定
-            m_strOutPutFilePath = System.IO.Directory.GetCurrentDirectory() + @"\"
-                                                                            + m_CON_OUTLOGFILE_NAME
-                                                                            + "_"
-                                                                            + DateTime.Now.ToString("yyyyMMdd")
-                                                                            + ".csv";
+            m_strOutPutFilePath = g_clsSystemSettingInfo.strLogFileOutputDirectory + @"\"
+                                                                                   + m_CON_OUTLOGFILE_NAME
+                                                                                   + "_"
+                                                                                   + DateTime.Now.ToString("yyyyMMdd")
+                                                                                   + ".csv";
 
             try
             {
