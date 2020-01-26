@@ -37,6 +37,8 @@
             this.dgvData = new System.Windows.Forms.DataGridView();
             this.No = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnOK = new System.Windows.Forms.Button();
+            this.panel2.SuspendLayout();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
             this.SuspendLayout();
@@ -54,11 +56,12 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.panel2.Controls.Add(this.btnOK);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 508);
+            this.panel2.Location = new System.Drawing.Point(0, 461);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(571, 23);
+            this.panel2.Size = new System.Drawing.Size(571, 70);
             this.panel2.TabIndex = 1;
             // 
             // panel3
@@ -68,7 +71,7 @@
             this.panel3.Location = new System.Drawing.Point(0, 11);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(22, 497);
+            this.panel3.Size = new System.Drawing.Size(22, 450);
             this.panel3.TabIndex = 2;
             // 
             // panel4
@@ -78,7 +81,7 @@
             this.panel4.Location = new System.Drawing.Point(549, 11);
             this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(22, 497);
+            this.panel4.Size = new System.Drawing.Size(22, 450);
             this.panel4.TabIndex = 3;
             // 
             // panel5
@@ -88,7 +91,7 @@
             this.panel5.Location = new System.Drawing.Point(22, 11);
             this.panel5.Margin = new System.Windows.Forms.Padding(2);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(527, 497);
+            this.panel5.Size = new System.Drawing.Size(527, 450);
             this.panel5.TabIndex = 4;
             // 
             // dgvData
@@ -108,7 +111,7 @@
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dgvData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvData.Size = new System.Drawing.Size(527, 497);
+            this.dgvData.Size = new System.Drawing.Size(527, 450);
             this.dgvData.TabIndex = 8;
             // 
             // No
@@ -126,6 +129,17 @@
             this.Reason.Name = "Reason";
             this.Reason.ReadOnly = true;
             // 
+            // btnOK
+            // 
+            this.btnOK.Location = new System.Drawing.Point(208, 20);
+            this.btnOK.Margin = new System.Windows.Forms.Padding(2);
+            this.btnOK.Name = "btnOK";
+            this.btnOK.Size = new System.Drawing.Size(154, 31);
+            this.btnOK.TabIndex = 1;
+            this.btnOK.Text = "閉じる";
+            this.btnOK.UseVisualStyleBackColor = true;
+            this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
+            // 
             // SelectErrorReason
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -142,6 +156,7 @@
             this.Name = "SelectErrorReason";
             this.Text = "判定理由マスタ";
             this.Load += new System.EventHandler(this.SelectErrorReason_Load);
+            this.panel2.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).EndInit();
             this.ResumeLayout(false);
@@ -158,5 +173,6 @@
         private System.Windows.Forms.DataGridView dgvData;
         private System.Windows.Forms.DataGridViewTextBoxColumn No;
         private System.Windows.Forms.DataGridViewTextBoxColumn Reason;
+        private System.Windows.Forms.Button btnOK;
     }
 }

@@ -8,13 +8,30 @@ using System.Configuration;
 using log4net;
 using System.Data;
 using System.IO;
+using System.Text;
+using ProductMstMaintenance.DTO;
 
 namespace ProductMstMaintenance
 {
     static class Common
     {
         // DB接続文字列
-        public static string g_ConnectionString;
+        public static string g_strConnectionString = "";
+        private const string g_CON_CONNECTION_STRING = "Server={0};Port={1};User ID={2};Database={3};Password={4};Enlist=true";
+        public static string g_strDBName = "";
+        public static string g_strDBUser = "";
+        public static string g_strDBUserPassword = "";
+        public static string g_strDBServerName = "";
+        public static string g_strDBPort = "";
+
+        // コネクションクラス
+        public static ConnectionNpgsql g_clsConnectionNpgsql;
+
+        // システム設定情報クラス
+        public static SystemSettingInfo g_clsSystemSettingInfo;
+
+        // メッセージ情報クラス
+        public static MessageInfo g_clsMessageInfo;
 
         // イベントログ出力関連
         public static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -23,6 +40,9 @@ namespace ProductMstMaintenance
         public const int g_CON_LEVEL_WARN = 3;
         public const int g_CON_LEVEL_INFO = 4;
         public const int g_CON_LEVEL_DEBUG = 5;
+
+        // システム設定情報取得時のエラーメッセージ格納用
+        private static StringBuilder m_sbErrMessage = new StringBuilder();
 
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
@@ -33,31 +53,57 @@ namespace ProductMstMaintenance
             try
             {
                 // 接続文字列をApp.configファイルから取得
-                ConnectionStringSettings setConStr = null;
-                setConStr = ConfigurationManager.ConnectionStrings["ConnectionString"];
-                if (setConStr == null)
+                GetAppConfigValue("DBName", ref g_strDBName);
+                GetAppConfigValue("DBUser", ref g_strDBUser);
+                GetAppConfigValue("DBUserPassword", ref g_strDBUserPassword);
+                GetAppConfigValue("DBServerName", ref g_strDBServerName);
+                GetAppConfigValue("DBPort", ref g_strDBPort);
+
+                if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, "App.configの[ConnectionString]の設定値取得時にエラーが発生しました。");
+                    WriteEventLog(g_CON_LEVEL_ERROR, "接続文字列取得時にエラーが発生しました。\r\n" + m_sbErrMessage.ToString());
                     // メッセージ出力
-                    MessageBox.Show("App.configの[ConnectionString]の設定値取得に失敗しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
-                else
-                {
-                    // TODO ★接続確認ロジックを付与★
-                }
-                g_ConnectionString = setConStr.ConnectionString;
+
+                g_strConnectionString = string.Format(g_CON_CONNECTION_STRING, g_strDBServerName,
+                                                                               g_strDBPort,
+                                                                               g_strDBUser,
+                                                                               g_strDBName,
+                                                                               g_strDBUserPassword);
+                // 接続確認
+                g_clsConnectionNpgsql = new ConnectionNpgsql(g_strConnectionString);
+                g_clsConnectionNpgsql.DbOpen();
+                g_clsConnectionNpgsql.DbClose();
+
+                // システム設定情報取得
+                g_clsSystemSettingInfo = new SystemSettingInfo();
+                if (g_clsSystemSettingInfo.bolNormalEnd == false)
+                    return;
+
+                // メッセージ情報取得
+                g_clsMessageInfo = new MessageInfo();
+                if (g_clsMessageInfo.bolNormalEnd == false)
+                    return;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "画面起動時にエラーが発生しました。\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, "初期起動時にエラーが発生しました。" + "\r\n" + ex.Message);
                 // メッセージ出力
-                MessageBox.Show("画面起動処理に失敗しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
+            }
+            finally
+            {
+                if (g_clsConnectionNpgsql != null)
+                {
+                    g_clsConnectionNpgsql.DbClose();
+                }
             }
 
             Application.EnableVisualStyles();
@@ -93,7 +139,7 @@ namespace ProductMstMaintenance
             try
             {
                 // SQL抽出から情報を取得
-                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_ConnectionString))
+                using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_strConnectionString))
                 {
                     NpgsqlCon.Open();
 
@@ -237,6 +283,21 @@ namespace ProductMstMaintenance
             return false;
         }
 
+        /// <summary>
+        /// App.configファイルから設定値を取得
+        /// </summary>
+        /// <param name="strKey">キー</param>
+        /// <param name="strValue">設定値</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        private static void GetAppConfigValue(string strKey, ref string strValue)
+        {
+            strValue = ConfigurationManager.AppSettings[strKey];
+            if (strValue == null)
+            {
+                m_sbErrMessage.AppendLine("Key[" + strKey + "] AppConfigに存在しません。");
+            }
+        }
+
         #region SQL定数
         //品番情報更新SQL
         public const string g_CON_INSERT_MST_PRODUCT_INFO =
@@ -284,8 +345,6 @@ namespace ProductMstMaintenance
                                           , point_5_plus_direction_y
                                           , stretch_rate_x
                                           , stretch_rate_y
-                                          , stretch_rate_x_upd
-                                          , stretch_rate_y_upd
                                           , regimark_3_imagepath
                                           , regimark_4_imagepath
                                           , stretch_rate_auto_calc_flg
@@ -339,8 +398,6 @@ namespace ProductMstMaintenance
                                           , :point_5_plus_direction_y
                                           , :AreaMagX
                                           , :AreaMagY
-                                          , :stretch_rate_x_upd
-                                          , :stretch_rate_y_upd
                                           , :TempFile3
                                           , :TempFile4
                                           , :AutoCalcAreaMagFlg
@@ -393,8 +450,6 @@ namespace ProductMstMaintenance
                                                        , point_5_plus_direction_y = :point_5_plus_direction_y
                                                        , stretch_rate_x = :AreaMagX
                                                        , stretch_rate_y = :AreaMagY
-                                                       , stretch_rate_x_upd = :stretch_rate_x_upd
-                                                       , stretch_rate_y_upd = :stretch_rate_y_upd
                                                        , regimark_3_imagepath = :TempFile3
                                                        , regimark_4_imagepath = :TempFile4
                                                        , stretch_rate_auto_calc_flg = :AutoCalcAreaMagFlg
@@ -455,6 +510,166 @@ namespace ProductMstMaintenance
         // 判定理由マスタ削除SQL
         public const string g_CON_DELETE_MST_PRODUCT_INFO_DECISION_REASON =
             @"DELETE FROM mst_decision_reason";
+
+        // 品名取得SQL
+        public const string g_CON_SELECT_MST_PRODUCT_INFO_PMS =
+            @"SELECT 'false',product_name FROM mst_product_info ORDER BY product_name";
+
+        // 判定理由取得SQL
+        public const string g_CON_SELECT_INFO_DECISION_REASON_SER =
+            @"SELECT reason_code, decision_reason FROM mst_decision_reason ORDER BY reason_code";
+
+        // 品名マスタメンテトップ画面取得SQL
+        public const string g_CON_SELECT_MST_PRODUCT_INFO_TOP =
+            @"SELECT
+                  *
+              FROM
+                  (
+                   SELECT
+                       product_name
+                     , airbag_imagepath
+                     , length
+                     , width
+                     , stretch_rate_x
+                     , stretch_rate_x_upd
+                     , stretch_rate_y
+                     , stretch_rate_y_upd
+                     , ai_model_non_inspection_flg
+                     , ai_model_name
+                     , regimark_between_length
+                     , regimark_1_point_x
+                     , regimark_1_point_y
+                     , regimark_2_point_x
+                     , regimark_2_point_y
+                     , base_point_1_x
+                     , base_point_1_y
+                     , point_1_plus_direction_x
+                     , point_1_plus_direction_y
+                     , base_point_2_x
+                     , base_point_2_y
+                     , point_2_plus_direction_x
+                     , point_2_plus_direction_y
+                     , base_point_3_x
+                     , base_point_3_y
+                     , point_3_plus_direction_x
+                     , point_3_plus_direction_y
+                     , base_point_4_x
+                     , base_point_4_y
+                     , point_4_plus_direction_x
+                     , point_4_plus_direction_y
+                     , base_point_5_x
+                     , base_point_5_y
+                     , point_5_plus_direction_x
+                     , point_5_plus_direction_y
+                     , start_regimark_camera_num
+                     , end_regimark_camera_num
+                     , illumination_information
+                     , column_threshold_01
+                     , column_threshold_02
+                     , column_threshold_03
+                     , column_threshold_04
+                     , line_threshold_a1
+                     , line_threshold_a2
+                     , line_threshold_b1
+                     , line_threshold_b2
+                     , line_threshold_c1
+                     , line_threshold_c2
+                     , line_threshold_d1
+                     , line_threshold_d2
+                     , line_threshold_e1
+                     , line_threshold_e2
+                   FROM
+                       mst_product_info
+                   ORDER BY
+                       product_name
+                  ) mpitop
+              LIMIT 1 OFFSET 0";
+
+        // 品名マスタメンテトップ画面取得SQL
+        public const string g_CON_SELECT_MST_PRODUCT_INFO_PRN =
+            @"SELECT
+                  product_name
+                , airbag_imagepath
+                , length
+                , width
+                , stretch_rate_x
+                , stretch_rate_x_upd
+                , stretch_rate_y
+                , stretch_rate_y_upd
+                , ai_model_non_inspection_flg
+                , ai_model_name
+                , regimark_between_length
+                , regimark_1_point_x
+                , regimark_1_point_y
+                , regimark_2_point_x
+                , regimark_2_point_y
+                , base_point_1_x
+                , base_point_1_y
+                , point_1_plus_direction_x
+                , point_1_plus_direction_y
+                , base_point_2_x
+                , base_point_2_y
+                , point_2_plus_direction_x
+                , point_2_plus_direction_y
+                , base_point_3_x
+                , base_point_3_y
+                , point_3_plus_direction_x
+                , point_3_plus_direction_y
+                , base_point_4_x
+                , base_point_4_y
+                , point_4_plus_direction_x
+                , point_4_plus_direction_y
+                , base_point_5_x
+                , base_point_5_y
+                , point_5_plus_direction_x
+                , point_5_plus_direction_y
+                , start_regimark_camera_num
+                , end_regimark_camera_num
+                , illumination_information
+                , column_threshold_01
+                , column_threshold_02
+                , column_threshold_03
+                , column_threshold_04
+                , line_threshold_a1
+                , line_threshold_a2
+                , line_threshold_b1
+                , line_threshold_b2
+                , line_threshold_c1
+                , line_threshold_c2
+                , line_threshold_d1
+                , line_threshold_d2
+                , line_threshold_e1
+                , line_threshold_e2
+              FROM
+                  mst_product_info
+              WHERE
+                  product_name = :product_name";
+
+        // 品名マスタメンテ画面更新SQL
+        public const string g_CON_UPDATE_MST_PRODUCT_INFO_DISP_INPUT =
+            @"UPDATE mst_product_info SET ai_model_non_inspection_flg = :ai_model_non_inspection_flg
+                                        , ai_model_name = :ai_model_name
+                                        , stretch_rate_x_upd = :stretch_rate_x_upd
+                                        , stretch_rate_y_upd = :stretch_rate_y_upd
+                                        , column_threshold_01 = :column_threshold_01
+                                        , column_threshold_02 = :column_threshold_02
+                                        , column_threshold_03 = :column_threshold_03
+                                        , column_threshold_04 = :column_threshold_04
+                                        , line_threshold_a1 = :line_threshold_a1
+                                        , line_threshold_a2 = :line_threshold_a2
+                                        , line_threshold_b1 = :line_threshold_b1
+                                        , line_threshold_b2 = :line_threshold_b2
+                                        , line_threshold_c1 = :line_threshold_c1
+                                        , line_threshold_c2 = :line_threshold_c2
+                                        , line_threshold_d1 = :line_threshold_d1
+                                        , line_threshold_d2 = :line_threshold_d2
+                                        , line_threshold_e1 = :line_threshold_e1
+                                        , line_threshold_e2 = :line_threshold_e2
+                                      WHERE product_name = :product_name ";
+
+        // 品名マスタメンテ削除SQL
+        public const string g_CON_DELETE_MST_PRODUCT_INFO_DISP_INPUT =
+            @"DELETE FROM mst_product_info WHERE product_name = :product_name ";
         #endregion
     }
 }
