@@ -44,7 +44,7 @@ namespace BeforeInspection.DTO
 
                 // メッセージ情報から内容を取得
                 GetMessageContent("E0001", ref strMsgE0001);
-                GetMessageContent("E0007", ref strMsgE0003);
+                GetMessageContent("E0003", ref strMsgE0003);
                 GetMessageContent("E0007", ref strMsgE0007);
                 GetMessageContent("E0021", ref strMsgE0021);
                 GetMessageContent("E0031", ref strMsgE0031);

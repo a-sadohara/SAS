@@ -170,7 +170,7 @@ namespace BeforeInspection
             }
             finally
             {
-                if (NpgsqlTran != null && NpgsqlTran.IsCompleted == false)
+                if (NpgsqlTran == null || NpgsqlTran.IsCompleted == true)
                     DbClose();
             }
         }
