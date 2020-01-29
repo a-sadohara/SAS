@@ -1,5 +1,5 @@
-﻿using Npgsql;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -10,10 +10,6 @@ namespace BeforeInspection
 {
     public partial class BeforeInspection : Form
     {
-        // 変数
-        private DataTable m_dtData;                                 // 抽出データ
-        private string m_strImagingDeviceCooperationDirectory = ""; // 撮像装置部連携ディレクトリパス
-
         // パラメータ変数
         private int m_intInspectionNum = 0;             // 検査番号
         private int m_intBranchNum = 0;                 // 枝番
@@ -25,39 +21,26 @@ namespace BeforeInspection
         private string m_strWorker2 = "";               // 作業者情報(社員番号)検反部No.2
         private string m_strInspectionDirection;        // 検査方向
 
-        // ヘッダ部関連
+        // 定数
+        private const string m_CON_SW = "ＳＷ";
+        private const string m_CON_EW = "ＥＷ";
+        private const string m_CON_INSPECTION_IMAGE_S_PATH = @".\image\ABCDE_S.png";
+        private const string m_CON_INSPECTION_IMAGE_X_PATH = @".\image\ABCDE_X.png";
+        private const string m_CON_INSPECTION_IMAGE_Y_PATH = @".\image\ABCDE_Y.png";
+        private const string m_CON_INSPECTION_IMAGE_R_PATH = @".\image\ABCDE_R.png";
         private const string m_CON_FORMAT_UNIT_NUM = "{0}号機";
         private const string m_CON_FORMAT_INSPECTION_NUM = "検査番号:{0}";
 
-        // 検査方向関連
-        private const string m_CON_INSPECTION_DIRECTION_S = "S";
-        private const string m_CON_INSPECTION_DIRECTION_X = "X";
-        private const string m_CON_INSPECTION_DIRECTION_Y = "Y";
-        private const string m_CON_INSPECTION_DIRECTION_R = "R";
+        // 検査方向背景色関連
         private Color m_clrInspectionDirectionActFore = System.Drawing.SystemColors.ActiveCaption;
         private Color m_clrInspectionDirectionActBack = SystemColors.Control;
-        private const string m_CON_SEW_S = "ＳＷ";
-        private const string m_CON_SEW_E = "ＥＷ";
-        private const string m_CON_INSPECTION_IMAGE_S_PATH = @".\ABCDE_S.png";
-        private const string m_CON_INSPECTION_IMAGE_X_PATH = @".\ABCDE_X.png";
-        private const string m_CON_INSPECTION_IMAGE_Y_PATH = @".\ABCDE_Y.png";
-        private const string m_CON_INSPECTION_IMAGE_R_PATH = @".\ABCDE_R.png";
 
-        // ステータス関連
+        // ステータス背景色関連
         private int m_intStatus;
-        private const int m_CON_STATUS_BEF = 1;     //検査開始前
-        private const int m_CON_STATUS_CHK = 2;     //検査準備完了
-        private const int m_CON_STATUS_STP = 3;     //検査中断
-        private const int m_CON_STATUS_END = 4;     //検査終了
         private Color m_clrStatusActFore = System.Drawing.SystemColors.ControlText;
         private Color m_clrStatusActBack = System.Drawing.Color.White;
         private Color m_clrStatusNonActFore = System.Drawing.SystemColors.ControlLightLight;
         private Color m_clrStatusNonActBack = System.Drawing.Color.Transparent;
-        private void MyForm_CloseOnStart(object sender, EventArgs e)
-        {
-            this.Visible = false;
-            this.Close();
-        }
 
         #region メソッド
         /// <summary>
@@ -65,222 +48,9 @@ namespace BeforeInspection
         /// </summary>
         public BeforeInspection()
         {
-            string strSQL = "";
-            NpgsqlCommand NpgsqlCom = null;
-            NpgsqlDataAdapter NpgsqlDtAd = null;
+            m_strUnitNum = g_clsSystemSettingInfo.strUnitNum;
 
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.Visible = false;
-
-            try
-            {
-                DateTime datNow = DateTime.Now;
-
-                // システム設定から情報を取得
-                //  号機
-                m_strUnitNum = strGetAppConfigValue("UnitNum");
-                if (m_strUnitNum == null)
-                {
-                    this.Load += (s, e) => Close();
-                    return;
-                }
-                //  撮像装置部連携ディレクトリパス
-                if (bolGetSystemSettingValue("ImagingDeviceCooperationDirectory", out m_strImagingDeviceCooperationDirectory) == false)
-                {
-                    this.Load += (s, e) => Close();
-                    return;
-                }
-                else
-                {
-                    // 存在チェック
-                    if (Directory.Exists(m_strImagingDeviceCooperationDirectory) == false)
-                    {
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, "撮像装置部連携ディレクトリ[ " + m_strImagingDeviceCooperationDirectory + "]は存在しません。");
-                        // メッセージ出力
-                        MessageBox.Show("撮像装置部連携ディレクトリ[ " + m_strImagingDeviceCooperationDirectory + "]は存在しません。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        // 画面生成前に閉じる
-                        this.Load += (s, e) => Close();
-                        return;
-                    }
-                }
-
-                try
-                {
-                    // DBオープン
-                    DbOpen();
-
-                    NpgsqlCom = null;
-                    NpgsqlDtAd = null;
-                    m_dtData = new DataTable();
-                    strSQL = @"SELECT COALESCE(MAX(inspection_num),0) AS inspection_num ";
-                    strSQL += @"FROM  inspection_info_header ";
-                    strSQL += @"WHERE (TO_CHAR(inspection_date,'YYYY/MM/DD') = '" + datNow.ToString("yyyy/MM/dd") + @"' OR ";
-                    strSQL += @"       TO_CHAR(inspection_date,'YYYY/MM/DD') = '" + datNow.AddDays(-1).ToString("yyyy/MM/dd") + @"') ";
-                    strSQL += @"AND   unit_num = '" + m_strUnitNum + @"' ";
-                    strSQL += @"AND   end_datetime IS NULL ";
-                    NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                    NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                    NpgsqlDtAd.Fill(m_dtData);
-
-                    //  検査番号
-                    m_intInspectionNum = int.Parse(m_dtData.Rows[0]["inspection_num"].ToString());
-                }
-                catch (Exception ex)
-                {
-                    // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
-                    // メッセージ出力
-                    MessageBox.Show("検査情報ヘッダーの取得で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    // 画面生成前に閉じる
-                    this.Load += (s, e) => Close();
-                    return;
-                }
-
-                if (m_intInspectionNum == 0)
-                {
-                    // 検査番号の取得
-                    if (bolGetInspectionNum(out m_intInspectionNum, DateTime.Now.ToString("yyyy/MM/dd")) == false)
-                    {
-                        // 画面生成前に閉じる
-                        this.Load += (s, e) => Close();
-                        return;
-                    }
-
-                    InitializeComponent();
-
-                    // 値の初期化
-                    lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum.ToString());
-                    lblUnitNum.Text = string.Format(m_CON_FORMAT_UNIT_NUM, m_strUnitNum);
-                    txtProductName.Text = "";
-                    txtOrderImg.Text = "";
-                    txtFabricName.Text = "";
-                    txtInspectionTargetLine.Text = "";
-                    lblInspectionEndLine.Text = "";
-                    txtInspectionStartLine.Text = "";
-                    txtWorker1.Text = "";
-                    txtWorker2.Text = "";
-                    lblStartDatetime.Text = "";
-                    lblEndDatetime.Text = "";
-                    SetInspectionDirectionSetting(m_CON_INSPECTION_DIRECTION_S);
-
-                    // 変数の設定
-                    m_intBranchNum = 1;
-
-                    // 品名にフォーカスを設定する
-                    txtProductName.Focus();
-
-                    // ステータスの表示設定(検査開始前)
-                    SetStatusCtrSetting(m_CON_STATUS_BEF);
-                }
-                else
-                {
-                    try
-                    {
-                        // DBオープン
-                        DbOpen();
-
-                        NpgsqlCom = null;
-                        NpgsqlDtAd = null;
-                        m_dtData = new DataTable();
-                        strSQL = @"SELECT ";
-                        strSQL += @"    branch_num";
-                        strSQL += @"  , product_name";
-                        strSQL += @"  , order_img";
-                        strSQL += @"  , fabric_name";
-                        strSQL += @"  , inspection_target_line";
-                        strSQL += @"  , inspection_end_line";
-                        strSQL += @"  , inspection_start_line";
-                        strSQL += @"  , worker_1";
-                        strSQL += @"  , worker_2";
-                        strSQL += @"  , TO_CHAR(start_datetime,'YYYY/MM/DD HH24:MI:SS') AS start_datetime";
-                        strSQL += @"  , inspection_direction ";
-                        strSQL += @"  , TO_CHAR(inspection_date,'YYYY/MM/DD') AS inspection_date ";
-                        strSQL += @"FROM ";
-                        strSQL += @"    inspection_info_header MAIN ";
-                        strSQL += @"WHERE (TO_CHAR(inspection_date,'YYYY/MM/DD') = '" + datNow.ToString("yyyy/MM/dd") + @"' OR ";
-                        strSQL += @"       TO_CHAR(inspection_date,'YYYY/MM/DD') = '" + datNow.AddDays(-1).ToString("yyyy/MM/dd") + @"') ";
-                        strSQL += @"  AND unit_num = '" + m_strUnitNum + @"' ";
-                        strSQL += @"  AND end_datetime IS NULL ";
-                        strSQL += @"  AND inspection_num = " + m_intInspectionNum;
-                        NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                        NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                        NpgsqlDtAd.Fill(m_dtData);
-
-                        InitializeComponent();
-
-                        // 値の初期化
-                        lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum.ToString());
-                        lblUnitNum.Text = string.Format(m_CON_FORMAT_UNIT_NUM, m_strUnitNum);
-                        txtProductName.Text = m_dtData.Rows[0]["product_name"].ToString();
-                        txtOrderImg.Text = m_dtData.Rows[0]["order_img"].ToString();
-                        txtFabricName.Text = m_dtData.Rows[0]["fabric_name"].ToString();
-                        txtInspectionTargetLine.Text = m_dtData.Rows[0]["inspection_target_line"].ToString();
-                        lblInspectionEndLine.Text = m_dtData.Rows[0]["inspection_end_line"].ToString();
-                        txtInspectionStartLine.Text = m_dtData.Rows[0]["inspection_start_line"].ToString();
-                        //  作業者名の表示
-                        string strWorkerName = "";
-                        if (bolGetWorkerName(out strWorkerName, m_dtData.Rows[0]["worker_1"].ToString()) == false)
-                        {
-                            // 画面生成前に閉じる
-                            this.Load += (s, e) => Close();
-                            return;
-                        }
-                        txtWorker1.Text = strWorkerName;
-                        if (bolGetWorkerName(out strWorkerName, m_dtData.Rows[0]["worker_2"].ToString()) == false)
-                        {
-                            // 画面生成前に閉じる
-                            this.Load += (s, e) => Close();
-                            return;
-                        }
-                        txtWorker2.Text = strWorkerName;
-                        lblStartDatetime.Text = m_dtData.Rows[0]["start_datetime"].ToString();
-                        lblEndDatetime.Text = "";
-                        SetInspectionDirectionSetting(m_dtData.Rows[0]["inspection_direction"].ToString());
-
-                        // 変数の設定
-                        //  品番登録情報の取得(照度情報,開始レジマークカメラ番号,終了レジマークカメラ番号)
-                        if (bolGetMstProductInfo(out m_intIlluminationInformation,
-                                                 out m_intStartRegimarkCameraNum,
-                                                 out m_intEndRegimarkCameraNum,
-                                                 txtProductName.Text) == false)
-                        {
-                            // 画面生成前に閉じる
-                            this.Load += (s, e) => Close();
-                            return;
-                        }
-                        m_intBranchNum = int.Parse(m_dtData.Rows[0]["branch_num"].ToString());
-                        m_strWorker1 = m_dtData.Rows[0]["worker_1"].ToString();
-                        m_strWorker2 = m_dtData.Rows[0]["worker_2"].ToString();
-                    }
-                    catch (Exception ex)
-                    {
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
-                        // メッセージ出力
-                        MessageBox.Show("検査情報ヘッダーの取得で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        // 画面生成前に閉じる
-                        this.Load += (s, e) => Close();
-                        return;
-                    }
-
-                    // 検査対象数(行数)にフォーカスを設定する
-                    txtInspectionTargetLine.Focus();
-
-                    // ステータスの表示設定(検査準備完了)
-                    SetStatusCtrSetting(m_CON_STATUS_CHK);
-                }
-            }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "画面初期表示時にエラーが発生しました。\r\n" + ex.Message);
-                // メッセージ出力
-                MessageBox.Show("画面初期表示処理で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                // 画面生成前に閉じる
-                this.Load += (s, e) => Close();
-                return;
-            }
+            InitializeComponent();
         }
 
         /// <summary>
@@ -288,17 +58,17 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DispInputForm(object sender, EventArgs e)
+        private void DispTenKeyInputForm(object sender, EventArgs e)
         {
             TextBox txtBox = (TextBox)sender;
 
             // 入力用フォームの表示
-            InputForm frmInputForm = new InputForm(txtBox.MaxLength);
-            frmInputForm.ShowDialog(this);
+            TenKeyInput frmTenKeyInput = new TenKeyInput(txtBox.MaxLength);
+            frmTenKeyInput.ShowDialog(this);
             this.Visible = true;
 
-            if (frmInputForm.strInput != null)
-                txtBox.Text = frmInputForm.strInput;
+            if (frmTenKeyInput.strInput != null)
+                txtBox.Text = frmTenKeyInput.strInput;
         }
 
         /// <summary>
@@ -306,16 +76,14 @@ namespace BeforeInspection
         /// </summary>
         private void CalcMaxLine()
         {
-            //string strInspectionEndLineBk = txtInspectionTargetLine.Text;
-
             // 最終行計算
             if (txtInspectionTargetLine.Text != "" && txtInspectionStartLine.Text != "")
             {
-                if (m_strInspectionDirection == m_CON_INSPECTION_DIRECTION_S || m_strInspectionDirection == m_CON_INSPECTION_DIRECTION_X)
+                if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS || m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
                 {
                     lblInspectionEndLine.Text = (int.Parse(txtInspectionStartLine.Text) + int.Parse(txtInspectionTargetLine.Text) - 1).ToString();
                 }
-                else if (m_strInspectionDirection == m_CON_INSPECTION_DIRECTION_Y || m_strInspectionDirection == m_CON_INSPECTION_DIRECTION_R)
+                else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY || m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
                 {
                     lblInspectionEndLine.Text = (int.Parse(txtInspectionStartLine.Text) - int.Parse(txtInspectionTargetLine.Text) + 1).ToString();
                 }
@@ -330,7 +98,8 @@ namespace BeforeInspection
             {
                 // 不正の場合はメッセージを表示
                 lblInspectionEndLine.ForeColor = Color.Red;
-                MessageBox.Show("検査対象数が不正です。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0032, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 // フォーカスセット
                 txtInspectionTargetLine.Focus();
@@ -352,10 +121,10 @@ namespace BeforeInspection
             // 非アクティブ化
             foreach (Label lblStatus in new Label[] { lblStatusBef, lblStatusChk, lblStatusStp, lblStatusEnd })
             {
-                if ((m_intStatus == m_CON_STATUS_BEF && lblStatus == lblStatusBef) ||
-                    (m_intStatus == m_CON_STATUS_CHK && lblStatus == lblStatusChk) ||
-                    (m_intStatus == m_CON_STATUS_STP && lblStatus == lblStatusStp) ||
-                    (m_intStatus == m_CON_STATUS_END && lblStatus == lblStatusEnd))
+                if ((m_intStatus == g_clsSystemSettingInfo.intStatusBef && lblStatus == lblStatusBef) ||
+                    (m_intStatus == g_clsSystemSettingInfo.intStatusChk && lblStatus == lblStatusChk) ||
+                    (m_intStatus == g_clsSystemSettingInfo.intStatusStp && lblStatus == lblStatusStp) ||
+                    (m_intStatus == g_clsSystemSettingInfo.intStatusEnd && lblStatus == lblStatusEnd))
                     continue;
 
                 lblStatus.ForeColor = m_clrStatusNonActFore;
@@ -363,102 +132,102 @@ namespace BeforeInspection
             }
 
             // アクティブ化
-            switch (m_intStatus)
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusBef)
             {
-                case m_CON_STATUS_BEF:
-                    // 背景色変更(協調)
-                    lblStatusBef.ForeColor = m_clrStatusActFore;
-                    lblStatusBef.BackColor = m_clrStatusActBack;
+                // 背景色変更(協調)
+                lblStatusBef.ForeColor = m_clrStatusActFore;
+                lblStatusBef.BackColor = m_clrStatusActBack;
 
-                    // 入力制御
-                    txtProductName.Enabled = true;
-                    txtOrderImg.Enabled = true;
-                    txtFabricName.Enabled = true;
-                    txtInspectionTargetLine.Enabled = true;
-                    txtInspectionStartLine.Enabled = true;
-                    txtWorker1.Enabled = true;
-                    txtWorker2.Enabled = true;
-                    btnStartDate.Enabled = true;
-                    btnEndDate.Enabled = false;
-                    btnInspectionDirection_S.Enabled = true;
-                    btnInspectionDirection_X.Enabled = true;
-                    btnInspectionDirection_Y.Enabled = true;
-                    btnInspectionDirection_R.Enabled = true;
-                    btnTyudan.Enabled = false;
-                    btnSettei.Enabled = true;
-                    btnTanSet.Enabled = false;
-                    break;
-                case m_CON_STATUS_CHK:
-                    // 背景色変更(協調)
-                    lblStatusChk.ForeColor = m_clrStatusActFore;
-                    lblStatusChk.BackColor = m_clrStatusActBack;
-
-                    // 入力制御
-                    txtProductName.Enabled = false;
-                    txtOrderImg.Enabled = false;
-                    txtFabricName.Enabled = false;
-                    txtInspectionTargetLine.Enabled = true;
-                    txtInspectionStartLine.Enabled = false;
-                    txtWorker1.Enabled = true;
-                    txtWorker2.Enabled = true;
-                    btnStartDate.Enabled = false;
-                    btnEndDate.Enabled = true;
-                    btnInspectionDirection_S.Enabled = false;
-                    btnInspectionDirection_X.Enabled = false;
-                    btnInspectionDirection_Y.Enabled = false;
-                    btnInspectionDirection_R.Enabled = false;
-                    btnTyudan.Enabled = true;
-                    btnSettei.Enabled = true;
-                    btnTanSet.Enabled = false;
-                    break;
-                case m_CON_STATUS_STP:
-                    // 背景色変更(協調)
-                    lblStatusStp.ForeColor = m_clrStatusActFore;
-                    lblStatusStp.BackColor = m_clrStatusActBack;
-
-                    // 入力制御
-                    txtProductName.Enabled = false;
-                    txtOrderImg.Enabled = false;
-                    txtFabricName.Enabled = false;
-                    txtInspectionTargetLine.Enabled = true;
-                    txtInspectionStartLine.Enabled = true;
-                    txtWorker1.Enabled = true;
-                    txtWorker2.Enabled = true;
-                    btnStartDate.Enabled = true;
-                    btnEndDate.Enabled = false;
-                    btnInspectionDirection_S.Enabled = false;
-                    btnInspectionDirection_X.Enabled = false;
-                    btnInspectionDirection_Y.Enabled = false;
-                    btnInspectionDirection_R.Enabled = false;
-                    btnTyudan.Enabled = false;
-                    btnSettei.Enabled = true;
-                    btnTanSet.Enabled = false;
-                    break;
-                case m_CON_STATUS_END:
-                    // 背景色変更(協調)
-                    lblStatusEnd.ForeColor = m_clrStatusActFore;
-                    lblStatusEnd.BackColor = m_clrStatusActBack;
-
-                    // 入力制御
-                    txtProductName.Enabled = false;
-                    txtOrderImg.Enabled = false;
-                    txtFabricName.Enabled = false;
-                    txtInspectionTargetLine.Enabled = true;
-                    txtInspectionStartLine.Enabled = false;
-                    txtWorker1.Enabled = true;
-                    txtWorker2.Enabled = true;
-                    btnStartDate.Enabled = false;
-                    btnEndDate.Enabled = true;
-                    btnInspectionDirection_S.Enabled = false;
-                    btnInspectionDirection_X.Enabled = false;
-                    btnInspectionDirection_Y.Enabled = false;
-                    btnInspectionDirection_R.Enabled = false;
-                    btnTyudan.Enabled = false;
-                    btnSettei.Enabled = true;
-                    btnTanSet.Enabled = true;
-                    break;
+                // 入力制御
+                txtProductName.Enabled = true;
+                txtOrderImg.Enabled = true;
+                txtFabricName.Enabled = true;
+                txtInspectionTargetLine.Enabled = true;
+                txtInspectionStartLine.Enabled = true;
+                txtWorker1.Enabled = true;
+                txtWorker2.Enabled = true;
+                btnStartDatetime.Enabled = true;
+                btnEndDatetime.Enabled = false;
+                btnInspectionDirectionS.Enabled = true;
+                btnInspectionDirectionX.Enabled = true;
+                btnInspectionDirectionY.Enabled = true;
+                btnInspectionDirectionR.Enabled = true;
+                btnInspectionStop.Enabled = false;
+                btnSet.Enabled = true;
+                btnNextFabric.Enabled = false;
             }
+            else if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
+            {
+                // 背景色変更(協調)
+                lblStatusChk.ForeColor = m_clrStatusActFore;
+                lblStatusChk.BackColor = m_clrStatusActBack;
 
+                // 入力制御
+                txtProductName.Enabled = false;
+                txtOrderImg.Enabled = false;
+                txtFabricName.Enabled = false;
+                txtInspectionTargetLine.Enabled = true;
+                txtInspectionStartLine.Enabled = false;
+                txtWorker1.Enabled = true;
+                txtWorker2.Enabled = true;
+                btnStartDatetime.Enabled = false;
+                btnEndDatetime.Enabled = true;
+                btnInspectionDirectionS.Enabled = false;
+                btnInspectionDirectionX.Enabled = false;
+                btnInspectionDirectionY.Enabled = false;
+                btnInspectionDirectionR.Enabled = false;
+                btnInspectionStop.Enabled = true;
+                btnSet.Enabled = true;
+                btnNextFabric.Enabled = false;
+            }
+            else if (m_intStatus == g_clsSystemSettingInfo.intStatusStp)
+            {
+                // 背景色変更(協調)
+                lblStatusStp.ForeColor = m_clrStatusActFore;
+                lblStatusStp.BackColor = m_clrStatusActBack;
+
+                // 入力制御
+                txtProductName.Enabled = false;
+                txtOrderImg.Enabled = false;
+                txtFabricName.Enabled = false;
+                txtInspectionTargetLine.Enabled = true;
+                txtInspectionStartLine.Enabled = true;
+                txtWorker1.Enabled = true;
+                txtWorker2.Enabled = true;
+                btnStartDatetime.Enabled = true;
+                btnEndDatetime.Enabled = false;
+                btnInspectionDirectionS.Enabled = false;
+                btnInspectionDirectionX.Enabled = false;
+                btnInspectionDirectionY.Enabled = false;
+                btnInspectionDirectionR.Enabled = false;
+                btnInspectionStop.Enabled = false;
+                btnSet.Enabled = true;
+                btnNextFabric.Enabled = false;
+            }
+            else if (m_intStatus == g_clsSystemSettingInfo.intStatusEnd)
+            {
+                // 背景色変更(協調)
+                lblStatusEnd.ForeColor = m_clrStatusActFore;
+                lblStatusEnd.BackColor = m_clrStatusActBack;
+
+                // 入力制御
+                txtProductName.Enabled = false;
+                txtOrderImg.Enabled = false;
+                txtFabricName.Enabled = false;
+                txtInspectionTargetLine.Enabled = true;
+                txtInspectionStartLine.Enabled = false;
+                txtWorker1.Enabled = true;
+                txtWorker2.Enabled = true;
+                btnStartDatetime.Enabled = false;
+                btnEndDatetime.Enabled = true;
+                btnInspectionDirectionS.Enabled = false;
+                btnInspectionDirectionX.Enabled = false;
+                btnInspectionDirectionY.Enabled = false;
+                btnInspectionDirectionR.Enabled = false;
+                btnInspectionStop.Enabled = false;
+                btnSet.Enabled = true;
+                btnNextFabric.Enabled = true;
+            }
         }
 
         /// <summary>
@@ -468,83 +237,67 @@ namespace BeforeInspection
         private void SetInspectionDirectionSetting(string strInspectionDirection)
         {
             // 非アクティブ化
-            foreach (Button btnInspectionDirection in new Button[] { btnInspectionDirection_S, btnInspectionDirection_X, btnInspectionDirection_Y, btnInspectionDirection_R })
+            foreach (Button btnInspectionDirection in new Button[] { btnInspectionDirectionS, btnInspectionDirectionX, btnInspectionDirectionY, btnInspectionDirectionR })
             {
-                if ((strInspectionDirection == m_CON_INSPECTION_DIRECTION_S && btnInspectionDirection != btnInspectionDirection_S) ||
-                    (strInspectionDirection == m_CON_INSPECTION_DIRECTION_X && btnInspectionDirection != btnInspectionDirection_X) ||
-                    (strInspectionDirection == m_CON_INSPECTION_DIRECTION_Y && btnInspectionDirection != btnInspectionDirection_Y) ||
-                    (strInspectionDirection == m_CON_INSPECTION_DIRECTION_R && btnInspectionDirection != btnInspectionDirection_R))
+                if ((strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS && btnInspectionDirection != btnInspectionDirectionS) ||
+                    (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX && btnInspectionDirection != btnInspectionDirectionX) ||
+                    (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY && btnInspectionDirection != btnInspectionDirectionY) ||
+                    (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR && btnInspectionDirection != btnInspectionDirectionR))
                     btnInspectionDirection.BackColor = m_clrInspectionDirectionActBack;
             }
 
             // アクティブ化
-            switch (strInspectionDirection)
+            if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS)
             {
-                case m_CON_INSPECTION_DIRECTION_S:
-                    // S
-                    picInspectionDirection_Front.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_S_PATH);
-                    lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
-                    lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
-                    picInspectionDirection_Back.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_X_PATH);
-                    lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
-                    lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
-                    btnInspectionDirection_S.BackColor = m_clrInspectionDirectionActFore;
+                picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_S_PATH);
+                lblSEWNo1Top.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
+                lblSEWNo1Bot.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
+                picInspectionDirectionNo2.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_X_PATH);
+                lblSEWNo2Top.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
+                lblSEWNo2Bot.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
+                btnInspectionDirectionS.BackColor = m_clrInspectionDirectionActFore;
 
-                    m_strInspectionDirection = m_CON_INSPECTION_DIRECTION_S;
-                    
-                    // 最終行の計算
-                    CalcMaxLine();
-
-                    break;
-                case m_CON_INSPECTION_DIRECTION_X:
-                    // X
-                    picInspectionDirection_Front.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_X_PATH);
-                    lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
-                    lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
-                    picInspectionDirection_Back.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_S_PATH);
-                    lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
-                    lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
-                    btnInspectionDirection_X.BackColor = m_clrInspectionDirectionActFore;
-
-                    m_strInspectionDirection = m_CON_INSPECTION_DIRECTION_X;
-
-                    // 最終行の計算
-                    CalcMaxLine();
-
-                    break;
-                case m_CON_INSPECTION_DIRECTION_Y:
-                    // Y
-                    picInspectionDirection_Front.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_Y_PATH);
-                    lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
-                    lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
-                    picInspectionDirection_Back.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_R_PATH);
-                    lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
-                    lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
-                    btnInspectionDirection_Y.BackColor = m_clrInspectionDirectionActFore;
-
-                    m_strInspectionDirection = m_CON_INSPECTION_DIRECTION_Y;
-
-                    // 最終行の計算
-                    CalcMaxLine();
-
-                    break;
-                case m_CON_INSPECTION_DIRECTION_R:
-                    // R
-                    picInspectionDirection_Front.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_R_PATH);
-                    lblSEW_1_Front.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
-                    lblSEW_2_Front.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
-                    picInspectionDirection_Back.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_Y_PATH);
-                    lblSEW_1_Back.Text = " ↓↓↓ " + m_CON_SEW_S + " ↓↓↓ ";
-                    lblSEW_2_Back.Text = " ↓↓↓ " + m_CON_SEW_E + " ↓↓↓ ";
-                    btnInspectionDirection_R.BackColor = m_clrInspectionDirectionActFore;
-
-                    m_strInspectionDirection = m_CON_INSPECTION_DIRECTION_R;
-
-                    // 最終行の計算
-                    CalcMaxLine();
-
-                    break;
+                m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionS;
             }
+            else if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
+            {
+                picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_X_PATH);
+                lblSEWNo1Top.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
+                lblSEWNo1Bot.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
+                picInspectionDirectionNo2.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_S_PATH);
+                lblSEWNo2Top.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
+                lblSEWNo2Bot.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
+                btnInspectionDirectionX.BackColor = m_clrInspectionDirectionActFore;
+
+                m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionX;
+            }
+            else if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
+            {
+                picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_Y_PATH);
+                lblSEWNo1Top.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
+                lblSEWNo1Bot.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
+                picInspectionDirectionNo2.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_R_PATH);
+                lblSEWNo2Top.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
+                lblSEWNo2Bot.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
+                btnInspectionDirectionY.BackColor = m_clrInspectionDirectionActFore;
+
+                m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionY;
+            }
+            else if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
+            {
+                picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_R_PATH);
+                lblSEWNo1Top.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
+                lblSEWNo1Bot.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
+                picInspectionDirectionNo2.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_Y_PATH);
+                lblSEWNo2Top.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
+                lblSEWNo2Bot.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
+                btnInspectionDirectionR.BackColor = m_clrInspectionDirectionActFore;
+
+                m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionR;
+            }
+
+            // 最終行の計算
+            CalcMaxLine();
         }
 
         /// <summary>
@@ -568,8 +321,10 @@ namespace BeforeInspection
             // 開始時刻入力チェック
             if (lblStartDatetime.Text == "")
             {
-                MessageBox.Show("開始時刻は必須入力の項目です。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                btnStartDate.Focus();
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0007, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                btnStartDatetime.Focus();
                 return false;
             }
 
@@ -587,7 +342,9 @@ namespace BeforeInspection
             // 必須入力チェック
             if (tbxCheckData.Text == "")
             {
-                MessageBox.Show(strItemName + "は必須入力の項目です。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // メッセージ出力
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0007, strItemName), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                 tbxCheckData.Focus();
                 return false;
             }
@@ -605,91 +362,99 @@ namespace BeforeInspection
         {
             try
             {
-                // DBオープン
-                DbOpen();
-                // DBトランザクション開始
-                DbBeginTran();
-
                 // SQL文を作成する
-                string strCreateSql = @"INSERT INTO inspection_info_header(
-                                                                inspection_num
-                                                              , branch_num
-                                                              , product_name
-                                                              , unit_num
-                                                              , order_img
-                                                              , fabric_name
-                                                              , inspection_target_line
-                                                              , inspection_end_line
-                                                              , inspection_start_line
-                                                              , worker_1
-                                                              , worker_2
-                                                              , start_datetime
-                                                              --, end_datetime
-                                                              , inspection_direction
-                                                              , inspection_date
-                                                              , illumination_information
-                                                              , start_regimark_camera_num
-                                                              , end_regimark_camera_num
-                                                              )VALUES(
-                                                                :inspection_num
-                                                              , :branch_num
-                                                              , :product_name
-                                                              , :unit_num
-                                                              , :order_img
-                                                              , :fabric_name
-                                                              , :inspection_target_line
-                                                              , :inspection_end_line
-                                                              , :inspection_start_line
-                                                              , :worker_1
-                                                              , :worker_2
-                                                              , TO_TIMESTAMP(:start_datetime,'YYYY/MM/DD HH24:MI:SS')
-                                                              --, :end_datetime
-                                                              , :inspection_direction
-                                                              , TO_DATE(:inspection_date,'YYYY/MM/DD')
-                                                              , :illumination_information
-                                                              , :start_regimark_camera_num
-                                                              , :end_regimark_camera_num
-                                                              );";
+                string strSql = @"INSERT INTO inspection_info_header(
+                                      inspection_num
+                                    , branch_num
+                                    , product_name
+                                    , unit_num
+                                    , order_img
+                                    , fabric_name
+                                    , inspection_target_line
+                                    , inspection_end_line
+                                    , inspection_start_line
+                                    , worker_1
+                                    , worker_2
+                                    , start_datetime
+                                    --, end_datetime
+                                    , inspection_direction
+                                    , inspection_date
+                                    , illumination_information
+                                    , start_regimark_camera_num
+                                    , end_regimark_camera_num
+                                    )VALUES(
+                                      :inspection_num
+                                    , :branch_num
+                                    , :product_name
+                                    , :unit_num
+                                    , :order_img
+                                    , :fabric_name
+                                    , :inspection_target_line
+                                    , :inspection_end_line
+                                    , :inspection_start_line
+                                    , :worker_1
+                                    , :worker_2
+                                    , TO_TIMESTAMP(:start_datetime,'YYYY/MM/DD HH24:MI:SS')
+                                    --, :end_datetime
+                                    , :inspection_direction
+                                    , TO_DATE(:inspection_date,'YYYY/MM/DD')
+                                    , :illumination_information
+                                    , :start_regimark_camera_num
+                                    , :end_regimark_camera_num
+                                    );";
 
                 // SQLコマンドに各パラメータを設定する
-                NpgsqlCommand command = new NpgsqlCommand(strCreateSql, NpgsqlCon, NpgsqlTran);
-
-                command.Parameters.Add(new NpgsqlParameter("inspection_num", DbType.Int32) { Value = intInspectionNum });
-                command.Parameters.Add(new NpgsqlParameter("branch_num", DbType.Int16) { Value = intBranchNum });
-                command.Parameters.Add(new NpgsqlParameter("product_name", DbType.String) { Value = txtProductName.Text });
-                command.Parameters.Add(new NpgsqlParameter("unit_num", DbType.String) { Value = m_strUnitNum });
-                command.Parameters.Add(new NpgsqlParameter("order_img", DbType.String) { Value = txtOrderImg.Text });
-                command.Parameters.Add(new NpgsqlParameter("fabric_name", DbType.String) { Value = txtFabricName.Text });
-                command.Parameters.Add(new NpgsqlParameter("inspection_target_line", DbType.Int16) { Value = int.Parse(txtInspectionTargetLine.Text) });
-                command.Parameters.Add(new NpgsqlParameter("inspection_end_line", DbType.Int16) { Value = int.Parse(lblInspectionEndLine.Text) });
-                command.Parameters.Add(new NpgsqlParameter("inspection_start_line", DbType.Int16) { Value = int.Parse(txtInspectionStartLine.Text) });
-                command.Parameters.Add(new NpgsqlParameter("worker_1", DbType.String) { Value = m_strWorker1 });
-                command.Parameters.Add(new NpgsqlParameter("worker_2", DbType.String) { Value = m_strWorker2 });
-                command.Parameters.Add(new NpgsqlParameter("start_datetime", DbType.String) { Value = lblStartDatetime.Text });
-                command.Parameters.Add(new NpgsqlParameter("inspection_direction", DbType.String) { Value = m_strInspectionDirection });
-                command.Parameters.Add(new NpgsqlParameter("inspection_date", DbType.String) { Value = lblStartDatetime.Text.Substring(0, 10) });
-                command.Parameters.Add(new NpgsqlParameter("illumination_information", DbType.Int16) { Value = m_intIlluminationInformation});
-                command.Parameters.Add(new NpgsqlParameter("start_regimark_camera_num", DbType.Int16) { Value = m_intStartRegimarkCameraNum });
-                command.Parameters.Add(new NpgsqlParameter("end_regimark_camera_num", DbType.Int16) { Value = m_intEndRegimarkCameraNum });
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "product_name", DbType = DbType.String, Value = txtProductName.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "order_img", DbType = DbType.String, Value = txtOrderImg.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = txtFabricName.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_target_line", DbType = DbType.Int16, Value = int.Parse(txtInspectionTargetLine.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_end_line", DbType = DbType.Int16, Value = int.Parse(lblInspectionEndLine.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_start_line", DbType = DbType.Int16, Value = int.Parse(txtInspectionStartLine.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "worker_1", DbType = DbType.String, Value = m_strWorker1 });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "worker_2", DbType = DbType.String, Value = m_strWorker2 });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_datetime", DbType = DbType.String, Value = lblStartDatetime.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_direction", DbType = DbType.String, Value = m_strInspectionDirection });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = lblStartDatetime.Text.Substring(0, 10) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "illumination_information", DbType = DbType.Int16, Value = m_intIlluminationInformation });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_regimark_camera_num", DbType = DbType.Int16, Value = m_intStartRegimarkCameraNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_regimark_camera_num", DbType = DbType.Int16, Value = m_intEndRegimarkCameraNum });
 
                 // sqlを実行する
-                if (ExecTranSQL(command) == false)
+                g_clsConnectionNpgsql.ExecTranSQL(strSql, lstNpgsqlCommand);
+
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
+
+                // 撮像装置部へ連携用ファイル出力
+                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
+                {
+                    btnSet.Focus();
                     return false;
+                }
 
                 return true;
 
             }
             catch (Exception ex)
             {
-                // ロールバック
-                DbRollback();
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0033 + "\r\n" + ex.Message);
+                // メッセージ出力
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0034)).ShowDialog(this);
 
-                MessageBox.Show("検査情報ヘッダーの登録時にエラーが発生しました。" + Environment.NewLine + ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                // 設定を設定
-                btnSettei.Focus();
+                // フォーカスを設定
+                btnSet.Focus();
 
                 return false;
+            }
+            finally
+            {
+                // DBクローズ
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
@@ -702,48 +467,58 @@ namespace BeforeInspection
         /// <returns>true:正常終了 false:異常終了</returns>
         private Boolean UpdEndInspectionInfoHeader(int intInspectionNum, int intBranchNum, string strEndDateTime)
         {
+            string strSql = "";
             try
             {
-                // DBオープン
-                DbOpen();
-                // DBトランザクション開始
-                DbBeginTran();
-
                 // SQL文を作成する
-                string strCreateSql = @"UPDATE inspection_info_header
-                                           SET end_datetime = TO_TIMESTAMP(:end_datetime,'YYYY/MM/DD HH24:MI:SS')
-                                         WHERE inspection_num = :inspection_num
-                                           AND branch_num = :branch_num
-                                           AND unit_num = :unit_num
-                                           AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date ;";
+                strSql = @"UPDATE inspection_info_header
+                              SET end_datetime = TO_TIMESTAMP(:end_datetime,'YYYY/MM/DD HH24:MI:SS')
+                            WHERE inspection_num = :inspection_num
+                              AND branch_num = :branch_num
+                              AND unit_num = :unit_num
+                              AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date ;";
 
                 // SQLコマンドに各パラメータを設定する
-                NpgsqlCommand command = new NpgsqlCommand(strCreateSql, NpgsqlCon, NpgsqlTran);
-
-                command.Parameters.Add(new NpgsqlParameter("inspection_num", DbType.Int32) { Value = intInspectionNum });
-                command.Parameters.Add(new NpgsqlParameter("branch_num", DbType.Int16) { Value = intBranchNum });
-                command.Parameters.Add(new NpgsqlParameter("unit_num", DbType.String) { Value = m_strUnitNum });
-                command.Parameters.Add(new NpgsqlParameter("inspection_date", DbType.String) { Value = lblStartDatetime.Text.Substring(0, 10) });
-                command.Parameters.Add(new NpgsqlParameter("end_datetime", DbType.String) { Value = strEndDateTime });
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = lblStartDatetime.Text.Substring(0, 10) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_datetime", DbType = DbType.String, Value = strEndDateTime });
 
                 // sqlを実行する
-                if (ExecTranSQL(command) == false)
+                g_clsConnectionNpgsql.ExecTranSQL(strSql, lstNpgsqlCommand);
+
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
+
+                // 撮像装置部へ連携用ファイル出力
+                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
+                {
+                    btnEndDatetime.Focus();
                     return false;
+                }
+                    
 
                 return true;
 
             }
             catch (Exception ex)
             {
-                // ロールバック
-                DbRollback();
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0033 + "\r\n" + ex.Message);
+                // メッセージ出力
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0035)).ShowDialog(this);
 
-                MessageBox.Show("検査情報ヘッダーの更新時にエラーが発生しました。" + Environment.NewLine + ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                btnEndDate.Focus();
+                // フォーカスを設定
+                btnEndDatetime.Focus();
 
                 return false;
-
+            }
+            finally
+            {
+                // DBクローズ
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
@@ -753,7 +528,7 @@ namespace BeforeInspection
         /// <param name="intInspectionNum">検査番号</param>
         /// <param name="strInspectionDate">検査日付</param>
         /// <returns>true:正常終了 false:異常終了</returns>
-        private bool bolGetInspectionNum(out int intInspectionNum, string strInspectionDate)
+        private bool bolGetInspectionNum(out int intInspectionNum)
         {
             // 初期化
             intInspectionNum = 0;
@@ -762,20 +537,18 @@ namespace BeforeInspection
 
             try
             {
-                // DBオープン
-                DbOpen();
-
-                NpgsqlCommand NpgsqlCom = null;
-                NpgsqlDataAdapter NpgsqlDtAd = null;
                 dtData = new DataTable();
+                strSQL = @"SELECT COALESCE(MAX(inspection_num),0) AS inspection_num 
+                             FROM inspection_info_header 
+                            WHERE inspection_date = current_date
+                              AND unit_num = :unit_num ";
 
-                strSQL = @"SELECT COALESCE(MAX(inspection_num),0) AS inspection_num ";
-                strSQL += @"FROM  inspection_info_header ";
-                strSQL += @"WHERE TO_CHAR(inspection_date,'YYYY/MM/DD') = '" + strInspectionDate + @"' ";
-                strSQL += @"AND   unit_num = '" + m_strUnitNum + @"' ";
-                NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                NpgsqlDtAd.Fill(dtData);
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+
+                // SQL抽出
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
                 //  検査番号
                 if (dtData.Rows.Count > 0)
@@ -791,9 +564,9 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
                 // メッセージ出力
-                MessageBox.Show("検査情報ヘッダーの取得で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
                 return false;
             }
@@ -805,9 +578,9 @@ namespace BeforeInspection
         /// <param name="intInspectionNum"></param>
         /// <param name="strInspectionDate"></param>
         /// <returns></returns>
-        private bool bolNumberInspectionNum(out int intInspectionNum, string strInspectionDate)
+        private bool bolNumberInspectionNum(out int intInspectionNum)
         {
-            if (bolGetInspectionNum(out intInspectionNum, strInspectionDate) == true)
+            if (bolGetInspectionNum(out intInspectionNum) == true)
             {
                 intInspectionNum++;
                 return true;
@@ -828,27 +601,27 @@ namespace BeforeInspection
         private bool bolGetBranchNum(out int intBranchNum, string strInspectionDate, int intInspectionNum)
         {
             // 初期化
+            string strSQL = "";
+            DataTable dtData;
             intBranchNum = 0;
 
             try
             {
-                string strSQL = "";
-                DataTable dtData;
-
-                // DBオープン
-                DbOpen();
-
-                NpgsqlCommand NpgsqlCom = null;
-                NpgsqlDataAdapter NpgsqlDtAd = null;
                 dtData = new DataTable();
-                strSQL = @"SELECT COALESCE(MAX(branch_num),0) AS branch_num ";
-                strSQL += @"FROM  inspection_info_header ";
-                strSQL += @"WHERE TO_CHAR(inspection_date,'YYYY/MM/DD') = '" + strInspectionDate + @"' ";
-                strSQL += @"AND   unit_num = '" + m_strUnitNum + @"' ";
-                strSQL += @"AND   inspection_num = " + intInspectionNum.ToString();
-                NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                NpgsqlDtAd.Fill(dtData);
+                strSQL = @"SELECT COALESCE(MAX(branch_num),0) AS branch_num 
+                             FROM inspection_info_header 
+                            WHERE TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd 
+                              AND unit_num = :unit_num 
+                              AND inspection_num = :inspection_num";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
+
+                // SQL抽出
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
                 //  枝番
                 if (dtData.Rows.Count > 0)
@@ -861,57 +634,9 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
                 // メッセージ出力
-                MessageBox.Show("検査情報ヘッダーの取得で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 作業者名の取得
-        /// </summary>
-        /// <param name="strWorkerName"></param>
-        /// <param name="strEmployeeNum"></param>
-        /// <returns></returns>
-        private bool bolGetWorkerName(out string strWorkerName, string strEmployeeNum)
-        {
-            // 初期化
-            strWorkerName = "";
-
-            try
-            {
-                string strSQL = "";
-                DataTable dtData;
-
-                // DBオープン
-                DbOpen();
-
-                NpgsqlCommand NpgsqlCom = null;
-                NpgsqlDataAdapter NpgsqlDtAd = null;
-                dtData = new DataTable();
-                strSQL = @"SELECT worker_name_sei || worker_name_mei AS worker_name ";
-                strSQL += @"FROM  mst_worker ";
-                strSQL += @"WHERE employee_num = '" + strEmployeeNum + @"' ";
-                NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                NpgsqlDtAd.Fill(dtData);
-
-                //  枝番
-                if (dtData.Rows.Count > 0)
-                {
-                    strWorkerName = dtData.Rows[0]["worker_name"].ToString();
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
-                // メッセージ出力
-                MessageBox.Show("作業者マスタの取得で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
                 return false;
             }
@@ -935,16 +660,11 @@ namespace BeforeInspection
             intStartRegimarkCameraNum = 0;
             intEndRegimarkCameraNum = 0;
 
+            string strSQL = "";
+            DataTable dtData;
+
             try
             {
-                string strSQL = "";
-                DataTable dtData;
-
-                // DBオープン
-                DbOpen();
-
-                NpgsqlCommand NpgsqlCom = null;
-                NpgsqlDataAdapter NpgsqlDtAd = null;
                 dtData = new DataTable();
                 strSQL = @"SELECT ";
                 strSQL += @"    illumination_information";
@@ -952,17 +672,20 @@ namespace BeforeInspection
                 strSQL += @"  , end_regimark_camera_num ";
                 strSQL += @"FROM ";
                 strSQL += @"    mst_product_info ";
-                strSQL += @"WHERE product_name = '" + strProductName + @"' ";
-                NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                NpgsqlDtAd.Fill(dtData);
+                strSQL += @"WHERE product_name = :product_name ";
 
-                //  枝番
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "product_name", DbType = DbType.String, Value = strProductName });
+
+                // SQL抽出
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
                 if (dtData.Rows.Count > 0)
                 {
                     intIlluminationInformation = int.Parse(dtData.Rows[0]["illumination_information"].ToString());
                     intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["start_regimark_camera_num"].ToString());
-                    intIlluminationInformation = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
+                    intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
                 }
 
                 return true;
@@ -970,9 +693,9 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
                 // メッセージ出力
-                MessageBox.Show("品種登録情報の取得で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0021)).ShowDialog(this);
 
                 return false;
             }
@@ -993,53 +716,41 @@ namespace BeforeInspection
 
             try
             {
-                // 撮像装置部連携ディレクトリの存在チェック
-                if (Directory.Exists(m_strImagingDeviceCooperationDirectory) == false)
-                {
-                    // ロールバック
-                    DbRollback();
-
-                    // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, "撮像装置部連携ディレクトリ[ " + m_strImagingDeviceCooperationDirectory + "]は存在しません。");
-                    // メッセージ出力
-                    MessageBox.Show("撮像装置部連携ディレクトリ[ " + m_strImagingDeviceCooperationDirectory + "]は存在しません。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return false;
-                }
-
                 // txtファイルの作成
-                sw = File.CreateText(m_strImagingDeviceCooperationDirectory + @"\" + strFabricName + "_" + intInspectionNum.ToString() + "_" + intBranchNum.ToString() + ".txt");
+                sw = File.CreateText(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory + @"\" + strFabricName + "_" + intInspectionNum.ToString() + "_" + intBranchNum.ToString() + ".txt");
 
                 // DBオープン
-                DbOpen();
+                strSQL = @"SELECT 
+                               product_name
+                             , order_img
+                             , inspection_target_line
+                             , inspection_end_line
+                             , inspection_start_line
+                             , worker_1
+                             , worker_2
+                             , TO_CHAR(start_datetime,'YYYY/MM/DD HH24:MI:SS') AS start_datetime
+                             , TO_CHAR(end_datetime,'YYYY/MM/DD HH24:MI:SS') AS end_datetime
+                             , inspection_direction 
+                             , TO_CHAR(inspection_date,'YYYY/MM/DD') AS inspection_date 
+                             , illumination_information 
+                             , start_regimark_camera_num 
+                             , end_regimark_camera_num 
+                           FROM 
+                               inspection_info_header 
+                           WHERE TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd 
+                             AND unit_num = :unit_num 
+                             AND inspection_num = :inspection_num
+                             AND branch_num = :branch_num";
 
-                NpgsqlCommand NpgsqlCom = null;
-                NpgsqlDataAdapter NpgsqlDtAd = null;
-                m_dtData = new DataTable();
-                strSQL = @"SELECT ";
-                strSQL += @"    product_name";
-                strSQL += @"  , order_img";
-                strSQL += @"  , inspection_target_line";
-                strSQL += @"  , inspection_end_line";
-                strSQL += @"  , inspection_start_line";
-                strSQL += @"  , worker_1";
-                strSQL += @"  , worker_2";
-                strSQL += @"  , TO_CHAR(start_datetime,'YYYY/MM/DD HH24:MI:SS') AS start_datetime";
-                strSQL += @"  , TO_CHAR(end_datetime,'YYYY/MM/DD HH24:MI:SS') AS end_datetime";
-                strSQL += @"  , inspection_direction ";
-                strSQL += @"  , TO_CHAR(inspection_date,'YYYY/MM/DD') AS inspection_date ";
-                strSQL += @"  , illumination_information ";
-                strSQL += @"  , start_regimark_camera_num ";
-                strSQL += @"  , end_regimark_camera_num ";
-                strSQL += @"FROM ";
-                strSQL += @"    inspection_info_header ";
-                strSQL += @"WHERE TO_CHAR(inspection_date,'YYYY/MM/DD') = '" + lblStartDatetime.Text.Substring(0, 10) + @"' ";
-                strSQL += @"  AND unit_num = '" + m_strUnitNum + @"' ";
-                strSQL += @"  AND inspection_num = " + intInspectionNum;
-                strSQL += @"  AND branch_num = " + intBranchNum;
-                NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                NpgsqlDtAd.Fill(dtData);
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = lblStartDatetime.Text.Substring(0, 10) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16 , Value = intBranchNum });
+
+                // SQL抽出
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
                 if (dtData.Rows.Count > 0)
                 {
@@ -1067,13 +778,10 @@ namespace BeforeInspection
             }
             catch (Exception ex)
             {
-                // ロールバック
-                DbRollback();
-
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "検査情報ヘッダファイルの出力でエラーが発生しました。\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0036 + "\r\n" + ex.Message);
                 // メッセージ出力
-                MessageBox.Show("検査情報ヘッダファイルの出力で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0037)).ShowDialog(this);
 
                 return false;
             }
@@ -1093,18 +801,191 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void BeforeInspection_Load(object sender, EventArgs e)
         {
-            // フォームの表示
-            this.Visible = true;
+            bool bolProcOkNg = false;
+            
+            string strSQL = "";
+            DataTable dtData;
 
-            // 座標系プロパティの設定　※Load後じゃないと反映されない
-            txtProductName.Location = new Point(txtProductName.Location.X, (int)((double)(pnlHinNo.Size.Height / 2) - ((double)txtProductName.Size.Height / 2)));
-            txtOrderImg.Location = new Point(txtOrderImg.Location.X, (int)(((double)pnlSashizu.Size.Height / 2) - ((double)txtOrderImg.Size.Height / 2)));
-            txtFabricName.Location = new Point(txtFabricName.Location.X, (int)(((double)pnlHanNo.Size.Height / 2) - ((double)txtFabricName.Size.Height / 2)));
-            txtInspectionTargetLine.Location = new Point(txtInspectionTargetLine.Location.X, (int)(((double)pnlKensaTaishoNum_LastNum.Size.Height / 2) - ((double)txtInspectionTargetLine.Size.Height / 2)));
-            lblInspectionEndLine.Location = new Point(lblInspectionEndLine.Location.X, (int)(((double)pnlKensaTaishoNum_LastNum.Size.Height / 2) - ((double)lblInspectionEndLine.Size.Height / 2)));
-            txtInspectionStartLine.Location = new Point(txtInspectionStartLine.Location.X, (int)(((double)pnlKensaStartRow.Size.Height / 2) - ((double)txtInspectionStartLine.Size.Height / 2)));
-            txtWorker1.Location = new Point(txtWorker1.Location.X, (int)(((double)pnlSagyosyaInfo_1.Size.Height / 2) - ((double)txtWorker1.Size.Height / 2)));
-            txtWorker2.Location = new Point(txtWorker2.Location.X, (int)(((double)pnlSagyosyaInfo_2.Size.Height / 2) - ((double)txtWorker2.Size.Height / 2)));
+            this.StartPosition = FormStartPosition.CenterScreen;
+
+            try
+            {
+                DateTime datNow = DateTime.Now;
+
+                try
+                {
+                    dtData = new DataTable();
+                    strSQL = @"SELECT COALESCE(MAX(inspection_num),0) AS inspection_num
+                                 FROM inspection_info_header
+                                WHERE (inspection_date = CURRENT_DATE OR
+                                       inspection_date = CURRENT_DATE - 1)
+                                  AND unit_num = :unit_num
+                                  AND end_datetime IS NULL ";
+
+                    // SQLコマンドに各パラメータを設定する
+                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+
+                    // SQL抽出
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+                     
+                    //  検査番号
+                    m_intInspectionNum = int.Parse(dtData.Rows[0]["inspection_num"].ToString());
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    // メッセージ出力
+                    new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
+
+                    return;
+                }
+
+                if (m_intInspectionNum == 0)
+                {
+                    // 検査番号の取得
+                    if (bolGetInspectionNum(out m_intInspectionNum) == false)
+                        return;
+
+                    // 値の初期化
+                    lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum.ToString());
+                    lblUnitNum.Text = string.Format(m_CON_FORMAT_UNIT_NUM, m_strUnitNum);
+                    txtProductName.Text = "";
+                    txtOrderImg.Text = "";
+                    txtFabricName.Text = "";
+                    txtInspectionTargetLine.Text = "";
+                    lblInspectionEndLine.Text = "";
+                    txtInspectionStartLine.Text = "";
+                    txtWorker1.Text = "";
+                    txtWorker2.Text = "";
+                    lblStartDatetime.Text = "";
+                    lblEndDatetime.Text = "";
+                    SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionS);
+
+                    // 変数の設定
+                    m_intBranchNum = 1;
+
+                    // 品名にフォーカスを設定する
+                    txtProductName.Focus();
+
+                    // ステータスの表示設定(検査開始前)
+                    SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusBef);
+                }
+                else
+                {
+                    try
+                    {
+                        dtData = new DataTable();
+                        strSQL = @"SELECT 
+                                       iih.branch_num
+                                     , iih.product_name
+                                     , iih.order_img
+                                     , iih.fabric_name
+                                     , iih.inspection_target_line
+                                     , iih.inspection_end_line
+                                     , iih.inspection_start_line
+                                     , iih.worker_1
+                                     , iih.worker_2
+                                     , (SELECT worker_name_sei || worker_name_mei FROM mst_worker WHERE employee_num = iih.worker_1) AS worker_1_name
+                                     , (SELECT worker_name_sei || worker_name_mei FROM mst_worker WHERE employee_num = iih.worker_2) AS worker_2_name
+                                     , TO_CHAR(iih.start_datetime,'YYYY/MM/DD HH24:MI:SS') AS start_datetime
+                                     , iih.inspection_direction 
+                                     , TO_CHAR(iih.inspection_date,'YYYY/MM/DD') AS inspection_date 
+                                     , mpi.illumination_information
+                                     , mpi.start_regimark_camera_nu
+                                     , mpi.end_regimark_camera_num 
+                                   FROM 
+                                       inspection_info_header iih
+                                   INNER JOIN
+                                       mst_product_info mpi
+                                   ON iih.product_name = mpi.product_name
+                                   WHERE (iih.inspection_date = CURRENT_DATE OR 
+                                          iih.inspection_date = CURRENT_DATE - 1) 
+                                     AND iih.unit_num = :unit_num 
+                                     AND iih.end_datetime IS NULL 
+                                     AND iih.inspection_num = :inspection_num";
+
+                        // SQLコマンドに各パラメータを設定する
+                        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
+
+                        // SQL抽出
+                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                        // 値の初期化
+                        lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum.ToString());
+                        lblUnitNum.Text = string.Format(m_CON_FORMAT_UNIT_NUM, m_strUnitNum);
+                        txtProductName.Text = dtData.Rows[0]["product_name"].ToString();
+                        txtOrderImg.Text = dtData.Rows[0]["order_img"].ToString();
+                        txtFabricName.Text = dtData.Rows[0]["fabric_name"].ToString();
+                        txtInspectionTargetLine.Text = dtData.Rows[0]["inspection_target_line"].ToString();
+                        lblInspectionEndLine.Text = dtData.Rows[0]["inspection_end_line"].ToString();
+                        txtInspectionStartLine.Text = dtData.Rows[0]["inspection_start_line"].ToString();
+                        txtWorker1.Text = dtData.Rows[0]["worker_1_name"].ToString();
+                        txtWorker2.Text = dtData.Rows[0]["worker_2_name"].ToString();
+                        lblStartDatetime.Text = dtData.Rows[0]["start_datetime"].ToString();
+                        lblEndDatetime.Text = "";
+                        SetInspectionDirectionSetting(dtData.Rows[0]["inspection_direction"].ToString());
+
+                        // 変数の設定
+                        m_intBranchNum = int.Parse(dtData.Rows[0]["branch_num"].ToString());
+                        m_strWorker1 = dtData.Rows[0]["worker_1"].ToString();
+                        m_strWorker2 = dtData.Rows[0]["worker_2"].ToString();
+                        m_intIlluminationInformation = int.Parse(dtData.Rows[0]["inspection_direction"].ToString());
+                        m_intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["inspection_direction"].ToString());
+                        m_intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["inspection_direction"].ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                        // メッセージ出力
+                        new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
+
+                        return;
+                    }
+
+                    // 検査対象数(行数)にフォーカスを設定する
+                    txtInspectionTargetLine.Focus();
+
+                    // ステータスの表示設定(検査準備完了)
+                    SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
+                }
+
+                // フォームの表示
+                this.Visible = true;
+
+                // 座標系プロパティの設定　※Load後じゃないと反映されない
+                txtProductName.Location = new Point(txtProductName.Location.X, (int)((double)(pnlHinNo.Size.Height / 2) - ((double)txtProductName.Size.Height / 2)));
+                txtOrderImg.Location = new Point(txtOrderImg.Location.X, (int)(((double)pnlSashizu.Size.Height / 2) - ((double)txtOrderImg.Size.Height / 2)));
+                txtFabricName.Location = new Point(txtFabricName.Location.X, (int)(((double)pnlHanNo.Size.Height / 2) - ((double)txtFabricName.Size.Height / 2)));
+                txtInspectionTargetLine.Location = new Point(txtInspectionTargetLine.Location.X, (int)(((double)pnlKensaTaishoNum_LastNum.Size.Height / 2) - ((double)txtInspectionTargetLine.Size.Height / 2)));
+                lblInspectionEndLine.Location = new Point(lblInspectionEndLine.Location.X, (int)(((double)pnlKensaTaishoNum_LastNum.Size.Height / 2) - ((double)lblInspectionEndLine.Size.Height / 2)));
+                txtInspectionStartLine.Location = new Point(txtInspectionStartLine.Location.X, (int)(((double)pnlKensaStartRow.Size.Height / 2) - ((double)txtInspectionStartLine.Size.Height / 2)));
+                txtWorker1.Location = new Point(txtWorker1.Location.X, (int)(((double)pnlSagyosyaInfo_1.Size.Height / 2) - ((double)txtWorker1.Size.Height / 2)));
+                txtWorker2.Location = new Point(txtWorker2.Location.X, (int)(((double)pnlSagyosyaInfo_2.Size.Height / 2) - ((double)txtWorker2.Size.Height / 2)));
+
+                bolProcOkNg = true;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                // メッセージ出力
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
+
+                // 品名にフォーカスを設定する
+                txtProductName.Focus();
+
+                return;
+            }
+            finally
+            {
+                if (bolProcOkNg == false)
+                    this.Close();
+            }
         }
 
         /// <summary>
@@ -1112,7 +993,7 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnStartDate_Click(object sender, EventArgs e)
+        private void btnStartDatetime_Click(object sender, EventArgs e)
         {
             lblStartDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         }
@@ -1122,7 +1003,7 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnEndDate_Click(object sender, EventArgs e)
+        private void btnEndDatetime_Click(object sender, EventArgs e)
         {
             // 終了時刻の表示
             lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
@@ -1135,24 +1016,17 @@ namespace BeforeInspection
             if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
                 return;
 
-            // 撮像装置部へ連携用ファイル出力
-            if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
-                return;
-
-            // DBコミット
-            DbCommit();
-
             // 検査番号の取得
-            if (bolGetInspectionNum(out m_intInspectionNum, DateTime.Now.ToString("yyyy/MM/dd")) == false)
+            if (bolGetInspectionNum(out m_intInspectionNum) == false)
                 return;
             // 検査番号の表示
             lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
             // ステータスの表示設定(検査終了)
-            SetStatusCtrSetting(m_CON_STATUS_END);
+            SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusEnd);
 
             // 次の反番情報を設定
-            btnTanSet.Focus();
+            btnNextFabric.Focus();
         }
 
         /// <summary>
@@ -1163,7 +1037,7 @@ namespace BeforeInspection
         private void txtHinNo_Click(object sender, EventArgs e)
         {
             // 品番選択画面
-            HinNoSelection frmHinNoSelection = new HinNoSelection();
+            ProductNameSelection frmHinNoSelection = new ProductNameSelection();
             frmHinNoSelection.ShowDialog(this);
             if (frmHinNoSelection.strProductName != null)
             {
@@ -1189,25 +1063,25 @@ namespace BeforeInspection
             TextBox txtWorker = (TextBox)sender;
 
             // 作業者選択画面表示
-            UserSelection frmTargetSelection = new UserSelection();
-            frmTargetSelection.ShowDialog(this);
+            WorkerSelection frmWorkerSelection = new WorkerSelection();
+            frmWorkerSelection.ShowDialog(this);
             this.Visible = true;
 
-            if (frmTargetSelection.strUserNo != null || frmTargetSelection.strUserNm != null)
+            if (frmWorkerSelection.strEmployeeNum != null || frmWorkerSelection.strWorkerName != null)
             {
                 // 社員番号を変数に保持
                 if (txtWorker == txtWorker1)
                 {
-                    m_strWorker1 = frmTargetSelection.strUserNo;
+                    m_strWorker1 = frmWorkerSelection.strEmployeeNum;
                 }
                 else if (txtWorker == txtWorker2)
                 {
 
-                    m_strWorker2 = frmTargetSelection.strUserNo;
+                    m_strWorker2 = frmWorkerSelection.strEmployeeNum;
                 }
 
                 // 作業者名の表示
-                txtWorker.Text = frmTargetSelection.strUserNm;
+                txtWorker.Text = frmWorkerSelection.strWorkerName;
             }
         }
 
@@ -1216,7 +1090,7 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtKensaTaishoNum_Leave(object sender, EventArgs e)
+        private void txtInspectionTargetLine_Leave(object sender, EventArgs e)
         {
             CalcMaxLine();
         }
@@ -1240,21 +1114,21 @@ namespace BeforeInspection
         {
             Button btn = (Button)sender;
 
-            if (btn == btnInspectionDirection_S)
+            if (btn == btnInspectionDirectionS)
             {
-                SetInspectionDirectionSetting(m_CON_INSPECTION_DIRECTION_S);
+                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionS);
             }
-            else if (btn == btnInspectionDirection_X)
+            else if (btn == btnInspectionDirectionX)
             {
-                SetInspectionDirectionSetting(m_CON_INSPECTION_DIRECTION_X);
+                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionX);
             }
-            else if (btn == btnInspectionDirection_Y)
+            else if (btn == btnInspectionDirectionY)
             {
-                SetInspectionDirectionSetting(m_CON_INSPECTION_DIRECTION_Y);
+                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionY);
             }
-            else if (btn == btnInspectionDirection_R)
+            else if (btn == btnInspectionDirectionR)
             {
-                SetInspectionDirectionSetting(m_CON_INSPECTION_DIRECTION_R);
+                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionR);
             }
         }
 
@@ -1263,7 +1137,7 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnTyudan_Click(object sender, EventArgs e)
+        private void btnInspectionStop_Click(object sender, EventArgs e)
         {
             // 終了日付の表示
             lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
@@ -1276,15 +1150,8 @@ namespace BeforeInspection
             if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
                 return;
 
-            // 撮像装置部へ連携用ファイル出力
-            if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
-                return;
-
-            // DBコミット
-            DbCommit();
-
             // ステータスの表示設定(検査中断)
-            SetStatusCtrSetting(m_CON_STATUS_STP);
+            SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusStp);
         }
 
         /// <summary>
@@ -1292,136 +1159,107 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnSettei_Click(object sender, EventArgs e)
+        private void btnSet_Click(object sender, EventArgs e)
         {
             if (InputDataCheck() == false)
                 return;
 
             // 確認メッセージ出力
-            DialogResult result = MessageBox.Show("以下の情報で、撮像装置部へデータを転送します。\r\n処理を継続してよろしいでしょうか。\r\n" +
-                                                  "　品名：" + txtProductName.Text + "\r\n" +
-                                                  "　指図：" + txtOrderImg.Text + "\r\n" +
-                                                  "　反番：" + txtFabricName.Text + "\r\n" +
-                                                  "　検査対象数/最終行数：" + txtInspectionTargetLine.Text + "/" + lblInspectionEndLine.Text + "\r\n" +
-                                                  "　検査開始行：" + txtInspectionStartLine.Text + "\r\n" +
-                                                  "　作業者情報（社員番号）検反部No.1：" + txtWorker1.Text + "\r\n" +
-                                                  "　作業者情報（社員番号）検反部No.2：" + txtWorker2.Text + "\r\n" +
-                                                  "　検査方向：" + m_strInspectionDirection,
-                                                  "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult result = System.Windows.Forms.MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0008,
+                                                                                     txtProductName.Text,
+                                                                                     txtFabricName.Text,
+                                                                                     txtInspectionTargetLine.Text,
+                                                                                     lblInspectionEndLine.Text,
+                                                                                     txtInspectionStartLine.Text,
+                                                                                     txtWorker1.Text,
+                                                                                     txtWorker2.Text,
+                                                                                     m_strInspectionDirection), 
+                                                                       "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result != DialogResult.Yes)
                 return;
 
-            switch (m_intStatus)
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusBef ||
+                m_intStatus == g_clsSystemSettingInfo.intStatusEnd)
             {
-                case m_CON_STATUS_BEF:
-                case m_CON_STATUS_END:
-                    // ステータス：検査開始前 or 終了から
+                // ステータス：検査開始前 or 終了から
 
-                    // 終了時刻
-                    lblEndDatetime.Text = "";
+                // 終了時刻
+                lblEndDatetime.Text = "";
 
-                    // 検査番号の採番
-                    if (bolNumberInspectionNum(out m_intInspectionNum, DateTime.Now.ToString("yyyy/MM/dd")) == false)
-                        return;
-                    // 検査番号の表示
-                    lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
+                // 検査番号の採番
+                if (bolNumberInspectionNum(out m_intInspectionNum) == false)
+                    return;
+                // 検査番号の表示
+                lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
-                    // 検査情報ヘッダーの登録
-                    if (RegStartInspectionInfoHeader(m_intInspectionNum, 1) == false)
-                        return;
+                // 検査情報ヘッダーの登録
+                if (RegStartInspectionInfoHeader(m_intInspectionNum, 1) == false)
+                    return;
 
-                    // 撮像装置部へ連携用ファイル出力
-                    if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
-                        return;
+                // ステータスの表示設定(検査準備完了)
+                SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
 
-                    // DBコミット
-                    DbCommit();
+                // 検査対象数(行数)にフォーカスを設定
+                btnSet.Focus();
+            }
+            else if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
+            {
+                // ステータス：検査準備完了から
 
-                    // ステータスの表示設定(検査準備完了)
-                    SetStatusCtrSetting(m_CON_STATUS_CHK);
+                // 枝番の取得
+                if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
+                    return;
 
-                    // 検査対象数(行数)にフォーカスを設定
-                    btnSettei.Focus();
+                // 検査情報ヘッダーの更新
+                if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")) == false)
+                    return;
 
-                    break;
-                case m_CON_STATUS_CHK:
-                    // ステータス：検査準備完了から
+                // 枝番の採番
+                m_intBranchNum++;
 
-                    // 枝番の取得
-                    if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
-                        return;
+                // 検査情報ヘッダーの登録
+                if (RegStartInspectionInfoHeader(m_intInspectionNum, m_intBranchNum) == false)
+                    return;
 
-                    // 検査情報ヘッダーの更新
-                    if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")) == false)
-                        return;
+                // ステータスの表示設定(検査準備完了)
+                SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
 
-                    // 撮像装置部へ連携用ファイル出力
-                    if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
-                        return;
+                // 次の反番情報を設定のフォーカスセット
+                btnNextFabric.Focus();
 
-                    // 枝番の採番
-                    m_intBranchNum++;
+                // 終了時刻
+                lblEndDatetime.Text = "";
+            }
+            else if (m_intStatus == g_clsSystemSettingInfo.intStatusStp)
+            {
+                // ステータス：検査中断から
 
-                    // 検査情報ヘッダーの登録
-                    if (RegStartInspectionInfoHeader(m_intInspectionNum, m_intBranchNum) == false)
-                        return;
+                // 枝番の取得
+                if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
+                    return;
 
-                    // 撮像装置部へ連携用ファイル出力
-                    if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
-                        return;
+                // 検査情報ヘッダーの更新
+                if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
+                    return;
 
-                    // DBコミット
-                    DbCommit();
+                // 終了時刻
+                lblEndDatetime.Text = "";
 
-                    // ステータスの表示設定(検査準備完了)
-                    SetStatusCtrSetting(m_CON_STATUS_CHK);
+                // 検査番号の採番
+                if (bolNumberInspectionNum(out m_intInspectionNum) == false)
+                    return;
+                // 検査番号の表示
+                lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
-                    // 次の反番情報を設定のフォーカスセット
-                    btnTanSet.Focus();
+                // 検査情報ヘッダーの登録
+                if (RegStartInspectionInfoHeader(m_intInspectionNum, m_intBranchNum) == false)
+                    return;
 
-                    // 終了時刻
-                    lblEndDatetime.Text = "";
+                // ステータスの表示設定(検査準備完了)
+                SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
 
-                    break;
-                case m_CON_STATUS_STP:
-                    // ステータス：検査中断から
-
-                    // 枝番の取得
-                    if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
-                        return;
-
-                    // 検査情報ヘッダーの更新
-                    if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
-                        return;
-
-                    // 撮像装置部へ連携用ファイル出力
-                    if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
-                        return;
-
-                    // 終了時刻
-                    lblEndDatetime.Text = "";
-
-                    // 検査番号の採番
-                    if (bolNumberInspectionNum(out m_intInspectionNum, DateTime.Now.ToString("yyyy/MM/dd")) == false)
-                        return;
-                    // 検査番号の表示
-                    lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
-
-                    // 検査情報ヘッダーの登録
-                    if (RegStartInspectionInfoHeader(m_intInspectionNum, m_intBranchNum) == false)
-                        return;
-
-                    // 撮像装置部へ連携用ファイル出力
-                    if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
-                        return;
-
-                    // ステータスの表示設定(検査準備完了)
-                    SetStatusCtrSetting(m_CON_STATUS_CHK);
-
-                    // 検査対象数(行数)のフォーカスセット
-                    txtInspectionTargetLine.Focus();
-
-                    break;
+                // 検査対象数(行数)のフォーカスセット
+                txtInspectionTargetLine.Focus();
             }
         }
 
@@ -1430,10 +1268,10 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnTanSet_Click(object sender, EventArgs e)
+        private void btnNextFabric_Click(object sender, EventArgs e)
         {
             // 検査番号の取得
-            bolGetInspectionNum(out m_intInspectionNum, DateTime.Now.ToString("yyyy/MM/dd"));
+            bolGetInspectionNum(out m_intInspectionNum);
 
             // 値の初期化
             lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum.ToString());
@@ -1448,7 +1286,7 @@ namespace BeforeInspection
             txtWorker2.Text = "";
             lblStartDatetime.Text = "";
             lblEndDatetime.Text = "";
-            SetInspectionDirectionSetting(m_CON_INSPECTION_DIRECTION_S);
+            SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionS);
 
             // 変数の設定
             m_intBranchNum = 1;
@@ -1457,7 +1295,47 @@ namespace BeforeInspection
             txtProductName.Focus();
 
             // ステータスの表示設定(検査開始前)
-            SetStatusCtrSetting(m_CON_STATUS_BEF);
+            SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusBef);
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// 半透明フォーム
+    /// </summary>
+    public partial class OpacityForm : Form
+    {
+        // 子フォーム
+        public Form m_form;
+
+        #region メソッド
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="form"></param>
+        public OpacityForm(Form form)
+        {
+            m_form = form;
+
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.Load += new System.EventHandler(this.OpacityForm_Load);
+            this.WindowState = FormWindowState.Maximized;
+            this.ShowInTaskbar = false;
+        }
+        #endregion
+
+        #region イベント
+        /// <summary>
+        /// フォームロード
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpacityForm_Load(object sender, EventArgs e)
+        {
+            this.Opacity = 0.8;
+
+            m_form.ShowDialog(this);
+            this.Close();
         }
         #endregion
     }
