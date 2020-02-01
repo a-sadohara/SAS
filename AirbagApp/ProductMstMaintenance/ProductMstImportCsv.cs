@@ -1550,9 +1550,9 @@ namespace ProductMstMaintenance
                     // カメラ情報ファイルを１行読み込む
                     strFileTextLine = sr.ReadLine();
                     intRowCount = intRowCount + 1;
-                    if (strFileTextLine == "")
+                    if (strFileTextLine == "" || intRowCount == 1)
                     {
-                        // 空行（最終行）の場合読み飛ばす
+                        // 空行（最終行）またはヘッダ行の場合読み飛ばす
                         continue;
                     }
 
@@ -1850,9 +1850,9 @@ namespace ProductMstMaintenance
                     // 閾値情報ファイルを１行読み込む
                     strFileTextLine = sr.ReadLine();
                     intRowCount = intRowCount + 1;
-                    if (strFileTextLine == "")
+                    if (strFileTextLine == "" || intRowCount == 1)
                     {
-                        // 空行（最終行）の場合読み飛ばす
+                        // 空行（最終行）またはヘッダ行の場合読み飛ばす
                         continue;
                     }
 
@@ -1921,19 +1921,8 @@ namespace ProductMstMaintenance
             if (CheckRequiredInput(stArrayData[m_CON_COL_PRODUCT_NAME_THRESHOLD], "品名", intRowCount, strFileReadLine) == false ||
                 CheckRequiredInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, strFileReadLine) == false ||
                 CheckRequiredInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04], "列閾値04", intRowCount, strFileReadLine) == false ||
                 CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A1], "行閾値A1", intRowCount, strFileReadLine) == false ||
                 CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A2], "行閾値A2", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B1], "行閾値B1", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B2], "行閾値B2", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C1], "行閾値C1", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C2], "行閾値C2", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D1], "行閾値D1", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D2], "行閾値D2", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E1], "行閾値E1", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E2], "行閾値E2", intRowCount, strFileReadLine) == false ||
                 CheckRequiredInput(stArrayData[m_CON_COL_AI_MODEL_NAME], "AIモデル名", intRowCount, strFileReadLine) == false)
             {
                 return false;
@@ -1962,7 +1951,7 @@ namespace ProductMstMaintenance
             }
 
             // 最大範囲入力チェック
-            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 26, strFileReadLine) == false ||
+            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 54, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, 1, 640, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, 1, 640, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, 1, 640, strFileReadLine) == false ||
@@ -2092,8 +2081,16 @@ namespace ProductMstMaintenance
                 {
                     if (fieldInfo.FieldType == typeof(int))
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
-                        { Value = NulltoInt(fieldInfo.GetValue(tciCurrentData)) });
+                        if (NulltoInt(fieldInfo.GetValue(tciCurrentData)) == 0)
+                        {
+                            command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
+                            { Value = DBNull.Value });
+                        }
+                        else 
+                        {
+                            command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
+                            { Value = NulltoInt(fieldInfo.GetValue(tciCurrentData)) });
+                        }
                     }
                     else
                     {
@@ -2267,9 +2264,9 @@ namespace ProductMstMaintenance
                     // 閾値情報ファイルを１行読み込む
                     strFileTextLine = sr.ReadLine();
                     intRowCount = intRowCount + 1;
-                    if (strFileTextLine == "")
+                    if (strFileTextLine == "" || intRowCount == 1)
                     {
-                        // 空行（最終行）の場合読み飛ばす
+                        // 空行（最終行）またはヘッダ行の場合読み飛ばす
                         continue;
                     }
 

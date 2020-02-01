@@ -213,7 +213,28 @@ namespace ProductMstMaintenance
                 return int.Parse(objNValue.ToString());
             }
         }
-        
+
+        /// <summary>
+        /// NULLを0に変換
+        /// </summary>
+        /// <param name="objNValue"></param>
+        /// <returns></returns>
+        public static double NulltoDbl(object objNValue)
+        {
+            if (objNValue == null)
+            {
+                return 0;
+            }
+            else if (objNValue.ToString() == "")
+            {
+                return 0;
+            }
+            else
+            {
+                return double.Parse(objNValue.ToString());
+            }
+        }
+
         /// <summary>
         /// 文字列からの部分文字列の抽出を右から行います
         /// </summary>
@@ -396,13 +417,13 @@ namespace ProductMstMaintenance
                                           , :point_4_plus_direction_y
                                           , :point_5_plus_direction_x
                                           , :point_5_plus_direction_y
-                                          , :AreaMagX
-                                          , :AreaMagY
+                                          , (CAST(:AreaMagX as NUMERIC) / 100)
+                                          , (CAST(:AreaMagY as NUMERIC) / 100)
                                           , :TempFile3
                                           , :TempFile4
                                           , :AutoCalcAreaMagFlg
-                                          , :AreaMagCoefficient
-                                          , :AreaMagCorrection
+                                          , (CAST(:AreaMagCoefficient as NUMERIC) / 100)
+                                          , (CAST(:AreaMagCorrection as NUMERIC) / 100)
                                           , :BThreadNum
                                           , :BThreadNo
                                           , :BTCamNo
@@ -448,13 +469,15 @@ namespace ProductMstMaintenance
                                                        , point_4_plus_direction_y = :point_4_plus_direction_y
                                                        , point_5_plus_direction_x = :point_5_plus_direction_x
                                                        , point_5_plus_direction_y = :point_5_plus_direction_y
-                                                       , stretch_rate_x = :AreaMagX
-                                                       , stretch_rate_y = :AreaMagY
+                                                       , stretch_rate_x = (CAST(:AreaMagX as NUMERIC) / 100)
+                                                       , stretch_rate_y = (CAST(:AreaMagY as NUMERIC) / 100)
+                                                       , stretch_rate_x_upd = null
+                                                       , stretch_rate_y_upd = null
                                                        , regimark_3_imagepath = :TempFile3
                                                        , regimark_4_imagepath = :TempFile4
                                                        , stretch_rate_auto_calc_flg = :AutoCalcAreaMagFlg
-                                                       , width_coefficient = :AreaMagCoefficient
-                                                       , correct_value = :AreaMagCorrection
+                                                       , width_coefficient = (CAST(:AreaMagCoefficient as NUMERIC) / 100)
+                                                       , correct_value = (CAST(:AreaMagCorrection as NUMERIC) / 100)
                                                        , black_thread_cnt_per_line = :BThreadNum
                                                        , measuring_black_thread_num = :BThreadNo
                                                        , camera_num = :BTCamNo";
