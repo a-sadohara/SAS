@@ -1,20 +1,38 @@
 ﻿using log4net;
-using Npgsql;
 using System;
 using System.Configuration;
+using System.Text;
 using System.Data;
 using System.Windows.Forms;
+using BeforeInspection.DTO;
 
 namespace BeforeInspection
 {
     static class Common
     {
-        // DB接続文字列
-        public static string g_ConnectionString;
-        // DBコネクションオブジェクト
-        public static NpgsqlConnection NpgsqlCon;
-        // DBトランザクションオブジェクト
-        public static NpgsqlTransaction NpgsqlTran;
+        // 接続情報情報
+        public static string g_strConnectionString = "";
+        private const string g_CON_CONNECTION_STRING = "Server={0};Port={1};User ID={2};Database={3};Password={4};Enlist=true";
+        public static string g_strDBName = "";
+        public static string g_strDBUser = "";
+        public static string g_strDBUserPassword = "";
+        public static string g_strDBServerName = "";
+        public static string g_strDBPort = "";
+
+        // コネクションクラス
+        public static ConnectionNpgsql g_clsConnectionNpgsql;
+
+        // システム設定情報クラス
+        public static SystemSettingInfo g_clsSystemSettingInfo;
+
+        // メッセージ情報クラス
+        public static MessageInfo g_clsMessageInfo;
+
+        // システム設定情報取得時のエラーメッセージ格納用
+        private static StringBuilder m_sbErrMessage = new StringBuilder();
+
+        // システム情報設定関連
+        public static DataTable m_dtSystemSettingValue = new DataTable();
 
         // イベントログ出力関連
         private static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -33,209 +51,63 @@ namespace BeforeInspection
             try
             {
                 // 接続文字列をApp.configファイルから取得
-                ConnectionStringSettings setConStr = null;
-                setConStr = ConfigurationManager.ConnectionStrings["ConnectionString"];
-                if (setConStr == null)
+                GetAppConfigValue("DBName", ref g_strDBName);
+                GetAppConfigValue("DBUser", ref g_strDBUser);
+                GetAppConfigValue("DBUserPassword", ref g_strDBUserPassword);
+                GetAppConfigValue("DBServerName", ref g_strDBServerName);
+                GetAppConfigValue("DBPort", ref g_strDBPort);
+
+                if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, "App.configの[ConnectionString]の設定値取得時にエラーが発生しました。");
+                    WriteEventLog(g_CON_LEVEL_ERROR, "接続文字列取得時にエラーが発生しました。\r\n" + m_sbErrMessage.ToString());
                     // メッセージ出力
-                    MessageBox.Show("App.configの[ConnectionString]の設定値取得に失敗しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
-                else
-                {
-                    NpgsqlCon = new NpgsqlConnection(setConStr.ConnectionString);
 
-                    DbOpen();
-                }
-                g_ConnectionString = setConStr.ConnectionString;
+                g_strConnectionString = string.Format(g_CON_CONNECTION_STRING, g_strDBServerName,
+                                                                               g_strDBPort,
+                                                                               g_strDBUser,
+                                                                               g_strDBName,
+                                                                               g_strDBUserPassword);
+                // 接続確認
+                g_clsConnectionNpgsql = new ConnectionNpgsql(g_strConnectionString);
+                g_clsConnectionNpgsql.DbOpen();
+                g_clsConnectionNpgsql.DbClose();
+
+                // システム設定情報取得
+                g_clsSystemSettingInfo = new SystemSettingInfo();
+                if (g_clsSystemSettingInfo.bolNormalEnd == false)
+                    return;
+
+                // メッセージ情報取得
+                g_clsMessageInfo = new MessageInfo();
+                if (g_clsMessageInfo.bolNormalEnd == false)
+                    return;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "画面起動時にエラーが発生しました。\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, "初期起動時にエラーが発生しました。" + "\r\n" + ex.Message);
                 // メッセージ出力
-                MessageBox.Show("画面起動処理に失敗しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
+            }
+            finally
+            {
+                if (g_clsConnectionNpgsql != null)
+                {
+                    g_clsConnectionNpgsql.DbClose();
+                }
             }
 
             // フォーム画面を起動
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new BeforeInspection() { Visible = false });
-        }
-
-        /// <summary>
-        /// DBオープン
-        /// </summary>
-        /// <example>既存のDBオープンが存在しない場合、DBオープンを実施する</example>
-        public static void DbOpen()
-        {
-            try
-            {
-                if (NpgsqlCon.FullState != System.Data.ConnectionState.Open)
-                    NpgsqlCon.Open();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// DBトランザクション開始
-        /// </summary>
-        /// <example>既存のDBトランザクションがない場合、DBトランザクション開始を実施する</example>
-        public static void DbBeginTran()
-        {
-            try
-            {
-                if (NpgsqlTran == null || NpgsqlTran.IsCompleted == true)
-                    NpgsqlTran = NpgsqlCon.BeginTransaction();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// DBコミット
-        /// </summary>
-        /// <example>DBトランザクション開始されている場合、DBコミットを実施する</example>
-        public static void DbCommit()
-        {
-            try
-            {
-                if (NpgsqlTran != null && NpgsqlTran.IsCompleted == false)
-                    NpgsqlTran.Commit();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// DBロールバック
-        /// </summary>
-        /// <example>DBトランザクション開始されている場合、DBロールバックを実施する</example>
-        public static void DbRollback()
-        {
-            try
-            {
-                if (NpgsqlTran != null && NpgsqlTran.IsCompleted == false)
-                    NpgsqlTran.Rollback();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// NULLを""に変換
-        /// </summary>
-        /// <param name="objNValue"></param>
-        /// <returns></returns>
-        public static string NulltoString(object objNValue)
-        {
-            if (objNValue == null)
-            {
-                return "";
-            }
-            else if (objNValue.ToString() == "")
-            {
-                return "";
-            }
-            else
-            {
-                return objNValue.ToString();
-            }
-        }
-
-        /// <summary>
-        /// App.configファイルから設定値を取得
-        /// </summary>
-        /// <param name="strName">要素名</param>
-        /// <returns>null:設定なし(取得失敗) それ以外:設定あり(取得成功)</returns>
-        public static string strGetAppConfigValue(string strName)
-        {
-            string strValue = ConfigurationManager.AppSettings[strName];
-            if (strValue == null)
-                MessageBox.Show("App.configの[" + strName + "]の設定値取得に失敗しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return strValue;
-        }
-
-        /// <summary>
-        /// システム設定情報から設定値を取得
-        /// </summary>
-        /// <param name="strId">ID</param>
-        /// <param name="strValue">設定値</param>
-        /// <returns>true:正常終了 false:異常終了</returns>
-        public static bool bolGetSystemSettingValue(string strId, out string strValue)
-        {
-            string strSQL = "";
-            DataTable dtData;
-            string strGetValue = "";
-
-            try
-            {
-                // SQL抽出から情報を取得
-                DbOpen();
-
-                NpgsqlCommand NpgsqlCom = null;
-                NpgsqlDataAdapter NpgsqlDtAd = null;
-                dtData = new DataTable();
-                strSQL = @"SELECT value FROM system_setting_info WHERE id = '" + strId + "'; ";
-                NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-                NpgsqlDtAd = new NpgsqlDataAdapter(NpgsqlCom);
-                NpgsqlDtAd.Fill(dtData);
-
-                //  検査番号
-                strGetValue = dtData.Rows[0]["value"].ToString();
-
-                return true;
-            }
-            catch (NpgsqlException ex)
-            {
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。\r\n" + ex.Message);
-                // メッセージ出力
-                MessageBox.Show("システム設定情報の取得で例外が発生しました。", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return false;
-            }
-            finally
-            {
-                strValue = strGetValue;
-            }
-        }
-
-        /// <summary>
-        /// 登録・更新処理実行
-        /// </summary>
-        /// <param name="nscCommand">実行SQLコマンド</param>
-        /// <param name="transaction">トランザクション情報</param>
-        /// <returns></returns>
-        public static Boolean ExecTranSQL(NpgsqlCommand nscCommand)
-        {
-            try
-            {
-                nscCommand.ExecuteNonQuery();
-                return true;
-            }
-            catch (NpgsqlException ex)
-            {
-                DbRollback();
-                MessageBox.Show("DB更新時にエラーが発生しました。"
-                              + Environment.NewLine
-                              + ex.Message);
-                return false;
-            }
+            Application.Run(new BeforeInspection());
         }
 
         /// <summary>
@@ -265,6 +137,21 @@ namespace BeforeInspection
                 case g_CON_LEVEL_DEBUG:
                     log.Debug(strMessage);
                     break;
+            }
+        }
+
+        /// <summary>
+        /// App.configファイルから設定値を取得
+        /// </summary>
+        /// <param name="strKey">キー</param>
+        /// <param name="strValue">設定値</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        private static void GetAppConfigValue(string strKey, ref string strValue)
+        {
+            strValue = ConfigurationManager.AppSettings[strKey];
+            if (strValue == null)
+            {
+                m_sbErrMessage.AppendLine("Key[" + strKey + "] AppConfigに存在しません。");
             }
         }
     }

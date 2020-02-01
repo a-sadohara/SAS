@@ -64,31 +64,31 @@
             this.pnlInfo = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.lblTitleInspectionDirection = new System.Windows.Forms.Label();
-            this.lblSEW_2_Front = new System.Windows.Forms.Label();
-            this.lblSEW_1_Front = new System.Windows.Forms.Label();
-            this.lblTitleFront = new System.Windows.Forms.Label();
-            this.lblTitleBack = new System.Windows.Forms.Label();
+            this.lblSEWNo1Bot = new System.Windows.Forms.Label();
+            this.lblSEWNo1Top = new System.Windows.Forms.Label();
+            this.lblTitleNo1 = new System.Windows.Forms.Label();
+            this.lblTitleNo2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.picInspectionDirection_Front = new System.Windows.Forms.PictureBox();
+            this.picInspectionDirectionNo1 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.picInspectionDirection_Back = new System.Windows.Forms.PictureBox();
-            this.lblSEW_1_Back = new System.Windows.Forms.Label();
-            this.lblSEW_2_Back = new System.Windows.Forms.Label();
+            this.picInspectionDirectionNo2 = new System.Windows.Forms.PictureBox();
+            this.lblSEWNo2Top = new System.Windows.Forms.Label();
+            this.lblSEWNo2Bot = new System.Windows.Forms.Label();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnInspectionDirection_X = new System.Windows.Forms.Button();
-            this.btnInspectionDirection_R = new System.Windows.Forms.Button();
-            this.btnInspectionDirection_S = new System.Windows.Forms.Button();
-            this.btnInspectionDirection_Y = new System.Windows.Forms.Button();
+            this.btnInspectionDirectionX = new System.Windows.Forms.Button();
+            this.btnInspectionDirectionR = new System.Windows.Forms.Button();
+            this.btnInspectionDirectionS = new System.Windows.Forms.Button();
+            this.btnInspectionDirectionY = new System.Windows.Forms.Button();
             this.pnlTitleEndDate = new System.Windows.Forms.Panel();
             this.lblTitleEndDatetime = new System.Windows.Forms.Label();
             this.pnlNowInputNowDate_2 = new System.Windows.Forms.Panel();
-            this.btnEndDate = new System.Windows.Forms.Button();
+            this.btnEndDatetime = new System.Windows.Forms.Button();
             this.pnlEndDate = new System.Windows.Forms.Panel();
             this.lblEndDatetime = new System.Windows.Forms.Label();
             this.pnlTitleStartDate = new System.Windows.Forms.Panel();
             this.lblTitleStartDatetime = new System.Windows.Forms.Label();
             this.pnlNowInputNowDate_1 = new System.Windows.Forms.Panel();
-            this.btnStartDate = new System.Windows.Forms.Button();
+            this.btnStartDatetime = new System.Windows.Forms.Button();
             this.pnlStartDate = new System.Windows.Forms.Panel();
             this.lblStartDatetime = new System.Windows.Forms.Label();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -100,9 +100,9 @@
             this.lblStatusStp = new System.Windows.Forms.Label();
             this.pnlStatusEnd = new System.Windows.Forms.Panel();
             this.lblStatusEnd = new System.Windows.Forms.Label();
-            this.btnTyudan = new System.Windows.Forms.Button();
-            this.btnSettei = new System.Windows.Forms.Button();
-            this.btnTanSet = new System.Windows.Forms.Button();
+            this.btnInspectionStop = new System.Windows.Forms.Button();
+            this.btnSet = new System.Windows.Forms.Button();
+            this.btnNextFabric = new System.Windows.Forms.Button();
             this.lblInspectionNum = new System.Windows.Forms.Label();
             this.lblUnitNum = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
@@ -124,9 +124,9 @@
             this.pnlInfo.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picInspectionDirection_Front)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picInspectionDirectionNo1)).BeginInit();
             this.tableLayoutPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picInspectionDirection_Back)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picInspectionDirectionNo2)).BeginInit();
             this.tableLayoutPanel5.SuspendLayout();
             this.pnlTitleEndDate.SuspendLayout();
             this.pnlNowInputNowDate_2.SuspendLayout();
@@ -452,8 +452,8 @@
             this.txtInspectionTargetLine.Size = new System.Drawing.Size(52, 31);
             this.txtInspectionTargetLine.TabIndex = 4;
             this.txtInspectionTargetLine.Text = "9999";
-            this.txtInspectionTargetLine.Click += new System.EventHandler(this.DispInputForm);
-            this.txtInspectionTargetLine.Leave += new System.EventHandler(this.txtKensaTaishoNum_Leave);
+            this.txtInspectionTargetLine.Click += new System.EventHandler(this.DispTenKeyInputForm);
+            this.txtInspectionTargetLine.Leave += new System.EventHandler(this.txtInspectionTargetLine_Leave);
             // 
             // lblInspectionEndLine
             // 
@@ -492,7 +492,7 @@
             this.txtInspectionStartLine.Size = new System.Drawing.Size(52, 31);
             this.txtInspectionStartLine.TabIndex = 6;
             this.txtInspectionStartLine.Text = "9999";
-            this.txtInspectionStartLine.Click += new System.EventHandler(this.DispInputForm);
+            this.txtInspectionStartLine.Click += new System.EventHandler(this.DispTenKeyInputForm);
             this.txtInspectionStartLine.Leave += new System.EventHandler(this.txtKensaStartRow_Leave);
             // 
             // pnlSagyosyaInfo_1
@@ -614,14 +614,14 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 252F));
             this.tableLayoutPanel3.Controls.Add(this.lblTitleInspectionDirection, 2, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblSEW_2_Front, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.lblSEW_1_Front, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblTitleFront, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.lblTitleBack, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblSEWNo1Bot, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.lblSEWNo1Top, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lblTitleNo1, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.lblTitleNo2, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel2, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel4, 1, 2);
-            this.tableLayoutPanel3.Controls.Add(this.lblSEW_1_Back, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.lblSEW_2_Back, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.lblSEWNo2Top, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.lblSEWNo2Bot, 1, 3);
             this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel5, 2, 2);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
@@ -648,53 +648,53 @@
             this.lblTitleInspectionDirection.Text = "検査方向設定";
             this.lblTitleInspectionDirection.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
-            // lblSEW_2_Front
+            // lblSEWNo1Bot
             // 
-            this.lblSEW_2_Front.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblSEW_2_Front.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblSEW_2_Front.Location = new System.Drawing.Point(0, 211);
-            this.lblSEW_2_Front.Margin = new System.Windows.Forms.Padding(0);
-            this.lblSEW_2_Front.Name = "lblSEW_2_Front";
-            this.lblSEW_2_Front.Size = new System.Drawing.Size(498, 30);
-            this.lblSEW_2_Front.TabIndex = 1;
-            this.lblSEW_2_Front.Text = " ↓↓↓ ＳＷ ↓↓↓ ";
-            this.lblSEW_2_Front.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblSEWNo1Bot.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblSEWNo1Bot.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblSEWNo1Bot.Location = new System.Drawing.Point(0, 211);
+            this.lblSEWNo1Bot.Margin = new System.Windows.Forms.Padding(0);
+            this.lblSEWNo1Bot.Name = "lblSEWNo1Bot";
+            this.lblSEWNo1Bot.Size = new System.Drawing.Size(498, 30);
+            this.lblSEWNo1Bot.TabIndex = 1;
+            this.lblSEWNo1Bot.Text = " ↓↓↓ ＳＷ ↓↓↓ ";
+            this.lblSEWNo1Bot.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lblSEW_1_Front
+            // lblSEWNo1Top
             // 
-            this.lblSEW_1_Front.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblSEW_1_Front.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.lblSEW_1_Front.Location = new System.Drawing.Point(0, 30);
-            this.lblSEW_1_Front.Margin = new System.Windows.Forms.Padding(0);
-            this.lblSEW_1_Front.Name = "lblSEW_1_Front";
-            this.lblSEW_1_Front.Size = new System.Drawing.Size(498, 30);
-            this.lblSEW_1_Front.TabIndex = 1;
-            this.lblSEW_1_Front.Text = " ↓↓↓ ＥＷ ↓↓↓ ";
-            this.lblSEW_1_Front.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblSEWNo1Top.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblSEWNo1Top.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblSEWNo1Top.Location = new System.Drawing.Point(0, 30);
+            this.lblSEWNo1Top.Margin = new System.Windows.Forms.Padding(0);
+            this.lblSEWNo1Top.Name = "lblSEWNo1Top";
+            this.lblSEWNo1Top.Size = new System.Drawing.Size(498, 30);
+            this.lblSEWNo1Top.TabIndex = 1;
+            this.lblSEWNo1Top.Text = " ↓↓↓ ＥＷ ↓↓↓ ";
+            this.lblSEWNo1Top.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lblTitleFront
+            // lblTitleNo1
             // 
-            this.lblTitleFront.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblTitleFront.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.lblTitleFront.Location = new System.Drawing.Point(0, 0);
-            this.lblTitleFront.Margin = new System.Windows.Forms.Padding(0);
-            this.lblTitleFront.Name = "lblTitleFront";
-            this.lblTitleFront.Size = new System.Drawing.Size(498, 30);
-            this.lblTitleFront.TabIndex = 1;
-            this.lblTitleFront.Text = "検反部No.1";
-            this.lblTitleFront.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTitleNo1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblTitleNo1.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblTitleNo1.Location = new System.Drawing.Point(0, 0);
+            this.lblTitleNo1.Margin = new System.Windows.Forms.Padding(0);
+            this.lblTitleNo1.Name = "lblTitleNo1";
+            this.lblTitleNo1.Size = new System.Drawing.Size(498, 30);
+            this.lblTitleNo1.TabIndex = 1;
+            this.lblTitleNo1.Text = "検反部No.1";
+            this.lblTitleNo1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lblTitleBack
+            // lblTitleNo2
             // 
-            this.lblTitleBack.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblTitleBack.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.lblTitleBack.Location = new System.Drawing.Point(498, 0);
-            this.lblTitleBack.Margin = new System.Windows.Forms.Padding(0);
-            this.lblTitleBack.Name = "lblTitleBack";
-            this.lblTitleBack.Size = new System.Drawing.Size(498, 30);
-            this.lblTitleBack.TabIndex = 1;
-            this.lblTitleBack.Text = "検反部No.2";
-            this.lblTitleBack.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTitleNo2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblTitleNo2.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblTitleNo2.Location = new System.Drawing.Point(498, 0);
+            this.lblTitleNo2.Margin = new System.Windows.Forms.Padding(0);
+            this.lblTitleNo2.Name = "lblTitleNo2";
+            this.lblTitleNo2.Size = new System.Drawing.Size(498, 30);
+            this.lblTitleNo2.TabIndex = 1;
+            this.lblTitleNo2.Text = "検反部No.2";
+            this.lblTitleNo2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tableLayoutPanel2
             // 
@@ -702,7 +702,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
-            this.tableLayoutPanel2.Controls.Add(this.picInspectionDirection_Front, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.picInspectionDirectionNo1, 1, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 63);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -711,17 +711,17 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(492, 145);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
-            // picInspectionDirection_Front
+            // picInspectionDirectionNo1
             // 
-            this.picInspectionDirection_Front.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.picInspectionDirection_Front.InitialImage = null;
-            this.picInspectionDirection_Front.Location = new System.Drawing.Point(73, 0);
-            this.picInspectionDirection_Front.Margin = new System.Windows.Forms.Padding(0);
-            this.picInspectionDirection_Front.Name = "picInspectionDirection_Front";
-            this.picInspectionDirection_Front.Size = new System.Drawing.Size(344, 145);
-            this.picInspectionDirection_Front.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.picInspectionDirection_Front.TabIndex = 0;
-            this.picInspectionDirection_Front.TabStop = false;
+            this.picInspectionDirectionNo1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picInspectionDirectionNo1.InitialImage = null;
+            this.picInspectionDirectionNo1.Location = new System.Drawing.Point(73, 0);
+            this.picInspectionDirectionNo1.Margin = new System.Windows.Forms.Padding(0);
+            this.picInspectionDirectionNo1.Name = "picInspectionDirectionNo1";
+            this.picInspectionDirectionNo1.Size = new System.Drawing.Size(344, 145);
+            this.picInspectionDirectionNo1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picInspectionDirectionNo1.TabIndex = 0;
+            this.picInspectionDirectionNo1.TabStop = false;
             // 
             // tableLayoutPanel4
             // 
@@ -729,7 +729,7 @@
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
-            this.tableLayoutPanel4.Controls.Add(this.picInspectionDirection_Back, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.picInspectionDirectionNo2, 1, 0);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(501, 63);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
@@ -738,49 +738,49 @@
             this.tableLayoutPanel4.Size = new System.Drawing.Size(492, 145);
             this.tableLayoutPanel4.TabIndex = 2;
             // 
-            // picInspectionDirection_Back
+            // picInspectionDirectionNo2
             // 
-            this.picInspectionDirection_Back.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.picInspectionDirection_Back.Location = new System.Drawing.Point(76, 3);
-            this.picInspectionDirection_Back.Name = "picInspectionDirection_Back";
-            this.picInspectionDirection_Back.Size = new System.Drawing.Size(338, 139);
-            this.picInspectionDirection_Back.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.picInspectionDirection_Back.TabIndex = 0;
-            this.picInspectionDirection_Back.TabStop = false;
+            this.picInspectionDirectionNo2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picInspectionDirectionNo2.Location = new System.Drawing.Point(76, 3);
+            this.picInspectionDirectionNo2.Name = "picInspectionDirectionNo2";
+            this.picInspectionDirectionNo2.Size = new System.Drawing.Size(338, 139);
+            this.picInspectionDirectionNo2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picInspectionDirectionNo2.TabIndex = 0;
+            this.picInspectionDirectionNo2.TabStop = false;
             // 
-            // lblSEW_1_Back
+            // lblSEWNo2Top
             // 
-            this.lblSEW_1_Back.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblSEW_1_Back.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.lblSEW_1_Back.Location = new System.Drawing.Point(498, 30);
-            this.lblSEW_1_Back.Margin = new System.Windows.Forms.Padding(0);
-            this.lblSEW_1_Back.Name = "lblSEW_1_Back";
-            this.lblSEW_1_Back.Size = new System.Drawing.Size(498, 30);
-            this.lblSEW_1_Back.TabIndex = 1;
-            this.lblSEW_1_Back.Text = " ↓↓↓ ＥＷ ↓↓↓ ";
-            this.lblSEW_1_Back.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblSEWNo2Top.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblSEWNo2Top.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblSEWNo2Top.Location = new System.Drawing.Point(498, 30);
+            this.lblSEWNo2Top.Margin = new System.Windows.Forms.Padding(0);
+            this.lblSEWNo2Top.Name = "lblSEWNo2Top";
+            this.lblSEWNo2Top.Size = new System.Drawing.Size(498, 30);
+            this.lblSEWNo2Top.TabIndex = 1;
+            this.lblSEWNo2Top.Text = " ↓↓↓ ＥＷ ↓↓↓ ";
+            this.lblSEWNo2Top.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lblSEW_2_Back
+            // lblSEWNo2Bot
             // 
-            this.lblSEW_2_Back.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblSEW_2_Back.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblSEW_2_Back.Location = new System.Drawing.Point(498, 211);
-            this.lblSEW_2_Back.Margin = new System.Windows.Forms.Padding(0);
-            this.lblSEW_2_Back.Name = "lblSEW_2_Back";
-            this.lblSEW_2_Back.Size = new System.Drawing.Size(498, 30);
-            this.lblSEW_2_Back.TabIndex = 1;
-            this.lblSEW_2_Back.Text = " ↓↓↓ ＳＷ ↓↓↓ ";
-            this.lblSEW_2_Back.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblSEWNo2Bot.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblSEWNo2Bot.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.lblSEWNo2Bot.Location = new System.Drawing.Point(498, 211);
+            this.lblSEWNo2Bot.Margin = new System.Windows.Forms.Padding(0);
+            this.lblSEWNo2Bot.Name = "lblSEWNo2Bot";
+            this.lblSEWNo2Bot.Size = new System.Drawing.Size(498, 30);
+            this.lblSEWNo2Bot.TabIndex = 1;
+            this.lblSEWNo2Bot.Text = " ↓↓↓ ＳＷ ↓↓↓ ";
+            this.lblSEWNo2Bot.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tableLayoutPanel5
             // 
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.Controls.Add(this.btnInspectionDirection_X, 0, 1);
-            this.tableLayoutPanel5.Controls.Add(this.btnInspectionDirection_R, 1, 1);
-            this.tableLayoutPanel5.Controls.Add(this.btnInspectionDirection_S, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.btnInspectionDirection_Y, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.btnInspectionDirectionX, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.btnInspectionDirectionR, 1, 1);
+            this.tableLayoutPanel5.Controls.Add(this.btnInspectionDirectionS, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.btnInspectionDirectionY, 1, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(999, 63);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
@@ -790,63 +790,63 @@
             this.tableLayoutPanel5.Size = new System.Drawing.Size(246, 145);
             this.tableLayoutPanel5.TabIndex = 10;
             // 
-            // btnInspectionDirection_X
+            // btnInspectionDirectionX
             // 
-            this.btnInspectionDirection_X.BackColor = System.Drawing.SystemColors.Control;
-            this.btnInspectionDirection_X.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnInspectionDirection_X.Font = new System.Drawing.Font("メイリオ", 11.25F);
-            this.btnInspectionDirection_X.Location = new System.Drawing.Point(5, 77);
-            this.btnInspectionDirection_X.Margin = new System.Windows.Forms.Padding(5);
-            this.btnInspectionDirection_X.Name = "btnInspectionDirection_X";
-            this.btnInspectionDirection_X.Size = new System.Drawing.Size(113, 63);
-            this.btnInspectionDirection_X.TabIndex = 0;
-            this.btnInspectionDirection_X.TabStop = false;
-            this.btnInspectionDirection_X.Text = "Ｘ";
-            this.btnInspectionDirection_X.UseVisualStyleBackColor = false;
-            this.btnInspectionDirection_X.Click += new System.EventHandler(this.btnInspectionDirection_Click);
+            this.btnInspectionDirectionX.BackColor = System.Drawing.SystemColors.Control;
+            this.btnInspectionDirectionX.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnInspectionDirectionX.Font = new System.Drawing.Font("メイリオ", 11.25F);
+            this.btnInspectionDirectionX.Location = new System.Drawing.Point(5, 77);
+            this.btnInspectionDirectionX.Margin = new System.Windows.Forms.Padding(5);
+            this.btnInspectionDirectionX.Name = "btnInspectionDirectionX";
+            this.btnInspectionDirectionX.Size = new System.Drawing.Size(113, 63);
+            this.btnInspectionDirectionX.TabIndex = 0;
+            this.btnInspectionDirectionX.TabStop = false;
+            this.btnInspectionDirectionX.Text = "Ｘ";
+            this.btnInspectionDirectionX.UseVisualStyleBackColor = false;
+            this.btnInspectionDirectionX.Click += new System.EventHandler(this.btnInspectionDirection_Click);
             // 
-            // btnInspectionDirection_R
+            // btnInspectionDirectionR
             // 
-            this.btnInspectionDirection_R.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnInspectionDirection_R.Font = new System.Drawing.Font("メイリオ", 11.25F);
-            this.btnInspectionDirection_R.Location = new System.Drawing.Point(128, 77);
-            this.btnInspectionDirection_R.Margin = new System.Windows.Forms.Padding(5);
-            this.btnInspectionDirection_R.Name = "btnInspectionDirection_R";
-            this.btnInspectionDirection_R.Size = new System.Drawing.Size(113, 63);
-            this.btnInspectionDirection_R.TabIndex = 0;
-            this.btnInspectionDirection_R.TabStop = false;
-            this.btnInspectionDirection_R.Text = "Ｒ";
-            this.btnInspectionDirection_R.UseVisualStyleBackColor = true;
-            this.btnInspectionDirection_R.Click += new System.EventHandler(this.btnInspectionDirection_Click);
+            this.btnInspectionDirectionR.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnInspectionDirectionR.Font = new System.Drawing.Font("メイリオ", 11.25F);
+            this.btnInspectionDirectionR.Location = new System.Drawing.Point(128, 77);
+            this.btnInspectionDirectionR.Margin = new System.Windows.Forms.Padding(5);
+            this.btnInspectionDirectionR.Name = "btnInspectionDirectionR";
+            this.btnInspectionDirectionR.Size = new System.Drawing.Size(113, 63);
+            this.btnInspectionDirectionR.TabIndex = 0;
+            this.btnInspectionDirectionR.TabStop = false;
+            this.btnInspectionDirectionR.Text = "Ｒ";
+            this.btnInspectionDirectionR.UseVisualStyleBackColor = true;
+            this.btnInspectionDirectionR.Click += new System.EventHandler(this.btnInspectionDirection_Click);
             // 
-            // btnInspectionDirection_S
+            // btnInspectionDirectionS
             // 
-            this.btnInspectionDirection_S.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.btnInspectionDirection_S.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnInspectionDirection_S.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnInspectionDirection_S.Location = new System.Drawing.Point(5, 5);
-            this.btnInspectionDirection_S.Margin = new System.Windows.Forms.Padding(5);
-            this.btnInspectionDirection_S.Name = "btnInspectionDirection_S";
-            this.btnInspectionDirection_S.Size = new System.Drawing.Size(113, 62);
-            this.btnInspectionDirection_S.TabIndex = 0;
-            this.btnInspectionDirection_S.TabStop = false;
-            this.btnInspectionDirection_S.Text = "Ｓ";
-            this.btnInspectionDirection_S.UseVisualStyleBackColor = false;
-            this.btnInspectionDirection_S.Click += new System.EventHandler(this.btnInspectionDirection_Click);
+            this.btnInspectionDirectionS.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnInspectionDirectionS.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnInspectionDirectionS.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnInspectionDirectionS.Location = new System.Drawing.Point(5, 5);
+            this.btnInspectionDirectionS.Margin = new System.Windows.Forms.Padding(5);
+            this.btnInspectionDirectionS.Name = "btnInspectionDirectionS";
+            this.btnInspectionDirectionS.Size = new System.Drawing.Size(113, 62);
+            this.btnInspectionDirectionS.TabIndex = 0;
+            this.btnInspectionDirectionS.TabStop = false;
+            this.btnInspectionDirectionS.Text = "Ｓ";
+            this.btnInspectionDirectionS.UseVisualStyleBackColor = false;
+            this.btnInspectionDirectionS.Click += new System.EventHandler(this.btnInspectionDirection_Click);
             // 
-            // btnInspectionDirection_Y
+            // btnInspectionDirectionY
             // 
-            this.btnInspectionDirection_Y.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnInspectionDirection_Y.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnInspectionDirection_Y.Location = new System.Drawing.Point(128, 5);
-            this.btnInspectionDirection_Y.Margin = new System.Windows.Forms.Padding(5);
-            this.btnInspectionDirection_Y.Name = "btnInspectionDirection_Y";
-            this.btnInspectionDirection_Y.Size = new System.Drawing.Size(113, 62);
-            this.btnInspectionDirection_Y.TabIndex = 0;
-            this.btnInspectionDirection_Y.TabStop = false;
-            this.btnInspectionDirection_Y.Text = "Ｙ";
-            this.btnInspectionDirection_Y.UseVisualStyleBackColor = true;
-            this.btnInspectionDirection_Y.Click += new System.EventHandler(this.btnInspectionDirection_Click);
+            this.btnInspectionDirectionY.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnInspectionDirectionY.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnInspectionDirectionY.Location = new System.Drawing.Point(128, 5);
+            this.btnInspectionDirectionY.Margin = new System.Windows.Forms.Padding(5);
+            this.btnInspectionDirectionY.Name = "btnInspectionDirectionY";
+            this.btnInspectionDirectionY.Size = new System.Drawing.Size(113, 62);
+            this.btnInspectionDirectionY.TabIndex = 0;
+            this.btnInspectionDirectionY.TabStop = false;
+            this.btnInspectionDirectionY.Text = "Ｙ";
+            this.btnInspectionDirectionY.UseVisualStyleBackColor = true;
+            this.btnInspectionDirectionY.Click += new System.EventHandler(this.btnInspectionDirection_Click);
             // 
             // pnlTitleEndDate
             // 
@@ -875,7 +875,7 @@
             // 
             this.pnlNowInputNowDate_2.BackColor = System.Drawing.SystemColors.Control;
             this.pnlNowInputNowDate_2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pnlNowInputNowDate_2.Controls.Add(this.btnEndDate);
+            this.pnlNowInputNowDate_2.Controls.Add(this.btnEndDatetime);
             this.pnlNowInputNowDate_2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlNowInputNowDate_2.Location = new System.Drawing.Point(225, 264);
             this.pnlNowInputNowDate_2.Margin = new System.Windows.Forms.Padding(0);
@@ -883,18 +883,18 @@
             this.pnlNowInputNowDate_2.Size = new System.Drawing.Size(225, 33);
             this.pnlNowInputNowDate_2.TabIndex = 0;
             // 
-            // btnEndDate
+            // btnEndDatetime
             // 
-            this.btnEndDate.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnEndDate.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnEndDate.Location = new System.Drawing.Point(0, 0);
-            this.btnEndDate.Margin = new System.Windows.Forms.Padding(0);
-            this.btnEndDate.Name = "btnEndDate";
-            this.btnEndDate.Size = new System.Drawing.Size(221, 29);
-            this.btnEndDate.TabIndex = 10;
-            this.btnEndDate.Text = "現在時刻選択";
-            this.btnEndDate.UseVisualStyleBackColor = true;
-            this.btnEndDate.Click += new System.EventHandler(this.btnEndDate_Click);
+            this.btnEndDatetime.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnEndDatetime.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnEndDatetime.Location = new System.Drawing.Point(0, 0);
+            this.btnEndDatetime.Margin = new System.Windows.Forms.Padding(0);
+            this.btnEndDatetime.Name = "btnEndDatetime";
+            this.btnEndDatetime.Size = new System.Drawing.Size(221, 29);
+            this.btnEndDatetime.TabIndex = 10;
+            this.btnEndDatetime.Text = "現在時刻選択";
+            this.btnEndDatetime.UseVisualStyleBackColor = true;
+            this.btnEndDatetime.Click += new System.EventHandler(this.btnEndDatetime_Click);
             // 
             // pnlEndDate
             // 
@@ -946,7 +946,7 @@
             // 
             this.pnlNowInputNowDate_1.BackColor = System.Drawing.SystemColors.Control;
             this.pnlNowInputNowDate_1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.pnlNowInputNowDate_1.Controls.Add(this.btnStartDate);
+            this.pnlNowInputNowDate_1.Controls.Add(this.btnStartDatetime);
             this.pnlNowInputNowDate_1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlNowInputNowDate_1.Location = new System.Drawing.Point(225, 231);
             this.pnlNowInputNowDate_1.Margin = new System.Windows.Forms.Padding(0);
@@ -954,18 +954,18 @@
             this.pnlNowInputNowDate_1.Size = new System.Drawing.Size(225, 33);
             this.pnlNowInputNowDate_1.TabIndex = 0;
             // 
-            // btnStartDate
+            // btnStartDatetime
             // 
-            this.btnStartDate.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnStartDate.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnStartDate.Location = new System.Drawing.Point(0, 0);
-            this.btnStartDate.Margin = new System.Windows.Forms.Padding(0);
-            this.btnStartDate.Name = "btnStartDate";
-            this.btnStartDate.Size = new System.Drawing.Size(221, 29);
-            this.btnStartDate.TabIndex = 9;
-            this.btnStartDate.Text = "現在時刻選択";
-            this.btnStartDate.UseVisualStyleBackColor = true;
-            this.btnStartDate.Click += new System.EventHandler(this.btnStartDate_Click);
+            this.btnStartDatetime.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnStartDatetime.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnStartDatetime.Location = new System.Drawing.Point(0, 0);
+            this.btnStartDatetime.Margin = new System.Windows.Forms.Padding(0);
+            this.btnStartDatetime.Name = "btnStartDatetime";
+            this.btnStartDatetime.Size = new System.Drawing.Size(221, 29);
+            this.btnStartDatetime.TabIndex = 9;
+            this.btnStartDatetime.Text = "現在時刻選択";
+            this.btnStartDatetime.UseVisualStyleBackColor = true;
+            this.btnStartDatetime.Click += new System.EventHandler(this.btnStartDatetime_Click);
             // 
             // pnlStartDate
             // 
@@ -1103,46 +1103,46 @@
             this.lblStatusEnd.Text = "検査終了";
             this.lblStatusEnd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // btnTyudan
+            // btnInspectionStop
             // 
-            this.btnTyudan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnTyudan.BackColor = System.Drawing.SystemColors.Control;
-            this.btnTyudan.Font = new System.Drawing.Font("メイリオ", 11.25F);
-            this.btnTyudan.Location = new System.Drawing.Point(916, 578);
-            this.btnTyudan.Margin = new System.Windows.Forms.Padding(0);
-            this.btnTyudan.Name = "btnTyudan";
-            this.btnTyudan.Size = new System.Drawing.Size(114, 44);
-            this.btnTyudan.TabIndex = 9;
-            this.btnTyudan.Text = "検査中断";
-            this.btnTyudan.UseVisualStyleBackColor = false;
-            this.btnTyudan.Click += new System.EventHandler(this.btnTyudan_Click);
+            this.btnInspectionStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnInspectionStop.BackColor = System.Drawing.SystemColors.Control;
+            this.btnInspectionStop.Font = new System.Drawing.Font("メイリオ", 11.25F);
+            this.btnInspectionStop.Location = new System.Drawing.Point(916, 578);
+            this.btnInspectionStop.Margin = new System.Windows.Forms.Padding(0);
+            this.btnInspectionStop.Name = "btnInspectionStop";
+            this.btnInspectionStop.Size = new System.Drawing.Size(114, 44);
+            this.btnInspectionStop.TabIndex = 9;
+            this.btnInspectionStop.Text = "検査中断";
+            this.btnInspectionStop.UseVisualStyleBackColor = false;
+            this.btnInspectionStop.Click += new System.EventHandler(this.btnInspectionStop_Click);
             // 
-            // btnSettei
+            // btnSet
             // 
-            this.btnSettei.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSettei.BackColor = System.Drawing.SystemColors.Control;
-            this.btnSettei.Font = new System.Drawing.Font("メイリオ", 11.25F);
-            this.btnSettei.Location = new System.Drawing.Point(1033, 578);
-            this.btnSettei.Margin = new System.Windows.Forms.Padding(0);
-            this.btnSettei.Name = "btnSettei";
-            this.btnSettei.Size = new System.Drawing.Size(114, 44);
-            this.btnSettei.TabIndex = 9;
-            this.btnSettei.Text = "設定";
-            this.btnSettei.UseVisualStyleBackColor = false;
-            this.btnSettei.Click += new System.EventHandler(this.btnSettei_Click);
+            this.btnSet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSet.BackColor = System.Drawing.SystemColors.Control;
+            this.btnSet.Font = new System.Drawing.Font("メイリオ", 11.25F);
+            this.btnSet.Location = new System.Drawing.Point(1033, 578);
+            this.btnSet.Margin = new System.Windows.Forms.Padding(0);
+            this.btnSet.Name = "btnSet";
+            this.btnSet.Size = new System.Drawing.Size(114, 44);
+            this.btnSet.TabIndex = 9;
+            this.btnSet.Text = "設定";
+            this.btnSet.UseVisualStyleBackColor = false;
+            this.btnSet.Click += new System.EventHandler(this.btnSet_Click);
             // 
-            // btnTanSet
+            // btnNextFabric
             // 
-            this.btnTanSet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnTanSet.BackColor = System.Drawing.SystemColors.Control;
-            this.btnTanSet.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnTanSet.Location = new System.Drawing.Point(1150, 578);
-            this.btnTanSet.Name = "btnTanSet";
-            this.btnTanSet.Size = new System.Drawing.Size(114, 44);
-            this.btnTanSet.TabIndex = 21;
-            this.btnTanSet.Text = "次の反番情報を\r\n設定";
-            this.btnTanSet.UseVisualStyleBackColor = false;
-            this.btnTanSet.Click += new System.EventHandler(this.btnTanSet_Click);
+            this.btnNextFabric.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNextFabric.BackColor = System.Drawing.SystemColors.Control;
+            this.btnNextFabric.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.btnNextFabric.Location = new System.Drawing.Point(1150, 578);
+            this.btnNextFabric.Name = "btnNextFabric";
+            this.btnNextFabric.Size = new System.Drawing.Size(114, 44);
+            this.btnNextFabric.TabIndex = 21;
+            this.btnNextFabric.Text = "次の反番情報を\r\n設定";
+            this.btnNextFabric.UseVisualStyleBackColor = false;
+            this.btnNextFabric.Click += new System.EventHandler(this.btnNextFabric_Click);
             // 
             // lblInspectionNum
             // 
@@ -1175,15 +1175,15 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.ClientSize = new System.Drawing.Size(1276, 626);
             this.Controls.Add(this.lblUnitNum);
-            this.Controls.Add(this.btnTyudan);
+            this.Controls.Add(this.btnInspectionStop);
             this.Controls.Add(this.lblInspectionNum);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.btnTanSet);
-            this.Controls.Add(this.btnSettei);
+            this.Controls.Add(this.btnNextFabric);
+            this.Controls.Add(this.btnSet);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "BeforeInspection";
-            this.Text = "検査開始前メイン画面";
+            this.Text = "検査開始前設定";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.BeforeInspection_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -1213,9 +1213,9 @@
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.picInspectionDirection_Front)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picInspectionDirectionNo1)).EndInit();
             this.tableLayoutPanel4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.picInspectionDirection_Back)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picInspectionDirectionNo2)).EndInit();
             this.tableLayoutPanel5.ResumeLayout(false);
             this.pnlTitleEndDate.ResumeLayout(false);
             this.pnlNowInputNowDate_2.ResumeLayout(false);
@@ -1279,31 +1279,31 @@
         private System.Windows.Forms.Label lblTitleInspectionStartLine;
         private System.Windows.Forms.Panel pnlKensaStartRow;
         private System.Windows.Forms.TextBox txtInspectionStartLine;
-        private System.Windows.Forms.Button btnTanSet;
-        private System.Windows.Forms.Button btnEndDate;
-        private System.Windows.Forms.Button btnStartDate;
-        private System.Windows.Forms.Button btnTyudan;
-        private System.Windows.Forms.Button btnSettei;
+        private System.Windows.Forms.Button btnNextFabric;
+        private System.Windows.Forms.Button btnEndDatetime;
+        private System.Windows.Forms.Button btnStartDatetime;
+        private System.Windows.Forms.Button btnInspectionStop;
+        private System.Windows.Forms.Button btnSet;
         private System.Windows.Forms.Label lblInspectionEndLine;
         private System.Windows.Forms.Label lblInspectionNum;
         private System.Windows.Forms.Label lblUnitNum;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Label lblTitleInspectionDirection;
-        private System.Windows.Forms.Label lblSEW_2_Front;
-        private System.Windows.Forms.Label lblSEW_1_Front;
-        private System.Windows.Forms.Label lblTitleFront;
-        private System.Windows.Forms.Label lblTitleBack;
+        private System.Windows.Forms.Label lblSEWNo1Bot;
+        private System.Windows.Forms.Label lblSEWNo1Top;
+        private System.Windows.Forms.Label lblTitleNo1;
+        private System.Windows.Forms.Label lblTitleNo2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.PictureBox picInspectionDirection_Front;
+        private System.Windows.Forms.PictureBox picInspectionDirectionNo1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.PictureBox picInspectionDirection_Back;
-        private System.Windows.Forms.Label lblSEW_1_Back;
-        private System.Windows.Forms.Label lblSEW_2_Back;
+        private System.Windows.Forms.PictureBox picInspectionDirectionNo2;
+        private System.Windows.Forms.Label lblSEWNo2Top;
+        private System.Windows.Forms.Label lblSEWNo2Bot;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.Button btnInspectionDirection_X;
-        private System.Windows.Forms.Button btnInspectionDirection_R;
-        private System.Windows.Forms.Button btnInspectionDirection_S;
-        private System.Windows.Forms.Button btnInspectionDirection_Y;
+        private System.Windows.Forms.Button btnInspectionDirectionX;
+        private System.Windows.Forms.Button btnInspectionDirectionR;
+        private System.Windows.Forms.Button btnInspectionDirectionS;
+        private System.Windows.Forms.Button btnInspectionDirectionY;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.Panel pnlStatusBef;
         private System.Windows.Forms.Label lblStatusBef;
