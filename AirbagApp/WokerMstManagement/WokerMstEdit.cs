@@ -32,6 +32,17 @@ namespace WokerMstManagement
 
             if (m_intEditMode == g_CON_EDITMODE_REG)
             {
+                if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0002
+                                                , txtEmployeeNum.Text
+                                                , txtWorkerNameSei.Text
+                                                , txtWorkerNameMei.Text
+                                                , txtWorkerNameSeiKana.Text
+                                                , txtWorkerNameMeiKana.Text)
+                                   , "確認"
+                                   , MessageBoxButtons.YesNo
+                                   , MessageBoxIcon.Question) != DialogResult.Yes)
+                    return;
+
                 // 登録処理を行う
                 if (RegistrationUser() == true)
                 {
@@ -44,6 +55,17 @@ namespace WokerMstManagement
             }
             if (m_intEditMode == g_CON_EDITMODE_UPD) 
             {
+                if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0003
+                                                , txtEmployeeNum.Text
+                                                , txtWorkerNameSei.Text
+                                                , txtWorkerNameMei.Text
+                                                , txtWorkerNameSeiKana.Text
+                                                , txtWorkerNameMeiKana.Text)
+                                   , "確認"
+                                   , MessageBoxButtons.YesNo
+                                   , MessageBoxIcon.Question) != DialogResult.Yes)
+                    return;
+
                 // 更新処理を行う
                 if (UpdateUser() == true)
                 {
