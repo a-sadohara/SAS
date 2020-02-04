@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 using static ProductMstMaintenance.Common;
 
 namespace ProductMstMaintenance
@@ -138,11 +131,8 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。" + ex.Message);
-                MessageBox.Show("品番登録情報の取得で例外が発生しました。"
-                              , "品番登録情報取得エラー"
-                              , MessageBoxButtons.OK
-                              , MessageBoxIcon.Warning);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 

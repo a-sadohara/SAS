@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
-using System.Text.RegularExpressions;
-using Npgsql;
-using System.Runtime.InteropServices;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using static ProductMstMaintenance.Common;
 
 namespace ProductMstMaintenance
@@ -119,14 +114,10 @@ namespace ProductMstMaintenance
         private static int m_intSuccesDecisionReasonReg = 0;
         private static int m_intErrorDecisionReasonReg = 0;
 
-        // ログフォルダパス
-        private static string m_strOutPutLogFolder = "";
-
         // エラー出力用ファイル名
         private static string m_strErrorOutFileName = "";
 
         // マスタ画像出力先フォルダ
-        private static string m_strOutMstFolder = "";
         private static string m_strCheckMstFile = "";
 
         /// <summary>
@@ -350,9 +341,7 @@ namespace ProductMstMaintenance
             m_intErrorMasterImg = 0;
             m_intSuccesDecisionReasonReg = 0;
             m_intErrorDecisionReasonReg = 0;
-            m_strOutPutLogFolder = "";
             m_strErrorOutFileName = "";
-            m_strOutMstFolder = "";
             m_strCheckMstFile = "";
 
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -369,96 +358,84 @@ namespace ProductMstMaintenance
             // 未入力チェック
             if (txtFolder.Text == "")
             {
-                MessageBox.Show("フォルダを選択してください");
+                MessageBox.Show(g_clsMessageInfo.strMsgE0022);
                 btnSearchFolder.Focus();
                 return;
             }
 
-            if (MessageBox.Show("指定したフォルダのファイルを取込みます。\r\nよろしいですか？"
-                              , "確認"
-                              , MessageBoxButtons.YesNo) == DialogResult.Yes)
+            DirectoryInfo directorySearchFolder = new DirectoryInfo(txtFolder.Text);
+
+            FileInfo[] fiInputIni = directorySearchFolder.GetFiles("*.ini"
+                                                                 , SearchOption.TopDirectoryOnly);
+            FileInfo[] fiInputCsv = directorySearchFolder.GetFiles("*.csv"
+                                                                 , SearchOption.TopDirectoryOnly);
+            FileInfo[] fiInputPng = directorySearchFolder.GetFiles("*.bmp"
+                                                                 , SearchOption.TopDirectoryOnly);
+
+            // マスタ画像取り込み
+            ProcessMasterPng(fiInputPng);
+
+            // 品番マスタ情報取り込み
+            ProcessRegisterIni(fiInputIni);
+
+            // PLCマスタ情報取り込み
+            ProcessPLCIni(fiInputIni);
+
+            // エアバッグ情報取り込み
+            ProcessAirBagIni(fiInputIni);
+
+            // カメラ情報CSV取り込み
+            ProcessCameraCsv(fiInputCsv);
+
+            // 閾値情報CSV取り込み
+            ProcessThresholdCsv(fiInputCsv);
+
+            // 判定理由取り込み
+            ProcessDecisionReasonCsv(fiInputCsv);
+
+            // 出力ファイル設定
+            string strOutPutFilePath = g_clsSystemSettingInfo.strLogFileOutputDirectory + @"\"
+                                                                                        + m_CON_OUTLOGFILE_NAME
+                                                                                        + ".csv";
+
+            // エラーが一つでもある場合は警告表示する
+            if (m_intErrorRegProductInfo > 0 ||
+                m_intErrorRegPTC > 0 ||
+                m_intErrorRegAirBag > 0 ||
+                m_intErrorCameraReg > 0 ||
+                m_intErrorThresholdReg > 0 ||
+                m_intErrorMasterImg > 0 ||
+                m_intErrorDecisionReasonReg > 0)
             {
-                // 出力先ログフォルダパスを取得する
-                if (bolGetSystemSettingValue(m_CON_LOG_OUT_DIRECTORY
-                                           , out m_strOutPutLogFolder) == true)
-                {
-                    // 対象フォルダなし
-                    if (Directory.Exists(m_strOutPutLogFolder) == false)
-                    {
-                        // フォルダ作成する
-                        Directory.CreateDirectory(m_strOutPutLogFolder);
-                    }
-                }
-                else 
-                {
-                    m_strOutPutLogFolder = System.IO.Directory.GetCurrentDirectory();
-                }
-
-                DirectoryInfo directorySearchFolder = new DirectoryInfo(txtFolder.Text);
-
-                FileInfo[] fiInputIni = directorySearchFolder.GetFiles("*.ini"
-                                                                     , SearchOption.TopDirectoryOnly);
-                FileInfo[] fiInputCsv = directorySearchFolder.GetFiles("*.csv"
-                                                                     , SearchOption.TopDirectoryOnly);
-                FileInfo[] fiInputPng = directorySearchFolder.GetFiles("*.bmp"
-                                                                     , SearchOption.TopDirectoryOnly);
-
-                // マスタ画像取り込み
-                ProcessMasterPng(fiInputPng);
-
-                // 品番マスタ情報取り込み
-                ProcessRegisterIni(fiInputIni);
-
-                // PLCマスタ情報取り込み
-                ProcessPLCIni(fiInputIni);
-
-                // エアバッグ情報取り込み
-                ProcessAirBagIni(fiInputIni);
-
-                // カメラ情報CSV取り込み
-                ProcessCameraCsv(fiInputCsv);
-
-                // 閾値情報CSV取り込み
-                ProcessThresholdCsv(fiInputCsv);
-
-                // 判定理由取り込み
-                ProcessDecisionReasonCsv(fiInputCsv);
-
-                // 出力ファイル設定
-                string strOutPutFilePath = m_strOutPutLogFolder + @"\" 
-                                                                + m_CON_OUTLOGFILE_NAME
-                                                                + ".csv";
-
-                // 出力ダイアログメッセージを設定する
-                string strMsg = "取り込み処理が終了しました。" + Environment.NewLine + 
-                 "　品番登録　取り込み件数：" + (m_intSuccesRegProductInfo + m_intErrorRegProductInfo) + "件　正常：" + m_intSuccesRegProductInfo + "件　異常：" + m_intErrorRegProductInfo + "件 " + Environment.NewLine +
-                 "　PLC設定　取り込み件数：" + (m_intSuccesRegPTC + m_intErrorRegPTC) + "件　正常：" + m_intSuccesRegPTC + "件　異常：" + m_intErrorRegPTC + "件 " + Environment.NewLine +
-                 "　エアバッグ領域設定　取り込み件数：" + (m_intSuccesRegAirBag + m_intErrorRegAirBag) + "件　正常：" + m_intSuccesRegAirBag + "件　異常：" + m_intErrorRegAirBag + "件 " + Environment.NewLine +
-                 "　カメラ情報　取り込み件数：" + (m_intSuccesCameraReg + m_intErrorCameraReg) + "件　正常：" + m_intSuccesCameraReg + "件　異常：" + m_intErrorCameraReg + "件 " + Environment.NewLine +
-                 "　閾値情報　取り込み件数：" + (m_intSuccesThresholdReg + m_intErrorThresholdReg) + "件　正常：" + m_intSuccesThresholdReg + "件　異常：" + m_intErrorThresholdReg + "件 " + Environment.NewLine +
-                 "　マスタ画像　取り込み件数：" + (m_intSuccesMasterImg + m_intErrorMasterImg) + "件　正常：" + m_intSuccesMasterImg + "件　異常：" + m_intErrorMasterImg + "件 " + Environment.NewLine +
-                 "　判定理由マスタ　取り込み件数：" + (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg) + "件　正常：" + m_intSuccesDecisionReasonReg + "件　異常：" + m_intErrorDecisionReasonReg + "件 " + Environment.NewLine +
-                 "詳細は、下記のログファイルを参照ください。" + Environment.NewLine +
-                 "　" + strOutPutFilePath;
-
-                // エラーが一つでもある場合は警告表示する
-                if (m_intErrorRegProductInfo > 0 ||
-                    m_intErrorRegPTC > 0 ||
-                    m_intErrorRegAirBag > 0 ||
-                    m_intErrorCameraReg > 0 ||
-                    m_intErrorThresholdReg > 0 ||
-                    m_intErrorMasterImg > 0 ||
-                    m_intErrorDecisionReasonReg > 0)
-                {
-                    MessageBox.Show(strMsg, "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                else 
-                {
-                    MessageBox.Show(strMsg, "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                this.Close();
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0002,
+                                              (m_intSuccesRegProductInfo + m_intErrorRegProductInfo), m_intSuccesRegProductInfo, m_intErrorRegProductInfo,
+                                              (m_intSuccesRegPTC + m_intErrorRegPTC), m_intSuccesRegPTC, m_intErrorRegPTC,
+                                              (m_intSuccesRegAirBag + m_intErrorRegAirBag), m_intSuccesRegAirBag, m_intErrorRegAirBag,
+                                              (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
+                                              (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
+                                              (m_intSuccesThresholdReg + m_intErrorThresholdReg), m_intSuccesThresholdReg, m_intErrorThresholdReg,
+                                              (m_intSuccesMasterImg + m_intErrorMasterImg), m_intSuccesMasterImg, m_intErrorMasterImg,
+                                              (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg), m_intSuccesDecisionReasonReg, m_intErrorDecisionReasonReg) + "\r\n" +
+                                string.Format(g_clsMessageInfo.strMsgI0004, strOutPutFilePath),
+                                "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            else
+            {
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgI0003,
+                                              (m_intSuccesRegProductInfo + m_intErrorRegProductInfo), m_intSuccesRegProductInfo, m_intErrorRegProductInfo,
+                                              (m_intSuccesRegPTC + m_intErrorRegPTC), m_intSuccesRegPTC, m_intErrorRegPTC,
+                                              (m_intSuccesRegAirBag + m_intErrorRegAirBag), m_intSuccesRegAirBag, m_intErrorRegAirBag,
+                                              (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
+                                              (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
+                                              (m_intSuccesThresholdReg + m_intErrorThresholdReg), m_intSuccesThresholdReg, m_intErrorThresholdReg,
+                                              (m_intSuccesMasterImg + m_intErrorMasterImg), m_intSuccesMasterImg, m_intErrorMasterImg,
+                                              (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg), m_intSuccesDecisionReasonReg, m_intErrorDecisionReasonReg) + "\r\n" +
+                                string.Format(g_clsMessageInfo.strMsgI0004, strOutPutFilePath),
+                                "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.Close();
+
         }
 
         /// <summary>
@@ -468,24 +445,16 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void btnSearchFolder_Click(object sender, EventArgs e)
         {
-            //FolderBrowserDialogクラスのインスタンスを作成
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            SelectFolder();
+        }
 
-            //上部に表示する説明テキストを指定する
-            fbd.Description = "フォルダを指定してください。";
-            //ルートフォルダを指定する
-            fbd.RootFolder = Environment.SpecialFolder.Desktop;
-            //RootFolder以下にあるフォルダである必要がある
-            fbd.SelectedPath = @"C:\Windows";
-            //ユーザーが新しいフォルダを作成できるようにする
-            fbd.ShowNewFolderButton = true;
-
-            //ダイアログを表示する
-            if (fbd.ShowDialog(this) == DialogResult.OK)
-            {
-                //選択されたフォルダを表示する
-                txtFolder.Text = fbd.SelectedPath;
-            }
+        /// <summary>
+        /// 取込フォルダパス        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtFolder_Click(object sender, EventArgs e)
+        {
+            SelectFolder();
         }
         #endregion
 
@@ -514,6 +483,31 @@ namespace ProductMstMaintenance
         #endregion
 
         #region メソッド
+        /// <summary>
+        /// フォルダ選択
+        /// </summary>
+        private void SelectFolder()
+        {
+            //FolderBrowserDialogクラスのインスタンスを作成
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+
+            //上部に表示する説明テキストを指定する
+            fbd.Description = "フォルダを指定してください。";
+            //ルートフォルダを指定する
+            fbd.RootFolder = Environment.SpecialFolder.Desktop;
+            //RootFolder以下にあるフォルダである必要がある
+            fbd.SelectedPath = @"C:\Windows";
+            //ユーザーが新しいフォルダを作成できるようにする
+            fbd.ShowNewFolderButton = true;
+
+            //ダイアログを表示する
+            if (fbd.ShowDialog(this) == DialogResult.OK)
+            {
+                //選択されたフォルダを表示する
+                txtFolder.Text = fbd.SelectedPath;
+            }
+        }
+
         #region 品番情報取り込み
         /// <summary>
         /// 品番情報取り込み
@@ -527,15 +521,6 @@ namespace ProductMstMaintenance
             foreach (FileInfo Inputfile in fiInputIni)
             {
                 m_strErrorOutFileName = Inputfile.Name;
-                // 対象のファイルがロックされているか確認する
-                if (IsFileLocked(Inputfile.FullName) == true)
-                {
-                    // ファイルがロックされている場合、スキップする
-                    // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています");
-                    m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
-                    continue;
-                }
 
                 // 品番情報ファイルを判定する
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.ini") == true)
@@ -548,9 +533,9 @@ namespace ProductMstMaintenance
                     catch (Exception ex) 
                     {
                         // ログファイルにエラー出力を行う
-                        WriteEventLog(g_CON_LEVEL_ERROR, "ファイルOPENに失敗しました " + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
+                        OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         continue;
                     }
 
@@ -576,10 +561,10 @@ namespace ProductMstMaintenance
 
             m_strErrorOutFileName = "";
             // ログファイル結果出力を行う
-            string strOutMsg = "取り込み処理が終了しました。"
-                             + "品番登録　取り込み件数：" + (m_intSuccesRegProductInfo + m_intErrorRegProductInfo) + "件　"
-                             + "正常：" + m_intSuccesRegProductInfo + "件　"
-                             + "異常：" + m_intErrorRegProductInfo + "件 ";
+            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0011,
+                                                    (m_intSuccesRegProductInfo + m_intErrorRegProductInfo),
+                                                    m_intSuccesRegProductInfo,
+                                                    m_intErrorRegProductInfo) + "\"";
             OutPutImportLog(strOutMsg);
         }
 
@@ -705,7 +690,7 @@ namespace ProductMstMaintenance
                                                              , fieldInfo.Name));
 
                     string strFileName = Path.GetFileName(strTenmIniValue);
-                    m_strCheckMstFile = m_strOutMstFolder + @"\" + strFileName;
+                    m_strCheckMstFile = g_clsSystemSettingInfo.strMasterImageDirectory + @"\" + strFileName;
                     fieldInfo.SetValue(boxed, m_strCheckMstFile);
 
                 }
@@ -760,33 +745,24 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static void InsertMstProductInfo(List<IniDataRegister> lstDataRegistersToDB)
         {
-            // PostgreSQLへ接続
-            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_strConnectionString))
+            foreach (IniDataRegister idrCurrentData in lstDataRegistersToDB)
             {
-                NpgsqlCon.Open();
-
-                using (var transaction = NpgsqlCon.BeginTransaction())
+                // 登録処理実施
+                if (ExecRegProductInfo(idrCurrentData) == true)
                 {
-
-                    foreach (IniDataRegister idrCurrentData in lstDataRegistersToDB)
-                    {
-                        // 登録処理実施
-                        if (ExecRegProductInfo(idrCurrentData, NpgsqlCon, transaction) == true)
-                        {
-                            m_intSuccesRegProductInfo = m_intSuccesRegProductInfo + 1;
-                        }
-                        else
-                        {
-                            m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
-                        }
-                    }
-
-                    if (m_intSuccesRegProductInfo > 0) 
-                    {
-                        // トランザクションコミット
-                        transaction.Commit();
-                    }
+                    m_intSuccesRegProductInfo = m_intSuccesRegProductInfo + 1;
                 }
+                else
+                {
+                    m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
+                }
+            }
+
+            if (m_intSuccesRegProductInfo > 0)
+            {
+                // トランザクションコミット
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
@@ -795,9 +771,7 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="lstUserData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private static Boolean ExecRegProductInfo(IniDataRegister idrCurrentData
-                                                , NpgsqlConnection NpgsqlCon
-                                                , NpgsqlTransaction transaction)
+        private static Boolean ExecRegProductInfo(IniDataRegister idrCurrentData)
         {
             try
             {
@@ -805,7 +779,8 @@ namespace ProductMstMaintenance
                 string strCreateSql = g_CON_INSERT_MST_PRODUCT_INFO;
 
                 // SQLコマンドに各パラメータを設定する
-                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+                //var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
                 // 各項目の値を取得する
                 // FieldInfoを取得する
@@ -817,30 +792,23 @@ namespace ProductMstMaintenance
                 {
                     if (fieldInfo.FieldType == typeof(int))
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
-                        { Value = NulltoInt(fieldInfo.GetValue(idrCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(idrCurrentData)) });
                     }
                     else
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.String)
-                        { Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
                     }
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command
-                              , transaction
-                              , "品番登録情報テーブルの更新に失敗しました。") == false)
-                {
-                    return false;
-                }
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
                 return true;
             }
             catch (Exception ex)
             {
-                OutPutImportLog("品番情報登録時にエラーが発生しました " + ex.Message);
-                WriteEventLog(g_CON_LEVEL_ERROR, "品番情報登録時にエラーが発生しました " + ex.Message);
+                OutPutImportLog(g_clsMessageInfo.strMsgE0053 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0053 + "\r\n" + ex.Message);
                 return false;
             }
         }
@@ -859,15 +827,6 @@ namespace ProductMstMaintenance
             foreach (FileInfo Inputfile in fiInputIni)
             {
                 m_strErrorOutFileName = Inputfile.Name;
-                // 対象のファイルがロックされているか確認する
-                if (IsFileLocked(Inputfile.FullName) == true)
-                {
-                    // ファイルがロックされている場合、スキップする
-                    // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています");
-                    m_intErrorRegPTC = m_intErrorRegPTC + 1;
-                    continue;
-                }
 
                 // PLC設定ファイルを判定する
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CONFIG_PLC + ".ini") == true)
@@ -879,9 +838,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex) 
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, "ファイルOPENに失敗しました " + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorRegPTC = m_intErrorRegPTC + 1;
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
+                        OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         continue;
                     }
 
@@ -900,10 +859,10 @@ namespace ProductMstMaintenance
 
             m_strErrorOutFileName = "";
             // ログファイル結果出力を行う
-            string strOutMsg = "取り込み処理が終了しました。"
-                             + "PLC設定　取り込み件数：" + (m_intSuccesRegPTC + m_intErrorRegPTC) + "件　"
-                             + "正常：" + m_intSuccesRegPTC + "件　"
-                             + "異常：" + m_intErrorRegPTC + "件 ";
+            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0005,
+                                                    (m_intSuccesRegPTC + m_intErrorRegPTC),
+                                                    m_intSuccesRegPTC,
+                                                    m_intErrorRegPTC) + "\"";
             OutPutImportLog(strOutMsg);
         }
 
@@ -1042,33 +1001,24 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static void UPDMstProductInfoInPTC(List<IniConfigPLC> lstDataPTCToDB)
         {
-            // PostgreSQLへ接続
-            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_strConnectionString))
+            foreach (IniConfigPLC icpCurrentData in lstDataPTCToDB)
             {
-                NpgsqlCon.Open();
-
-                using (var transaction = NpgsqlCon.BeginTransaction())
+                // 登録処理実施
+                if (ExecRegProductInfoPLC(icpCurrentData) == true)
                 {
-
-                    foreach (IniConfigPLC icpCurrentData in lstDataPTCToDB)
-                    {
-                        // 登録処理実施
-                        if (ExecRegProductInfoPTC(icpCurrentData, NpgsqlCon, transaction) == true)
-                        {
-                            m_intSuccesRegPTC = m_intSuccesRegPTC + 1;
-                        }
-                        else
-                        {
-                            m_intErrorRegPTC = m_intErrorRegPTC + 1;
-                        }
-                    }
-
-                    if (m_intSuccesRegPTC > 0) 
-                    {
-                        // トランザクションコミット
-                        transaction.Commit();
-                    }
+                    m_intSuccesRegPTC = m_intSuccesRegPTC + 1;
                 }
+                else
+                {
+                    m_intErrorRegPTC = m_intErrorRegPTC + 1;
+                }
+            }
+
+            if (m_intSuccesRegPTC > 0)
+            {
+                // トランザクションコミット
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
@@ -1077,9 +1027,7 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="lstUserData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private static Boolean ExecRegProductInfoPTC(IniConfigPLC idrCurrentData
-                                                   , NpgsqlConnection NpgsqlCon
-                                                   , NpgsqlTransaction transaction)
+        private static Boolean ExecRegProductInfoPLC(IniConfigPLC idrCurrentData)
         {
             try
             {
@@ -1087,7 +1035,7 @@ namespace ProductMstMaintenance
                 string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_PTC;
 
                 // SQLコマンドに各パラメータを設定する
-                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
                 // 各項目の値を取得する
                 // FieldInfoを取得する
@@ -1099,30 +1047,23 @@ namespace ProductMstMaintenance
                 {
                     if (fieldInfo.FieldType == typeof(int))
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
-                        { Value = NulltoInt(fieldInfo.GetValue(idrCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(idrCurrentData)) });
                     }
                     else
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.String)
-                        { Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
                     }
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command
-                              , transaction
-                              , "品番登録情報テーブルの更新に失敗しました。") == false)
-                {
-                    return false;
-                }
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
                 return true;
             }
             catch (Exception ex)
             {
-                OutPutImportLog("PTC更新時にエラーが発生しました。" + ex.Message);
-                WriteEventLog(g_CON_LEVEL_ERROR, "PTC更新時にエラーが発生しました。" + ex.Message);
+                OutPutImportLog(g_clsMessageInfo.strMsgE0053 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0053 + "\r\n" + ex.Message);
                 return false;
             }
         }
@@ -1141,15 +1082,6 @@ namespace ProductMstMaintenance
             foreach (FileInfo Inputfile in fiInputIni)
             {
                 m_strErrorOutFileName = Inputfile.Name;
-                // 対象のファイルがロックされているか確認する
-                if (IsFileLocked(Inputfile.FullName) == true)
-                {
-                    // ファイルがロックされている場合、スキップする
-                    // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています");
-                    m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
-                    continue;
-                }
 
                 // エアバック領域設定ファイルを判定する
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_AIRBAG_COORD + "[0-9][0-9]*.ini") == true)
@@ -1161,9 +1093,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, "ファイルOPENに失敗しました " + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
+                        OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         continue;
                     }
 
@@ -1182,10 +1114,10 @@ namespace ProductMstMaintenance
 
             m_strErrorOutFileName = "";
             // ログファイル結果出力を行う
-            string strOutMsg = "取り込み処理が終了しました。"
-                             + "エアバッグ領域設定　取り込み件数：" + (m_intSuccesRegAirBag + m_intErrorRegAirBag) + "件　"
-                             + "正常：" + m_intSuccesRegAirBag + "件　"
-                             + "異常：" + m_intErrorRegAirBag + "件 ";
+            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0006,
+                                                    (m_intSuccesRegAirBag + m_intErrorRegAirBag),
+                                                    m_intSuccesRegAirBag,
+                                                    m_intErrorRegAirBag) + "\"";
             OutPutImportLog(strOutMsg);
         }
 
@@ -1383,33 +1315,24 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static void UPDMstProductInfoInAirbag(List<IniAirBagCoord> lstDataAirBagToDB)
         {
-            // PostgreSQLへ接続
-            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_strConnectionString))
+            foreach (IniAirBagCoord iabCurrentData in lstDataAirBagToDB)
             {
-                NpgsqlCon.Open();
-
-                using (var transaction = NpgsqlCon.BeginTransaction())
+                // 登録処理実施
+                if (ExecRegProductInfoAirbag(iabCurrentData) == true)
                 {
-
-                    foreach (IniAirBagCoord iabCurrentData in lstDataAirBagToDB)
-                    {
-                        // 登録処理実施
-                        if (ExecRegProductInfoAirbag(iabCurrentData, NpgsqlCon, transaction) == true)
-                        {
-                            m_intSuccesRegAirBag = m_intSuccesRegAirBag + 1;
-                        }
-                        else
-                        {
-                            m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
-                        }
-                    }
-
-                    if (m_intSuccesRegAirBag > 0) 
-                    {
-                        // トランザクションコミット
-                        transaction.Commit();
-                    }
+                    m_intSuccesRegAirBag = m_intSuccesRegAirBag + 1;
                 }
+                else
+                {
+                    m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
+                }
+            }
+
+            if (m_intSuccesRegAirBag > 0)
+            {
+                // トランザクションコミット
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
@@ -1418,9 +1341,7 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="lstUserData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private static Boolean ExecRegProductInfoAirbag(IniAirBagCoord idrCurrentData
-                                                      , NpgsqlConnection NpgsqlCon
-                                                      , NpgsqlTransaction transaction)
+        private static Boolean ExecRegProductInfoAirbag(IniAirBagCoord idrCurrentData)
         {
             try
             {
@@ -1428,7 +1349,7 @@ namespace ProductMstMaintenance
                 string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_AIRBAG;
 
                 // SQLコマンドに各パラメータを設定する
-                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
                 // 各項目の値を取得する
                 // FieldInfoを取得する
@@ -1440,30 +1361,23 @@ namespace ProductMstMaintenance
                 {
                     if (fieldInfo.FieldType == typeof(int))
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
-                        { Value = NulltoInt(fieldInfo.GetValue(idrCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(idrCurrentData)) });
                     }
                     else
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.String)
-                        { Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
                     }
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command
-                              , transaction
-                              , "品番登録情報テーブルの更新に失敗しました。") == false)
-                {
-                    return false;
-                }
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
                 return true;
             }
             catch (Exception ex)
             {
-                OutPutImportLog("エアバッグ更新時にエラーが発生しました。" + ex.Message);
-                WriteEventLog(g_CON_LEVEL_ERROR, "エアバッグ更新時にエラーが発生しました。" + ex.Message);
+                OutPutImportLog(g_clsMessageInfo.strMsgE0053 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0053 + "\r\n" + ex.Message);
                 return false;
             }
         }
@@ -1482,15 +1396,6 @@ namespace ProductMstMaintenance
             foreach (FileInfo Inputfile in fiInputCsv)
             {
                 m_strErrorOutFileName = Inputfile.Name;
-                // 対象のファイルがロックされているか確認する
-                if (IsFileLocked(Inputfile.FullName) == true)
-                {
-                    // ファイルがロックされている場合、スキップする
-                    // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています");
-                    m_intErrorCameraReg = m_intErrorCameraReg + 1;
-                    continue;
-                }
 
                 // カメラ情報を判定する
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CAMERA_INFO + ".csv") == true)
@@ -1502,9 +1407,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, "ファイルOPENに失敗しました " + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorCameraReg = m_intErrorCameraReg + 1;
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
+                        OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         continue;
                     }
 
@@ -1519,10 +1424,10 @@ namespace ProductMstMaintenance
 
             m_strErrorOutFileName = "";
             // ログファイル結果出力を行う
-            string strOutMsg = "取り込み処理が終了しました。"
-                             + "カメラ情報　取り込み件数：" + (m_intSuccesCameraReg + m_intErrorCameraReg) + "件　"
-                             + "正常：" + m_intSuccesCameraReg + "件　"
-                             + "異常：" + m_intErrorCameraReg + "件 ";
+            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0007,
+                                                    (m_intSuccesCameraReg + m_intErrorCameraReg),
+                                                    m_intSuccesCameraReg,
+                                                    m_intErrorCameraReg) + "\"";
             OutPutImportLog(strOutMsg);
         }
 
@@ -1643,7 +1548,7 @@ namespace ProductMstMaintenance
             if (stArrayData.Length <= m_CON_COL_END_REGIMARK_CAMERA_NUM)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目のファイルレイアウトが不正です。" + strFileReadLine);
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0010, intRowCount) + ",\"" + strFileReadLine + "\"");
                 return false;
             }
 
@@ -1684,33 +1589,24 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static void UPDMstProductInfoInCamera(List<CameraCsvInfo> lstCameraCsvToDB)
         {
-            // PostgreSQLへ接続
-            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_strConnectionString))
+            foreach (CameraCsvInfo cciCurrentData in lstCameraCsvToDB)
             {
-                NpgsqlCon.Open();
-
-                using (var transaction = NpgsqlCon.BeginTransaction())
+                // 登録処理実施
+                if (ExecRegProductInfoCamera(cciCurrentData) == true)
                 {
-
-                    foreach (CameraCsvInfo cciCurrentData in lstCameraCsvToDB)
-                    {
-                        // 登録処理実施
-                        if (ExecRegProductInfoCamera(cciCurrentData, NpgsqlCon, transaction) == true)
-                        {
-                            m_intSuccesCameraReg = m_intSuccesCameraReg + 1;
-                        }
-                        else
-                        {
-                            m_intErrorCameraReg = m_intErrorCameraReg + 1;
-                        }
-                    }
-
-                    if (m_intSuccesCameraReg > 0) 
-                    {
-                        // トランザクションコミット
-                        transaction.Commit();
-                    }
+                    m_intSuccesCameraReg = m_intSuccesCameraReg + 1;
                 }
+                else
+                {
+                    m_intErrorCameraReg = m_intErrorCameraReg + 1;
+                }
+            }
+
+            if (m_intSuccesCameraReg > 0)
+            {
+                // トランザクションコミット
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
@@ -1719,17 +1615,19 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="lstUserData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private static Boolean ExecRegProductInfoCamera(CameraCsvInfo cciCurrentData
-                                                      , NpgsqlConnection NpgsqlCon
-                                                      , NpgsqlTransaction transaction)
+        private static Boolean ExecRegProductInfoCamera(CameraCsvInfo cciCurrentData)
         {
+            string strData = string.Join(",", cciCurrentData.strProductName +
+                                              cciCurrentData.intIlluminationInformation.ToString() +
+                                              cciCurrentData.intStartRegimarkCameraNum.ToString() +
+                                              cciCurrentData.intEndRegimarkCameraNum.ToString());
             try
             {
                 // SQL文を作成する
                 string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_CAMERA;
 
                 // SQLコマンドに各パラメータを設定する
-                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
                 // 各項目の値を取得する
                 // FieldInfoを取得する
@@ -1741,29 +1639,24 @@ namespace ProductMstMaintenance
                 {
                     if (fieldInfo.FieldType == typeof(int))
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
-                        { Value = NulltoInt(fieldInfo.GetValue(cciCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(cciCurrentData)) });
                     }
                     else
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.String)
-                        { Value = NulltoString(fieldInfo.GetValue(cciCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(cciCurrentData)) });
                     }
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command
-                              , transaction
-                              , "品番登録情報テーブルの更新に失敗しました。") == false)
-                {
-                    return false;
-                }
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
                 return true;
             }
             catch (Exception ex)
             {
-                WriteEventLog(g_CON_LEVEL_ERROR, "カメラ情報更新時にエラーが発生しました。" + ex.Message);
+                OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0025, (m_intSuccesCameraReg + m_intErrorCameraReg)) + "\r\n" + ex.Message + "\"," +
+                                "\"" + strData + "\"");
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0053 + "\r\n" + ex.Message);
                 return false;
             }
         }
@@ -1782,15 +1675,6 @@ namespace ProductMstMaintenance
             foreach (FileInfo Inputfile in fiInputCsv)
             {
                 m_strErrorOutFileName = Inputfile.Name;
-                // 対象のファイルがロックされているか確認する
-                if (IsFileLocked(Inputfile.FullName) == true)
-                {
-                    // ファイルがロックされている場合、スキップする
-                    // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています");
-                    m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
-                    continue;
-                }
 
                 // 閾値情報を判定する。
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_THRESHOLD_INFO + ".csv") == true)
@@ -1802,9 +1686,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex) 
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, "ファイルOPENに失敗しました " + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
+                        OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         continue;
                     }
 
@@ -1819,10 +1703,10 @@ namespace ProductMstMaintenance
 
             m_strErrorOutFileName = "";
             // ログファイル結果出力を行う
-            string strOutMsg = "取り込み処理が終了しました。"
-                             + "閾値情報　取り込み件数：" + (m_intSuccesThresholdReg + m_intErrorThresholdReg) + "件　"
-                             + "正常：" + m_intSuccesThresholdReg + "件　"
-                             + "異常：" + m_intErrorThresholdReg + "件 ";
+            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0008,
+                                                    (m_intSuccesThresholdReg + m_intErrorThresholdReg),
+                                                    m_intSuccesThresholdReg,
+                                                    m_intErrorThresholdReg) + "\"";
             OutPutImportLog(strOutMsg);
         }
 
@@ -1913,7 +1797,7 @@ namespace ProductMstMaintenance
             if (stArrayData.Length <= m_CON_COL_AI_MODEL_NAME)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目のファイルレイアウトが不正です。" + strFileReadLine);
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0010, intRowCount) + ",\"" + strFileReadLine + "\"");
                 return false;
             }
 
@@ -2024,33 +1908,24 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static void UPDMstProductInfoInThreshold(List<ThresholdCsvInfo> lstThresholdCsvToDB)
         {
-            // PostgreSQLへ接続
-            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_strConnectionString))
+            foreach (ThresholdCsvInfo tciCurrentData in lstThresholdCsvToDB)
             {
-                NpgsqlCon.Open();
-
-                using (var transaction = NpgsqlCon.BeginTransaction())
+                // 登録処理実施
+                if (ExecRegProductInfoThreshold(tciCurrentData) == true)
                 {
-
-                    foreach (ThresholdCsvInfo tciCurrentData in lstThresholdCsvToDB)
-                    {
-                        // 登録処理実施
-                        if (ExecRegProductInfoThreshold(tciCurrentData, NpgsqlCon, transaction) == true)
-                        {
-                            m_intSuccesThresholdReg = m_intSuccesThresholdReg + 1;
-                        }
-                        else
-                        {
-                            m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
-                        }
-                    }
-
-                    if (m_intSuccesThresholdReg > 0) 
-                    {
-                        // トランザクションコミット
-                        transaction.Commit();
-                    }
+                    m_intSuccesThresholdReg = m_intSuccesThresholdReg + 1;
                 }
+                else
+                {
+                    m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
+                }
+            }
+
+            if (m_intSuccesThresholdReg > 0)
+            {
+                // トランザクションコミット
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
@@ -2059,17 +1934,33 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="lstUserData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private static Boolean ExecRegProductInfoThreshold(ThresholdCsvInfo tciCurrentData
-                                                         , NpgsqlConnection NpgsqlCon
-                                                         , NpgsqlTransaction transaction)
+        private static Boolean ExecRegProductInfoThreshold(ThresholdCsvInfo tciCurrentData)
         {
+            string strData = string.Join(",", tciCurrentData.strProductName +
+                                              tciCurrentData.intTakingCameraCnt.ToString() + 
+                                              tciCurrentData.intColumnThreshold01.ToString() +
+                                              tciCurrentData.intColumnThreshold02.ToString() +
+                                              tciCurrentData.intColumnThreshold03.ToString() +
+                                              tciCurrentData.intColumnThreshold04.ToString() +
+                                              tciCurrentData.intLineThresholda1.ToString() +
+                                              tciCurrentData.intLineThresholda2.ToString() +
+                                              tciCurrentData.intLineThresholdb1.ToString() +
+                                              tciCurrentData.intLineThresholdb2.ToString() +
+                                              tciCurrentData.intLineThresholdc1.ToString() +
+                                              tciCurrentData.intLineThresholdc2.ToString() +
+                                              tciCurrentData.intLineThresholdd1.ToString() +
+                                              tciCurrentData.intLineThresholdd2.ToString() +
+                                              tciCurrentData.intLineThresholde1.ToString() +
+                                              tciCurrentData.intLineThresholde2.ToString() +
+                                              tciCurrentData.strAiModelName);
+
             try
             {
                 // SQL文を作成する
                 string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_THRESHOLD;
 
                 // SQLコマンドに各パラメータを設定する
-                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
                 // 各項目の値を取得する
                 // FieldInfoを取得する
@@ -2083,36 +1974,29 @@ namespace ProductMstMaintenance
                     {
                         if (NulltoInt(fieldInfo.GetValue(tciCurrentData)) == 0)
                         {
-                            command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
-                            { Value = DBNull.Value });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = DBNull.Value });
                         }
                         else 
                         {
-                            command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
-                            { Value = NulltoInt(fieldInfo.GetValue(tciCurrentData)) });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(tciCurrentData)) });
                         }
                     }
                     else
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.String)
-                        { Value = NulltoString(fieldInfo.GetValue(tciCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(tciCurrentData)) });
                     }
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command
-                              , transaction
-                              , "品番登録情報テーブルの更新に失敗しました。") == false)
-                {
-                    return false;
-                }
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
                 return true;
             }
             catch (Exception ex)
             {
-                OutPutImportLog("閾値情報更新時にエラーが発生しました。" + ex.Message);
-                WriteEventLog(g_CON_LEVEL_ERROR, "閾値情報更新時にエラーが発生しました。" + ex.Message);
+                OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0026, (m_intSuccesThresholdReg + m_intErrorThresholdReg)) + "\r\n" + ex.Message + "\"," +
+                                "\"" + strData + "\"");
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0053 + "\r\n" + ex.Message);
                 return false;
             }
         }
@@ -2125,7 +2009,7 @@ namespace ProductMstMaintenance
         /// <param name="fiInputCsv">読み込みcsvファイル全種類</param>
         private static void ProcessMasterPng(FileInfo[] fiInputPng)
         {
-            string strOutFilePath = "";
+            //string strOutFilePath = "";
             int intFileCount = 0;
 
             // フォルダ内のファイルの数だけループする
@@ -2134,51 +2018,27 @@ namespace ProductMstMaintenance
                 m_strErrorOutFileName = Inputfile.Name;
                 intFileCount = intFileCount + 1;
 
-                // 対象のファイルがロックされているか確認する
-                if (IsFileLocked(Inputfile.FullName) == true)
+                // マスタ画像を取り込み先のフォルダにコピーする。
+                try
                 {
-                    // ファイルがロックされている場合、スキップする
-                    // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています");
+                    Inputfile.CopyTo(g_clsSystemSettingInfo.strMasterImageDirectory + @"\" + Inputfile.Name, true);
+                    m_intSuccesMasterImg = m_intSuccesMasterImg + 1;
+                }
+                catch (Exception ex)
+                {
+                    OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0027, intFileCount) + "\r\n" + ex.Message + "\"," +
+                                    Inputfile.Name);
                     m_intErrorMasterImg = m_intErrorMasterImg + 1;
                     continue;
-                }
-
-                // 出力先フォルダパスを取得する
-                if (bolGetSystemSettingValue(m_CON_MASTER_IMAGE
-                                           , out strOutFilePath) == true)
-                {
-                    // 対象フォルダなし
-                    if (Directory.Exists(strOutFilePath) == false)
-                    {
-                        // フォルダ作成する
-                        Directory.CreateDirectory(strOutFilePath);
-                    }
-
-                    // 品番取込時のマスタ画像チェック用にフォルダをコピーする
-                    m_strOutMstFolder = strOutFilePath;
-
-                    // マスタ画像を取り込み先のフォルダにコピーする。
-                    try
-                    {
-                        Inputfile.CopyTo(strOutFilePath + @"\" + Inputfile.Name, true);
-                        m_intSuccesMasterImg = m_intSuccesMasterImg + 1;
-                    }
-                    catch (Exception ex)
-                    {
-                        OutPutImportLog(intFileCount + "件目のマスタ画像の取り込みで例外が発生しました。" + ex.Message);
-                        m_intErrorMasterImg = m_intErrorMasterImg + 1;
-                        continue;
-                    }
                 }
             }
 
             m_strErrorOutFileName = "";
             // ログファイル結果出力を行う
-            string strOutMsg = "取り込み処理が終了しました。"
-                             + "マスタ画像　取り込み件数：" + (m_intSuccesMasterImg + m_intErrorMasterImg) + "件　"
-                             + "正常：" + m_intSuccesMasterImg + "件　"
-                             + "異常：" + m_intErrorMasterImg + "件 ";
+            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0009,
+                                                    (m_intSuccesMasterImg + m_intErrorMasterImg),
+                                                    m_intSuccesMasterImg,
+                                                    m_intErrorMasterImg) + "\"";
             OutPutImportLog(strOutMsg);
         }
         #endregion
@@ -2196,15 +2056,6 @@ namespace ProductMstMaintenance
             foreach (FileInfo Inputfile in fiInputCsv)
             {
                 m_strErrorOutFileName = Inputfile.Name;
-                // 対象のファイルがロックされているか確認する
-                if (IsFileLocked(Inputfile.FullName) == true)
-                {
-                    // ファイルがロックされている場合、スキップする
-                    // ログファイルにエラー出力を行う
-                    OutPutImportLog("ファイルがロックされています");
-                    m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
-                    continue;
-                }
 
                 // 判定理由マスタを判定する。
                 if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REASON_JUDGMENT + ".csv") == true)
@@ -2216,9 +2067,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, "ファイルOPENに失敗しました " + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
-                        OutPutImportLog("ファイルOPENに失敗しました " + ex.Message);
+                        OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         continue;
                     }
 
@@ -2233,10 +2084,10 @@ namespace ProductMstMaintenance
 
             m_strErrorOutFileName = "";
             // ログファイル結果出力を行う
-            string strOutMsg = "取り込み処理が終了しました。"
-                             + "判定理由マスタ　取り込み件数：" + (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg) + "件　"
-                             + "正常：" + m_intSuccesDecisionReasonReg + "件　"
-                             + "異常：" + m_intErrorDecisionReasonReg + "件 ";
+            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0005,
+                                                    (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg),
+                                                    m_intSuccesDecisionReasonReg,
+                                                    m_intErrorDecisionReasonReg) + "\"";
             OutPutImportLog(strOutMsg);
         }
 
@@ -2327,7 +2178,7 @@ namespace ProductMstMaintenance
             if (stArrayData.Length <= m_CON_COL_DECISION_REASON)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(intRowCount + "行目のファイルレイアウトが不正です。" + strFileReadLine);
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0010, intRowCount) + ",\"" + strFileReadLine + "\"");
                 return false;
             }
 
@@ -2391,35 +2242,27 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static void UPDMstProductInfoInDecisionReason(List<DecisionReasonCsvInfo> lstDecisionReasonCsvToDB)
         {
-            // PostgreSQLへ接続
-            using (NpgsqlConnection NpgsqlCon = new NpgsqlConnection(g_strConnectionString))
+            // テーブルの全件削除を行う
+            ExecDelProductInfoDecisionReason();
+
+            foreach (DecisionReasonCsvInfo drcCurrentData in lstDecisionReasonCsvToDB)
             {
-                NpgsqlCon.Open();
-
-                using (var transaction = NpgsqlCon.BeginTransaction())
+                // 登録処理実施
+                if (ExecRegProductInfoDecisionReason(drcCurrentData) == true)
                 {
-                    // テーブルの全件削除を行う
-                    ExecDelProductInfoDecisionReason(NpgsqlCon, transaction);
-
-                    foreach (DecisionReasonCsvInfo drcCurrentData in lstDecisionReasonCsvToDB)
-                    {
-                        // 登録処理実施
-                        if (ExecRegProductInfoDecisionReason(drcCurrentData, NpgsqlCon, transaction) == true)
-                        {
-                            m_intSuccesDecisionReasonReg = m_intSuccesDecisionReasonReg + 1;
-                        }
-                        else
-                        {
-                            m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
-                        }
-                    }
-
-                    if (m_intSuccesDecisionReasonReg > 0) 
-                    {
-                        // トランザクションコミット
-                        transaction.Commit();
-                    }
+                    m_intSuccesDecisionReasonReg = m_intSuccesDecisionReasonReg + 1;
                 }
+                else
+                {
+                    m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
+                }
+            }
+
+            if (m_intSuccesDecisionReasonReg > 0)
+            {
+                // トランザクションコミット
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
             }
         }
 
@@ -2429,8 +2272,7 @@ namespace ProductMstMaintenance
         /// <param name="NpgsqlCon"></param>
         /// <param name="transaction"></param>
         /// <returns></returns>
-        private static Boolean ExecDelProductInfoDecisionReason(NpgsqlConnection NpgsqlCon
-                                                              , NpgsqlTransaction transaction)
+        private static Boolean ExecDelProductInfoDecisionReason()
         {
             try
             {
@@ -2438,22 +2280,17 @@ namespace ProductMstMaintenance
                 string strCreateSql = g_CON_DELETE_MST_PRODUCT_INFO_DECISION_REASON;
 
                 // SQLコマンドに各パラメータを設定する
-                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
                 // sqlを実行する
-                if (ExecTranSQL(command
-                              , transaction
-                              , "判定理由マスタテーブルの削除に失敗しました。") == false)
-                {
-                    return false;
-                }
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql);
 
                 return true;
             }
             catch (Exception ex)
             {
-                OutPutImportLog("判定理由削除時にエラーが発生しました。" + ex.Message);
-                WriteEventLog(g_CON_LEVEL_ERROR, "判定理由削除時にエラーが発生しました。" + ex.Message);
+                OutPutImportLog(g_clsMessageInfo.strMsgE0028 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                 return false;
             }
         }
@@ -2463,9 +2300,7 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="lstUserData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private static Boolean ExecRegProductInfoDecisionReason(DecisionReasonCsvInfo drcCurrentData
-                                                              , NpgsqlConnection NpgsqlCon
-                                                              , NpgsqlTransaction transaction)
+        private static Boolean ExecRegProductInfoDecisionReason(DecisionReasonCsvInfo drcCurrentData)
         {
             try
             {
@@ -2473,7 +2308,7 @@ namespace ProductMstMaintenance
                 string strCreateSql = g_CON_INSERT_MST_PRODUCT_INFO_DECISION_REASON;
 
                 // SQLコマンドに各パラメータを設定する
-                var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
                 // 各項目の値を取得する
                 // FieldInfoを取得する
@@ -2485,60 +2320,27 @@ namespace ProductMstMaintenance
                 {
                     if (fieldInfo.FieldType == typeof(int))
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.Int32)
-                        { Value = NulltoInt(fieldInfo.GetValue(drcCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(drcCurrentData)) });
                     }
                     else
                     {
-                        command.Parameters.Add(new NpgsqlParameter(fieldInfo.Name, DbType.String)
-                        { Value = NulltoString(fieldInfo.GetValue(drcCurrentData)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(drcCurrentData)) });
                     }
                 }
 
                 // sqlを実行する
-                if (ExecTranSQL(command
-                              , transaction
-                              , "判定理由マスタの登録に失敗しました。") == false)
-                {
-                    return false;
-                }
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
                 return true;
             }
             catch (Exception ex)
             {
-                OutPutImportLog("判定理由登録時にエラーが発生しました。" + ex.Message);
-                WriteEventLog(g_CON_LEVEL_ERROR, "判定理由登録時にエラーが発生しました。" + ex.Message);
+                OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0029 + "\r\n" + ex.Message);
                 return false;
             }
         }
         #endregion
-        #endregion
-
-        #region 登録実行
-        /// <summary>
-        /// 登録・更新処理実行
-        /// </summary>
-        /// <param name="nscCommand">実行SQLコマンド</param>
-        /// <param name="transaction">トランザクション情報</param>
-        /// <returns></returns>
-        public static Boolean ExecTranSQL(NpgsqlCommand nscCommand
-                                        , NpgsqlTransaction transaction
-                                        , string strErrorMsg)
-        {
-            try
-            {
-                nscCommand.ExecuteNonQuery();
-                return true;
-            }
-            catch (NpgsqlException ex)
-            {
-                WriteEventLog(g_CON_LEVEL_ERROR, strErrorMsg + ex.Message);
-                OutPutImportLog(strErrorMsg + ex.Message);
-                transaction.Rollback();
-                return false;
-            }
-        }
         #endregion
 
         #region チェック処理
@@ -2677,9 +2479,9 @@ namespace ProductMstMaintenance
             string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
             // 出力ファイル設定
-            strOutPutFilePath = m_strOutPutLogFolder + @"\"
-                                                     + m_CON_OUTLOGFILE_NAME
-                                                     + ".csv";
+            strOutPutFilePath = g_clsSystemSettingInfo.strLogFileOutputDirectory + @"\"
+                                                                                 + m_CON_OUTLOGFILE_NAME
+                                                                                 + ".csv";
 
             try
             {
@@ -2696,7 +2498,7 @@ namespace ProductMstMaintenance
             catch(Exception ex)
             {
                 // ログファイル結果出力を行う
-                WriteEventLog(g_CON_LEVEL_ERROR, "ログファイルの出力でエラーが発生しました。" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0016 + "\r\n" + ex.Message);
                 return;
             }
         }

@@ -42,6 +42,7 @@
             this.txtFolder.ReadOnly = true;
             this.txtFolder.Size = new System.Drawing.Size(446, 19);
             this.txtFolder.TabIndex = 1;
+            this.txtFolder.Click += new System.EventHandler(this.txtFolder_Click);
             // 
             // lblTitleCsvFile
             // 

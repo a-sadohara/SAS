@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ProductMstMaintenance.Common;
 
@@ -74,7 +70,6 @@ namespace ProductMstMaintenance
         private const string m_CON_COLNAME_LINE_THRESHOLD_E1 = "line_threshold_e1";
         private const string m_CON_COLNAME_LINE_THRESHOLD_E2 = "line_threshold_e2";
 
-
         // 変数
         private double m_dblSizeRateW = 100.00;
         private double m_dblSizeRateH = 100.00;
@@ -103,16 +98,73 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void ProductMstMaintenance_Load(object sender, EventArgs e)
         {
-            // 品番マスタから値の取得を行う
-            if (GetHinMstInitial("") == false || 
-                m_dtData.Rows.Count == 0)
-            {
-                txtProductName.Select();
-                return;
-            }
+            bool bolProcOkNg = false;
 
-            // 取得結果反映処理
-            CreateFormInfo();
+            try
+            {
+                // 初期化
+                txtProductName.Text = "";
+                lblLength.Text = "";
+                lblWidth.Text = "";
+                lblLineLength.Text = "";
+                lblRegimarkBetweenLength.Text = "";
+                txtStretchRateX.Text = "";
+                txtStretchRateY.Text = "";
+                chkAiModelNonInspectionFlg.Checked = true;
+                txtAiModelName.Text = "";
+                picMasterImage.Image = null;
+                lblStartRegimarkPointN.Text = "";
+                lblStartRegimarkPointNPlus1Line.Text = "";
+                lblEndRegimarkPointN.Text = "";
+                lblEndRegimarkPointNMinus1Line.Text = "";
+                lblBasePointA.Text = "";
+                lblBasePointB.Text = "";
+                lblBasePointC.Text = "";
+                lblBasePointD.Text = "";
+                lblBasePointE.Text = "";
+                lblPlusDirectionA.Text = "";
+                lblPlusDirectionB.Text = "";
+                lblPlusDirectionC.Text = "";
+                lblPlusDirectionD.Text = "";
+                lblPlusDirectionE.Text = "";
+                lblStartRegimarkCameraNum.Text = "";
+                lblEndRegimarkCameraNum.Text = "";
+                lblIlluminationInformation.Text = "";
+                txtColumnThresholdAB.Text = "";
+                txtColumnThresholdBC.Text = "";
+                txtColumnThresholdCD.Text = "";
+                txtColumnThresholdDE.Text = "";
+                txtColumnThresholdAFrom.Text = "";
+                txtColumnThresholdATo.Text = "";
+                txtColumnThresholdBFrom.Text = "";
+                txtColumnThresholdBTo.Text = "";
+                txtColumnThresholdCFrom.Text = "";
+                txtColumnThresholdCTo.Text = "";
+                txtColumnThresholdDFrom.Text = "";
+                txtColumnThresholdDTo.Text = "";
+                txtColumnThresholdEFrom.Text = "";
+                txtColumnThresholdETo.Text = "";
+
+                // 品番マスタから値の取得を行う
+                if (GetHinMstInitial("") == false)
+                {
+                    txtProductName.Select();
+                    return;
+                }
+                if (m_dtData.Rows.Count == 0)
+                    if (bolRunProductMstImportCsv() == false)
+                        return;
+
+                // 取得結果反映処理
+                CreateFormInfo();
+
+                bolProcOkNg = true;
+            }
+            finally
+            {
+                if (bolProcOkNg == false)
+                    this.Close();
+            }
         }
 
         /// <summary>
@@ -157,17 +209,22 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnProMstImport_Click(object sender, EventArgs e)
+        private void btnProductInfoImportCsv_Click(object sender, EventArgs e)
         {
-            string strMsg = "品番情報の取り込みを行います。" + Environment.NewLine;
-            strMsg = strMsg + "画面の内容を更新している場合は、更新内容が破棄されます。" + Environment.NewLine;
-            strMsg = strMsg + "処理を継続してよろしいでしょうか。";
+            bolRunProductMstImportCsv();
+        }
 
+        /// <summary>
+        /// 品番情報取り込み画面遷移
+        /// </summary>
+        /// <returns>
+        ///     true :1件以上のデータが存在する 
+        ///     false:それ以外
+        /// </returns>
+        private bool bolRunProductMstImportCsv()
+        {
             // 確認メッセージ
-            if (MessageBox.Show(strMsg
-                          , "確認"
-                          , MessageBoxButtons.YesNo
-                          , MessageBoxIcon.Information) == DialogResult.Yes) 
+            if (MessageBox.Show(g_clsMessageInfo.strMsgQ0005, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 // 取り込み表示の場合、初期表示する
                 ProductMstImportCsv frmUserImportCsv = new ProductMstImportCsv();
@@ -180,11 +237,17 @@ namespace ProductMstMaintenance
                     m_dtData.Rows.Count == 0)
                 {
                     txtProductName.Select();
-                    return;
+                    return false;
                 }
 
                 // 取得結果反映処理
                 CreateFormInfo();
+
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -195,14 +258,8 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            string strMsg = "品名：" + txtProductName.Text + "の登録情報を更新します。" + Environment.NewLine;
-            strMsg = strMsg + "処理を継続してよろしいでしょうか。";
-
             // 確認メッセージ
-            if (MessageBox.Show(strMsg
-                              , "確認"
-                              , MessageBoxButtons.YesNo
-                              , MessageBoxIcon.Information) == DialogResult.Yes) 
+            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0006, txtProductName.Text), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) 
             {
                 // 入力チェックを行う
                 if (InputCheck() == false) 
@@ -211,13 +268,8 @@ namespace ProductMstMaintenance
                 }
 
                 // 更新処理を行う
-                if (UPDMstProductInfoDisp() == true) 
-                {
-                    MessageBox.Show("更新が完了しました"
-                                  , "確認"
-                                  , MessageBoxButtons.OK
-                                  , MessageBoxIcon.Information);
-                }
+                if (UPDMstProductInfoDisp() == false)
+                    return;
             }
         }
 
@@ -226,7 +278,7 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnErrorReason_Click(object sender, EventArgs e)
+        private void btnMstDecisionReason_Click(object sender, EventArgs e)
         {
             SelectErrorReason frmSelectErrorReason = new SelectErrorReason();
             frmSelectErrorReason.ShowDialog(this);
@@ -275,27 +327,27 @@ namespace ProductMstMaintenance
             }
 
             // 列判定用境界線の描画
-            foreach (TextBox txtColumnThreshold in new TextBox[] { txtColumnThreshold01, txtColumnThreshold02,
-                                                                   txtColumnThreshold03, txtColumnThreshold04 })
+            foreach (TextBox txtColumnThreshold in new TextBox[] { txtColumnThresholdAB, txtColumnThresholdBC,
+                                                                   txtColumnThresholdCD, txtColumnThresholdDE })
             {
                 // 初期化
                 intColumnThreshold = -1;
 
-                if (m_intColumn_cnt > 1 && txtColumnThreshold == txtColumnThreshold01)
+                if (m_intColumn_cnt > 1 && txtColumnThreshold == txtColumnThresholdAB)
                 {
-                    intColumnThreshold = (int)((double)NulltoInt(txtColumnThreshold01.Text) * m_dblSizeRate);
+                    intColumnThreshold = (int)((double)NulltoInt(txtColumnThresholdAB.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 2 && txtColumnThreshold == txtColumnThreshold02)
+                else if (m_intColumn_cnt > 2 && txtColumnThreshold == txtColumnThresholdBC)
                 {
-                    intColumnThreshold = (int)((double)NulltoInt(txtColumnThreshold02.Text) * m_dblSizeRate);
+                    intColumnThreshold = (int)((double)NulltoInt(txtColumnThresholdBC.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 3 && txtColumnThreshold == txtColumnThreshold03)
+                else if (m_intColumn_cnt > 3 && txtColumnThreshold == txtColumnThresholdCD)
                 {
-                    intColumnThreshold = (int)((double)NulltoInt(txtColumnThreshold03.Text) * m_dblSizeRate);
+                    intColumnThreshold = (int)((double)NulltoInt(txtColumnThresholdCD.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 4 && txtColumnThreshold == txtColumnThreshold04)
+                else if (m_intColumn_cnt > 4 && txtColumnThreshold == txtColumnThresholdDE)
                 {
-                    intColumnThreshold = (int)((double)NulltoInt(txtColumnThreshold04.Text) * m_dblSizeRate);
+                    intColumnThreshold = (int)((double)NulltoInt(txtColumnThresholdDE.Text) * m_dblSizeRate);
                 }
                 // 行判定用境界線が未設定（列数の設定等）の場合はスルー
                 if (intColumnThreshold > -1)
@@ -309,83 +361,83 @@ namespace ProductMstMaintenance
             }
 
             // 行判定用境界線の描画
-            foreach (TextBox txtLineThreshold in new TextBox[] { txtLineThresholdA1, txtLineThresholdA2,
-                                                                 txtLineThresholdB1, txtLineThresholdB2,
-                                                                 txtLineThresholdC1, txtLineThresholdC2,
-                                                                 txtLineThresholdD1, txtLineThresholdD2,
-                                                                 txtLineThresholdE1, txtLineThresholdE2 })
+            foreach (TextBox txtLineThreshold in new TextBox[] { txtColumnThresholdAFrom, txtColumnThresholdATo,
+                                                                 txtColumnThresholdBFrom, txtColumnThresholdBTo,
+                                                                 txtColumnThresholdCFrom, txtColumnThresholdCTo,
+                                                                 txtColumnThresholdDFrom, txtColumnThresholdDTo,
+                                                                 txtColumnThresholdEFrom, txtColumnThresholdETo })
             {
                 // 初期化
                 intLineThreshold = -1;
                 intColumnThresholdTop = -1;
                 intColumnThresholdBottom = -1;
 
-                if (txtLineThreshold == txtLineThresholdA1)
+                if (txtLineThreshold == txtColumnThresholdAFrom)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdA1.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdAFrom.Text) * m_dblSizeRate);
                     intColumnThresholdTop = 0;
                     if (m_intColumn_cnt > 1)
-                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThreshold01.Text) * m_dblSizeRate);
+                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdAB.Text) * m_dblSizeRate);
                 }
-                else if (txtLineThreshold == txtLineThresholdA2)
+                else if (txtLineThreshold == txtColumnThresholdATo)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdA2.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdATo.Text) * m_dblSizeRate);
                     intColumnThresholdTop = 0;
                     if (m_intColumn_cnt > 1)
-                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThreshold01.Text) * m_dblSizeRate);
+                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdAB.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 1 && txtLineThreshold == txtLineThresholdB1)
+                else if (m_intColumn_cnt > 1 && txtLineThreshold == txtColumnThresholdBFrom)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdB1.Text) * m_dblSizeRate);
-                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThreshold01.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdBFrom.Text) * m_dblSizeRate);
+                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdAB.Text) * m_dblSizeRate);
                     if (m_intColumn_cnt > 2)
-                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThreshold02.Text) * m_dblSizeRate);
+                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdBC.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 1 && txtLineThreshold == txtLineThresholdB2)
+                else if (m_intColumn_cnt > 1 && txtLineThreshold == txtColumnThresholdBTo)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdB2.Text) * m_dblSizeRate);
-                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThreshold01.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdBTo.Text) * m_dblSizeRate);
+                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdAB.Text) * m_dblSizeRate);
                     if (m_intColumn_cnt > 2)
-                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThreshold02.Text) * m_dblSizeRate);
+                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdBC.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 2 && txtLineThreshold == txtLineThresholdC1)
+                else if (m_intColumn_cnt > 2 && txtLineThreshold == txtColumnThresholdCFrom)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdC1.Text) * m_dblSizeRate);
-                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThreshold02.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdCFrom.Text) * m_dblSizeRate);
+                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdBC.Text) * m_dblSizeRate);
                     if (m_intColumn_cnt > 3)
-                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThreshold03.Text) * m_dblSizeRate);
+                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdCD.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 2 && txtLineThreshold == txtLineThresholdC2)
+                else if (m_intColumn_cnt > 2 && txtLineThreshold == txtColumnThresholdCTo)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdC2.Text) * m_dblSizeRate);
-                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThreshold02.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdCTo.Text) * m_dblSizeRate);
+                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdBC.Text) * m_dblSizeRate);
                     if (m_intColumn_cnt > 3)
-                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThreshold03.Text) * m_dblSizeRate);
+                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdCD.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 3 && txtLineThreshold == txtLineThresholdD1)
+                else if (m_intColumn_cnt > 3 && txtLineThreshold == txtColumnThresholdDFrom)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdD1.Text) * m_dblSizeRate);
-                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThreshold03.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdDFrom.Text) * m_dblSizeRate);
+                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdCD.Text) * m_dblSizeRate);
                     if (m_intColumn_cnt > 4)
-                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThreshold04.Text) * m_dblSizeRate);
+                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdDE.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 3 && txtLineThreshold == txtLineThresholdD2)
+                else if (m_intColumn_cnt > 3 && txtLineThreshold == txtColumnThresholdDTo)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdD2.Text) * m_dblSizeRate);
-                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThreshold03.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdDTo.Text) * m_dblSizeRate);
+                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdCD.Text) * m_dblSizeRate);
                     if (m_intColumn_cnt > 4)
-                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThreshold04.Text) * m_dblSizeRate);
+                        intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdDE.Text) * m_dblSizeRate);
                 }
-                else if (m_intColumn_cnt > 4 && txtLineThreshold == txtLineThresholdE1)
+                else if (m_intColumn_cnt > 4 && txtLineThreshold == txtColumnThresholdEFrom)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdE1.Text) * m_dblSizeRate);
-                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThreshold04.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdEFrom.Text) * m_dblSizeRate);
+                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdDE.Text) * m_dblSizeRate);
                     intColumnThresholdBottom = picMasterImage.ClientSize.Height;
                 }
-                else if (m_intColumn_cnt > 4 && txtLineThreshold == txtLineThresholdE2)
+                else if (m_intColumn_cnt > 4 && txtLineThreshold == txtColumnThresholdETo)
                 {
-                    intLineThreshold = (int)((double)NulltoInt(txtLineThresholdE2.Text) * m_dblSizeRate);
-                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThreshold04.Text) * m_dblSizeRate);
+                    intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdETo.Text) * m_dblSizeRate);
+                    intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdDE.Text) * m_dblSizeRate);
                     intColumnThresholdBottom = picMasterImage.ClientSize.Height;
                 }
                 // 行判定用境界線が未設定（列数の設定等）の場合はスルー
@@ -448,11 +500,8 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。" + ex.Message);
-                MessageBox.Show("品番登録情報の取得で例外が発生しました。"
-                              , "品番登録情報取得エラー"
-                              , MessageBoxButtons.OK
-                              , MessageBoxIcon.Warning);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
@@ -514,13 +563,22 @@ namespace ProductMstMaintenance
                 m_strMstFilePath = NulltoString(dtCurentRow[m_CON_COLNAME_AIRBAG_IMAGEPATH]);
 
                 // 長さ
-                lblLength.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH]);
+                if (NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH]) != "")
+                    lblLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])));
+                else
+                    lblLength.Text = "";
 
                 // 幅
-                lblWidth.Text = NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH]);
+                if (NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH]) != "")
+                    lblWidth.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH])));
+                else
+                    lblWidth.Text = "";
 
                 // レジマーク間引き
-                lblRegiLength.Text = NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH]);
+                if (NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH]) != "")
+                    lblRegimarkBetweenLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])));
+                else
+                    lblRegimarkBetweenLength.Text = "";
 
                 // 伸縮率X
                 string strStretchRateX = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_X_UPD]);
@@ -575,7 +633,7 @@ namespace ProductMstMaintenance
                                 , m_CON_COLNAME_POINT_1_PLUS_DIRECTION_Y
                                 , out strPoint
                                 , out strArrow);
-                lblPointA.Text = strPoint;
+                lblBasePointA.Text = strPoint;
                 lblPlusDirectionA.Text = strArrow;
 
                 // 座標のラベルを作成 B
@@ -586,7 +644,7 @@ namespace ProductMstMaintenance
                                 , m_CON_COLNAME_POINT_2_PLUS_DIRECTION_Y
                                 , out strPoint
                                 , out strArrow);
-                lblPointB.Text = strPoint;
+                lblBasePointB.Text = strPoint;
                 lblPlusDirectionB.Text = strArrow;
 
                 // 座標のラベルを作成 C
@@ -597,7 +655,7 @@ namespace ProductMstMaintenance
                                 , m_CON_COLNAME_POINT_3_PLUS_DIRECTION_Y
                                 , out strPoint
                                 , out strArrow);
-                lblPointC.Text = strPoint;
+                lblBasePointC.Text = strPoint;
                 lblPlusDirectionC.Text = strArrow;
 
                 // 座標のラベルを作成 D
@@ -608,7 +666,7 @@ namespace ProductMstMaintenance
                                 , m_CON_COLNAME_POINT_4_PLUS_DIRECTION_Y
                                 , out strPoint
                                 , out strArrow);
-                lblPointD.Text = strPoint;
+                lblBasePointD.Text = strPoint;
                 lblPlusDirectionD.Text = strArrow;
 
                 // 座標のラベルを作成 E
@@ -619,7 +677,7 @@ namespace ProductMstMaintenance
                                 , m_CON_COLNAME_POINT_5_PLUS_DIRECTION_Y
                                 , out strPoint
                                 , out strArrow);
-                lblPointE.Text = strPoint;
+                lblBasePointE.Text = strPoint;
                 lblPlusDirectionE.Text = strArrow;
 
                 if (strPoint != "")
@@ -635,55 +693,55 @@ namespace ProductMstMaintenance
                 lblIlluminationInformation.Text = NulltoString(dtCurentRow[m_CON_COLNAME_ILLUMINATION_INFORMATION]);
 
                 // A-B列
-                txtColumnThreshold01.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_01]);
+                txtColumnThresholdAB.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_01]);
                 // B-C列
-                txtColumnThreshold02.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_02]);
+                txtColumnThresholdBC.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_02]);
                 // C-D列
-                txtColumnThreshold03.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_03]);
+                txtColumnThresholdCD.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_03]);
                 // D-E列
-                txtColumnThreshold04.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_04]);
+                txtColumnThresholdDE.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_04]);
 
                 // 行判定用境界線設定表示部.A列
-                txtLineThresholdA1.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A1]);
-                txtLineThresholdA2.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A2]);
+                txtColumnThresholdAFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A1]);
+                txtColumnThresholdATo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A2]);
 
-                if (txtLineThresholdA1.Text != "" && txtLineThresholdA2.Text != "")
+                if (txtColumnThresholdAFrom.Text != "" && txtColumnThresholdATo.Text != "")
                 {
                     m_intColumn_cnt = 1;
                 }
 
                 // 行判定用境界線設定表示部.B列
-                txtLineThresholdB1.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B1]);
-                txtLineThresholdB2.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B2]);
+                txtColumnThresholdBFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B1]);
+                txtColumnThresholdBTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B2]);
 
-                if (txtLineThresholdB1.Text != "" && txtLineThresholdB2.Text != "")
+                if (txtColumnThresholdBFrom.Text != "" && txtColumnThresholdBTo.Text != "")
                 {
                     m_intColumn_cnt = 2;
                 }
 
                 // 行判定用境界線設定表示部.C列
-                txtLineThresholdC1.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C1]);
-                txtLineThresholdC2.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C2]);
+                txtColumnThresholdCFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C1]);
+                txtColumnThresholdCTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C2]);
 
-                if (txtLineThresholdC1.Text != "" && txtLineThresholdC2.Text != "")
+                if (txtColumnThresholdCFrom.Text != "" && txtColumnThresholdCTo.Text != "")
                 {
                     m_intColumn_cnt = 3;
                 }
 
                 // 行判定用境界線設定表示部.D列
-                txtLineThresholdD1.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D1]);
-                txtLineThresholdD2.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D2]);
+                txtColumnThresholdDFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D1]);
+                txtColumnThresholdDTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D2]);
 
-                if (txtLineThresholdD1.Text != "" && txtLineThresholdD2.Text != "")
+                if (txtColumnThresholdDFrom.Text != "" && txtColumnThresholdDTo.Text != "")
                 {
                     m_intColumn_cnt = 4;
                 }
 
                 // 行判定用境界線設定表示部.E列
-                txtLineThresholdE1.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E1]);
-                txtLineThresholdE2.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E2]);
+                txtColumnThresholdEFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E1]);
+                txtColumnThresholdETo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E2]);
 
-                if (txtLineThresholdE1.Text != "" && txtLineThresholdE2.Text != "")
+                if (txtColumnThresholdEFrom.Text != "" && txtColumnThresholdETo.Text != "")
                 {
                     m_intColumn_cnt = 5;
                 }
@@ -769,61 +827,61 @@ namespace ProductMstMaintenance
             // 列数でコントロールを非表示にする
             if (m_intColumn_cnt < 2)
             {
-                txtColumnThreshold01.Visible = false;
-                txtLineThresholdB1.Visible = false;
-                txtLineThresholdB2.Visible = false;
+                txtColumnThresholdAB.Visible = false;
+                txtColumnThresholdBFrom.Visible = false;
+                txtColumnThresholdBTo.Visible = false;
                 lblBDash.Visible = false;
             }
             else 
             {
-                txtColumnThreshold01.Visible = true;
-                txtLineThresholdB1.Visible = true;
-                txtLineThresholdB2.Visible = true;
+                txtColumnThresholdAB.Visible = true;
+                txtColumnThresholdBFrom.Visible = true;
+                txtColumnThresholdBTo.Visible = true;
                 lblBDash.Visible = true;
             }
 
             if (m_intColumn_cnt < 3)
             {
-                txtColumnThreshold02.Visible = false;
-                txtLineThresholdC1.Visible = false;
-                txtLineThresholdC2.Visible = false;
+                txtColumnThresholdBC.Visible = false;
+                txtColumnThresholdCFrom.Visible = false;
+                txtColumnThresholdCTo.Visible = false;
                 lblCDash.Visible = false;
             }
             else
             {
-                txtColumnThreshold02.Visible = true;
-                txtLineThresholdC1.Visible = true;
-                txtLineThresholdC2.Visible = true;
+                txtColumnThresholdBC.Visible = true;
+                txtColumnThresholdCFrom.Visible = true;
+                txtColumnThresholdCTo.Visible = true;
                 lblCDash.Visible = true;
             }
 
             if (m_intColumn_cnt < 4)
             {
-                txtColumnThreshold03.Visible = false;
-                txtLineThresholdD1.Visible = false;
-                txtLineThresholdD2.Visible = false;
+                txtColumnThresholdCD.Visible = false;
+                txtColumnThresholdDFrom.Visible = false;
+                txtColumnThresholdDTo.Visible = false;
                 lblDDash.Visible = false;
             }
             else 
             {
-                txtColumnThreshold03.Visible = true;
-                txtLineThresholdD1.Visible = true;
-                txtLineThresholdD2.Visible = true;
+                txtColumnThresholdCD.Visible = true;
+                txtColumnThresholdDFrom.Visible = true;
+                txtColumnThresholdDTo.Visible = true;
                 lblDDash.Visible = true;
             }
 
             if (m_intColumn_cnt < 5)
             {
-                txtColumnThreshold04.Visible = false;
-                txtLineThresholdE1.Visible = false;
-                txtLineThresholdE2.Visible = false;
+                txtColumnThresholdDE.Visible = false;
+                txtColumnThresholdEFrom.Visible = false;
+                txtColumnThresholdETo.Visible = false;
                 lblEDash.Visible = false;
             }
             else 
             {
-                txtColumnThreshold04.Visible = true;
-                txtLineThresholdE1.Visible = true;
-                txtLineThresholdE2.Visible = true;
+                txtColumnThresholdDE.Visible = true;
+                txtColumnThresholdEFrom.Visible = true;
+                txtColumnThresholdETo.Visible = true;
                 lblEDash.Visible = true;
             }
         }
@@ -869,20 +927,20 @@ namespace ProductMstMaintenance
             if (CheckRequiredInput(txtProductName, "品名") == false ||
                 CheckRequiredInput(txtStretchRateX, "伸縮率（Xb）[%]") == false ||
                 CheckRequiredInput(txtStretchRateY, "伸縮率（Yb）[%]") == false ||
-                CheckRequiredInput(txtColumnThreshold01, "A-B列") == false ||
-                CheckRequiredInput(txtColumnThreshold02, "B-C列") == false ||
-                CheckRequiredInput(txtColumnThreshold03, "C-D列") == false ||
-                CheckRequiredInput(txtColumnThreshold04, "D-E列") == false ||
-                CheckRequiredInput(txtLineThresholdA1, "A列(開始)") == false ||
-                CheckRequiredInput(txtLineThresholdA2, "A列(終了)") == false ||
-                CheckRequiredInput(txtLineThresholdB1, "B列(開始)") == false ||
-                CheckRequiredInput(txtLineThresholdB2, "B列(終了)") == false ||
-                CheckRequiredInput(txtLineThresholdC1, "C列(開始)") == false ||
-                CheckRequiredInput(txtLineThresholdC2, "C列(終了)") == false ||
-                CheckRequiredInput(txtLineThresholdD1, "D列(開始)") == false ||
-                CheckRequiredInput(txtLineThresholdD2, "D列(終了)") == false ||
-                CheckRequiredInput(txtLineThresholdE1, "E列(開始)") == false ||
-                CheckRequiredInput(txtLineThresholdE2, "E列(終了)") == false)
+                CheckRequiredInput(txtColumnThresholdAB, "A-B列") == false ||
+                CheckRequiredInput(txtColumnThresholdBC, "B-C列") == false ||
+                CheckRequiredInput(txtColumnThresholdCD, "C-D列") == false ||
+                CheckRequiredInput(txtColumnThresholdDE, "D-E列") == false ||
+                CheckRequiredInput(txtColumnThresholdAFrom, "A列(開始)") == false ||
+                CheckRequiredInput(txtColumnThresholdATo, "A列(終了)") == false ||
+                CheckRequiredInput(txtColumnThresholdBFrom, "B列(開始)") == false ||
+                CheckRequiredInput(txtColumnThresholdBTo, "B列(終了)") == false ||
+                CheckRequiredInput(txtColumnThresholdCFrom, "C列(開始)") == false ||
+                CheckRequiredInput(txtColumnThresholdCTo, "C列(終了)") == false ||
+                CheckRequiredInput(txtColumnThresholdDFrom, "D列(開始)") == false ||
+                CheckRequiredInput(txtColumnThresholdDTo, "D列(終了)") == false ||
+                CheckRequiredInput(txtColumnThresholdEFrom, "E列(開始)") == false ||
+                CheckRequiredInput(txtColumnThresholdETo, "E列(終了)") == false)
             {
                 return false;
             }
@@ -890,20 +948,20 @@ namespace ProductMstMaintenance
             // 範囲チェック
             if (CheckRangeInputDouble(txtStretchRateX, "伸縮率（Xb）[%]", 1.00, 300.00) == false ||
                 CheckRangeInputDouble(txtStretchRateY, "伸縮率（Yb）[%]", 1.00, 300.00) == false ||
-                CheckRangeInput(txtColumnThreshold01, "A-B列", 1, 480) == false ||
-                CheckRangeInput(txtColumnThreshold02, "B-C列", 1, 480) == false ||
-                CheckRangeInput(txtColumnThreshold03, "C-D列", 1, 480) == false ||
-                CheckRangeInput(txtColumnThreshold04, "D-E列", 1, 480) == false ||
-                CheckRangeInput(txtLineThresholdA1, "A列(開始)", 1, 640) == false ||
-                CheckRangeInput(txtLineThresholdA2, "A列(終了)", 1, 640) == false ||
-                CheckRangeInput(txtLineThresholdB1, "B列(開始)", 1, 640) == false ||
-                CheckRangeInput(txtLineThresholdB2, "B列(終了)", 1, 640) == false ||
-                CheckRangeInput(txtLineThresholdC1, "C列(開始)", 1, 640) == false ||
-                CheckRangeInput(txtLineThresholdC2, "C列(終了)", 1, 640) == false ||
-                CheckRangeInput(txtLineThresholdD1, "D列(開始)", 1, 640) == false ||
-                CheckRangeInput(txtLineThresholdD2, "D列(終了)", 1, 640) == false ||
-                CheckRangeInput(txtLineThresholdE1, "E列(開始)", 1, 640) == false ||
-                CheckRangeInput(txtLineThresholdE2, "E列(終了)", 1, 640) == false)
+                CheckRangeInput(txtColumnThresholdAB, "A-B列", 1, 480) == false ||
+                CheckRangeInput(txtColumnThresholdBC, "B-C列", 1, 480) == false ||
+                CheckRangeInput(txtColumnThresholdCD, "C-D列", 1, 480) == false ||
+                CheckRangeInput(txtColumnThresholdDE, "D-E列", 1, 480) == false ||
+                CheckRangeInput(txtColumnThresholdAFrom, "A列(開始)", 1, 640) == false ||
+                CheckRangeInput(txtColumnThresholdATo, "A列(終了)", 1, 640) == false ||
+                CheckRangeInput(txtColumnThresholdBFrom, "B列(開始)", 1, 640) == false ||
+                CheckRangeInput(txtColumnThresholdBTo, "B列(終了)", 1, 640) == false ||
+                CheckRangeInput(txtColumnThresholdCFrom, "C列(開始)", 1, 640) == false ||
+                CheckRangeInput(txtColumnThresholdCTo, "C列(終了)", 1, 640) == false ||
+                CheckRangeInput(txtColumnThresholdDFrom, "D列(開始)", 1, 640) == false ||
+                CheckRangeInput(txtColumnThresholdDTo, "D列(終了)", 1, 640) == false ||
+                CheckRangeInput(txtColumnThresholdEFrom, "E列(開始)", 1, 640) == false ||
+                CheckRangeInput(txtColumnThresholdETo, "E列(終了)", 1, 640) == false)
             {
                 return false;
             }
@@ -928,17 +986,13 @@ namespace ProductMstMaintenance
                 // 必須入力チェック
                 if (txtCheckData.Text == "")
                 {
-                    // ログファイルにエラー出力を行う
-                    MessageBox.Show(strItemName + "が未設定です。"
-                                  + strItemName + "を設定してください。"
-                                  , "確認"
-                                  , MessageBoxButtons.OK
-                                  , MessageBoxIcon.Warning);
+                    // エラーメッセージ出力を行う
+                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0007, strItemName), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtCheckData.Focus();
                     return false;
                 }
             }
-
+            
             return true;
         }
 
@@ -964,20 +1018,16 @@ namespace ProductMstMaintenance
 
             int intCheckData = NulltoInt(txtCheckData.Text);
 
-            // 桁数チェック
+            // 範囲チェック
             if (intCheckData < intMinRange || intCheckData > intMaxRange)
             {
                 // ログファイルにエラー出力を行う
-                MessageBox.Show(strItemName + "の値が不正です。"
-                                            + intMinRange.ToString() + "～" + intMaxRange.ToString()
-                                            + "までを入力してください。 "
-                                            , "確認"
-                                            , MessageBoxButtons.OK
-                                            , MessageBoxIcon.Warning);
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0023, intMinRange, intMaxRange), 
+                                "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtCheckData.Focus();
                 return false;
             }
-
+            
             return true;
         }
 
@@ -1006,17 +1056,13 @@ namespace ProductMstMaintenance
             // 桁数チェック
             if (dblCheckData < dblMinRange || dblCheckData > dblMaxRange)
             {
-                // ログファイルにエラー出力を行う
-                MessageBox.Show(strItemName + "の値が不正です。"
-                                            + dblMinRange.ToString() + "～" + dblMaxRange.ToString()
-                                            + "までを入力してください。 "
-                                            , "確認"
-                                            , MessageBoxButtons.OK
-                                            , MessageBoxIcon.Warning);
+                // エラーメッセージ出力を行う
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0023, dblMinRange, dblMaxRange), 
+                                "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtCheckData.Focus();
                 return false;
             }
-
+            
             return true;
         }
 
@@ -1043,20 +1089,20 @@ namespace ProductMstMaintenance
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_name", DbType = DbType.String, Value = txtAiModelName.Text });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_x_upd", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateX.Text) });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_y_upd", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateY.Text) });
-                lstNpgsqlCommand.Add(DBOrInt(txtColumnThreshold01, "column_threshold_01"));
-                lstNpgsqlCommand.Add(DBOrInt(txtColumnThreshold02, "column_threshold_02"));
-                lstNpgsqlCommand.Add(DBOrInt(txtColumnThreshold03, "column_threshold_03"));
-                lstNpgsqlCommand.Add(DBOrInt(txtColumnThreshold04, "column_threshold_04"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdA1, "line_threshold_a1"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdA2, "line_threshold_a2"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdB1, "line_threshold_b1"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdB2, "line_threshold_b2"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdC1, "line_threshold_c1"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdC2, "line_threshold_c2"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdD1, "line_threshold_d1"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdD2, "line_threshold_d2"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdE1, "line_threshold_e1"));
-                lstNpgsqlCommand.Add(DBOrInt(txtLineThresholdE2, "line_threshold_e2"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdAB, "column_threshold_01"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdBC, "column_threshold_02"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdCD, "column_threshold_03"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdDE, "column_threshold_04"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdAFrom, "line_threshold_a1"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdATo, "line_threshold_a2"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdBFrom, "line_threshold_b1"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdBTo, "line_threshold_b2"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdCFrom, "line_threshold_c1"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdCTo, "line_threshold_c2"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdDFrom, "line_threshold_d1"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdDTo, "line_threshold_d2"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdEFrom, "line_threshold_e1"));
+                lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdETo, "line_threshold_e2"));
 
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "product_name", DbType = DbType.String, Value = txtProductName.Text });
 
@@ -1072,44 +1118,7 @@ namespace ProductMstMaintenance
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
                 // メッセージ出力
-                MessageBox.Show("品番登録情報の更新で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtProductName.Focus();
-                return false;
-            }
-            finally
-            {
-                g_clsConnectionNpgsql.DbClose();
-            }
-        }
-
-        /// <summary>
-        /// 品名削除処理
-        /// </summary>
-        /// <returns></returns>
-        private Boolean DELMstProductInfoDisp()
-        {
-            try
-            {
-                // SQL文を作成する
-                string strUpdateSql = g_CON_DELETE_MST_PRODUCT_INFO_DISP_INPUT;
-
-                // SQLコマンドに各パラメータを設定する
-                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "product_name", DbType = DbType.String, Value = txtProductName.Text });
-
-                // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
-
-                g_clsConnectionNpgsql.DbCommit();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
-                // メッセージ出力
-                MessageBox.Show("品番登録情報の削除で例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0022, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtProductName.Focus();
                 return false;
             }

@@ -21,16 +21,12 @@ namespace ProductMstMaintenance.DTO
         //==============
         // App.Config
         //==============
-        // ログ出力ディレクトリ
-        public readonly string strLogFileOutputDirectory;
-        public readonly string strProcessTypeCre;
-        public readonly string strProcessTypeUpd;
-        public readonly string strProcessTypeDel;
 
         //==============================
         //システム情報設定テーブル
         //==============================
-        // 
+        public readonly string strMasterImageDirectory;     // マスタ画像格納ディレクトリ
+        public readonly string strLogFileOutputDirectory;   // ログファイル出力先
 
         /// <summary>
         /// コンストラクタ
@@ -42,10 +38,8 @@ namespace ProductMstMaintenance.DTO
                 GetSystemSettingValue();
 
                 // システム設定から情報を取得
+                GetSystemSettingValue("MasterImageDirectory", ref strMasterImageDirectory);
                 GetSystemSettingValue("LogFileOutputDirectory", ref strLogFileOutputDirectory);
-                GetSystemSettingValue("ProcessTypeCre", ref strProcessTypeCre);
-                GetSystemSettingValue("ProcessTypeUpd", ref strProcessTypeUpd);
-                GetSystemSettingValue("ProcessTypeDel", ref strProcessTypeDel);
 
                 if (m_sbErrMessage.Length > 0)
                     throw new Exception(m_sbErrMessage.ToString());

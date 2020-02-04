@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using ProductMstMaintenance.DTO;
 using static ProductMstMaintenance.Common;
 
 namespace ProductMstMaintenance
@@ -67,30 +59,6 @@ namespace ProductMstMaintenance
         {
 
             this.Close();
-
-            // 本当に不要か確認すること
-            //foreach (DataGridViewRow row in dgvData.Rows)
-            //{
-
-            //    if(row.Cells[0].Value == null)
-            //    {
-            //        continue;
-            //    }
-
-            //    if(row.Cells[0].Value.Equals(true))
-            //    {
-            //        if (m_chkReg == true)
-            //        {
-            //            if (MessageBox.Show("NG理由：" + row.Cells[1].Value + "で登録しますか？"
-            //                              , "確認"
-            //                              , MessageBoxButtons.YesNo) == DialogResult.No)
-            //            {
-            //                return;
-            //            }
-            //        }
-            //        this.Close();
-            //    }
-            //}
         }
 
         /// <summary>
@@ -141,11 +109,8 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                WriteEventLog(g_CON_LEVEL_ERROR, "DBアクセス時にエラーが発生しました。" + ex.Message);
-                MessageBox.Show("判定理由マスタの取得で例外が発生しました。"
-                              , "判定理由取得エラー"
-                              , MessageBoxButtons.OK
-                              , MessageBoxIcon.Warning);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0030, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
