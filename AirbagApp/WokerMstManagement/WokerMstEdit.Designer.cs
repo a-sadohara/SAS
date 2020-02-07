@@ -64,6 +64,7 @@
             this.txtWorkerNameSei.Name = "txtWorkerNameSei";
             this.txtWorkerNameSei.Size = new System.Drawing.Size(68, 19);
             this.txtWorkerNameSei.TabIndex = 3;
+            this.txtWorkerNameSei.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWorkerName_KeyPress);
             // 
             // txtWorkerNameSeiKana
             // 
@@ -128,6 +129,7 @@
             this.txtWorkerNameMei.Name = "txtWorkerNameMei";
             this.txtWorkerNameMei.Size = new System.Drawing.Size(68, 19);
             this.txtWorkerNameMei.TabIndex = 5;
+            this.txtWorkerNameMei.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWorkerName_KeyPress);
             // 
             // btnDecision
             // 

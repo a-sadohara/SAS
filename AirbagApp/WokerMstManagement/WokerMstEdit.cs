@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using static WokerMstManagement.Common;
@@ -24,12 +25,6 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void btnDecision_Click(object sender, EventArgs e)
         {
-            // 入力チェックを行う
-            if (InputDataCheck() == false)
-            {
-                return;
-            }
-
             if (m_intEditMode == g_CON_EDITMODE_REG)
             {
                 if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0002
@@ -42,6 +37,13 @@ namespace WokerMstManagement
                                    , MessageBoxButtons.YesNo
                                    , MessageBoxIcon.Question) != DialogResult.Yes)
                     return;
+
+
+                // 入力チェックを行う
+                if (InputDataCheck() == false)
+                {
+                    return;
+                }
 
                 // 登録処理を行う
                 if (RegistrationUser() == true)
@@ -65,6 +67,12 @@ namespace WokerMstManagement
                                    , MessageBoxButtons.YesNo
                                    , MessageBoxIcon.Question) != DialogResult.Yes)
                     return;
+
+                // 入力チェックを行う
+                if (InputDataCheck() == false)
+                {
+                    return;
+                }
 
                 // 更新処理を行う
                 if (UpdateUser() == true)
@@ -130,7 +138,6 @@ namespace WokerMstManagement
             // 更新モードで起動された場合、引数の情報を初期表示する
             if (m_intEditMode == g_CON_EDITMODE_UPD)
             {
-                this.Text = "更新";
                 // 社員番号
                 txtEmployeeNum.Text = parUserNo;
                 txtEmployeeNum.Enabled = false;
@@ -165,7 +172,6 @@ namespace WokerMstManagement
             }
             else
             {
-                this.Text = "登録";
                 // 登録モードで起動された場合、画面の各項目を空白で表示する
                 txtEmployeeNum.Clear();
                 txtWorkerNameSei.Clear();
@@ -182,10 +188,10 @@ namespace WokerMstManagement
         {
             // 必須入力チェック
             if (CheckRequiredInput(txtEmployeeNum, "社員番号") == false ||
-                CheckRequiredInput(txtWorkerNameSei, "作業者名") == false ||
-                CheckRequiredInput(txtWorkerNameMei, "作業者名") == false ||
-                CheckRequiredInput(txtWorkerNameSeiKana, "読みカナ") == false ||
-                CheckRequiredInput(txtWorkerNameMeiKana, "読みカナ") == false) 
+                CheckRequiredInput(txtWorkerNameSei, "作業者名　姓") == false ||
+                CheckRequiredInput(txtWorkerNameMei, "作業者名　名") == false ||
+                CheckRequiredInput(txtWorkerNameSeiKana, "読みカナ　姓") == false ||
+                CheckRequiredInput(txtWorkerNameMeiKana, "読みカナ　名") == false) 
             {
                 return false;
             }
@@ -255,19 +261,34 @@ namespace WokerMstManagement
             }
             catch (Exception ex) 
             {
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
-
-                if (((Npgsql.PostgresException)ex).SqlState == "23505")
+                try
                 {
-                    // 重複の例外時
+                    if (((Npgsql.PostgresException)ex).SqlState == "23505")
+                    {
+                        // 重複の例外時
 
-                    // メッセージ出力
-                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0008, "社員番号"), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // メッセージ出力
+                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0008, "社員番号"), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        txtEmployeeNum.Focus();
+                    }
+                    else
+                    {
+                        // それ以外の例外時
+
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0004, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-                else
+                catch (Exception)
                 {
-                    // それ以外の例外時
+                    // ※DB非接続時は重複時の判断でエラーになる考慮
+
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
 
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0004, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -326,6 +347,20 @@ namespace WokerMstManagement
             finally
             {
                 g_clsConnectionNpgsql.DbClose();
+            }
+        }
+
+        /// <summary>
+        /// 作業者名入力イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtWorkerName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //カタカナ以外の時は、イベントをキャンセルする
+            if (!(Encoding.GetEncoding("Shift-JIS").GetByteCount(e.KeyChar.ToString()) == e.KeyChar.ToString().Length * 2) && e.KeyChar != '\b')
+            {
+                e.Handled = true;
             }
         }
 

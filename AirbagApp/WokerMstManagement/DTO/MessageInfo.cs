@@ -40,6 +40,7 @@ namespace WokerMstManagement.DTO
         public readonly string strMsgE0018;
         public readonly string strMsgE0019;
         public readonly string strMsgE0020;
+        public readonly string strMsgE0055;
         public readonly string strMsgI0001;
         public readonly string strMsgI0002;
         public readonly string strMsgQ0001;
@@ -79,6 +80,7 @@ namespace WokerMstManagement.DTO
                 GetMessageContent("E0018", ref strMsgE0018);
                 GetMessageContent("E0019", ref strMsgE0019);
                 GetMessageContent("E0020", ref strMsgE0020);
+                GetMessageContent("E0055", ref strMsgE0055);
                 GetMessageContent("I0001", ref strMsgI0001);
                 GetMessageContent("I0002", ref strMsgI0002);
                 GetMessageContent("Q0001", ref strMsgQ0001);

@@ -207,6 +207,14 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void dgvWorker_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            string strSelEmployeeNum = "0000";
+
+            // 選択行の社員番号取得
+            foreach (DataGridViewRow dgvRow in this.dgvWorker.SelectedRows)
+            {
+                strSelEmployeeNum = dgvWorker.Rows[dgvRow.Index].Cells["EmployeeNum"].Value.ToString();
+                break;
+            }
 
             // 作業者登録画面を更新モードで表示する
             WokerMstEdit frmUserReg = new WokerMstEdit(g_CON_EDITMODE_UPD,
@@ -219,7 +227,7 @@ namespace WokerMstManagement
                 try
                 {
                     // 更新表示モードで明細表示を呼び出し
-                    dispDataGridView(1, "0000", e.RowIndex);
+                    dispDataGridView(1, strSelEmployeeNum, e.RowIndex);
                 }
                 catch (Exception ex)
                 {
@@ -470,6 +478,8 @@ namespace WokerMstManagement
                 g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
 
                 g_clsConnectionNpgsql.DbCommit();
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -477,13 +487,13 @@ namespace WokerMstManagement
                 WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0006, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
             }
             finally 
             {
                 g_clsConnectionNpgsql.DbClose();
             }
-
-            return true;
         }
         #endregion
     }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using static WokerMstManagement.Common;
 
 namespace WokerMstManagement
@@ -22,7 +23,7 @@ namespace WokerMstManagement
 
         private const string m_CON_OUTLOGFILE_NAME = "WorkerImportLog";
 
-        private static string m_strInputFileName = "";
+        private static bool m_bolProcEnd = false;
 
         private static string m_strOutPutFilePath = "";
 
@@ -58,6 +59,9 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void SelectImportFile_Click(object sender, EventArgs e)
         {
+            m_bolProcEnd = false;
+
+            DispatcherTimer dtEnabletxtImportFilePath;
             OpenFileDialog ofDialog = new OpenFileDialog();
 
             // デフォルトのフォルダを指定する
@@ -74,6 +78,19 @@ namespace WokerMstManagement
                 Console.WriteLine(ofDialog.FileName);
             }
 
+            // ダイアログ選択直後はCSVファイルパスを一時無効にする
+            // ※ファイル選択ダイアログでファイルをダブルクリックで選択した時、
+            // 　同じポイントに画面のCSVファイルパスがあった場合、
+            // 　再度ファイル選択ダイアログを開いてしまう考慮
+            txtImportFilePath.Enabled = false;
+            dtEnabletxtImportFilePath = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+            dtEnabletxtImportFilePath.Start();
+            dtEnabletxtImportFilePath.Tick += (s, args) =>
+            {
+                dtEnabletxtImportFilePath.Stop();
+                txtImportFilePath.Enabled = true;
+            };
+
             txtImportFilePath.Text = ofDialog.FileName;
 
             // オブジェクトを破棄する
@@ -87,6 +104,8 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void btnImport_Click(object sender, EventArgs e)
         {
+            m_bolProcEnd = false;
+
             // 読み込みデータ
             WorkerCsvInfo uciWorkerData = new WorkerCsvInfo();
             bool bolTitleRow = true;
@@ -119,7 +138,6 @@ namespace WokerMstManagement
                               , MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 string strFileName = txtImportFilePath.Text;
-                m_strInputFileName = strFileName;
 
                 // 選択ファイル読み込み
                 try
@@ -167,6 +185,7 @@ namespace WokerMstManagement
 
                                 continue;
                             }
+                            if (m_bolProcEnd == true) return;
 
                             // 登録処理実施
                             if (RegistrationWorker(uciWorkerData) == true)
@@ -177,7 +196,7 @@ namespace WokerMstManagement
                                 else if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeUpd)
                                     intUOkCount++;
                                 else if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeDel)
-                                    intUOkCount++;
+                                    intDOkCount++;
 
                                 intImpOkCount++;
                             }
@@ -193,6 +212,7 @@ namespace WokerMstManagement
 
                                 intImpNgCount++;
                             }
+                            if (m_bolProcEnd == true) return;
 
                         }
 
@@ -206,6 +226,7 @@ namespace WokerMstManagement
                     WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
 
                     OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message + "\"");
+                    if (m_bolProcEnd == true) return;
 
                     intImpNgCount++;
                 }
@@ -221,13 +242,15 @@ namespace WokerMstManagement
                                                          intCCount, intCOkCount, intCNgCount,
                                                          intUCount, intUOkCount, intUNgCount,
                                                          intDCount, intDOkCount, intDNgCount) + "\"");
+                    if (m_bolProcEnd == true) return;
                     MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0001,
                                                   intImpCount, intImpOkCount, intImpNgCount,
                                                   intCCount, intCOkCount, intCNgCount,
                                                   intUCount, intUOkCount, intUNgCount,
                                                   intDCount, intDOkCount, intDNgCount) + "\n" +
                                     string.Format(g_clsMessageInfo.strMsgI0002, m_strOutPutFilePath),
-                                    "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    if (m_bolProcEnd == true) return;
                 }
                 else
                 {
@@ -236,13 +259,15 @@ namespace WokerMstManagement
                                                          intCCount, intCOkCount, intCNgCount,
                                                          intUCount, intUOkCount, intUNgCount,
                                                          intDCount, intDOkCount, intDNgCount) + "\"");
+                    if (m_bolProcEnd == true) return;
                     MessageBox.Show(string.Format(g_clsMessageInfo.strMsgI0001,
                                                   intImpCount, intImpOkCount, intImpNgCount,
                                                   intCCount, intCOkCount, intCNgCount,
                                                   intUCount, intUOkCount, intUNgCount,
                                                   intDCount, intDOkCount, intDNgCount) + "\n" +
                                     string.Format(g_clsMessageInfo.strMsgI0002, m_strOutPutFilePath),
-                                    "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (m_bolProcEnd == true) return;
                 }
 
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
@@ -276,6 +301,8 @@ namespace WokerMstManagement
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0010, intRowCount) + ",\"" + strFileTextLine + "\"");
+                if (m_bolProcEnd == true) return false;
+
                 return false;
             }
 
@@ -338,48 +365,151 @@ namespace WokerMstManagement
                                          uciCheckData.strWorkerKanaSei,
                                          uciCheckData.strWorkerKanaMei);
 
-            // 必須入力チェック
-            if (CheckRequiredInput(uciCheckData.strProcessType, "処理区分", intRowCount, strData, 1, 1 , "", "") == false ||
-                CheckRequiredInput(uciCheckData.strWorkerID, "社員番号", intRowCount, strData, 4, 4, "0001", "0009") == false ||
-                CheckRequiredInput(uciCheckData.strWorkerNameSei, "作業者名 性", intRowCount, strData, 1, 10, "", "") == false ||
-                CheckRequiredInput(uciCheckData.strWorkerNameMei, "作業者名 名", intRowCount, strData, 1, 10, "", "") == false ||
-                CheckRequiredInput(uciCheckData.strWorkerKanaSei, "読みカナ 性", intRowCount, strData, 1, 10, "", "") == false ||
-                CheckRequiredInput(uciCheckData.strWorkerKanaMei, "読みカナ 名", intRowCount, strData, 1, 10, "", "") == false)
+            //----------
+            // 更新区分
+            //----------
+            // 必須チェック
+            if (CheckRequiredInput(uciCheckData.strProcessType, "処理区分", intRowCount, strData) == false)
+                return false;
+
+            // 型チェック（アルファベット）
+            if (!Regex.IsMatch(uciCheckData.strProcessType, @"[^a-zA-zａ-ｚＡ-Ｚ]") == false)
             {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "処理区分", "アルファベット") + ",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
                 return false;
             }
 
-            // 文字入力チェック
+            // 桁数チェック
+            if (CheckLength(uciCheckData.strProcessType, "処理区分", 1, 1, strData) == false)
+                return false;
+
+            // 設定可能値チェック
             if (uciCheckData.strProcessType != g_clsSystemSettingInfo.strProcessTypeCre &&
                 uciCheckData.strProcessType != g_clsSystemSettingInfo.strProcessTypeUpd &&
                 uciCheckData.strProcessType != g_clsSystemSettingInfo.strProcessTypeDel)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "処理区分", "C/U/D") + ",\"" + strData + "\"");
+                OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0014, "処理区分", String.Join(",",
+                                                                                                           g_clsSystemSettingInfo.strProcessTypeCre,
+                                                                                                           g_clsSystemSettingInfo.strProcessTypeUpd,
+                                                                                                           g_clsSystemSettingInfo.strProcessTypeDel)) + 
+                                                                                               "\",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
                 return false;
             }
 
-            // 数値入力チェック
+            //----------
+            // 社員番号
+            //----------
+            // 必須チェック
+            if (CheckRequiredInput(uciCheckData.strWorkerID, "社員番号", intRowCount, strData) == false)
+                return false;
+
+            // 型チェック(数字)
             if (Int32.TryParse(uciCheckData.strWorkerID, out intWorkerNo) == false)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0013, "社員番号", "0001", "0009") + ",\"" + strData + "\"");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "社員番号", "数値") + ",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
                 return false;
             }
+
+            // 桁数チェック
+            if (CheckLength(uciCheckData.strWorkerID, "社員番号", 4, 4, strData) == false)
+                return false;
+
+            // 範囲チェック
+            if (CheckRange(uciCheckData.strWorkerID, "社員番号", "0001", "9999", strData) == false)
+                return false;
+
+            //--------------
+            // 作業者名＿姓
+            //--------------
+            // 必須チェック
+            if (CheckRequiredInput(uciCheckData.strWorkerNameSei, "作業者名＿姓", intRowCount, strData) == false)
+                return false;
+
+            // 全角文字チェック
+            if (!(Encoding.GetEncoding("Shift-JIS").GetByteCount(uciCheckData.strWorkerNameSei) == uciCheckData.strWorkerNameSei.Length * 2))
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "作業者名＿性", "全角文字") + ",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
+                return false;
+            }
+
+            // 桁数チェック
+            if (CheckLength(uciCheckData.strWorkerNameSei, "作業者名＿姓", 1, 10, strData) == false)
+                return false;
+
+            //--------------
+            // 作業者名＿名
+            //--------------
+            // 必須チェック
+            if (CheckRequiredInput(uciCheckData.strWorkerNameMei, "作業者名＿名", intRowCount, strData) == false)
+                return false;
+
+            // 全角文字チェック
+            if (!(Encoding.GetEncoding("Shift-JIS").GetByteCount(uciCheckData.strWorkerNameMei) == uciCheckData.strWorkerNameMei.Length * 2))
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "作業者名＿名", "全角文字") + ",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
+                return false;
+            }
+
+            // 桁数チェック
+            if (CheckLength(uciCheckData.strWorkerNameMei, "作業者名＿名", 1, 10, strData) == false)
+                return false;
+
+            //--------------
+            // 読みカナ＿姓
+            //--------------
+            // 必須チェック
+            if (CheckRequiredInput(uciCheckData.strWorkerKanaSei, "読みカナ＿姓", intRowCount, strData) == false)
+                return false;
 
             // カナ入力チェック
             if (Regex.IsMatch(uciCheckData.strWorkerKanaSei, "^[ァ-ヶー]*$") == false)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "読みカナ 性", "全角カナ") + ",\"" + strData + "\"");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "読みカナ＿性", "全角カナ") + ",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
                 return false;
             }
+
+            // 桁数チェック
+            if (CheckLength(uciCheckData.strWorkerKanaSei, "読みカナ＿姓", 1, 30, strData) == false)
+                return false;
+
+            //--------------
+            // 読みカナ＿名
+            //--------------
+            // 必須チェック
+            if (CheckRequiredInput(uciCheckData.strWorkerKanaMei, "読みカナ＿名", intRowCount, strData) == false)
+                return false;
+
+            // カナ入力チェック
             if (Regex.IsMatch(uciCheckData.strWorkerKanaMei, "^[ァ-ヶー]*$") == false)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "読みカナ 名", "全角カナ") + ",\"" + strData + "\"");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "読みカナ＿名", "全角カナ") + ",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
                 return false;
             }
+
+            // 桁数チェック
+            if (CheckLength(uciCheckData.strWorkerKanaMei, "読みカナ＿名", 1, 30, strData) == false)
+                return false;
 
             return true;
         }
@@ -391,36 +521,81 @@ namespace WokerMstManagement
         /// <param name="strItemName">チェック対象項目名</param>
         /// <param name="intRowCount">チェック対象行番号</param>
         /// <param name="strData">データ文字列</param>
-        /// <param name="intMinLength">項目最小長</param>
-        /// <param name="intMaxLength">項目最大長</param>
-        /// <param name="strMinValue">項目最小値</param>
-        /// <param name="strMaxValue">項目最大値</param>
         /// <returns></returns>
         private Boolean CheckRequiredInput(String strCheckData
                                          , String strItemName
                                          , Int32 intRowCount
-                                         , String strData
-                                         , Int32 intMinLength
-                                         , Int32 intMaxLength
-                                         , String strMinValue
-                                         , String strMaxValue)
+                                         , String strData)
         {
             // 必須入力チェック
             if (strCheckData == "")
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0011 , strItemName) + ",\"" + strData + "\"");
-                return false;
-            }
-            else if (strCheckData.Length < intMinLength || strCheckData.Length > intMaxLength)
-            {
-                // ログファイルにエラー出力を行う
-                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0012, strItemName, intMinLength, intMaxLength) + ",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
                 return false;
             }
 
             return true;
         }
+
+        /// <summary>
+        /// 桁数チェック
+        /// </summary>
+        /// <param name="strCheckData">チェック対象テキスト</param>
+        /// <param name="strItemName">チェック対象項目名</param>
+        /// <param name="intMinLength">項目最小桁</param>
+        /// <param name="intMaxLength">項目最大桁</param>
+        /// <param name="strData">データ文字列</param>
+        /// <returns></returns>
+        private Boolean CheckLength(String strCheckData
+                                    , String strItemName
+                                    , Int32 intMinLength
+                                    , Int32 intMaxLength
+                                    , String strData)
+        {
+            // 必須入力チェック
+            if (strCheckData.Length < intMinLength || strCheckData.Length > intMaxLength)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0012, strItemName, intMinLength, intMaxLength) + ",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 範囲チェック
+        /// </summary>
+        /// <param name="strCheckData">チェック対象テキスト</param>
+        /// <param name="strItemName">チェック対象項目名</param>
+        /// <param name="strMinValue">項目最小値</param>
+        /// <param name="strMaxValue">項目最大値</param>
+        /// <param name="strData">データ文字列</param>
+        /// <returns></returns>
+        private Boolean CheckRange(String strCheckData
+                                   , String strItemName
+                                   , String strMinValue
+                                   , String strMaxValue
+                                   , String strData)
+        {
+            // 必須入力チェック
+            if (string.Compare(strCheckData, strMinValue) == -1 || string.Compare(strCheckData, strMaxValue) == 1)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0013, strItemName, strMinValue, strMaxValue) + ",\"" + strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
+                return false;
+            }
+
+            return true;
+        }
+
 
         /// <summary>
         /// 登録処理
@@ -429,40 +604,104 @@ namespace WokerMstManagement
         /// <returns></returns>
         private Boolean RegistrationWorker(WorkerCsvInfo uciCheckData)
         {
+            string strData = string.Join(",", uciCheckData.strProcessType,
+                                              uciCheckData.strWorkerID,
+                                              uciCheckData.strWorkerNameSei,
+                                              uciCheckData.strWorkerNameMei,
+                                              uciCheckData.strWorkerKanaSei,
+                                              uciCheckData.strWorkerKanaMei);
+
             try
             {
-                // 登録・更新
-                if (uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeCre ||
-                    uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeUpd)
+                // 登録
+                if (uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeCre)
                 {
-                    // SQL文を作成する
-                    string strCreateSql = @"INSERT INTO mst_Worker (employee_num, worker_name_sei, worker_name_mei, worker_name_sei_kana, worker_name_mei_kana, del_flg)
-                                                                    VALUES (:WorkerNo, :WorkerSurname, :WorkerName, :WorkerSurnameKana, :WorkerNameKana, 0)
-                                                               ON CONFLICT (employee_num)
-                                                             DO UPDATE SET worker_name_sei = :WorkerSurname
-                                                                         , worker_name_mei = :WorkerName
-                                                                         , worker_name_sei_kana = :WorkerSurnameKana
-                                                                         , worker_name_mei_kana = :WorkerNameKana
-                                                                     WHERE mst_Worker.del_flg = 0 ";
+                    try
+                    {
+                        // SQL文を作成する
+                        string strCreateSql = @"INSERT INTO mst_Worker (employee_num, worker_name_sei, worker_name_mei, worker_name_sei_kana, worker_name_mei_kana, del_flg)
+                                                                VALUES (:WorkerNo, :WorkerSurname, :WorkerName, :WorkerSurnameKana, :WorkerNameKana, 0)";
 
-                    // SQLコマンドに各パラメータを設定する
-                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNo", DbType = DbType.String, Value = String.Format("{0:D4}", Int32.Parse(uciCheckData.strWorkerID)) });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerSurname", DbType = DbType.String, Value = uciCheckData.strWorkerNameSei });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerName", DbType = DbType.String, Value = uciCheckData.strWorkerNameMei });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerSurnameKana", DbType = DbType.String, Value = uciCheckData.strWorkerKanaSei });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNameKana", DbType = DbType.String, Value = uciCheckData.strWorkerKanaMei });
+                        // SQLコマンドに各パラメータを設定する
+                        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNo", DbType = DbType.String, Value = String.Format("{0:D4}", Int32.Parse(uciCheckData.strWorkerID)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerSurname", DbType = DbType.String, Value = uciCheckData.strWorkerNameSei });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerName", DbType = DbType.String, Value = uciCheckData.strWorkerNameMei });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerSurnameKana", DbType = DbType.String, Value = uciCheckData.strWorkerKanaSei });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNameKana", DbType = DbType.String, Value = uciCheckData.strWorkerKanaMei });
 
-                    // sqlを実行する
-                    g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+                        // sqlを実行する
+                        g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+
+                        g_clsConnectionNpgsql.DbCommit();
+                    }
+                    catch (Exception ex)
+                    {
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0017 + "\r\n" + ex.Message);
+
+                        // ログファイル出力
+                        OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0017 + "\r\n" + ex.Message + "\",\"" + strData + "\"");
+                        if (m_bolProcEnd == true) return false;
+
+                        return false;
+                    }
+                    finally
+                    {
+                        g_clsConnectionNpgsql.DbClose();
+                    }
                 }
+                // 更新
+                if (uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeUpd)
+                {
+                    try
+                    {
+                        // SQL文を作成する
+                        string strCreateSql = @"UPDATE mst_Worker
+                                                   SET worker_name_sei = :WorkerSurname
+                                                     , worker_name_mei = :WorkerName
+                                                     , worker_name_sei_kana = :WorkerSurnameKana
+                                                     , worker_name_mei_kana = :WorkerNameKana
+                                                 WHERE employee_num = :WorkerNo
+                                                   AND del_flg = 0 ";
+
+                        // SQLコマンドに各パラメータを設定する
+                        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNo", DbType = DbType.String, Value = String.Format("{0:D4}", Int32.Parse(uciCheckData.strWorkerID)) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerSurname", DbType = DbType.String, Value = uciCheckData.strWorkerNameSei });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerName", DbType = DbType.String, Value = uciCheckData.strWorkerNameMei });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerSurnameKana", DbType = DbType.String, Value = uciCheckData.strWorkerKanaSei });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNameKana", DbType = DbType.String, Value = uciCheckData.strWorkerKanaMei });
+
+                        // sqlを実行する
+                        g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+
+                        g_clsConnectionNpgsql.DbCommit();
+                    }
+                    catch (Exception ex)
+                    {
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message);
+
+                        // ログファイル出力
+                        OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message + "\",\"" + strData + "\"");
+                        if (m_bolProcEnd == true) return false;
+
+                        return false;
+                    }
+                    finally
+                    {
+                        g_clsConnectionNpgsql.DbClose();
+                    }
+                }
+
                 // 削除
                 else if (uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeDel)
                 {
                     string strSelWorkerNo = String.Format("{0:D4}", Int32.Parse(uciCheckData.strWorkerID));
 
                     // ユーザ削除
-                    if (DelWorker(strSelWorkerNo) == false)
+                    if (DelWorker(strSelWorkerNo, strData) == false)
                     {
                         return false;
                     }
@@ -482,24 +721,46 @@ namespace WokerMstManagement
         /// <summary>
         /// ユーザ削除処理
         /// </summary>
-        /// <param name="NpgsqlCon">接続子</param>
-        /// <param name="transaction">トランザクション</param>
+        /// <param name="strSelWorkerNo">社員番号</param>
+        /// <param name="strData">データ文字列</param>
         /// <returns></returns>
-        private Boolean DelWorker(string strSelWorkerNo)
+        private Boolean DelWorker(string strSelWorkerNo, string strData)
         {
-            // SQL文を作成する
-            string strUpdateSql = @"UPDATE mst_Worker
+            try
+            {
+                // SQL文を作成する
+                string strUpdateSql = @"UPDATE mst_Worker
                                        SET del_flg = 1
-                                     WHERE employee_num = :WorkerNo";
+                                     WHERE employee_num = :WorkerNo
+                                       AND del_flg = 0";
 
-            // SQLコマンドに各パラメータを設定する
-            List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNo", DbType = DbType.String, Value = strSelWorkerNo });
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "WorkerNo", DbType = DbType.String, Value = strSelWorkerNo });
 
-            // sqlを実行する
-            g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
+                // sqlを実行する
+                g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
 
-            return true;
+                g_clsConnectionNpgsql.DbCommit();
+
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message);
+
+                // ログファイル出力
+                OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message + "\",\""+ strData + "\"");
+                if (m_bolProcEnd == true) return false;
+
+                return false;
+            }
+            finally
+            {
+                g_clsConnectionNpgsql.DbClose();
+            }
         }
 
         /// <summary>
@@ -532,9 +793,18 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0016 + "\r\n" + ex.Message);
 
-                return;
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0055, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                // 処理を中断
+                // ※以下の対応が必要
+                // 　・このメソッドを呼び出す可能性のある関数が対象であり、
+                // 　　その関数の全ての呼出し直後でreturnを返す(メソッド単位の処理を終了する)ようにする。
+                // 　　最終的に、大元のイベントで処理を終了できればOK。
+                // 　・イベント開始直後にこの変数を初期化(false)する。
+                m_bolProcEnd = true;
             }
         }
         #endregion    
