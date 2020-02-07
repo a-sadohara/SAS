@@ -363,35 +363,32 @@ namespace ProductMstMaintenance
                 return;
             }
 
-            DirectoryInfo directorySearchFolder = new DirectoryInfo(txtFolder.Text);
+            string[] strInputIni = Directory.GetFiles(txtFolder.Text, "*.ini", SearchOption.TopDirectoryOnly);
 
-            FileInfo[] fiInputIni = directorySearchFolder.GetFiles("*.ini"
-                                                                 , SearchOption.TopDirectoryOnly);
-            FileInfo[] fiInputCsv = directorySearchFolder.GetFiles("*.csv"
-                                                                 , SearchOption.TopDirectoryOnly);
-            FileInfo[] fiInputPng = directorySearchFolder.GetFiles("*.bmp"
-                                                                 , SearchOption.TopDirectoryOnly);
+            string[] strInputCsv = Directory.GetFiles(txtFolder.Text, "*.csv", SearchOption.TopDirectoryOnly);
+
+            string[] strInputPng = Directory.GetFiles(txtFolder.Text, "*.bmp", SearchOption.TopDirectoryOnly);
 
             // マスタ画像取り込み
-            ProcessMasterPng(fiInputPng);
+            ProcessMasterPng(strInputPng);
 
             // 品番マスタ情報取り込み
-            ProcessRegisterIni(fiInputIni);
+            ProcessRegisterIni(strInputIni);
 
             // PLCマスタ情報取り込み
-            ProcessPLCIni(fiInputIni);
+            ProcessPLCIni(strInputIni);
 
             // エアバッグ情報取り込み
-            ProcessAirBagIni(fiInputIni);
+            ProcessAirBagIni(strInputIni);
 
             // カメラ情報CSV取り込み
-            ProcessCameraCsv(fiInputCsv);
+            ProcessCameraCsv(strInputCsv);
 
             // 閾値情報CSV取り込み
-            ProcessThresholdCsv(fiInputCsv);
+            ProcessThresholdCsv(strInputCsv);
 
             // 判定理由取り込み
-            ProcessDecisionReasonCsv(fiInputCsv);
+            ProcessDecisionReasonCsv(strInputCsv);
 
             // 出力ファイル設定
             string strOutPutFilePath = g_clsSystemSettingInfo.strLogFileOutputDirectory + @"\"
@@ -484,6 +481,18 @@ namespace ProductMstMaintenance
 
         #region メソッド
         /// <summary>
+        /// ファイル名取得
+        /// </summary>
+        /// <param name="strFilePath"></param>
+        private static string strGetFileName(string strFilePath)
+        {
+            if (strFilePath.LastIndexOf(@"\") == -1)
+                return strFilePath;
+            else
+                return strFilePath.Substring(strFilePath.LastIndexOf(@"\") + 1);
+        }
+
+        /// <summary>
         /// フォルダ選択
         /// </summary>
         private void SelectFolder()
@@ -512,23 +521,23 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 品番情報取り込み
         /// </summary>
-        /// <param name="fiInputIni">読み込みINIファイル全種類</param>
-        private static void ProcessRegisterIni(FileInfo[] fiInputIni)
+        /// <param name="strInputIni">読み込みINIファイル全種類</param>
+        private static void ProcessRegisterIni(string[] strInputIni)
         {
             List<IniDataRegister> lstDataRegistersToDB = new List<IniDataRegister>();
 
             // フォルダ内のファイルの数だけループする
-            foreach (FileInfo Inputfile in fiInputIni)
+            foreach (string InputfilePath in strInputIni)
             {
-                m_strErrorOutFileName = Inputfile.Name;
-
+                m_strErrorOutFileName = strGetFileName(InputfilePath);
+                
                 // 品番情報ファイルを判定する
-                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.ini") == true)
+                if (Regex.IsMatch(strGetFileName(InputfilePath), m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.ini", RegexOptions.IgnoreCase) == true)
                 {
                     try
                     {
                         // 品番情報ファイルの場合、取り込みを行う
-                        lstDataRegistersToDB = ImportRegisterIniData(Inputfile);
+                        lstDataRegistersToDB = ImportRegisterIniData(InputfilePath);
                     }
                     catch (Exception ex) 
                     {
@@ -541,7 +550,7 @@ namespace ProductMstMaintenance
 
                     // 読み込んだ値に対してチェック処理を行う
                     if (CheckRegisterIniData(lstDataRegistersToDB
-                                           , Inputfile.Name) == false)
+                                           , strGetFileName(InputfilePath)) == false)
                     {
                         m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
                         continue;
@@ -571,15 +580,15 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 品番情報取り込み
         /// </summary>
-        /// <param name="Inputfile">読み込みファイル情報</param>
+        /// <param name="strInputfilePath">読み込みファイル情報</param>
         /// <returns></returns>
-        private static List<IniDataRegister> ImportRegisterIniData(FileInfo Inputfile)
+        private static List<IniDataRegister> ImportRegisterIniData(string strInputfilePath)
         {
             List<IniDataRegister> lstDataRegisterDB = new List<IniDataRegister>();
             List<string> lstRegisterIniSection = new List<string>();
 
             // ファイル読み込み処理を行う
-            using (StreamReader sr = new StreamReader(Inputfile.FullName
+            using (StreamReader sr = new StreamReader(strInputfilePath
                                                     , Encoding.GetEncoding("Shift_JIS")))
             {
                 string strFileTextLine = "";
@@ -595,7 +604,7 @@ namespace ProductMstMaintenance
                     }
 
                     // 品番情報ファイル内のセクションを取得する
-                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_REGISTER + "[0-9][0-9][0-9]]") == true)
+                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_REGISTER + "[0-9][0-9][0-9]]", RegexOptions.IgnoreCase) == true)
                     {
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", "");
@@ -611,7 +620,7 @@ namespace ProductMstMaintenance
                     IniDataRegister idrCurrentData = new IniDataRegister();
 
                     // Iniファイルの値をクラスへ格納する
-                    idrCurrentData = DataRegIniToDBClass(Inputfile, strRegister);
+                    idrCurrentData = DataRegIniToDBClass(strInputfilePath, strRegister);
 
                     lstDataRegisterDB.Add(idrCurrentData);
                 }
@@ -642,10 +651,10 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 品番マスタメンテINIファイル読み込み格納処理
         /// </summary>
-        /// <param name="Inputfile">読み込みINIファイル</param>
+        /// <param name="strInputfilePath">読み込みINIファイル</param>
         /// <param name="strRegister">セクション</param>
         /// <returns></returns>
-        private static IniDataRegister DataRegIniToDBClass(FileInfo Inputfile
+        private static IniDataRegister DataRegIniToDBClass(string strInputfilePath
                                                          , string strRegister)
         {
             IniDataRegister idrCurrentData = new IniDataRegister();
@@ -657,7 +666,7 @@ namespace ProductMstMaintenance
 
             // ファイルナンバーの格納を行う
             idrCurrentData.file_num =
-                SubstringRight(System.IO.Path.GetFileNameWithoutExtension(Inputfile.Name), 2);
+                SubstringRight(System.IO.Path.GetFileNameWithoutExtension(strGetFileName(strInputfilePath)), 2);
 
             string strTenmIniValue = "";
 
@@ -685,7 +694,7 @@ namespace ProductMstMaintenance
                 {
                     m_strCheckMstFile = "";
                     // 特殊対応項目の場合は特殊対応して設定
-                    strTenmIniValue = NulltoString(GetIniValue(Inputfile.FullName
+                    strTenmIniValue = NulltoString(GetIniValue(strInputfilePath
                                                              , strRegister
                                                              , fieldInfo.Name));
 
@@ -697,7 +706,7 @@ namespace ProductMstMaintenance
                 else if (strUniKey is null == false)
                 {
                     // 特殊対応項目の場合は特殊対応して設定
-                    strTenmIniValue = NulltoString(GetIniValue(Inputfile.FullName
+                    strTenmIniValue = NulltoString(GetIniValue(strInputfilePath
                                                              , strRegister
                                                              , strUniKey));
                     if (fieldInfo.FieldType == typeof(int))
@@ -717,7 +726,7 @@ namespace ProductMstMaintenance
                     {
                         // それ以外の項目は普通に設定
                         fieldInfo.SetValue(boxed
-                                         , NulltoInt(GetIniValue(Inputfile.FullName
+                                         , NulltoInt(GetIniValue(strInputfilePath
                                                                , strRegister
                                                                , fieldInfo.Name)));
                     }
@@ -725,7 +734,7 @@ namespace ProductMstMaintenance
                     {
                         // それ以外の項目は普通に設定
                         fieldInfo.SetValue(boxed
-                                         , NulltoString(GetIniValue(Inputfile.FullName
+                                         , NulltoString(GetIniValue(strInputfilePath
                                                                   , strRegister
                                                                   , fieldInfo.Name)));
                     }
@@ -818,23 +827,23 @@ namespace ProductMstMaintenance
         /// <summary>
         /// PLC情報取り込み
         /// </summary>
-        /// <param name="fiInputIni">読み込みINIファイル全種類</param>
-        private static void ProcessPLCIni(FileInfo[] fiInputIni)
+        /// <param name="strInputIni">読み込みINIファイル全種類</param>
+        private static void ProcessPLCIni(string[] strInputIni)
         {
             List<IniConfigPLC> lstPLCDataToDB = new List<IniConfigPLC>();
 
             // フォルダ内のファイルの数だけループする
-            foreach (FileInfo Inputfile in fiInputIni)
+            foreach (string InputfilePath in strInputIni)
             {
-                m_strErrorOutFileName = Inputfile.Name;
+                m_strErrorOutFileName = strGetFileName(InputfilePath);
 
                 // PLC設定ファイルを判定する
-                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CONFIG_PLC + ".ini") == true)
+                if (Regex.IsMatch(strGetFileName(InputfilePath), m_CON_FILE_NAME_CONFIG_PLC + ".ini", RegexOptions.IgnoreCase) == true)
                 {
                     try
                     {
                         // PLC設定より、レジマーク間距離を取得し登録する。
-                        lstPLCDataToDB = ImportPLCIniData(Inputfile);
+                        lstPLCDataToDB = ImportPLCIniData(InputfilePath);
                     }
                     catch (Exception ex) 
                     {
@@ -846,7 +855,7 @@ namespace ProductMstMaintenance
 
                     // 読み込んだ値に対してチェック処理を行う
                     if (CheckPLCIniData(lstPLCDataToDB
-                                      , Inputfile.Name) == false)
+                                      , strGetFileName(InputfilePath)) == false)
                     {
                         m_intErrorRegPTC = m_intErrorRegPTC + 1;
                         continue;
@@ -869,15 +878,15 @@ namespace ProductMstMaintenance
         /// <summary>
         /// PLC情報取り込み
         /// </summary>
-        /// <param name="Inputfile">読み込みファイル情報</param>
+        /// <param name="strInputfilePath">読み込みファイル情報</param>
         /// <returns></returns>
-        private static List<IniConfigPLC> ImportPLCIniData(FileInfo Inputfile)
+        private static List<IniConfigPLC> ImportPLCIniData(string strInputfilePath)
         {
             List<IniConfigPLC> lstDataPLCDB = new List<IniConfigPLC>();
             List<string> lstPLCIniSection = new List<string>();
 
             // ファイル読み込み処理を行う
-            using (StreamReader sr = new StreamReader(Inputfile.FullName
+            using (StreamReader sr = new StreamReader(strInputfilePath
                                                     , Encoding.GetEncoding("Shift_JIS")))
             {
                 string strFileTextLine = "";
@@ -893,7 +902,7 @@ namespace ProductMstMaintenance
                     }
 
                     // PLC情報ファイル内のセクションを取得する
-                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_KIND + "[0-9][0-9]]") == true)
+                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_KIND + "[0-9][0-9]]", RegexOptions.IgnoreCase) == true)
                     {
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", "");
@@ -908,7 +917,7 @@ namespace ProductMstMaintenance
                     IniConfigPLC icpCurrentData = new IniConfigPLC();
 
                     // Iniファイルの値をクラスへ格納する
-                    icpCurrentData = DataPLCIniToDBClass(Inputfile, strRegister);
+                    icpCurrentData = DataPLCIniToDBClass(strInputfilePath, strRegister);
 
                     lstDataPLCDB.Add(icpCurrentData);
                 }
@@ -920,10 +929,10 @@ namespace ProductMstMaintenance
         /// <summary>
         /// PLCINIファイル読み込み格納処理
         /// </summary>
-        /// <param name="Inputfile">読み込みINIファイル</param>
+        /// <param name="strInputfilePath">読み込みINIファイル</param>
         /// <param name="strRegister">セクション</param>
         /// <returns></returns>
-        private static IniConfigPLC DataPLCIniToDBClass(FileInfo Inputfile
+        private static IniConfigPLC DataPLCIniToDBClass(string strInputfilePath
                                                       , string strRegister)
         {
             IniConfigPLC icpCurrentData = new IniConfigPLC();
@@ -955,7 +964,7 @@ namespace ProductMstMaintenance
                     {
                         // それ以外の項目は普通に設定
                         fieldInfo.SetValue(boxed
-                                         , NulltoInt(GetIniValue(Inputfile.FullName
+                                         , NulltoInt(GetIniValue(strInputfilePath
                                                                , strRegister
                                                                , fieldInfo.Name)));
                     }
@@ -963,7 +972,7 @@ namespace ProductMstMaintenance
                     {
                         // それ以外の項目は普通に設定
                         fieldInfo.SetValue(boxed
-                                         , NulltoString(GetIniValue(Inputfile.FullName
+                                         , NulltoString(GetIniValue(strInputfilePath
                                                                   , strRegister
                                                                   , fieldInfo.Name)));
                     }
@@ -1073,23 +1082,23 @@ namespace ProductMstMaintenance
         /// <summary>
         /// エアバッグ情報取り込み
         /// </summary>
-        /// <param name="fiInputIni">読み込みINIファイル全種類</param>
-        private static void ProcessAirBagIni(FileInfo[] fiInputIni)
+        /// <param name="strInputIni">読み込みINIファイル全種類</param>
+        private static void ProcessAirBagIni(string[] strInputIni)
         {
             List<IniAirBagCoord> lstAirBagCoordToDB = new List<IniAirBagCoord>();
 
             // フォルダ内のファイルの数だけループする
-            foreach (FileInfo Inputfile in fiInputIni)
+            foreach (string InputfilePath in strInputIni)
             {
-                m_strErrorOutFileName = Inputfile.Name;
+                m_strErrorOutFileName = strGetFileName(InputfilePath);
 
                 // エアバック領域設定ファイルを判定する
-                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_AIRBAG_COORD + "[0-9][0-9]*.ini") == true)
+                if (Regex.IsMatch(strGetFileName(InputfilePath), m_CON_FILE_NAME_AIRBAG_COORD + "[0-9][0-9]*.ini", RegexOptions.IgnoreCase) == true)
                 {
                     try
                     {
                         // エアバック領域設定より、列数を取得し登録する。
-                        lstAirBagCoordToDB = ImportAirBagCoordIniData(Inputfile);
+                        lstAirBagCoordToDB = ImportAirBagCoordIniData(InputfilePath);
                     }
                     catch (Exception ex)
                     {
@@ -1101,7 +1110,7 @@ namespace ProductMstMaintenance
 
                     // 読み込んだ値に対してチェック処理を行う
                     if (CheckAirbagIniData(lstAirBagCoordToDB
-                                         , Inputfile.Name) == false)
+                                         , strGetFileName(InputfilePath)) == false)
                     {
                         m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
                         continue;
@@ -1124,15 +1133,15 @@ namespace ProductMstMaintenance
         /// <summary>
         /// エアバッグ領域設定取込み取り込み
         /// </summary>
-        /// <param name="Inputfile">読み込みファイル情報</param>
+        /// <param name="strInputfilePath">読み込みファイル情報</param>
         /// <returns></returns>
-        private static List<IniAirBagCoord> ImportAirBagCoordIniData(FileInfo Inputfile)
+        private static List<IniAirBagCoord> ImportAirBagCoordIniData(string strInputfilePath)
         {
             List<IniAirBagCoord> lstAirBagCoord = new List<IniAirBagCoord>();
             List<string> lstRegisterIniSection = new List<string>();
 
             // ファイル読み込み処理を行う
-            using (StreamReader sr = new StreamReader(Inputfile.FullName
+            using (StreamReader sr = new StreamReader(strInputfilePath
                                                     , Encoding.GetEncoding("Shift_JIS")))
             {
                 string strFileTextLine = "";
@@ -1148,7 +1157,7 @@ namespace ProductMstMaintenance
                     }
 
                     // エアバッグ情報ファイル内のセクションを取得する
-                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_AIRBAG + "[0-9][0-9][0-9]]") == true)
+                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_AIRBAG + "[0-9][0-9][0-9]]", RegexOptions.IgnoreCase) == true)
                     {
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", "");
@@ -1160,7 +1169,7 @@ namespace ProductMstMaintenance
 
                 // エアバッグの設定ファイルの値を格納する
                 IniAirBagCoord iabCurrentData = new IniAirBagCoord();
-                iabCurrentData = DataAirbagIniToDBClass(Inputfile, lstRegisterIniSection);
+                iabCurrentData = DataAirbagIniToDBClass(strInputfilePath, lstRegisterIniSection);
                 lstAirBagCoord.Add(iabCurrentData);
 
                 return lstAirBagCoord;
@@ -1170,10 +1179,10 @@ namespace ProductMstMaintenance
         /// <summary>
         /// エアバッグINIファイル読み込み格納処理
         /// </summary>
-        /// <param name="Inputfile">読み込みINIファイル</param>
-        /// <param name="strRegister">セクション</param>
+        /// <param name="strInputfilePath">読み込みINIファイル</param>
+        /// <param name="lstRegisterIniSection">セクション</param>
         /// <returns></returns>
-        private static IniAirBagCoord DataAirbagIniToDBClass(FileInfo Inputfile
+        private static IniAirBagCoord DataAirbagIniToDBClass(string strInputfilePath
                                                            , List<string> lstRegisterIniSection)
         {
             IniAirBagCoord iabCurrentData = new IniAirBagCoord();
@@ -1193,7 +1202,7 @@ namespace ProductMstMaintenance
 
             // ファイルナンバーの格納を行う
             iabCurrentData.file_num =
-                SubstringRight(System.IO.Path.GetFileNameWithoutExtension(Inputfile.Name), 2);
+                SubstringRight(System.IO.Path.GetFileNameWithoutExtension(strGetFileName(strInputfilePath)), 2);
 
             // Iniファイルから各値を読み込む
             foreach (var fieldInfo in fieldInfos)
@@ -1209,7 +1218,7 @@ namespace ProductMstMaintenance
                     // セクションの数だけループする
                     foreach (string strRegister in lstRegisterIniSection)
                     {
-                        int intNumberValue = NulltoInt(GetIniValue(Inputfile.FullName
+                        int intNumberValue = NulltoInt(GetIniValue(strInputfilePath
                                                                  , strRegister
                                                                  , fieldInfo.Name));
                         if (intNumberValue > 0)
@@ -1220,7 +1229,7 @@ namespace ProductMstMaintenance
                             // 頂点座標の設定を行う
                             for (int i = 0; i < intNumberValue; i++)
                             {
-                                string strPointValue = GetIniValue(Inputfile.FullName
+                                string strPointValue = GetIniValue(strInputfilePath
                                                                  , strRegister
                                                                  , m_CON_COL_AIRBAG_COORD + String.Format("{0:00}", i));
 
@@ -1387,23 +1396,23 @@ namespace ProductMstMaintenance
         /// <summary>
         /// カメラ情報取り込み
         /// </summary>
-        /// <param name="fiInputCsv">読み込みcsvファイル全種類</param>
-        private static void ProcessCameraCsv(FileInfo[] fiInputCsv)
+        /// <param name="strInputCsv">読み込みcsvファイル全種類</param>
+        private static void ProcessCameraCsv(string[] strInputCsv)
         {
             List<CameraCsvInfo> lstCamCsvInfo = new List<CameraCsvInfo>();
 
             // フォルダ内のファイルの数だけループする
-            foreach (FileInfo Inputfile in fiInputCsv)
+            foreach (string InputfilePath in strInputCsv)
             {
-                m_strErrorOutFileName = Inputfile.Name;
+                m_strErrorOutFileName = strGetFileName(InputfilePath);
 
                 // カメラ情報を判定する
-                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_CAMERA_INFO + ".csv") == true)
+                if (Regex.IsMatch(strGetFileName(InputfilePath), m_CON_FILE_NAME_CAMERA_INFO + ".csv", RegexOptions.IgnoreCase) == true)
                 {
                     try
                     {
                         // CSVファイルを取り込み、カメラ情報を取得し登録する。
-                        lstCamCsvInfo = ImportCameraCsvData(Inputfile);
+                        lstCamCsvInfo = ImportCameraCsvData(InputfilePath);
                     }
                     catch (Exception ex)
                     {
@@ -1434,9 +1443,9 @@ namespace ProductMstMaintenance
         /// <summary>
         /// カメラ情報取り込み
         /// </summary>
-        /// <param name="Inputfile">読み込みファイル情報</param>
+        /// <param name="strInputfilePath">読み込みファイル情報</param>
         /// <returns></returns>
-        private static List<CameraCsvInfo> ImportCameraCsvData(FileInfo Inputfile)
+        private static List<CameraCsvInfo> ImportCameraCsvData(string strInputfilePath)
         {
             List<CameraCsvInfo> lstCameraCsvInfo = new List<CameraCsvInfo>();
             // 読み込みデータ
@@ -1445,7 +1454,7 @@ namespace ProductMstMaintenance
             int intRowCount = 0;
 
             // ファイル読み込み処理を行う
-            using (StreamReader sr = new StreamReader(Inputfile.FullName
+            using (StreamReader sr = new StreamReader(strInputfilePath
                                                     , Encoding.GetEncoding("Shift_JIS")))
             {
                 string strFileTextLine = "";
@@ -1464,7 +1473,7 @@ namespace ProductMstMaintenance
                     // CSVファイル読み込み＆入力データチェックを行う
                     if (ReadCameraCsvData(strFileTextLine
                                         , intRowCount
-                                        , Inputfile.Name
+                                        , strGetFileName(strInputfilePath)
                                         , out cciCurrentData) == false)
                     {
                         m_intErrorCameraReg = m_intErrorCameraReg + 1;
@@ -1666,23 +1675,23 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 閾値情報取り込み
         /// </summary>
-        /// <param name="fiInputCsv">読み込みcsvファイル全種類</param>
-        private static void ProcessThresholdCsv(FileInfo[] fiInputCsv)
+        /// <param name="strInputCsv">読み込みcsvファイル全種類</param>
+        private static void ProcessThresholdCsv(string[] strInputCsv)
         {
             List<ThresholdCsvInfo> lstThresholdCsvInfo = new List<ThresholdCsvInfo>();
 
             // フォルダ内のファイルの数だけループする
-            foreach (FileInfo Inputfile in fiInputCsv)
+            foreach (string InputfilePath in strInputCsv)
             {
-                m_strErrorOutFileName = Inputfile.Name;
+                m_strErrorOutFileName = strGetFileName(InputfilePath);
 
                 // 閾値情報を判定する。
-                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_THRESHOLD_INFO + ".csv") == true)
+                if (Regex.IsMatch(strGetFileName(InputfilePath), m_CON_FILE_NAME_THRESHOLD_INFO + ".csv", RegexOptions.IgnoreCase) == true)
                 {
                     try
                     {
                         // CSVファイルを取り込み、閾値情報を取得し登録する。
-                        lstThresholdCsvInfo = ImportThresholdCsvData(Inputfile);
+                        lstThresholdCsvInfo = ImportThresholdCsvData(InputfilePath);
                     }
                     catch (Exception ex) 
                     {
@@ -1713,9 +1722,9 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 閾値情報取り込み
         /// </summary>
-        /// <param name="Inputfile">読み込みファイル情報</param>
+        /// <param name="strInputfilePath">読み込みファイル情報</param>
         /// <returns></returns>
-        private static List<ThresholdCsvInfo> ImportThresholdCsvData(FileInfo Inputfile)
+        private static List<ThresholdCsvInfo> ImportThresholdCsvData(string strInputfilePath)
         {
             List<ThresholdCsvInfo> lstThresholdCsvInfo = new List<ThresholdCsvInfo>();
             // 読み込みデータ
@@ -1724,7 +1733,7 @@ namespace ProductMstMaintenance
             int intRowCount = 0;
 
             // ファイル読み込み処理を行う
-            using (StreamReader sr = new StreamReader(Inputfile.FullName
+            using (StreamReader sr = new StreamReader(strInputfilePath
                                                     , Encoding.GetEncoding("Shift_JIS")))
             {
                 string strFileTextLine = "";
@@ -1743,7 +1752,7 @@ namespace ProductMstMaintenance
                     // CSVファイル読み込み＆入力データチェックを行う
                     if (ReadThresholdCsvData(strFileTextLine
                                            , intRowCount
-                                           , Inputfile.Name
+                                           , strGetFileName(strInputfilePath)
                                            , out tciCurrentData) == false)
                     {
                         m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
@@ -2006,28 +2015,28 @@ namespace ProductMstMaintenance
         /// <summary>
         /// マスタ画像取り込み
         /// </summary>
-        /// <param name="fiInputCsv">読み込みcsvファイル全種類</param>
-        private static void ProcessMasterPng(FileInfo[] fiInputPng)
+        /// <param name="strInputCsv">読み込みcsvファイル全種類</param>
+        private static void ProcessMasterPng(string[] strInputPng)
         {
             //string strOutFilePath = "";
             int intFileCount = 0;
 
             // フォルダ内のファイルの数だけループする
-            foreach (FileInfo Inputfile in fiInputPng)
+            foreach (string InputfilePath in strInputPng)
             {
-                m_strErrorOutFileName = Inputfile.Name;
+                m_strErrorOutFileName = strGetFileName(InputfilePath);
                 intFileCount = intFileCount + 1;
 
                 // マスタ画像を取り込み先のフォルダにコピーする。
                 try
                 {
-                    Inputfile.CopyTo(g_clsSystemSettingInfo.strMasterImageDirectory + @"\" + Inputfile.Name, true);
+                    File.Copy(InputfilePath, g_clsSystemSettingInfo.strMasterImageDirectory + @"\" + strGetFileName(InputfilePath), true);
                     m_intSuccesMasterImg = m_intSuccesMasterImg + 1;
                 }
                 catch (Exception ex)
                 {
                     OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0027, intFileCount) + "\r\n" + ex.Message + "\"," +
-                                    Inputfile.Name);
+                                    strGetFileName(InputfilePath));
                     m_intErrorMasterImg = m_intErrorMasterImg + 1;
                     continue;
                 }
@@ -2047,23 +2056,23 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 判定理由情報取り込み
         /// </summary>
-        /// <param name="fiInputCsv">読み込みcsvファイル全種類</param>
-        private static void ProcessDecisionReasonCsv(FileInfo[] fiInputCsv)
+        /// <param name="strInputCsv">読み込みcsvファイル全種類</param>
+        private static void ProcessDecisionReasonCsv(string[] strInputCsv)
         {
             List<DecisionReasonCsvInfo> lstDecisionReasonCsvInfo = new List<DecisionReasonCsvInfo>();
 
             // フォルダ内のファイルの数だけループする
-            foreach (FileInfo Inputfile in fiInputCsv)
+            foreach (string InputfilePath in strInputCsv)
             {
-                m_strErrorOutFileName = Inputfile.Name;
+                m_strErrorOutFileName = strGetFileName(InputfilePath);
 
                 // 判定理由マスタを判定する。
-                if (Regex.IsMatch(Inputfile.Name, m_CON_FILE_NAME_REASON_JUDGMENT + ".csv") == true)
+                if (Regex.IsMatch(strGetFileName(InputfilePath), m_CON_FILE_NAME_REASON_JUDGMENT + ".csv", RegexOptions.IgnoreCase) == true)
                 {
                     try
                     {
                         // CSVファイルを取り込み、判定理由マスタを登録する
-                        lstDecisionReasonCsvInfo = ImportDecisionReasonCsvData(Inputfile);
+                        lstDecisionReasonCsvInfo = ImportDecisionReasonCsvData(InputfilePath);
                     }
                     catch (Exception ex)
                     {
@@ -2094,9 +2103,9 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 判定理由情報取り込み
         /// </summary>
-        /// <param name="Inputfile">読み込みファイル情報</param>
+        /// <param name="strInputfilePath">読み込みファイル情報</param>
         /// <returns></returns>
-        private static List<DecisionReasonCsvInfo> ImportDecisionReasonCsvData(FileInfo Inputfile)
+        private static List<DecisionReasonCsvInfo> ImportDecisionReasonCsvData(string strInputfilePath)
         {
             List<DecisionReasonCsvInfo> lstDecisionReasonCsvInfo = new List<DecisionReasonCsvInfo>();
             // 読み込みデータ
@@ -2105,7 +2114,7 @@ namespace ProductMstMaintenance
             int intRowCount = 0;
 
             // ファイル読み込み処理を行う
-            using (StreamReader sr = new StreamReader(Inputfile.FullName
+            using (StreamReader sr = new StreamReader(strInputfilePath
                                                     , Encoding.GetEncoding("Shift_JIS")))
             {
                 string strFileTextLine = "";
@@ -2124,7 +2133,7 @@ namespace ProductMstMaintenance
                     // CSVファイル読み込み＆入力データチェックを行う
                     if (ReadDecisionReasonCsvData(strFileTextLine
                                                 , intRowCount
-                                                , Inputfile.Name
+                                                , strGetFileName(strInputfilePath)
                                                 , out driCurrentData) == false)
                     {
                         m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;

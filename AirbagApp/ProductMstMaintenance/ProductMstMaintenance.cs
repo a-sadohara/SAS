@@ -519,7 +519,10 @@ namespace ProductMstMaintenance
             if (File.Exists(m_strMstFilePath) == true)
             {
                 // マスタ画像イメージ反映
-                picMasterImage.Image = System.Drawing.Image.FromFile(m_strMstFilePath);
+                // ※ファイルをロックしてしまい、取り込み処理に失敗する考慮
+                FileStream fs = new FileStream(m_strMstFilePath, FileMode.Open, FileAccess.Read);
+                picMasterImage.Image = Image.FromStream(fs);
+                fs.Close();
             }
             else
             {
