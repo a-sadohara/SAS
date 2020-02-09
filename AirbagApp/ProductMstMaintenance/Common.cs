@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Npgsql;
-using System.Configuration;
-using log4net;
-using System.Data;
-using System.IO;
-using System.Text;
+﻿using log4net;
 using ProductMstMaintenance.DTO;
+using System;
+using System.Configuration;
+using System.Text;
+using System.Windows.Forms;
 
 namespace ProductMstMaintenance
 {
