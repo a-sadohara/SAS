@@ -21,9 +21,10 @@ namespace WokerMstManagement
         private const int m_CON_COL_WORKER_INFO_KANA_SEI = 4;
         private const int m_CON_COL_WORKER_INFO_KANA_MEI = 5;
 
-        private const string m_CON_OUTLOGFILE_NAME = "WorkerImportLog";
+        private const string m_CON_OUTLOGFILE_NAME = "作業者CSVファイル取り込みログ";
 
         private static bool m_bolProcEnd = false;
+        private static bool m_bolAppendFlag = false;
 
         private static string m_strOutPutFilePath = "";
 
@@ -105,6 +106,9 @@ namespace WokerMstManagement
         private void btnImport_Click(object sender, EventArgs e)
         {
             m_bolProcEnd = false;
+
+            // ログ出力を上書きモードに変更する
+            m_bolAppendFlag = false;
 
             // 読み込みデータ
             WorkerCsvInfo uciWorkerData = new WorkerCsvInfo();
@@ -773,8 +777,6 @@ namespace WokerMstManagement
             // 出力ファイル設定
             m_strOutPutFilePath = g_clsSystemSettingInfo.strLogFileOutputDirectory + @"\"
                                                                                    + m_CON_OUTLOGFILE_NAME
-                                                                                   + "_"
-                                                                                   + DateTime.Now.ToString("yyyyMMdd")
                                                                                    + ".csv";
 
             try
@@ -782,7 +784,7 @@ namespace WokerMstManagement
                 //Shift JISで書き込む
                 //書き込むファイルが既に存在している場合は、上書きする
                 using (StreamWriter sw = new StreamWriter(m_strOutPutFilePath
-                                                        , true
+                                                        , m_bolAppendFlag
                                                         , Encoding.GetEncoding("shift_jis")))
                 {
                     // １行ずつ出力を行う
@@ -806,6 +808,9 @@ namespace WokerMstManagement
                 // 　・イベント開始直後にこの変数を初期化(false)する。
                 m_bolProcEnd = true;
             }
+
+            // ログ出力を追記モードに変更する
+            m_bolAppendFlag = true;
         }
         #endregion    
     }
