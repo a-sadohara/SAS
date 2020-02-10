@@ -20,6 +20,7 @@ namespace BeforeInspection
         private string m_strWorker1 = "";               // 作業者情報(社員番号)検反部No.1
         private string m_strWorker2 = "";               // 作業者情報(社員番号)検反部No.2
         private string m_strInspectionDirection;        // 検査方向
+        private DateTime m_datInspectionDate;           // 検査日付
 
         // 定数
         private const string m_CON_SW = "ＳＷ";
@@ -318,11 +319,31 @@ namespace BeforeInspection
                 return false;
             }
 
+            // 検査対象数(行数)入力チェック
+            if (int.Parse(txtInspectionTargetLine.Text) == 0)
+            {
+                // メッセージ出力
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0013, "検査対象数(行数)", 1, 9999), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                btnStartDatetime.Focus();
+                return false;
+            }
+
+            // 検査開始行入力チェック
+            if (int.Parse(txtInspectionStartLine.Text) == 0)
+            {
+                // メッセージ出力
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0013, "検査開始行", 1, 9999), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                btnStartDatetime.Focus();
+                return false;
+            }
+
             // 開始時刻入力チェック
             if (lblStartDatetime.Text == "")
             {
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0007, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0007, "開始時刻"), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 btnStartDatetime.Focus();
                 return false;
@@ -418,7 +439,7 @@ namespace BeforeInspection
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "worker_2", DbType = DbType.String, Value = m_strWorker2 });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_datetime", DbType = DbType.String, Value = lblStartDatetime.Text });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_direction", DbType = DbType.String, Value = m_strInspectionDirection });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = lblStartDatetime.Text.Substring(0, 10) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_datInspectionDate.ToString("yyyy/MM/dd") });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "illumination_information", DbType = DbType.Int16, Value = m_intIlluminationInformation });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_regimark_camera_num", DbType = DbType.Int16, Value = m_intStartRegimarkCameraNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_regimark_camera_num", DbType = DbType.Int16, Value = m_intEndRegimarkCameraNum });
@@ -483,7 +504,7 @@ namespace BeforeInspection
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = lblStartDatetime.Text.Substring(0, 10) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_datInspectionDate.ToString("yyyy/MM/dd") });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_datetime", DbType = DbType.String, Value = strEndDateTime });
 
                 // sqlを実行する
@@ -498,7 +519,7 @@ namespace BeforeInspection
                     btnEndDatetime.Focus();
                     return false;
                 }
-                    
+
 
                 return true;
 
@@ -559,6 +580,9 @@ namespace BeforeInspection
                 // 枝番のリセット
                 m_intBranchNum = 1;
 
+                // 検査日付の更新
+                m_datInspectionDate = DateTime.Now.Date;
+
                 return true;
             }
             catch (Exception ex)
@@ -616,7 +640,7 @@ namespace BeforeInspection
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_datInspectionDate.ToString("yyyy/MM/dd") });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
 
@@ -731,7 +755,6 @@ namespace BeforeInspection
                              , TO_CHAR(start_datetime,'YYYY/MM/DD HH24:MI:SS') AS start_datetime
                              , TO_CHAR(end_datetime,'YYYY/MM/DD HH24:MI:SS') AS end_datetime
                              , inspection_direction 
-                             , TO_CHAR(inspection_date,'YYYY/MM/DD') AS inspection_date 
                              , illumination_information 
                              , start_regimark_camera_num 
                              , end_regimark_camera_num 
@@ -744,10 +767,10 @@ namespace BeforeInspection
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = lblStartDatetime.Text.Substring(0, 10) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_datInspectionDate.ToString("yyyy/MM/dd") });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16 , Value = intBranchNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
 
                 // SQL抽出
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
@@ -769,7 +792,6 @@ namespace BeforeInspection
                     sw.WriteLine(dtData.Rows[0]["start_datetime"].ToString());
                     sw.WriteLine(dtData.Rows[0]["end_datetime"].ToString());
                     sw.WriteLine(dtData.Rows[0]["inspection_direction"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["inspection_date"].ToString());
                     sw.WriteLine(dtData.Rows[0]["illumination_information"].ToString());
                     sw.WriteLine(dtData.Rows[0]["start_regimark_camera_num"].ToString());
                     sw.WriteLine(dtData.Rows[0]["end_regimark_camera_num"].ToString());
@@ -802,15 +824,19 @@ namespace BeforeInspection
         private void BeforeInspection_Load(object sender, EventArgs e)
         {
             bool bolProcOkNg = false;
-            
+
             string strSQL = "";
             DataTable dtData;
 
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.TopMost = true;
+            this.WindowState = FormWindowState.Maximized;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
 
             try
             {
-                DateTime datNow = DateTime.Now;
+                m_datInspectionDate = DateTime.Now.Date;
 
                 try
                 {
@@ -828,7 +854,7 @@ namespace BeforeInspection
 
                     // SQL抽出
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
-                     
+
                     //  検査番号
                     m_intInspectionNum = int.Parse(dtData.Rows[0]["inspection_num"].ToString());
                 }
@@ -893,7 +919,7 @@ namespace BeforeInspection
                                      , iih.inspection_direction 
                                      , TO_CHAR(iih.inspection_date,'YYYY/MM/DD') AS inspection_date 
                                      , mpi.illumination_information
-                                     , mpi.start_regimark_camera_nu
+                                     , mpi.start_regimark_camera_num
                                      , mpi.end_regimark_camera_num 
                                    FROM 
                                        inspection_info_header iih
@@ -933,9 +959,9 @@ namespace BeforeInspection
                         m_intBranchNum = int.Parse(dtData.Rows[0]["branch_num"].ToString());
                         m_strWorker1 = dtData.Rows[0]["worker_1"].ToString();
                         m_strWorker2 = dtData.Rows[0]["worker_2"].ToString();
-                        m_intIlluminationInformation = int.Parse(dtData.Rows[0]["inspection_direction"].ToString());
-                        m_intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["inspection_direction"].ToString());
-                        m_intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["inspection_direction"].ToString());
+                        m_intIlluminationInformation = int.Parse(dtData.Rows[0]["illumination_information"].ToString());
+                        m_intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["start_regimark_camera_num"].ToString());
+                        m_intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
                     }
                     catch (Exception ex)
                     {
@@ -1044,7 +1070,7 @@ namespace BeforeInspection
                 // 品番登録情報の取得(照度情報,開始レジマークカメラ番号,終了レジマークカメラ番号)
                 if (bolGetMstProductInfo(out m_intIlluminationInformation,
                                          out m_intStartRegimarkCameraNum,
-                                         out m_intEndRegimarkCameraNum, 
+                                         out m_intEndRegimarkCameraNum,
                                          frmHinNoSelection.strProductName) == false)
                     return;
 
@@ -1173,7 +1199,7 @@ namespace BeforeInspection
                                                                                      txtInspectionStartLine.Text,
                                                                                      txtWorker1.Text,
                                                                                      txtWorker2.Text,
-                                                                                     m_strInspectionDirection), 
+                                                                                     m_strInspectionDirection),
                                                                        "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result != DialogResult.Yes)
                 return;
@@ -1290,6 +1316,7 @@ namespace BeforeInspection
 
             // 変数の設定
             m_intBranchNum = 1;
+            m_datInspectionDate = DateTime.Now.Date;
 
             // 品名にフォーカスを設定する
             txtProductName.Focus();

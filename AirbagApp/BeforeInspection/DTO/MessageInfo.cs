@@ -23,6 +23,7 @@ namespace BeforeInspection.DTO
         public readonly string strMsgE0001;
         public readonly string strMsgE0003;
         public readonly string strMsgE0007;
+        public readonly string strMsgE0013;
         public readonly string strMsgE0021;
         public readonly string strMsgE0031;
         public readonly string strMsgE0032;
@@ -46,6 +47,7 @@ namespace BeforeInspection.DTO
                 GetMessageContent("E0001", ref strMsgE0001);
                 GetMessageContent("E0003", ref strMsgE0003);
                 GetMessageContent("E0007", ref strMsgE0007);
+                GetMessageContent("E0013", ref strMsgE0013);
                 GetMessageContent("E0021", ref strMsgE0021);
                 GetMessageContent("E0031", ref strMsgE0031);
                 GetMessageContent("E0032", ref strMsgE0032);

@@ -48,8 +48,33 @@ namespace BeforeInspection
         [STAThread]
         static void Main(string[] args)
         {
+            // Mutex名を設定する
+            string mutexName = "BeforeInspection";
+
+            // Mutexオブジェクトを作成する
+            System.Threading.Mutex mutex = new System.Threading.Mutex(false, mutexName);
+
+            bool hasHandle = false;
+
             try
             {
+                try
+                {
+                    // Mutexの所有権を要求する
+                    hasHandle = mutex.WaitOne(0, false);
+                }
+                catch (System.Threading.AbandonedMutexException)
+                {
+                    // 別のアプリケーションがMutexを解放せず終了した場合、変数を更新する
+                    hasHandle = true;
+                }
+
+                if (!hasHandle)
+                {
+                    MessageBox.Show("多重起動はできません。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 // 接続文字列をApp.configファイルから取得
                 GetAppConfigValue("DBName", ref g_strDBName);
                 GetAppConfigValue("DBUser", ref g_strDBUser);
