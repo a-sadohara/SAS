@@ -49,105 +49,93 @@ namespace WokerMstManagement
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
-            // Mutex名を決める
+            // Mutex名を設定する
             string mutexName = "WokerMstManagement";
+
             // Mutexオブジェクトを作成する
             System.Threading.Mutex mutex = new System.Threading.Mutex(false, mutexName);
 
             bool hasHandle = false;
+
             try
             {
                 try
                 {
-                    // ミューテックスの所有権を要求する
+                    // Mutexの所有権を要求する
                     hasHandle = mutex.WaitOne(0, false);
                 }
-                // .NET Framework 2.0以降の場合
                 catch (System.Threading.AbandonedMutexException)
                 {
-                    // 別のアプリケーションがミューテックスを解放しないで終了した時
+                    // 別のアプリケーションがMutexを解放せず終了した場合、変数を更新する
                     hasHandle = true;
                 }
-                // ミューテックスを得られたか調べる
-                if (hasHandle == false)
+
+                if (!hasHandle)
                 {
-                    //得られなかった場合は、すでに起動していると判断して終了
                     MessageBox.Show("多重起動はできません。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                try
-                {
-                    // 接続文字列をApp.configファイルから取得
-                    GetAppConfigValue("DBName", ref g_strDBName);
-                    GetAppConfigValue("DBUser", ref g_strDBUser);
-                    GetAppConfigValue("DBUserPassword", ref g_strDBUserPassword);
-                    GetAppConfigValue("DBServerName", ref g_strDBServerName);
-                    GetAppConfigValue("DBPort", ref g_strDBPort);
+                // 接続文字列をApp.configファイルから取得
+                GetAppConfigValue("DBName", ref g_strDBName);
+                GetAppConfigValue("DBUser", ref g_strDBUser);
+                GetAppConfigValue("DBUserPassword", ref g_strDBUserPassword);
+                GetAppConfigValue("DBServerName", ref g_strDBServerName);
+                GetAppConfigValue("DBPort", ref g_strDBPort);
 
-                    if (m_sbErrMessage.Length > 0)
-                    {
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, "接続文字列取得時にエラーが発生しました。\r\n" + m_sbErrMessage.ToString());
-                        // メッセージ出力
-                        System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        return;
-                    }
-
-                    g_strConnectionString = string.Format(g_CON_CONNECTION_STRING, g_strDBServerName,
-                                                                                   g_strDBPort,
-                                                                                   g_strDBUser,
-                                                                                   g_strDBName,
-                                                                                   g_strDBUserPassword);
-                    // 接続確認
-                    g_clsConnectionNpgsql = new ConnectionNpgsql(g_strConnectionString);
-                    g_clsConnectionNpgsql.DbOpen();
-                    g_clsConnectionNpgsql.DbClose();
-
-                    // システム設定情報取得
-                    g_clsSystemSettingInfo = new SystemSettingInfo();
-                    if (g_clsSystemSettingInfo.bolNormalEnd == false)
-                        return;
-
-                    // メッセージ情報取得
-                    g_clsMessageInfo = new MessageInfo();
-                    if (g_clsMessageInfo.bolNormalEnd == false)
-                        return;
-                }
-                catch (Exception ex)
+                if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, "初期起動時にエラーが発生しました。" + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, "接続文字列取得時にエラーが発生しました。\r\n" + m_sbErrMessage.ToString());
                     // メッセージ出力
-                    System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
-                finally
-                {
-                    if (g_clsConnectionNpgsql != null)
-                    {
-                        g_clsConnectionNpgsql.DbClose();
-                    }
-                }
 
-                // フォーム画面を起動
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new WokerMstManagement());
+                g_strConnectionString = string.Format(g_CON_CONNECTION_STRING, g_strDBServerName,
+                                                                               g_strDBPort,
+                                                                               g_strDBUser,
+                                                                               g_strDBName,
+                                                                               g_strDBUserPassword);
+                // 接続確認
+                g_clsConnectionNpgsql = new ConnectionNpgsql(g_strConnectionString);
+                g_clsConnectionNpgsql.DbOpen();
+                g_clsConnectionNpgsql.DbClose();
+
+                // システム設定情報取得
+                g_clsSystemSettingInfo = new SystemSettingInfo();
+                if (g_clsSystemSettingInfo.bolNormalEnd == false)
+                    return;
+
+                // メッセージ情報取得
+                g_clsMessageInfo = new MessageInfo();
+                if (g_clsMessageInfo.bolNormalEnd == false)
+                    return;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, "初期起動時にエラーが発生しました。" + "\r\n" + ex.Message);
+                // メッセージ出力
+                System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
             }
             finally
             {
-                if (hasHandle)
+                if (g_clsConnectionNpgsql != null)
                 {
-                    // ミューテックスを解放する
-                    mutex.ReleaseMutex();
+                    g_clsConnectionNpgsql.DbClose();
                 }
-                mutex.Close();
             }
+
+            // フォーム画面を起動
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new WokerMstManagement());
         }
 
         /// <summary>
