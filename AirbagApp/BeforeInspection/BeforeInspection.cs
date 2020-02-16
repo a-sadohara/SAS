@@ -836,6 +836,8 @@ namespace BeforeInspection
 
             try
             {
+                this.SuspendLayout();
+
                 m_datInspectionDate = DateTime.Now.Date;
 
                 try
@@ -1009,6 +1011,8 @@ namespace BeforeInspection
             }
             finally
             {
+                this.ResumeLayout();
+
                 if (bolProcOkNg == false)
                     this.Close();
             }
