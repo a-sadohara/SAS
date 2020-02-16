@@ -120,6 +120,12 @@ namespace ProductMstMaintenance
         // マスタ画像出力先フォルダ
         private static string m_strCheckMstFile = "";
 
+        // ログ出力追記フラグ
+        private static bool m_bolAppendFlag = false;
+
+        // プロセス終了フラグ
+        private static bool m_bolProcEnd = false;
+
         /// <summary>
         /// 特殊対応ディクショナリ
         /// </summary>
@@ -252,7 +258,7 @@ namespace ProductMstMaintenance
         /// <summary>
         /// PLCINI格納構造体
         /// </summary>
-        private struct IniConfigPLC 
+        private struct IniConfigPLC
         {
             public string KIND;
             public int LINE_LENGTH;
@@ -262,7 +268,7 @@ namespace ProductMstMaintenance
         /// <summary>
         /// エアバッグ領域設定INI構造体
         /// </summary>
-        private struct IniAirBagCoord 
+        private struct IniAirBagCoord
         {
             public string file_num;
             public int Number;
@@ -345,6 +351,10 @@ namespace ProductMstMaintenance
             m_strCheckMstFile = "";
 
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
         }
 
         /// <summary>
@@ -354,14 +364,18 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void btnImport_Click(object sender, EventArgs e)
         {
-
             // 未入力チェック
             if (txtFolder.Text == "")
             {
-                MessageBox.Show(g_clsMessageInfo.strMsgE0022);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0024);
                 btnSearchFolder.Focus();
                 return;
             }
+
+            // ログ出力を上書きモードに変更する
+            m_bolAppendFlag = false;
+
+            m_bolProcEnd = false;
 
             string[] strInputIni = Directory.GetFiles(txtFolder.Text, "*.ini", SearchOption.TopDirectoryOnly);
 
@@ -372,23 +386,37 @@ namespace ProductMstMaintenance
             // マスタ画像取り込み
             ProcessMasterPng(strInputPng);
 
+            if (m_bolProcEnd) return;
+
             // 品番マスタ情報取り込み
             ProcessRegisterIni(strInputIni);
+
+            if (m_bolProcEnd) return;
 
             // PLCマスタ情報取り込み
             ProcessPLCIni(strInputIni);
 
+            if (m_bolProcEnd) return;
+
             // エアバッグ情報取り込み
             ProcessAirBagIni(strInputIni);
+
+            if (m_bolProcEnd) return;
 
             // カメラ情報CSV取り込み
             ProcessCameraCsv(strInputCsv);
 
+            if (m_bolProcEnd) return;
+
             // 閾値情報CSV取り込み
             ProcessThresholdCsv(strInputCsv);
 
+            if (m_bolProcEnd) return;
+
             // 判定理由取り込み
             ProcessDecisionReasonCsv(strInputCsv);
+
+            if (m_bolProcEnd) return;
 
             // 出力ファイル設定
             string strOutPutFilePath = g_clsSystemSettingInfo.strLogFileOutputDirectory + @"\"
@@ -409,7 +437,6 @@ namespace ProductMstMaintenance
                                               (m_intSuccesRegPTC + m_intErrorRegPTC), m_intSuccesRegPTC, m_intErrorRegPTC,
                                               (m_intSuccesRegAirBag + m_intErrorRegAirBag), m_intSuccesRegAirBag, m_intErrorRegAirBag,
                                               (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
-                                              (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
                                               (m_intSuccesThresholdReg + m_intErrorThresholdReg), m_intSuccesThresholdReg, m_intErrorThresholdReg,
                                               (m_intSuccesMasterImg + m_intErrorMasterImg), m_intSuccesMasterImg, m_intErrorMasterImg,
                                               (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg), m_intSuccesDecisionReasonReg, m_intErrorDecisionReasonReg) + "\r\n" +
@@ -422,7 +449,6 @@ namespace ProductMstMaintenance
                                               (m_intSuccesRegProductInfo + m_intErrorRegProductInfo), m_intSuccesRegProductInfo, m_intErrorRegProductInfo,
                                               (m_intSuccesRegPTC + m_intErrorRegPTC), m_intSuccesRegPTC, m_intErrorRegPTC,
                                               (m_intSuccesRegAirBag + m_intErrorRegAirBag), m_intSuccesRegAirBag, m_intErrorRegAirBag,
-                                              (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
                                               (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
                                               (m_intSuccesThresholdReg + m_intErrorThresholdReg), m_intSuccesThresholdReg, m_intErrorThresholdReg,
                                               (m_intSuccesMasterImg + m_intErrorMasterImg), m_intSuccesMasterImg, m_intErrorMasterImg,
@@ -446,7 +472,8 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
-        /// 取込フォルダパス        /// </summary>
+        /// 取込フォルダパス
+        /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void txtFolder_Click(object sender, EventArgs e)
@@ -530,7 +557,7 @@ namespace ProductMstMaintenance
             foreach (string InputfilePath in strInputIni)
             {
                 m_strErrorOutFileName = strGetFileName(InputfilePath);
-                
+
                 // 品番情報ファイルを判定する
                 if (Regex.IsMatch(strGetFileName(InputfilePath), m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.ini", RegexOptions.IgnoreCase) == true)
                 {
@@ -539,12 +566,13 @@ namespace ProductMstMaintenance
                         // 品番情報ファイルの場合、取り込みを行う
                         lstDataRegistersToDB = ImportRegisterIniData(InputfilePath);
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         // ログファイルにエラー出力を行う
                         WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
                         OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
+                        if (m_bolProcEnd) return;
                         continue;
                     }
 
@@ -788,7 +816,6 @@ namespace ProductMstMaintenance
                 string strCreateSql = g_CON_INSERT_MST_PRODUCT_INFO;
 
                 // SQLコマンドに各パラメータを設定する
-                //var command = new NpgsqlCommand(strCreateSql, NpgsqlCon, transaction);
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
                 // 各項目の値を取得する
@@ -845,11 +872,12 @@ namespace ProductMstMaintenance
                         // PLC設定より、レジマーク間距離を取得し登録する。
                         lstPLCDataToDB = ImportPLCIniData(InputfilePath);
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorRegPTC = m_intErrorRegPTC + 1;
                         OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
+                        if (m_bolProcEnd) return;
                         continue;
                     }
 
@@ -1105,6 +1133,7 @@ namespace ProductMstMaintenance
                         WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
                         OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
+                        if (m_bolProcEnd) return;
                         continue;
                     }
 
@@ -1289,7 +1318,7 @@ namespace ProductMstMaintenance
                     iabCurrentData.strTopPointD = strTopPointDTran;
                     iabCurrentData.strTopPointE = strTopPointETran;
                 }
-                else 
+                else
                 {
                     continue;
                 }
@@ -1419,6 +1448,7 @@ namespace ProductMstMaintenance
                         WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorCameraReg = m_intErrorCameraReg + 1;
                         OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
+                        if (m_bolProcEnd) return;
                         continue;
                     }
 
@@ -1479,7 +1509,7 @@ namespace ProductMstMaintenance
                         m_intErrorCameraReg = m_intErrorCameraReg + 1;
                         continue;
                     }
-                    else 
+                    else
                     {
                         // csvのリストに現在行を追加
                         lstCameraCsvInfo.Add(cciCurrentData);
@@ -1505,7 +1535,7 @@ namespace ProductMstMaintenance
 
             // データチェック＆CSVを読み込む
             if (SetCameraInfoCsv(strFileTextLine, out cciCurrentData, intRowCount) == false)
-            { 
+            {
                 return false;
             }
 
@@ -1528,7 +1558,7 @@ namespace ProductMstMaintenance
             // 半角スペース区切りで分割して配列に格納する
             stArrayData = strFileReadLine.Split(',');
 
-            if (InputDataCheckCamera(stArrayData, intRowCount, strFileReadLine) == false) 
+            if (InputDataCheckCamera(stArrayData, intRowCount, strFileReadLine) == false)
             {
                 return false;
             }
@@ -1693,11 +1723,12 @@ namespace ProductMstMaintenance
                         // CSVファイルを取り込み、閾値情報を取得し登録する。
                         lstThresholdCsvInfo = ImportThresholdCsvData(InputfilePath);
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
                         OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
+                        if (m_bolProcEnd) return;
                         continue;
                     }
 
@@ -1844,21 +1875,21 @@ namespace ProductMstMaintenance
             }
 
             // 最大範囲入力チェック
-            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 54, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04], "列閾値04", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A1], "行閾値A1", intRowCount, 1, 740, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A2], "行閾値A2", intRowCount, 1, 740, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B1], "行閾値B1", intRowCount, 1, 740, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B2], "行閾値B2", intRowCount, 1, 740, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C1], "行閾値C1", intRowCount, 1, 740, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C2], "行閾値C2", intRowCount, 1, 740, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D1], "行閾値D1", intRowCount, 1, 740, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D2], "行閾値D2", intRowCount, 1, 740, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E1], "行閾値E1", intRowCount, 1, 740, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E2], "行閾値E2", intRowCount, 1, 740, strFileReadLine) == false)
+            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 26, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, 1, 480, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, 1, 480, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, 1, 480, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04], "列閾値04", intRowCount, 1, 480, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A1], "行閾値A1", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A2], "行閾値A2", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B1], "行閾値B1", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B2], "行閾値B2", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C1], "行閾値C1", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C2], "行閾値C2", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D1], "行閾値D1", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D2], "行閾値D2", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E1], "行閾値E1", intRowCount, 1, 640, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E2], "行閾値E2", intRowCount, 1, 640, strFileReadLine) == false)
             {
                 return false;
             }
@@ -1946,7 +1977,7 @@ namespace ProductMstMaintenance
         private static Boolean ExecRegProductInfoThreshold(ThresholdCsvInfo tciCurrentData)
         {
             string strData = string.Join(",", tciCurrentData.strProductName +
-                                              tciCurrentData.intTakingCameraCnt.ToString() + 
+                                              tciCurrentData.intTakingCameraCnt.ToString() +
                                               tciCurrentData.intColumnThreshold01.ToString() +
                                               tciCurrentData.intColumnThreshold02.ToString() +
                                               tciCurrentData.intColumnThreshold03.ToString() +
@@ -1985,7 +2016,7 @@ namespace ProductMstMaintenance
                         {
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = DBNull.Value });
                         }
-                        else 
+                        else
                         {
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(tciCurrentData)) });
                         }
@@ -2038,6 +2069,7 @@ namespace ProductMstMaintenance
                     OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0027, intFileCount) + "\r\n" + ex.Message + "\"," +
                                     strGetFileName(InputfilePath));
                     m_intErrorMasterImg = m_intErrorMasterImg + 1;
+                    if (m_bolProcEnd) return;
                     continue;
                 }
             }
@@ -2079,6 +2111,7 @@ namespace ProductMstMaintenance
                         WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
                         m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
                         OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
+                        if (m_bolProcEnd) return;
                         continue;
                     }
 
@@ -2093,7 +2126,7 @@ namespace ProductMstMaintenance
 
             m_strErrorOutFileName = "";
             // ログファイル結果出力を行う
-            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0005,
+            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0010,
                                                     (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg),
                                                     m_intSuccesDecisionReasonReg,
                                                     m_intErrorDecisionReasonReg) + "\"";
@@ -2397,7 +2430,7 @@ namespace ProductMstMaintenance
         {
             // 未入力データの場合はチェックしない
             // ※未入力データは必須入力チェックではじく
-            if (strCheckData == "") 
+            if (strCheckData == "")
             {
                 return true;
             }
@@ -2497,19 +2530,24 @@ namespace ProductMstMaintenance
                 //Shift JISで書き込む
                 //書き込むファイルが既に存在している場合は、上書きする
                 using (StreamWriter sw = new StreamWriter(strOutPutFilePath
-                                                        , true
+                                                        , m_bolAppendFlag
                                                         , Encoding.GetEncoding("shift_jis")))
                 {
                     // １行ずつ出力を行う
                     sw.WriteLine(time + "," + strLogText + "," + m_strErrorOutFileName);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // ログファイル結果出力を行う
                 WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0016 + "\r\n" + ex.Message);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0055, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                m_bolProcEnd = true;
                 return;
             }
+
+            // ログ出力を追記モードに変更する
+            m_bolAppendFlag = true;
         }
         #endregion
     }

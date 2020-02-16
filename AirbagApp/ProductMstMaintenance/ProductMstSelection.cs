@@ -39,6 +39,11 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void SelectErrorReason_Load(object sender, EventArgs e)
         {
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
+
             // 行選択モードに変更
             this.dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             // 新規行を追加させない

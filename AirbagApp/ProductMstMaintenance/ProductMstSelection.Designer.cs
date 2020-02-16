@@ -37,7 +37,8 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.dgvData = new System.Windows.Forms.DataGridView();
+            // this.dgvData = new System.Windows.Forms.DataGridView();
+            this.dgvData = new MyDataGridView();
             this.chkSelectReason = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.HinNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel2.SuspendLayout();

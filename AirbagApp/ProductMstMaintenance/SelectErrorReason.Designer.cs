@@ -31,13 +31,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SelectErrorReason));
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnOK = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.dgvData = new System.Windows.Forms.DataGridView();
+            // this.dgvData = new System.Windows.Forms.DataGridView();
+            this.dgvData = new MyDataGridView();
             this.No = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnOK = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             this.panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
@@ -63,6 +64,17 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(571, 70);
             this.panel2.TabIndex = 1;
+            // 
+            // btnOK
+            // 
+            this.btnOK.Location = new System.Drawing.Point(208, 20);
+            this.btnOK.Margin = new System.Windows.Forms.Padding(2);
+            this.btnOK.Name = "btnOK";
+            this.btnOK.Size = new System.Drawing.Size(154, 31);
+            this.btnOK.TabIndex = 1;
+            this.btnOK.Text = "閉じる";
+            this.btnOK.UseVisualStyleBackColor = true;
+            this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
             // 
             // panel3
             // 
@@ -128,17 +140,6 @@
             this.Reason.HeaderText = "理由";
             this.Reason.Name = "Reason";
             this.Reason.ReadOnly = true;
-            // 
-            // btnOK
-            // 
-            this.btnOK.Location = new System.Drawing.Point(208, 20);
-            this.btnOK.Margin = new System.Windows.Forms.Padding(2);
-            this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(154, 31);
-            this.btnOK.TabIndex = 1;
-            this.btnOK.Text = "閉じる";
-            this.btnOK.UseVisualStyleBackColor = true;
-            this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
             // 
             // SelectErrorReason
             // 

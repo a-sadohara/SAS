@@ -207,6 +207,27 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
+        /// NULLを0に変換
+        /// </summary>
+        /// <param name="objNValue"></param>
+        /// <returns></returns>
+        public static decimal NulltoDcm(object objNValue)
+        {
+            if (objNValue == null)
+            {
+                return 0;
+            }
+            else if (objNValue.ToString() == "")
+            {
+                return 0;
+            }
+            else
+            {
+                return decimal.Parse(objNValue.ToString());
+            }
+        }
+
+        /// <summary>
         /// 文字列からの部分文字列の抽出を右から行います
         /// </summary>
         /// <param name="target">対象の文字列</param>
@@ -309,6 +330,8 @@ namespace ProductMstMaintenance
                                           , point_5_plus_direction_y
                                           , stretch_rate_x
                                           , stretch_rate_y
+                                          , stretch_rate_x_upd
+                                          , stretch_rate_y_upd
                                           , regimark_3_imagepath
                                           , regimark_4_imagepath
                                           , stretch_rate_auto_calc_flg
@@ -362,6 +385,8 @@ namespace ProductMstMaintenance
                                           , :point_5_plus_direction_y
                                           , (CAST(:AreaMagX as NUMERIC) / 100)
                                           , (CAST(:AreaMagY as NUMERIC) / 100)
+                                          , null
+                                          , null
                                           , :TempFile3
                                           , :TempFile4
                                           , :AutoCalcAreaMagFlg
@@ -496,6 +521,7 @@ namespace ProductMstMaintenance
                      , airbag_imagepath
                      , length
                      , width
+                     , line_length
                      , stretch_rate_x
                      , stretch_rate_x_upd
                      , stretch_rate_y
@@ -558,6 +584,7 @@ namespace ProductMstMaintenance
                 , airbag_imagepath
                 , length
                 , width
+                , line_length
                 , stretch_rate_x
                 , stretch_rate_x_upd
                 , stretch_rate_y

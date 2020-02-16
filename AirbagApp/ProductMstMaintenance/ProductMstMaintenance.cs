@@ -21,6 +21,7 @@ namespace ProductMstMaintenance
         private const string m_CON_COLNAME_AIRBAG_IMAGEPATH = "airbag_imagepath";
         private const string m_CON_COLNAME_LENGTH = "length";
         private const string m_CON_COLNAME_WIDTH = "width";
+        private const string m_CON_COLNAME_LINE_LENGTH = "line_length";
         private const string m_CON_COLNAME_STRETCH_RATE_X = "stretch_rate_x";
         private const string m_CON_COLNAME_STRETCH_RATE_X_UPD = "stretch_rate_x_upd";
         private const string m_CON_COLNAME_STRETCH_RATE_Y = "stretch_rate_y";
@@ -74,7 +75,7 @@ namespace ProductMstMaintenance
         private double m_dblSizeRateW = 100.00;
         private double m_dblSizeRateH = 100.00;
         private double m_dblSizeRate = 100.00;
-        private int m_intColumn_cnt = 5;
+        private int m_intColumn_cnt = 0;
         private DataTable m_dtData = new DataTable();
         private string m_strMstFilePath = "";
 
@@ -98,10 +99,17 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void ProductMstMaintenance_Load(object sender, EventArgs e)
         {
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
+
             bool bolProcOkNg = false;
 
             try
             {
+                this.SuspendLayout();
+
                 // 初期化
                 txtProductName.Text = "";
                 lblLength.Text = "";
@@ -162,6 +170,8 @@ namespace ProductMstMaintenance
             }
             finally
             {
+                this.ResumeLayout();
+
                 if (bolProcOkNg == false)
                     this.Close();
             }
@@ -201,7 +211,50 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void txtThreshold_Leave(object sender, EventArgs e)
         {
+            // 大小チェック
+            if (CheckRangeInputData(txtColumnThresholdAB, txtColumnThresholdBC, "列判定用境界線設定", "A-B列", "B-C列", false) == false ||
+                CheckRangeInputData(txtColumnThresholdBC, txtColumnThresholdCD, "列判定用境界線設定", "B-C列", "C-D列", false) == false ||
+                CheckRangeInputData(txtColumnThresholdCD, txtColumnThresholdDE, "列判定用境界線設定", "C-D列", "D-E列", false) == false ||
+                CheckRangeInputData(txtColumnThresholdAFrom, txtColumnThresholdATo, "行判定用境界線設定", "A列(開始)", "A列(終了)", false) == false ||
+                CheckRangeInputData(txtColumnThresholdBFrom, txtColumnThresholdBTo, "行判定用境界線設定", "B列(開始)", "B列(終了)", false) == false ||
+                CheckRangeInputData(txtColumnThresholdCFrom, txtColumnThresholdCTo, "行判定用境界線設定", "C列(開始)", "C列(終了)", false) == false ||
+                CheckRangeInputData(txtColumnThresholdDFrom, txtColumnThresholdDTo, "行判定用境界線設定", "D列(開始)", "D列(終了)", false) == false ||
+                CheckRangeInputData(txtColumnThresholdEFrom, txtColumnThresholdETo, "行判定用境界線設定", "E列(開始)", "E列(終了)", false) == false)
+            {
+                TextBox target = sender as TextBox;
+                target.Focus();
+                return;
+            }
+
             DrawThreshold();
+        }
+
+        /// <summary>
+        /// 境界線テキストボックス値変更確定
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtThreshold_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                // 大小チェック
+                if (CheckRangeInputData(txtColumnThresholdAB, txtColumnThresholdBC, "列判定用境界線設定", "A-B列", "B-C列", false) == false ||
+                    CheckRangeInputData(txtColumnThresholdBC, txtColumnThresholdCD, "列判定用境界線設定", "B-C列", "C-D列", false) == false ||
+                    CheckRangeInputData(txtColumnThresholdCD, txtColumnThresholdDE, "列判定用境界線設定", "C-D列", "D-E列", false) == false ||
+                    CheckRangeInputData(txtColumnThresholdAFrom, txtColumnThresholdATo, "行判定用境界線設定", "A列(開始)", "A列(終了)", false) == false ||
+                    CheckRangeInputData(txtColumnThresholdBFrom, txtColumnThresholdBTo, "行判定用境界線設定", "B列(開始)", "B列(終了)", false) == false ||
+                    CheckRangeInputData(txtColumnThresholdCFrom, txtColumnThresholdCTo, "行判定用境界線設定", "C列(開始)", "C列(終了)", false) == false ||
+                    CheckRangeInputData(txtColumnThresholdDFrom, txtColumnThresholdDTo, "行判定用境界線設定", "D列(開始)", "D列(終了)", false) == false ||
+                    CheckRangeInputData(txtColumnThresholdEFrom, txtColumnThresholdETo, "行判定用境界線設定", "E列(開始)", "E列(終了)", false) == false)
+                {
+                    TextBox target = sender as TextBox;
+                    target.Focus();
+                    return;
+                }
+
+                DrawThreshold();
+            }
         }
 
         /// <summary>
@@ -223,32 +276,36 @@ namespace ProductMstMaintenance
         /// </returns>
         private bool bolRunProductMstImportCsv()
         {
-            // 確認メッセージ
-            if (MessageBox.Show(g_clsMessageInfo.strMsgQ0005, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (m_dtData.Rows.Count == 0)
             {
-                // 取り込み表示の場合、初期表示する
-                ProductMstImportCsv frmUserImportCsv = new ProductMstImportCsv();
-                frmUserImportCsv.ShowDialog(this);
-                frmUserImportCsv.Dispose();
-
-                // 画面初期表示
-                // 品番マスタから値の取得を行う
-                if (GetHinMstInitial("") == false ||
-                    m_dtData.Rows.Count == 0)
-                {
-                    txtProductName.Select();
-                    return false;
-                }
-
-                // 取得結果反映処理
-                CreateFormInfo();
-
-                return true;
+                MessageBox.Show(g_clsMessageInfo.strMsgW0004, "確認", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             else
             {
+                if (MessageBox.Show(g_clsMessageInfo.strMsgQ0005, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    return false;
+                }
+            }
+
+            // 取り込み表示の場合、初期表示する
+            ProductMstImportCsv frmUserImportCsv = new ProductMstImportCsv();
+            frmUserImportCsv.ShowDialog(this);
+            frmUserImportCsv.Dispose();
+
+            // 画面初期表示
+            // 品番マスタから値の取得を行う
+            if (GetHinMstInitial("") == false ||
+                m_dtData.Rows.Count == 0)
+            {
+                txtProductName.Select();
                 return false;
             }
+
+            // 取得結果反映処理
+            CreateFormInfo();
+
+            return true;
         }
 
         /// <summary>
@@ -258,15 +315,15 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            // 確認メッセージ
-            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0006, txtProductName.Text), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) 
+            // 入力チェックを行う
+            if (InputCheck() == false)
             {
-                // 入力チェックを行う
-                if (InputCheck() == false) 
-                {
-                    return;
-                }
+                return;
+            }
 
+            // 確認メッセージ
+            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0006, txtProductName.Text), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
                 // 更新処理を行う
                 if (UPDMstProductInfoDisp() == false)
                     return;
@@ -282,6 +339,44 @@ namespace ProductMstMaintenance
         {
             SelectErrorReason frmSelectErrorReason = new SelectErrorReason();
             frmSelectErrorReason.ShowDialog(this);
+        }
+
+        /// <summary>
+        /// 数値入力チェック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckInputNumber_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((e.KeyChar < '0' || '9' < e.KeyChar) && e.KeyChar != '\b')
+            {
+                // 0～9と、バックスペース以外の時は、イベントをキャンセルする
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// 小数入力チェック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckInputDouble_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '.')
+            {
+                TextBox target = sender as TextBox;
+
+                if (target.Text.IndexOf('.') >= 0)
+                {
+                    // 複数のピリオドが入力された時は、イベントをキャンセルする
+                    e.Handled = true;
+                }
+            }
+            else if ((e.KeyChar < '0' || '9' < e.KeyChar) && e.KeyChar != '\b')
+            {
+                // 0～9と、バックスペース以外の時は、イベントをキャンセルする
+                e.Handled = true;
+            }
         }
         #endregion
 
@@ -484,15 +579,20 @@ namespace ProductMstMaintenance
                     strSQL = g_CON_SELECT_MST_PRODUCT_INFO_TOP;
                     g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL);
                 }
-                else 
+                else
                 {
                     // 品名選択情報表示
                     strSQL = g_CON_SELECT_MST_PRODUCT_INFO_PRN;
                     // SQLコマンドに各パラメータを設定する
                     List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "product_name"
-                                                                              , DbType = DbType.String
-                                                                              , Value = strProductName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter
+                    {
+                        ParameterName = "product_name"
+                                                                              ,
+                        DbType = DbType.String
+                                                                              ,
+                        Value = strProductName
+                    });
                     g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL, lstNpgsqlCommand);
                 }
 
@@ -510,7 +610,7 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 画面反映処理
         /// </summary>
-        private void CreateFormInfo() 
+        private void CreateFormInfo()
         {
             // 取得結果描画
             MappingDtToForm(m_dtData);
@@ -556,216 +656,216 @@ namespace ProductMstMaintenance
         /// <param name="dtData">読み取り対象データテーブル</param>
         private void MappingDtToForm(DataTable dtData)
         {
-            // 行数分ループする
-            foreach (DataRow dtCurentRow in dtData.Rows)
+            DataRow dtCurentRow = dtData.Rows[0];
+            m_intColumn_cnt = 0;
+
+            // 品名
+            txtProductName.Text = NulltoString(dtCurentRow[m_CON_COLNAME_PRODUCT_NAME]);
+
+            //エアバック画像ファイルパス
+            m_strMstFilePath = NulltoString(dtCurentRow[m_CON_COLNAME_AIRBAG_IMAGEPATH]);
+
+            // 長さ
+            if (NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH]) != "")
+                lblLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])));
+            else
+                lblLength.Text = "";
+
+            // 幅
+            if (NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH]) != "")
+                lblWidth.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH])));
+            else
+                lblWidth.Text = "";
+
+            // 行長さ
+            if (NulltoString(dtCurentRow[m_CON_COLNAME_LINE_LENGTH]) != "")
+                lblLineLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_LINE_LENGTH])));
+            else
+                lblLineLength.Text = "";
+
+            // レジマーク間引き
+            if (NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH]) != "")
+                lblRegimarkBetweenLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])));
+            else
+                lblRegimarkBetweenLength.Text = "";
+
+            // 伸縮率X
+            string strStretchRateX = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_X_UPD]);
+            if (strStretchRateX == "")
             {
-                // 品名
-                txtProductName.Text = NulltoString(dtCurentRow[m_CON_COLNAME_PRODUCT_NAME]);
-
-                //エアバック画像ファイルパス
-                m_strMstFilePath = NulltoString(dtCurentRow[m_CON_COLNAME_AIRBAG_IMAGEPATH]);
-
-                // 長さ
-                if (NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH]) != "")
-                    lblLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])));
-                else
-                    lblLength.Text = "";
-
-                // 幅
-                if (NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH]) != "")
-                    lblWidth.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH])));
-                else
-                    lblWidth.Text = "";
-
-                // レジマーク間引き
-                if (NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH]) != "")
-                    lblRegimarkBetweenLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])));
-                else
-                    lblRegimarkBetweenLength.Text = "";
-
-                // 伸縮率X
-                string strStretchRateX = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_X_UPD]);
-                if (strStretchRateX == "")
-                {
-                    strStretchRateX = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_X]);
-                }
-                txtStretchRateX.Text = strStretchRateX;
-
-                // 伸縮率Y
-                string strStretchRateY = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_Y_UPD]);
-                if (strStretchRateY == "")
-                {
-                    strStretchRateY = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_Y]);
-                }
-                txtStretchRateY.Text = strStretchRateY;
-
-                // AIモデル未検査フラグ
-                if (NulltoInt(dtCurentRow[m_CON_COLNAME_AI_MODEL_NON_INSPECTION_FLG]) == 1)
-                {
-                    chkAiModelNonInspectionFlg.Checked = true;
-                }
-                else
-                {
-                    chkAiModelNonInspectionFlg.Checked = false;
-                }
-
-                // AIモデル名
-                txtAiModelName.Text = NulltoString(dtCurentRow[m_CON_COLNAME_AI_MODEL_NAME]);
-
-                // レジマーク間の長さ（pixel）
-                decimal dc = (640 * NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH]) /
-                                    NulltoInt(dtCurentRow[m_CON_COLNAME_LENGTH]));
-                m_intRegiMarkLengthPx = NulltoInt(Math.Floor(dc));
-
-                // レジマーク表示部.開始レジマーク座標.N行
-                lblStartRegimarkPointN.Text = "(" + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X]) + "," +
-                                                    NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]) + ")";
-
-                // レジマーク表示部.終了レジマーク座標.N行
-                lblEndRegimarkPointN.Text = "(" + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X]) + "," +
-                                                  NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]) + ")";
-
-                string strPoint;
-                string strArrow;
-
-                // 座標のラベルを作成 A
-                CreatePointString(dtCurentRow
-                                , m_CON_COLNAME_BASE_POINT_1_X
-                                , m_CON_COLNAME_BASE_POINT_1_Y
-                                , m_CON_COLNAME_POINT_1_PLUS_DIRECTION_X
-                                , m_CON_COLNAME_POINT_1_PLUS_DIRECTION_Y
-                                , out strPoint
-                                , out strArrow);
-                lblBasePointA.Text = strPoint;
-                lblPlusDirectionA.Text = strArrow;
-
-                // 座標のラベルを作成 B
-                CreatePointString(dtCurentRow
-                                , m_CON_COLNAME_BASE_POINT_2_X
-                                , m_CON_COLNAME_BASE_POINT_2_Y
-                                , m_CON_COLNAME_POINT_2_PLUS_DIRECTION_X
-                                , m_CON_COLNAME_POINT_2_PLUS_DIRECTION_Y
-                                , out strPoint
-                                , out strArrow);
-                lblBasePointB.Text = strPoint;
-                lblPlusDirectionB.Text = strArrow;
-
-                // 座標のラベルを作成 C
-                CreatePointString(dtCurentRow
-                                , m_CON_COLNAME_BASE_POINT_3_X
-                                , m_CON_COLNAME_BASE_POINT_3_Y
-                                , m_CON_COLNAME_POINT_3_PLUS_DIRECTION_X
-                                , m_CON_COLNAME_POINT_3_PLUS_DIRECTION_Y
-                                , out strPoint
-                                , out strArrow);
-                lblBasePointC.Text = strPoint;
-                lblPlusDirectionC.Text = strArrow;
-
-                // 座標のラベルを作成 D
-                CreatePointString(dtCurentRow
-                                , m_CON_COLNAME_BASE_POINT_4_X
-                                , m_CON_COLNAME_BASE_POINT_4_Y
-                                , m_CON_COLNAME_POINT_4_PLUS_DIRECTION_X
-                                , m_CON_COLNAME_POINT_4_PLUS_DIRECTION_Y
-                                , out strPoint
-                                , out strArrow);
-                lblBasePointD.Text = strPoint;
-                lblPlusDirectionD.Text = strArrow;
-
-                // 座標のラベルを作成 E
-                CreatePointString(dtCurentRow
-                                , m_CON_COLNAME_BASE_POINT_5_X
-                                , m_CON_COLNAME_BASE_POINT_5_Y
-                                , m_CON_COLNAME_POINT_5_PLUS_DIRECTION_X
-                                , m_CON_COLNAME_POINT_5_PLUS_DIRECTION_Y
-                                , out strPoint
-                                , out strArrow);
-                lblBasePointE.Text = strPoint;
-                lblPlusDirectionE.Text = strArrow;
-
-                if (strPoint != "")
-                {
-                    m_intColumn_cnt = 5;
-                }
-
-                // 開始レジマークカメラ番号
-                lblStartRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_START_REGIMARK_CAMERA_NUM]);
-                // 終了レジマークカメラ番号
-                lblEndRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_END_REGIMARK_CAMERA_NUM]);
-                // 照度情報
-                lblIlluminationInformation.Text = NulltoString(dtCurentRow[m_CON_COLNAME_ILLUMINATION_INFORMATION]);
-
-                // A-B列
-                txtColumnThresholdAB.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_01]);
-                // B-C列
-                txtColumnThresholdBC.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_02]);
-                // C-D列
-                txtColumnThresholdCD.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_03]);
-                // D-E列
-                txtColumnThresholdDE.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_04]);
-
-                // 行判定用境界線設定表示部.A列
-                txtColumnThresholdAFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A1]);
-                txtColumnThresholdATo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A2]);
-
-                if (txtColumnThresholdAFrom.Text != "" && txtColumnThresholdATo.Text != "")
-                {
-                    m_intColumn_cnt = 1;
-                }
-
-                // 行判定用境界線設定表示部.B列
-                txtColumnThresholdBFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B1]);
-                txtColumnThresholdBTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B2]);
-
-                if (txtColumnThresholdBFrom.Text != "" && txtColumnThresholdBTo.Text != "")
-                {
-                    m_intColumn_cnt = 2;
-                }
-
-                // 行判定用境界線設定表示部.C列
-                txtColumnThresholdCFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C1]);
-                txtColumnThresholdCTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C2]);
-
-                if (txtColumnThresholdCFrom.Text != "" && txtColumnThresholdCTo.Text != "")
-                {
-                    m_intColumn_cnt = 3;
-                }
-
-                // 行判定用境界線設定表示部.D列
-                txtColumnThresholdDFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D1]);
-                txtColumnThresholdDTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D2]);
-
-                if (txtColumnThresholdDFrom.Text != "" && txtColumnThresholdDTo.Text != "")
-                {
-                    m_intColumn_cnt = 4;
-                }
-
-                // 行判定用境界線設定表示部.E列
-                txtColumnThresholdEFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E1]);
-                txtColumnThresholdETo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E2]);
-
-                if (txtColumnThresholdEFrom.Text != "" && txtColumnThresholdETo.Text != "")
-                {
-                    m_intColumn_cnt = 5;
-                }
-
-                // 開始レジマーク座標.N行+1行
-                string strPointNPlus1 = "";
-                strPointNPlus1 = "(";
-                strPointNPlus1 = strPointNPlus1 + NulltoString(NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X]) 
-                                                             + m_intRegiMarkLengthPx);
-                strPointNPlus1 = strPointNPlus1 + ",";
-                strPointNPlus1 = strPointNPlus1 + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]) + ")";
-                lblStartRegimarkPointNPlus1Line.Text = strPointNPlus1;
-
-                // 終了レジマーク座標.N行+1行
-                strPointNPlus1 = "(";
-                strPointNPlus1 = strPointNPlus1 + NulltoString(NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X]) 
-                                                             - m_intRegiMarkLengthPx);
-                strPointNPlus1 = strPointNPlus1 + ",";
-                strPointNPlus1 = strPointNPlus1 + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]) + ")";
-                lblEndRegimarkPointNMinus1Line.Text = strPointNPlus1;
+                strStretchRateX = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_X]);
             }
+            txtStretchRateX.Text = string.Format("{0:f2}", double.Parse(strStretchRateX));
+
+            // 伸縮率Y
+            string strStretchRateY = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_Y_UPD]);
+            if (strStretchRateY == "")
+            {
+                strStretchRateY = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_Y]);
+            }
+            txtStretchRateY.Text = string.Format("{0:f2}", double.Parse(strStretchRateY));
+
+            // AIモデル未検査フラグ
+            if (NulltoInt(dtCurentRow[m_CON_COLNAME_AI_MODEL_NON_INSPECTION_FLG]) == 1)
+            {
+                chkAiModelNonInspectionFlg.Checked = true;
+            }
+            else
+            {
+                chkAiModelNonInspectionFlg.Checked = false;
+            }
+
+            // AIモデル名
+            txtAiModelName.Text = NulltoString(dtCurentRow[m_CON_COLNAME_AI_MODEL_NAME]);
+
+            // レジマーク間の長さ（pixel）
+            decimal dc = (640 * (NulltoDcm(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH]) /
+                                NulltoDcm(dtCurentRow[m_CON_COLNAME_LENGTH])));
+            m_intRegiMarkLengthPx = NulltoInt(Math.Floor(dc));
+
+            // レジマーク表示部.開始レジマーク座標.N行
+            lblStartRegimarkPointN.Text = "(" + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X]) + "," +
+                                                NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]) + ")";
+
+            // レジマーク表示部.終了レジマーク座標.N行
+            lblEndRegimarkPointN.Text = "(" + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X]) + "," +
+                                              NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]) + ")";
+
+            string strPoint;
+            string strArrow;
+
+            // 座標のラベルを作成 A
+            CreatePointString(dtCurentRow
+                            , m_CON_COLNAME_BASE_POINT_1_X
+                            , m_CON_COLNAME_BASE_POINT_1_Y
+                            , m_CON_COLNAME_POINT_1_PLUS_DIRECTION_X
+                            , m_CON_COLNAME_POINT_1_PLUS_DIRECTION_Y
+                            , out strPoint
+                            , out strArrow);
+            lblBasePointA.Text = strPoint;
+            lblPlusDirectionA.Text = strArrow;
+
+            // 座標のラベルを作成 B
+            CreatePointString(dtCurentRow
+                            , m_CON_COLNAME_BASE_POINT_2_X
+                            , m_CON_COLNAME_BASE_POINT_2_Y
+                            , m_CON_COLNAME_POINT_2_PLUS_DIRECTION_X
+                            , m_CON_COLNAME_POINT_2_PLUS_DIRECTION_Y
+                            , out strPoint
+                            , out strArrow);
+            lblBasePointB.Text = strPoint;
+            lblPlusDirectionB.Text = strArrow;
+
+            // 座標のラベルを作成 C
+            CreatePointString(dtCurentRow
+                            , m_CON_COLNAME_BASE_POINT_3_X
+                            , m_CON_COLNAME_BASE_POINT_3_Y
+                            , m_CON_COLNAME_POINT_3_PLUS_DIRECTION_X
+                            , m_CON_COLNAME_POINT_3_PLUS_DIRECTION_Y
+                            , out strPoint
+                            , out strArrow);
+            lblBasePointC.Text = strPoint;
+            lblPlusDirectionC.Text = strArrow;
+
+            // 座標のラベルを作成 D
+            CreatePointString(dtCurentRow
+                            , m_CON_COLNAME_BASE_POINT_4_X
+                            , m_CON_COLNAME_BASE_POINT_4_Y
+                            , m_CON_COLNAME_POINT_4_PLUS_DIRECTION_X
+                            , m_CON_COLNAME_POINT_4_PLUS_DIRECTION_Y
+                            , out strPoint
+                            , out strArrow);
+            lblBasePointD.Text = strPoint;
+            lblPlusDirectionD.Text = strArrow;
+
+            // 座標のラベルを作成 E
+            CreatePointString(dtCurentRow
+                            , m_CON_COLNAME_BASE_POINT_5_X
+                            , m_CON_COLNAME_BASE_POINT_5_Y
+                            , m_CON_COLNAME_POINT_5_PLUS_DIRECTION_X
+                            , m_CON_COLNAME_POINT_5_PLUS_DIRECTION_Y
+                            , out strPoint
+                            , out strArrow);
+            lblBasePointE.Text = strPoint;
+            lblPlusDirectionE.Text = strArrow;
+
+            // 開始レジマークカメラ番号
+            lblStartRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_START_REGIMARK_CAMERA_NUM]);
+            // 終了レジマークカメラ番号
+            lblEndRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_END_REGIMARK_CAMERA_NUM]);
+            // 照度情報
+            lblIlluminationInformation.Text = NulltoString(dtCurentRow[m_CON_COLNAME_ILLUMINATION_INFORMATION]);
+
+            // A-B列
+            txtColumnThresholdAB.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_01]);
+            // B-C列
+            txtColumnThresholdBC.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_02]);
+            // C-D列
+            txtColumnThresholdCD.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_03]);
+            // D-E列
+            txtColumnThresholdDE.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_04]);
+
+            // 行判定用境界線設定表示部.A列
+            txtColumnThresholdAFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A1]);
+            txtColumnThresholdATo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A2]);
+
+            if (txtColumnThresholdAFrom.Text != "" && txtColumnThresholdATo.Text != "")
+            {
+                m_intColumn_cnt = 1;
+            }
+
+            // 行判定用境界線設定表示部.B列
+            txtColumnThresholdBFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B1]);
+            txtColumnThresholdBTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B2]);
+
+            if (txtColumnThresholdBFrom.Text != "" && txtColumnThresholdBTo.Text != "")
+            {
+                m_intColumn_cnt = 2;
+            }
+
+            // 行判定用境界線設定表示部.C列
+            txtColumnThresholdCFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C1]);
+            txtColumnThresholdCTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C2]);
+
+            if (txtColumnThresholdCFrom.Text != "" && txtColumnThresholdCTo.Text != "")
+            {
+                m_intColumn_cnt = 3;
+            }
+
+            // 行判定用境界線設定表示部.D列
+            txtColumnThresholdDFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D1]);
+            txtColumnThresholdDTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D2]);
+
+            if (txtColumnThresholdDFrom.Text != "" && txtColumnThresholdDTo.Text != "")
+            {
+                m_intColumn_cnt = 4;
+            }
+
+            // 行判定用境界線設定表示部.E列
+            txtColumnThresholdEFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E1]);
+            txtColumnThresholdETo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E2]);
+
+            if (txtColumnThresholdEFrom.Text != "" && txtColumnThresholdETo.Text != "")
+            {
+                m_intColumn_cnt = 5;
+            }
+
+            // 開始レジマーク座標.N行+1行
+            string strPointNPlus1 = "";
+            strPointNPlus1 = "(";
+            strPointNPlus1 = strPointNPlus1 + NulltoString(NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X])
+                                                         + m_intRegiMarkLengthPx);
+            strPointNPlus1 = strPointNPlus1 + ",";
+            strPointNPlus1 = strPointNPlus1 + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]) + ")";
+            lblStartRegimarkPointNPlus1Line.Text = strPointNPlus1;
+
+            // 終了レジマーク座標.N行+1行
+            strPointNPlus1 = "(";
+            strPointNPlus1 = strPointNPlus1 + NulltoString(NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X])
+                                                         - m_intRegiMarkLengthPx);
+            strPointNPlus1 = strPointNPlus1 + ",";
+            strPointNPlus1 = strPointNPlus1 + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]) + ")";
+            lblEndRegimarkPointNMinus1Line.Text = strPointNPlus1;
         }
 
         /// <summary>
@@ -825,9 +925,24 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 座標ラベル表示非表示切り替え
         /// </summary>
-        private void DispPointChange() 
+        private void DispPointChange()
         {
             // 列数でコントロールを非表示にする
+            if (m_intColumn_cnt < 1)
+            {
+                txtColumnThresholdAB.Visible = false;
+                txtColumnThresholdAFrom.Visible = false;
+                txtColumnThresholdATo.Visible = false;
+                lblADash.Visible = false;
+            }
+            else
+            {
+                txtColumnThresholdAB.Visible = true;
+                txtColumnThresholdAFrom.Visible = true;
+                txtColumnThresholdATo.Visible = true;
+                lblADash.Visible = true;
+            }
+
             if (m_intColumn_cnt < 2)
             {
                 txtColumnThresholdAB.Visible = false;
@@ -835,7 +950,7 @@ namespace ProductMstMaintenance
                 txtColumnThresholdBTo.Visible = false;
                 lblBDash.Visible = false;
             }
-            else 
+            else
             {
                 txtColumnThresholdAB.Visible = true;
                 txtColumnThresholdBFrom.Visible = true;
@@ -865,7 +980,7 @@ namespace ProductMstMaintenance
                 txtColumnThresholdDTo.Visible = false;
                 lblDDash.Visible = false;
             }
-            else 
+            else
             {
                 txtColumnThresholdCD.Visible = true;
                 txtColumnThresholdDFrom.Visible = true;
@@ -880,7 +995,7 @@ namespace ProductMstMaintenance
                 txtColumnThresholdETo.Visible = false;
                 lblEDash.Visible = false;
             }
-            else 
+            else
             {
                 txtColumnThresholdDE.Visible = true;
                 txtColumnThresholdEFrom.Visible = true;
@@ -892,7 +1007,7 @@ namespace ProductMstMaintenance
         /// <summary>
         /// ピクチャボックス設定
         /// </summary>
-        private void SettingPicBox() 
+        private void SettingPicBox()
         {
             // 表示領域とマスタ画像実寸との比率を算出
             // ※実寸：640x480
@@ -924,7 +1039,7 @@ namespace ProductMstMaintenance
         /// 入力チェック
         /// </summary>
         /// <returns></returns>
-        private Boolean InputCheck() 
+        private Boolean InputCheck()
         {
             // 必須入力チェック
             if (CheckRequiredInput(txtProductName, "品名") == false ||
@@ -969,6 +1084,19 @@ namespace ProductMstMaintenance
                 return false;
             }
 
+            // 大小チェック
+            if (CheckRangeInputData(txtColumnThresholdAB, txtColumnThresholdBC, "列判定用境界線設定", "A-B列", "B-C列", true) == false ||
+                CheckRangeInputData(txtColumnThresholdBC, txtColumnThresholdCD, "列判定用境界線設定", "B-C列", "C-D列", true) == false ||
+                CheckRangeInputData(txtColumnThresholdCD, txtColumnThresholdDE, "列判定用境界線設定", "C-D列", "D-E列", true) == false ||
+                CheckRangeInputData(txtColumnThresholdAFrom, txtColumnThresholdATo, "行判定用境界線設定", "A列(開始)", "A列(終了)", true) == false ||
+                CheckRangeInputData(txtColumnThresholdBFrom, txtColumnThresholdBTo, "行判定用境界線設定", "B列(開始)", "B列(終了)", true) == false ||
+                CheckRangeInputData(txtColumnThresholdCFrom, txtColumnThresholdCTo, "行判定用境界線設定", "C列(開始)", "C列(終了)", true) == false ||
+                CheckRangeInputData(txtColumnThresholdDFrom, txtColumnThresholdDTo, "行判定用境界線設定", "D列(開始)", "D列(終了)", true) == false ||
+                CheckRangeInputData(txtColumnThresholdEFrom, txtColumnThresholdETo, "行判定用境界線設定", "E列(開始)", "E列(終了)", true) == false)
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -984,7 +1112,7 @@ namespace ProductMstMaintenance
                                                 , String strItemName)
         {
             // 境界線項目は無効になっている可能性があるため、有効な場合のみチェックする
-            if (txtCheckData.Visible == true) 
+            if (txtCheckData.Visible == true)
             {
                 // 必須入力チェック
                 if (txtCheckData.Text == "")
@@ -995,7 +1123,7 @@ namespace ProductMstMaintenance
                     return false;
                 }
             }
-            
+
             return true;
         }
 
@@ -1025,12 +1153,12 @@ namespace ProductMstMaintenance
             if (intCheckData < intMinRange || intCheckData > intMaxRange)
             {
                 // ログファイルにエラー出力を行う
-                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0023, intMinRange, intMaxRange), 
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0023, strItemName, intMinRange, intMaxRange),
                                 "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtCheckData.Focus();
                 return false;
             }
-            
+
             return true;
         }
 
@@ -1060,12 +1188,58 @@ namespace ProductMstMaintenance
             if (dblCheckData < dblMinRange || dblCheckData > dblMaxRange)
             {
                 // エラーメッセージ出力を行う
-                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0023, dblMinRange, dblMaxRange), 
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0023, strItemName, dblMinRange, dblMaxRange),
                                 "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtCheckData.Focus();
                 return false;
             }
-            
+
+            return true;
+        }
+
+        /// <summary>
+        /// 大小チェック
+        /// </summary>
+        /// <param name="txtCheckDataFrom">チェック対象テキスト(From)</param>
+        /// <param name="txtCheckDataTo">チェック対象テキスト(To)</param>
+        /// <param name="strErrorLocation">エラー箇所</param>
+        /// <param name="strItemNameFrom">チェック対象項目名From</param>
+        /// <param name="strItemNameTo">チェック対象項目名To</param>
+        /// <param name="bolIsFocusSetting">フォーカス設定フラグ</param>
+        /// <returns>チェック結果</returns>
+        private static Boolean CheckRangeInputData(TextBox txtCheckDataFrom
+                                                   , TextBox txtCheckDataTo
+                                                   , string strErrorLocation
+                                                   , string strItemNameFrom
+                                                   , string strItemNameTo
+                                                   , bool bolIsFocusSetting)
+        {
+            // 未入力データの場合はチェックしない
+            // ※未入力データは必須入力チェックではじく
+            if (txtCheckDataFrom.Text == "" ||
+                txtCheckDataTo.Text == "")
+            {
+                return true;
+            }
+
+            int intCheckDataFrom = NulltoInt(txtCheckDataFrom.Text);
+            int intCheckDataTo = NulltoInt(txtCheckDataTo.Text);
+
+            // 範囲チェック
+            if (intCheckDataFrom >= intCheckDataTo)
+            {
+                // ログファイルにエラー出力を行う
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0056, strErrorLocation, strItemNameFrom, strItemNameTo),
+                                "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                if (bolIsFocusSetting)
+                {
+                    txtCheckDataFrom.Focus();
+                }
+
+                return false;
+            }
+
             return true;
         }
 
@@ -1073,7 +1247,7 @@ namespace ProductMstMaintenance
         /// 品名更新処理
         /// </summary>
         /// <returns></returns>
-        private Boolean UPDMstProductInfoDisp() 
+        private Boolean UPDMstProductInfoDisp()
         {
             try
             {
@@ -1085,7 +1259,7 @@ namespace ProductMstMaintenance
                 {
                     intChkFlg = 1;
                 }
-                
+
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_non_inspection_flg", DbType = DbType.Int32, Value = intChkFlg });
@@ -1138,7 +1312,7 @@ namespace ProductMstMaintenance
         /// <param name="strParamName"></param>
         /// <returns></returns>
         private ConnectionNpgsql.structParameter DBOrInt(TextBox txtValue
-                                                       , string strParamName) 
+                                                       , string strParamName)
         {
             ConnectionNpgsql.structParameter cnsStructParameter;
 
@@ -1147,7 +1321,7 @@ namespace ProductMstMaintenance
             {
                 cnsStructParameter = new ConnectionNpgsql.structParameter { ParameterName = strParamName, DbType = DbType.Int32, Value = DBNull.Value };
             }
-            else 
+            else
             {
                 cnsStructParameter = new ConnectionNpgsql.structParameter { ParameterName = strParamName, DbType = DbType.Int32, Value = NulltoInt(txtValue.Text) };
             }
