@@ -45,7 +45,7 @@ namespace ProductMstMaintenance
         static void Main()
         {
             // Mutex名を決める
-            string mutexName = "WokerMstManagement";
+            string mutexName = "ProductMstMaintenance";
             // Mutexオブジェクトを作成する
             System.Threading.Mutex mutex = new System.Threading.Mutex(false, mutexName);
 

@@ -971,7 +971,7 @@ namespace ProductMstMaintenance
             System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
 
             // セクションナンバーの格納を行う
-            int intSection = NulltoInt(SubstringRight(strRegister, 2)) - 1;
+            int intSection = NulltoInt(strRegister.Replace(m_CON_COL_PLC_KIND, string.Empty)) - 1;
             icpCurrentData.KIND = String.Format("{0:D2}", intSection);
 
             // 一旦構造体インスタンスをボックス化する(SetValueはobject型じゃないとできない)
@@ -1068,6 +1068,8 @@ namespace ProductMstMaintenance
         {
             try
             {
+                string strKINDNumber = string.Empty;
+
                 // SQL文を作成する
                 string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_PTC;
 
@@ -1089,13 +1091,22 @@ namespace ProductMstMaintenance
                     else
                     {
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
+                        strKINDNumber = fieldInfo.Name + (NulltoInt(fieldInfo.GetValue(idrCurrentData)) + 1).ToString("D2");
                     }
                 }
 
                 // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
-
-                return true;
+                if (g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand) > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    string strErrorMessage = "更新対象のレコードが存在しません。[{0}]";
+                    OutPutImportLog(g_clsMessageInfo.strMsgE0053 + "\r\n" + string.Format(strErrorMessage, strKINDNumber));
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0053 + "\r\n" + string.Format(strErrorMessage, strKINDNumber));
+                    return false;
+                }
             }
             catch (Exception ex)
             {
