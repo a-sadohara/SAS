@@ -31,35 +31,38 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CopyReg));
             this.panel11 = new System.Windows.Forms.Panel();
             this.label17 = new System.Windows.Forms.Label();
-            this.lblXY = new System.Windows.Forms.Label();
-            this.lblNGMen = new System.Windows.Forms.Label();
+            this.lblNgDistance = new System.Windows.Forms.Label();
+            this.lblNgFace = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.panel10 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnTanpatuWhite = new System.Windows.Forms.Button();
-            this.btnJudgeNG = new System.Windows.Forms.Button();
+            this.btnWhiteThreadOne = new System.Windows.Forms.Button();
+            this.btnOtherNg = new System.Windows.Forms.Button();
             this.btnOther = new System.Windows.Forms.Button();
-            this.btnRenzokuWhite = new System.Windows.Forms.Button();
-            this.btnTanpatuBlack = new System.Windows.Forms.Button();
-            this.btnRenzokuBlack = new System.Windows.Forms.Button();
+            this.btnWhiteThreadMulti = new System.Windows.Forms.Button();
+            this.btnBlackThreadOne = new System.Windows.Forms.Button();
+            this.btnBlackThreadMulti = new System.Windows.Forms.Button();
             this.panel9 = new System.Windows.Forms.Panel();
-            this.lblReason = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
+            this.lblNgReason = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.panel7 = new System.Windows.Forms.Panel();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.cmbBoxLine = new System.Windows.Forms.ComboBox();
             this.panel12 = new System.Windows.Forms.Panel();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.cmbBoxColumns = new System.Windows.Forms.ComboBox();
             this.panel13 = new System.Windows.Forms.Panel();
-            this.btnOk = new System.Windows.Forms.Button();
+            this.btnOKSelect = new System.Windows.Forms.Button();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.btnClose = new System.Windows.Forms.Button();
-            this.btnNextReg = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.btnNextDefect = new System.Windows.Forms.Button();
+            this.picMarkingImage = new System.Windows.Forms.PictureBox();
+            this.lblMarkingImagepath = new System.Windows.Forms.Label();
+            this.pnlTop = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.pnlDock = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.panel11.SuspendLayout();
             this.panel10.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -69,21 +72,25 @@
             this.panel12.SuspendLayout();
             this.panel13.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picMarkingImage)).BeginInit();
+            this.pnlTop.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.pnlDock.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel11
             // 
             this.tableLayoutPanel6.SetColumnSpan(this.panel11, 3);
             this.panel11.Controls.Add(this.label17);
-            this.panel11.Controls.Add(this.lblXY);
-            this.panel11.Controls.Add(this.lblNGMen);
+            this.panel11.Controls.Add(this.lblNgDistance);
+            this.panel11.Controls.Add(this.lblNgFace);
             this.panel11.Controls.Add(this.label18);
             this.panel11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel11.Location = new System.Drawing.Point(0, 58);
+            this.panel11.Location = new System.Drawing.Point(0, 61);
             this.panel11.Margin = new System.Windows.Forms.Padding(0);
             this.panel11.Name = "panel11";
-            this.panel11.Size = new System.Drawing.Size(340, 78);
+            this.panel11.Size = new System.Drawing.Size(348, 78);
             this.panel11.TabIndex = 38;
             // 
             // label17
@@ -99,29 +106,29 @@
             this.label17.TabIndex = 24;
             this.label17.Text = "位置（X,Y）cm:102,-36";
             // 
-            // lblXY
+            // lblNgDistance
             // 
-            this.lblXY.AutoSize = true;
-            this.lblXY.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.lblXY.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblXY.Location = new System.Drawing.Point(2, 36);
-            this.lblXY.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblXY.Name = "lblXY";
-            this.lblXY.Size = new System.Drawing.Size(185, 24);
-            this.lblXY.TabIndex = 30;
-            this.lblXY.Text = "位置(X,Y)cm：102,-36";
+            this.lblNgDistance.AutoSize = true;
+            this.lblNgDistance.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblNgDistance.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblNgDistance.Location = new System.Drawing.Point(2, 36);
+            this.lblNgDistance.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblNgDistance.Name = "lblNgDistance";
+            this.lblNgDistance.Size = new System.Drawing.Size(185, 24);
+            this.lblNgDistance.TabIndex = 30;
+            this.lblNgDistance.Text = "位置(X,Y)cm：102,-36";
             // 
-            // lblNGMen
+            // lblNgFace
             // 
-            this.lblNGMen.AutoSize = true;
-            this.lblNGMen.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.lblNGMen.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNGMen.Location = new System.Drawing.Point(2, 10);
-            this.lblNGMen.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblNGMen.Name = "lblNGMen";
-            this.lblNGMen.Size = new System.Drawing.Size(98, 24);
-            this.lblNGMen.TabIndex = 30;
-            this.lblNGMen.Text = "NG面：＃１";
+            this.lblNgFace.AutoSize = true;
+            this.lblNgFace.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblNgFace.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblNgFace.Location = new System.Drawing.Point(2, 10);
+            this.lblNgFace.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblNgFace.Name = "lblNgFace";
+            this.lblNgFace.Size = new System.Drawing.Size(98, 24);
+            this.lblNgFace.TabIndex = 30;
+            this.lblNgFace.Text = "NG面：＃１";
             // 
             // label18
             // 
@@ -140,11 +147,11 @@
             // 
             this.panel10.Controls.Add(this.tableLayoutPanel1);
             this.panel10.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel10.Location = new System.Drawing.Point(340, 24);
+            this.panel10.Location = new System.Drawing.Point(348, 24);
             this.panel10.Margin = new System.Windows.Forms.Padding(0);
             this.panel10.Name = "panel10";
             this.tableLayoutPanel6.SetRowSpan(this.panel10, 2);
-            this.panel10.Size = new System.Drawing.Size(434, 112);
+            this.panel10.Size = new System.Drawing.Size(446, 115);
             this.panel10.TabIndex = 37;
             // 
             // tableLayoutPanel1
@@ -158,7 +165,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 13F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(434, 112);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(446, 115);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // tableLayoutPanel7
@@ -167,12 +174,12 @@
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
-            this.tableLayoutPanel7.Controls.Add(this.btnTanpatuWhite, 0, 0);
-            this.tableLayoutPanel7.Controls.Add(this.btnJudgeNG, 2, 1);
+            this.tableLayoutPanel7.Controls.Add(this.btnWhiteThreadOne, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.btnOtherNg, 2, 1);
             this.tableLayoutPanel7.Controls.Add(this.btnOther, 2, 0);
-            this.tableLayoutPanel7.Controls.Add(this.btnRenzokuWhite, 0, 1);
-            this.tableLayoutPanel7.Controls.Add(this.btnTanpatuBlack, 1, 0);
-            this.tableLayoutPanel7.Controls.Add(this.btnRenzokuBlack, 1, 1);
+            this.tableLayoutPanel7.Controls.Add(this.btnWhiteThreadMulti, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.btnBlackThreadOne, 1, 0);
+            this.tableLayoutPanel7.Controls.Add(this.btnBlackThreadMulti, 1, 1);
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel7.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
@@ -181,128 +188,114 @@
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(424, 99);
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(436, 102);
             this.tableLayoutPanel7.TabIndex = 0;
             // 
-            // btnTanpatuWhite
+            // btnWhiteThreadOne
             // 
-            this.btnTanpatuWhite.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnTanpatuWhite.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnTanpatuWhite.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnTanpatuWhite.Location = new System.Drawing.Point(4, 0);
-            this.btnTanpatuWhite.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
-            this.btnTanpatuWhite.Name = "btnTanpatuWhite";
-            this.btnTanpatuWhite.Size = new System.Drawing.Size(133, 41);
-            this.btnTanpatuWhite.TabIndex = 26;
-            this.btnTanpatuWhite.Text = "□結節有(白糸上単発)";
-            this.btnTanpatuWhite.UseVisualStyleBackColor = true;
-            this.btnTanpatuWhite.Click += new System.EventHandler(this.BtnTanpatuWhite_Click);
+            this.btnWhiteThreadOne.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnWhiteThreadOne.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnWhiteThreadOne.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnWhiteThreadOne.Location = new System.Drawing.Point(4, 0);
+            this.btnWhiteThreadOne.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
+            this.btnWhiteThreadOne.Name = "btnWhiteThreadOne";
+            this.btnWhiteThreadOne.Size = new System.Drawing.Size(137, 43);
+            this.btnWhiteThreadOne.TabIndex = 26;
+            this.btnWhiteThreadOne.Text = "□結節有(白糸上単発)";
+            this.btnWhiteThreadOne.UseVisualStyleBackColor = true;
+            this.btnWhiteThreadOne.Click += new System.EventHandler(this.btnWhiteThreadOne_Click);
             // 
-            // btnJudgeNG
+            // btnOtherNg
             // 
-            this.btnJudgeNG.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnJudgeNG.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnJudgeNG.Font = new System.Drawing.Font("メイリオ", 8.25F);
-            this.btnJudgeNG.Location = new System.Drawing.Point(286, 49);
-            this.btnJudgeNG.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
-            this.btnJudgeNG.Name = "btnJudgeNG";
-            this.btnJudgeNG.Size = new System.Drawing.Size(134, 42);
-            this.btnJudgeNG.TabIndex = 27;
-            this.btnJudgeNG.Text = "□他画像で\r\nＮＧ判定済み";
-            this.btnJudgeNG.UseVisualStyleBackColor = true;
-            this.btnJudgeNG.Click += new System.EventHandler(this.btnJudgeNG_Click);
+            this.btnOtherNg.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnOtherNg.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnOtherNg.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.btnOtherNg.Location = new System.Drawing.Point(294, 51);
+            this.btnOtherNg.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
+            this.btnOtherNg.Name = "btnOtherNg";
+            this.btnOtherNg.Size = new System.Drawing.Size(138, 43);
+            this.btnOtherNg.TabIndex = 27;
+            this.btnOtherNg.Text = "□他画像で\r\nＮＧ判定済み";
+            this.btnOtherNg.UseVisualStyleBackColor = true;
+            this.btnOtherNg.Click += new System.EventHandler(this.btnOtherNg_Click);
             // 
             // btnOther
             // 
             this.btnOther.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnOther.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnOther.Font = new System.Drawing.Font("メイリオ", 8.25F);
-            this.btnOther.Location = new System.Drawing.Point(286, 0);
+            this.btnOther.Location = new System.Drawing.Point(294, 0);
             this.btnOther.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
             this.btnOther.Name = "btnOther";
-            this.btnOther.Size = new System.Drawing.Size(134, 41);
+            this.btnOther.Size = new System.Drawing.Size(138, 43);
             this.btnOther.TabIndex = 28;
             this.btnOther.Text = "□その他";
             this.btnOther.UseVisualStyleBackColor = true;
-            this.btnOther.Click += new System.EventHandler(this.BtnOther_Click);
+            this.btnOther.Click += new System.EventHandler(this.btnOther_Click);
             // 
-            // btnRenzokuWhite
+            // btnWhiteThreadMulti
             // 
-            this.btnRenzokuWhite.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnRenzokuWhite.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnRenzokuWhite.Font = new System.Drawing.Font("メイリオ", 8.25F);
-            this.btnRenzokuWhite.Location = new System.Drawing.Point(4, 49);
-            this.btnRenzokuWhite.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
-            this.btnRenzokuWhite.Name = "btnRenzokuWhite";
-            this.btnRenzokuWhite.Size = new System.Drawing.Size(133, 42);
-            this.btnRenzokuWhite.TabIndex = 27;
-            this.btnRenzokuWhite.Text = "□結節有(白糸上連続)";
-            this.btnRenzokuWhite.UseVisualStyleBackColor = true;
-            this.btnRenzokuWhite.Click += new System.EventHandler(this.BtnRenzokuWhite_Click);
+            this.btnWhiteThreadMulti.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnWhiteThreadMulti.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnWhiteThreadMulti.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.btnWhiteThreadMulti.Location = new System.Drawing.Point(4, 51);
+            this.btnWhiteThreadMulti.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
+            this.btnWhiteThreadMulti.Name = "btnWhiteThreadMulti";
+            this.btnWhiteThreadMulti.Size = new System.Drawing.Size(137, 43);
+            this.btnWhiteThreadMulti.TabIndex = 27;
+            this.btnWhiteThreadMulti.Text = "□結節有(白糸上連続)";
+            this.btnWhiteThreadMulti.UseVisualStyleBackColor = true;
+            this.btnWhiteThreadMulti.Click += new System.EventHandler(this.btnWhiteThreadMulti_Click);
             // 
-            // btnTanpatuBlack
+            // btnBlackThreadOne
             // 
-            this.btnTanpatuBlack.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnTanpatuBlack.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnTanpatuBlack.Font = new System.Drawing.Font("メイリオ", 8.25F);
-            this.btnTanpatuBlack.Location = new System.Drawing.Point(145, 0);
-            this.btnTanpatuBlack.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
-            this.btnTanpatuBlack.Name = "btnTanpatuBlack";
-            this.btnTanpatuBlack.Size = new System.Drawing.Size(133, 41);
-            this.btnTanpatuBlack.TabIndex = 26;
-            this.btnTanpatuBlack.Text = "□結節有(黒糸上単発)";
-            this.btnTanpatuBlack.UseVisualStyleBackColor = true;
-            this.btnTanpatuBlack.Click += new System.EventHandler(this.BtnTanpatuBlack_Click);
+            this.btnBlackThreadOne.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnBlackThreadOne.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnBlackThreadOne.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.btnBlackThreadOne.Location = new System.Drawing.Point(149, 0);
+            this.btnBlackThreadOne.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
+            this.btnBlackThreadOne.Name = "btnBlackThreadOne";
+            this.btnBlackThreadOne.Size = new System.Drawing.Size(137, 43);
+            this.btnBlackThreadOne.TabIndex = 26;
+            this.btnBlackThreadOne.Text = "□結節有(黒糸上単発)";
+            this.btnBlackThreadOne.UseVisualStyleBackColor = true;
+            this.btnBlackThreadOne.Click += new System.EventHandler(this.btnBlackThreadOne_Click);
             // 
-            // btnRenzokuBlack
+            // btnBlackThreadMulti
             // 
-            this.btnRenzokuBlack.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnRenzokuBlack.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnRenzokuBlack.Font = new System.Drawing.Font("メイリオ", 8.25F);
-            this.btnRenzokuBlack.Location = new System.Drawing.Point(145, 49);
-            this.btnRenzokuBlack.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
-            this.btnRenzokuBlack.Name = "btnRenzokuBlack";
-            this.btnRenzokuBlack.Size = new System.Drawing.Size(133, 42);
-            this.btnRenzokuBlack.TabIndex = 27;
-            this.btnRenzokuBlack.Text = "□結節有(黒糸上連続)";
-            this.btnRenzokuBlack.UseVisualStyleBackColor = true;
-            this.btnRenzokuBlack.Click += new System.EventHandler(this.BtnRenzokuBlack_Click);
+            this.btnBlackThreadMulti.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnBlackThreadMulti.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btnBlackThreadMulti.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.btnBlackThreadMulti.Location = new System.Drawing.Point(149, 51);
+            this.btnBlackThreadMulti.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
+            this.btnBlackThreadMulti.Name = "btnBlackThreadMulti";
+            this.btnBlackThreadMulti.Size = new System.Drawing.Size(137, 43);
+            this.btnBlackThreadMulti.TabIndex = 27;
+            this.btnBlackThreadMulti.Text = "□結節有(黒糸上連続)";
+            this.btnBlackThreadMulti.UseVisualStyleBackColor = true;
+            this.btnBlackThreadMulti.Click += new System.EventHandler(this.btnBlackThreadMulti_Click);
             // 
             // panel9
             // 
-            this.panel9.Controls.Add(this.lblReason);
-            this.panel9.Controls.Add(this.label20);
+            this.panel9.Controls.Add(this.lblNgReason);
             this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel9.Location = new System.Drawing.Point(340, 0);
+            this.panel9.Location = new System.Drawing.Point(348, 0);
             this.panel9.Margin = new System.Windows.Forms.Padding(0);
             this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(434, 24);
+            this.panel9.Size = new System.Drawing.Size(446, 24);
             this.panel9.TabIndex = 36;
             // 
-            // lblReason
+            // lblNgReason
             // 
-            this.lblReason.AutoSize = true;
-            this.lblReason.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lblReason.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblReason.Location = new System.Drawing.Point(116, 0);
-            this.lblReason.Margin = new System.Windows.Forms.Padding(0);
-            this.lblReason.Name = "lblReason";
-            this.lblReason.Size = new System.Drawing.Size(90, 24);
-            this.lblReason.TabIndex = 31;
-            this.lblReason.Text = "ＸＸＸＸＸ";
-            this.lblReason.Visible = false;
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.label20.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label20.Location = new System.Drawing.Point(0, 0);
-            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(114, 24);
-            this.label20.TabIndex = 30;
-            this.label20.Text = "NG理由選択：";
+            this.lblNgReason.AutoSize = true;
+            this.lblNgReason.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblNgReason.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblNgReason.Location = new System.Drawing.Point(0, 0);
+            this.lblNgReason.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblNgReason.Name = "lblNgReason";
+            this.lblNgReason.Size = new System.Drawing.Size(114, 24);
+            this.lblNgReason.TabIndex = 30;
+            this.lblNgReason.Text = "NG理由選択：";
             // 
             // label19
             // 
@@ -310,10 +303,10 @@
             this.label19.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label19.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label19.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label19.Location = new System.Drawing.Point(201, 0);
+            this.label19.Location = new System.Drawing.Point(206, 0);
             this.label19.Margin = new System.Windows.Forms.Padding(0);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(139, 24);
+            this.label19.Size = new System.Drawing.Size(142, 24);
             this.label19.TabIndex = 29;
             this.label19.Text = "OK選択：";
             // 
@@ -323,10 +316,10 @@
             this.label14.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label14.Font = new System.Drawing.Font("メイリオ", 12F);
             this.label14.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label14.Location = new System.Drawing.Point(116, 0);
+            this.label14.Location = new System.Drawing.Point(119, 0);
             this.label14.Margin = new System.Windows.Forms.Padding(0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(85, 24);
+            this.label14.Size = new System.Drawing.Size(87, 24);
             this.label14.TabIndex = 20;
             this.label14.Text = "列：";
             // 
@@ -339,182 +332,76 @@
             this.label13.Location = new System.Drawing.Point(0, 0);
             this.label13.Margin = new System.Windows.Forms.Padding(0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(116, 24);
+            this.label13.Size = new System.Drawing.Size(119, 24);
             this.label13.TabIndex = 19;
             this.label13.Text = "行：";
             // 
             // panel7
             // 
-            this.panel7.Controls.Add(this.comboBox1);
+            this.panel7.Controls.Add(this.cmbBoxLine);
             this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel7.Location = new System.Drawing.Point(0, 24);
             this.panel7.Margin = new System.Windows.Forms.Padding(0);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(116, 34);
+            this.panel7.Size = new System.Drawing.Size(119, 37);
             this.panel7.TabIndex = 8;
             // 
-            // comboBox1
+            // cmbBoxLine
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.Font = new System.Drawing.Font("メイリオ", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26",
-            "27",
-            "28",
-            "29",
-            "30",
-            "31",
-            "32",
-            "33",
-            "34",
-            "35",
-            "36",
-            "37",
-            "38",
-            "39",
-            "40",
-            "41",
-            "42",
-            "43",
-            "44",
-            "45",
-            "46",
-            "47",
-            "48",
-            "49",
-            "50",
-            "51",
-            "52",
-            "53",
-            "54",
-            "55",
-            "56",
-            "57",
-            "58",
-            "59",
-            "60",
-            "61",
-            "62",
-            "63",
-            "64",
-            "65",
-            "66",
-            "67",
-            "68",
-            "69",
-            "70",
-            "71",
-            "72",
-            "73",
-            "74",
-            "75",
-            "76",
-            "77",
-            "78",
-            "79",
-            "80",
-            "81",
-            "82",
-            "83",
-            "84",
-            "85",
-            "86",
-            "87",
-            "88",
-            "89",
-            "90",
-            "91",
-            "92",
-            "93",
-            "94",
-            "95",
-            "96",
-            "97",
-            "98",
-            "99"});
-            this.comboBox1.Location = new System.Drawing.Point(0, 0);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(0);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(84, 39);
-            this.comboBox1.TabIndex = 34;
+            this.cmbBoxLine.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbBoxLine.Font = new System.Drawing.Font("メイリオ", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cmbBoxLine.FormattingEnabled = true;
+            this.cmbBoxLine.Location = new System.Drawing.Point(0, 0);
+            this.cmbBoxLine.Margin = new System.Windows.Forms.Padding(0);
+            this.cmbBoxLine.Name = "cmbBoxLine";
+            this.cmbBoxLine.Size = new System.Drawing.Size(84, 39);
+            this.cmbBoxLine.TabIndex = 34;
             // 
             // panel12
             // 
-            this.panel12.Controls.Add(this.comboBox2);
+            this.panel12.Controls.Add(this.cmbBoxColumns);
             this.panel12.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel12.Location = new System.Drawing.Point(116, 24);
+            this.panel12.Location = new System.Drawing.Point(119, 24);
             this.panel12.Margin = new System.Windows.Forms.Padding(0);
             this.panel12.Name = "panel12";
-            this.panel12.Size = new System.Drawing.Size(85, 34);
+            this.panel12.Size = new System.Drawing.Size(87, 37);
             this.panel12.TabIndex = 8;
             // 
-            // comboBox2
+            // cmbBoxColumns
             // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.Font = new System.Drawing.Font("メイリオ", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
-            "A",
-            "B",
-            "C",
-            "D"});
-            this.comboBox2.Location = new System.Drawing.Point(0, 0);
-            this.comboBox2.Margin = new System.Windows.Forms.Padding(0);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(62, 39);
-            this.comboBox2.TabIndex = 34;
+            this.cmbBoxColumns.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbBoxColumns.Font = new System.Drawing.Font("メイリオ", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cmbBoxColumns.FormattingEnabled = true;
+            this.cmbBoxColumns.Location = new System.Drawing.Point(0, 0);
+            this.cmbBoxColumns.Margin = new System.Windows.Forms.Padding(0);
+            this.cmbBoxColumns.Name = "cmbBoxColumns";
+            this.cmbBoxColumns.Size = new System.Drawing.Size(62, 39);
+            this.cmbBoxColumns.TabIndex = 34;
             // 
             // panel13
             // 
-            this.panel13.Controls.Add(this.btnOk);
+            this.panel13.Controls.Add(this.btnOKSelect);
             this.panel13.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel13.Location = new System.Drawing.Point(201, 24);
+            this.panel13.Location = new System.Drawing.Point(206, 24);
             this.panel13.Margin = new System.Windows.Forms.Padding(0);
             this.panel13.Name = "panel13";
-            this.panel13.Size = new System.Drawing.Size(139, 34);
+            this.panel13.Size = new System.Drawing.Size(142, 37);
             this.panel13.TabIndex = 8;
             // 
-            // btnOk
+            // btnOKSelect
             // 
-            this.btnOk.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnOk.Location = new System.Drawing.Point(0, 0);
-            this.btnOk.Margin = new System.Windows.Forms.Padding(0);
-            this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(116, 39);
-            this.btnOk.TabIndex = 25;
-            this.btnOk.Text = "OK";
-            this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new System.EventHandler(this.Button2_Click);
+            this.btnOKSelect.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnOKSelect.Location = new System.Drawing.Point(0, 0);
+            this.btnOKSelect.Margin = new System.Windows.Forms.Padding(0);
+            this.btnOKSelect.Name = "btnOKSelect";
+            this.btnOKSelect.Size = new System.Drawing.Size(116, 39);
+            this.btnOKSelect.TabIndex = 25;
+            this.btnOKSelect.Text = "OK";
+            this.btnOKSelect.UseVisualStyleBackColor = true;
+            this.btnOKSelect.Click += new System.EventHandler(this.btnOKSelect_Click);
             // 
             // tableLayoutPanel6
             // 
-            this.tableLayoutPanel6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.tableLayoutPanel6.ColumnCount = 4;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11F));
@@ -529,21 +416,22 @@
             this.tableLayoutPanel6.Controls.Add(this.panel9, 3, 0);
             this.tableLayoutPanel6.Controls.Add(this.panel10, 3, 1);
             this.tableLayoutPanel6.Controls.Add(this.panel11, 0, 2);
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(11, 516);
+            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 3;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 78F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(774, 136);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(794, 139);
             this.tableLayoutPanel6.TabIndex = 8;
             // 
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.Font = new System.Drawing.Font("メイリオ", 8.25F);
-            this.btnClose.Location = new System.Drawing.Point(635, 12);
+            this.btnClose.Location = new System.Drawing.Point(651, 12);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(134, 40);
             this.btnClose.TabIndex = 9;
@@ -551,39 +439,86 @@
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
-            // btnNextReg
+            // btnNextDefect
             // 
-            this.btnNextReg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNextReg.Font = new System.Drawing.Font("メイリオ", 8.25F);
-            this.btnNextReg.Location = new System.Drawing.Point(493, 12);
-            this.btnNextReg.Name = "btnNextReg";
-            this.btnNextReg.Size = new System.Drawing.Size(134, 40);
-            this.btnNextReg.TabIndex = 9;
-            this.btnNextReg.Text = "次の欠点を登録する";
-            this.btnNextReg.UseVisualStyleBackColor = true;
-            this.btnNextReg.Click += new System.EventHandler(this.btnNextReg_Click);
+            this.btnNextDefect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNextDefect.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.btnNextDefect.Location = new System.Drawing.Point(511, 12);
+            this.btnNextDefect.Name = "btnNextDefect";
+            this.btnNextDefect.Size = new System.Drawing.Size(134, 40);
+            this.btnNextDefect.TabIndex = 9;
+            this.btnNextDefect.Text = "次の欠点を登録する";
+            this.btnNextDefect.UseVisualStyleBackColor = true;
+            this.btnNextDefect.Click += new System.EventHandler(this.btnNextDefect_Click);
             // 
-            // pictureBox1
+            // picMarkingImage
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(161, 80);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(523, 458);
-            this.pictureBox1.TabIndex = 10;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.picMarkingImage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.picMarkingImage.Location = new System.Drawing.Point(3, 18);
+            this.picMarkingImage.Name = "picMarkingImage";
+            this.picMarkingImage.Size = new System.Drawing.Size(788, 437);
+            this.picMarkingImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picMarkingImage.TabIndex = 10;
+            this.picMarkingImage.TabStop = false;
+            this.picMarkingImage.Click += new System.EventHandler(this.picMarkingImage_Click);
             // 
-            // label1
+            // lblMarkingImagepath
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(552, 60);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(109, 17);
-            this.label1.TabIndex = 30;
-            this.label1.Text = "01_F1_A0559.png";
+            this.lblMarkingImagepath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblMarkingImagepath.AutoSize = true;
+            this.lblMarkingImagepath.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblMarkingImagepath.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblMarkingImagepath.Location = new System.Drawing.Point(591, 0);
+            this.lblMarkingImagepath.Margin = new System.Windows.Forms.Padding(2, 0, 100, 0);
+            this.lblMarkingImagepath.Name = "lblMarkingImagepath";
+            this.lblMarkingImagepath.Size = new System.Drawing.Size(103, 15);
+            this.lblMarkingImagepath.TabIndex = 30;
+            this.lblMarkingImagepath.Text = "XXXXXXXXXX.XXX";
+            // 
+            // pnlTop
+            // 
+            this.pnlTop.Controls.Add(this.btnNextDefect);
+            this.pnlTop.Controls.Add(this.btnClose);
+            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlTop.Name = "pnlTop";
+            this.pnlTop.Size = new System.Drawing.Size(794, 57);
+            this.pnlTop.TabIndex = 31;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.tableLayoutPanel6);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(0, 515);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(794, 139);
+            this.panel1.TabIndex = 32;
+            // 
+            // pnlDock
+            // 
+            this.pnlDock.Controls.Add(this.tableLayoutPanel2);
+            this.pnlDock.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDock.Location = new System.Drawing.Point(0, 57);
+            this.pnlDock.Name = "pnlDock";
+            this.pnlDock.Size = new System.Drawing.Size(794, 458);
+            this.pnlDock.TabIndex = 33;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.lblMarkingImagepath, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.picMarkingImage, 0, 1);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 3.49345F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 96.50655F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(794, 458);
+            this.tableLayoutPanel2.TabIndex = 31;
             // 
             // CopyReg
             // 
@@ -591,16 +526,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.ClientSize = new System.Drawing.Size(794, 654);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.btnNextReg);
-            this.Controls.Add(this.btnClose);
-            this.Controls.Add(this.tableLayoutPanel6);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.pnlDock);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pnlTop);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(810, 631);
             this.Name = "CopyReg";
             this.Text = "複写して登録";
+            this.Load += new System.EventHandler(this.CopyReg_Load);
             this.panel11.ResumeLayout(false);
             this.panel11.PerformLayout();
             this.panel10.ResumeLayout(false);
@@ -613,9 +549,13 @@
             this.panel13.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);
             this.tableLayoutPanel6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picMarkingImage)).EndInit();
+            this.pnlTop.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.pnlDock.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -624,33 +564,36 @@
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.Panel panel13;
-        private System.Windows.Forms.Button btnOk;
+        private System.Windows.Forms.Button btnOKSelect;
         private System.Windows.Forms.Panel panel12;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox cmbBoxColumns;
         private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox cmbBoxLine;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Panel panel9;
-        private System.Windows.Forms.Label lblReason;
-        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label lblNgReason;
         private System.Windows.Forms.Panel panel10;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
-        private System.Windows.Forms.Button btnTanpatuWhite;
-        private System.Windows.Forms.Button btnJudgeNG;
+        private System.Windows.Forms.Button btnWhiteThreadOne;
+        private System.Windows.Forms.Button btnOtherNg;
         private System.Windows.Forms.Button btnOther;
-        private System.Windows.Forms.Button btnRenzokuWhite;
-        private System.Windows.Forms.Button btnTanpatuBlack;
-        private System.Windows.Forms.Button btnRenzokuBlack;
+        private System.Windows.Forms.Button btnWhiteThreadMulti;
+        private System.Windows.Forms.Button btnBlackThreadOne;
+        private System.Windows.Forms.Button btnBlackThreadMulti;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label lblXY;
-        private System.Windows.Forms.Label lblNGMen;
+        private System.Windows.Forms.Label lblNgDistance;
+        private System.Windows.Forms.Label lblNgFace;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.Button btnNextReg;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnNextDefect;
+        private System.Windows.Forms.PictureBox picMarkingImage;
+        private System.Windows.Forms.Label lblMarkingImagepath;
+        private System.Windows.Forms.Panel pnlTop;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel pnlDock;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
     }
 }

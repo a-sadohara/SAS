@@ -32,105 +32,105 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DisplayResults));
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.btnLogOut = new System.Windows.Forms.Button();
+            this.pnlTop = new System.Windows.Forms.Panel();
+            this.btnLogout = new System.Windows.Forms.Button();
             this.grbWhere = new System.Windows.Forms.GroupBox();
             this.lblTitleUserNm = new System.Windows.Forms.Label();
             this.lblNgReason = new System.Windows.Forms.Label();
             this.txtNgReason = new System.Windows.Forms.TextBox();
             this.lblNgSide = new System.Windows.Forms.Label();
-            this.txtCol = new System.Windows.Forms.TextBox();
             this.lblCol = new System.Windows.Forms.Label();
-            this.txtNgSide = new System.Windows.Forms.TextBox();
             this.lblRow = new System.Windows.Forms.Label();
-            this.txtUserNm = new System.Windows.Forms.TextBox();
+            this.txtWorkerName = new System.Windows.Forms.TextBox();
             this.lblTitleSearchCushionCnt = new System.Windows.Forms.Label();
-            this.txtRow = new System.Windows.Forms.TextBox();
+            this.txtLine = new System.Windows.Forms.TextBox();
             this.lblTitleSearchImageCnt = new System.Windows.Forms.Label();
-            this.lblSerchCushionCnt = new System.Windows.Forms.Label();
-            this.lblSearchImageCnt = new System.Windows.Forms.Label();
+            this.lblCushionSearchCount = new System.Windows.Forms.Label();
+            this.lblImageSearchCount = new System.Windows.Forms.Label();
             this.lblTitleSearchCnt = new System.Windows.Forms.Label();
+            this.cmbColumns = new System.Windows.Forms.ComboBox();
+            this.cmbNgFace = new System.Windows.Forms.ComboBox();
             this.btnSearch = new System.Windows.Forms.Button();
-            this.lblUser = new System.Windows.Forms.Label();
-            this.lblEndDate = new System.Windows.Forms.Label();
-            this.lblStaDate = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.lblHansoEndDate = new System.Windows.Forms.Label();
-            this.lblHansoStaDate = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.lblNgImgCushionNum = new System.Windows.Forms.Label();
-            this.lblKensaNo = new System.Windows.Forms.Label();
-            this.lblHanNo = new System.Windows.Forms.Label();
-            this.lblSashizu = new System.Windows.Forms.Label();
-            this.lblShinaNm = new System.Windows.Forms.Label();
-            this.lblGoki = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.BackResultCheck = new System.Windows.Forms.Button();
-            this.btnBackTargetSelection = new System.Windows.Forms.Button();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
+            this.lblWorkerName = new System.Windows.Forms.Label();
+            this.lblDecisionEndTime = new System.Windows.Forms.Label();
+            this.lblDecisionStartTime = new System.Windows.Forms.Label();
+            this.lblInspectionLine = new System.Windows.Forms.Label();
+            this.lblEndDatetime = new System.Windows.Forms.Label();
+            this.lblStartDatetime = new System.Windows.Forms.Label();
+            this.lblCushionCount = new System.Windows.Forms.Label();
+            this.lblImageCount = new System.Windows.Forms.Label();
+            this.lblInspectionNum = new System.Windows.Forms.Label();
+            this.lblFabricName = new System.Windows.Forms.Label();
+            this.lblOrderImg = new System.Windows.Forms.Label();
+            this.lblProductName = new System.Windows.Forms.Label();
+            this.lblUnitNum = new System.Windows.Forms.Label();
+            this.pnlBottom = new System.Windows.Forms.Panel();
+            this.btnInspectionUpdate = new System.Windows.Forms.Button();
+            this.btnTargetSelection = new System.Windows.Forms.Button();
+            this.pnlLeft = new System.Windows.Forms.Panel();
+            this.pnlRight = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
-            this.dgvData = new System.Windows.Forms.DataGridView();
-            this.no = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.line = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvDecisionResult = new ImageChecker.MyDataGridView();
+            this.No = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Row = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ng = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.position = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Except = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Ret = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ExceptInpDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ExceptUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CheckInpDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ChekUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UpdInpDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UpdUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UpdBefNgReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.panel1.SuspendLayout();
+            this.NGArea = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvLocationXY = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SearchExclude = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Check = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NGReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SearchTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SearchUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CheckTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CheckUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdateTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdateUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdateNGReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pnlTop.SuspendLayout();
             this.grbWhere.SuspendLayout();
-            this.panel4.SuspendLayout();
+            this.pnlBottom.SuspendLayout();
             this.panel6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDecisionResult)).BeginInit();
             this.SuspendLayout();
             // 
-            // panel1
+            // pnlTop
             // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.panel1.Controls.Add(this.btnLogOut);
-            this.panel1.Controls.Add(this.grbWhere);
-            this.panel1.Controls.Add(this.btnSearch);
-            this.panel1.Controls.Add(this.lblUser);
-            this.panel1.Controls.Add(this.lblEndDate);
-            this.panel1.Controls.Add(this.lblStaDate);
-            this.panel1.Controls.Add(this.label7);
-            this.panel1.Controls.Add(this.lblHansoEndDate);
-            this.panel1.Controls.Add(this.lblHansoStaDate);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.lblNgImgCushionNum);
-            this.panel1.Controls.Add(this.lblKensaNo);
-            this.panel1.Controls.Add(this.lblHanNo);
-            this.panel1.Controls.Add(this.lblSashizu);
-            this.panel1.Controls.Add(this.lblShinaNm);
-            this.panel1.Controls.Add(this.lblGoki);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1276, 156);
-            this.panel1.TabIndex = 0;
+            this.pnlTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
+            this.pnlTop.Controls.Add(this.btnLogout);
+            this.pnlTop.Controls.Add(this.grbWhere);
+            this.pnlTop.Controls.Add(this.btnSearch);
+            this.pnlTop.Controls.Add(this.lblWorkerName);
+            this.pnlTop.Controls.Add(this.lblDecisionEndTime);
+            this.pnlTop.Controls.Add(this.lblDecisionStartTime);
+            this.pnlTop.Controls.Add(this.lblInspectionLine);
+            this.pnlTop.Controls.Add(this.lblEndDatetime);
+            this.pnlTop.Controls.Add(this.lblStartDatetime);
+            this.pnlTop.Controls.Add(this.lblCushionCount);
+            this.pnlTop.Controls.Add(this.lblImageCount);
+            this.pnlTop.Controls.Add(this.lblInspectionNum);
+            this.pnlTop.Controls.Add(this.lblFabricName);
+            this.pnlTop.Controls.Add(this.lblOrderImg);
+            this.pnlTop.Controls.Add(this.lblProductName);
+            this.pnlTop.Controls.Add(this.lblUnitNum);
+            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlTop.Margin = new System.Windows.Forms.Padding(2);
+            this.pnlTop.Name = "pnlTop";
+            this.pnlTop.Size = new System.Drawing.Size(1276, 156);
+            this.pnlTop.TabIndex = 0;
             // 
-            // btnLogOut
+            // btnLogout
             // 
-            this.btnLogOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLogOut.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnLogOut.Location = new System.Drawing.Point(1158, 9);
-            this.btnLogOut.Margin = new System.Windows.Forms.Padding(2);
-            this.btnLogOut.Name = "btnLogOut";
-            this.btnLogOut.Size = new System.Drawing.Size(107, 36);
-            this.btnLogOut.TabIndex = 0;
-            this.btnLogOut.Text = "ログアウト";
-            this.btnLogOut.UseVisualStyleBackColor = true;
-            this.btnLogOut.Click += new System.EventHandler(this.btnLogOut_Click);
+            this.btnLogout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLogout.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.btnLogout.Location = new System.Drawing.Point(1158, 9);
+            this.btnLogout.Margin = new System.Windows.Forms.Padding(2);
+            this.btnLogout.Name = "btnLogout";
+            this.btnLogout.Size = new System.Drawing.Size(107, 36);
+            this.btnLogout.TabIndex = 0;
+            this.btnLogout.Text = "ログアウト";
+            this.btnLogout.UseVisualStyleBackColor = true;
+            this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
             // 
             // grbWhere
             // 
@@ -138,17 +138,17 @@
             this.grbWhere.Controls.Add(this.lblNgReason);
             this.grbWhere.Controls.Add(this.txtNgReason);
             this.grbWhere.Controls.Add(this.lblNgSide);
-            this.grbWhere.Controls.Add(this.txtCol);
             this.grbWhere.Controls.Add(this.lblCol);
-            this.grbWhere.Controls.Add(this.txtNgSide);
             this.grbWhere.Controls.Add(this.lblRow);
-            this.grbWhere.Controls.Add(this.txtUserNm);
+            this.grbWhere.Controls.Add(this.txtWorkerName);
             this.grbWhere.Controls.Add(this.lblTitleSearchCushionCnt);
-            this.grbWhere.Controls.Add(this.txtRow);
+            this.grbWhere.Controls.Add(this.txtLine);
             this.grbWhere.Controls.Add(this.lblTitleSearchImageCnt);
-            this.grbWhere.Controls.Add(this.lblSerchCushionCnt);
-            this.grbWhere.Controls.Add(this.lblSearchImageCnt);
+            this.grbWhere.Controls.Add(this.lblCushionSearchCount);
+            this.grbWhere.Controls.Add(this.lblImageSearchCount);
             this.grbWhere.Controls.Add(this.lblTitleSearchCnt);
+            this.grbWhere.Controls.Add(this.cmbColumns);
+            this.grbWhere.Controls.Add(this.cmbNgFace);
             this.grbWhere.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.grbWhere.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.grbWhere.Location = new System.Drawing.Point(448, 4);
@@ -186,9 +186,12 @@
             // 
             this.txtNgReason.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtNgReason.Location = new System.Drawing.Point(281, 52);
+            this.txtNgReason.MaxLength = 16;
             this.txtNgReason.Name = "txtNgReason";
             this.txtNgReason.Size = new System.Drawing.Size(100, 24);
             this.txtNgReason.TabIndex = 26;
+            this.txtNgReason.Text = "ＷＷＷＷＷＷＷＷＷＷＷＷＷＷＷＷ";
+            this.txtNgReason.DoubleClick += new System.EventHandler(this.txtNgReason_DoubleClick);
             // 
             // lblNgSide
             // 
@@ -202,14 +205,6 @@
             this.lblNgSide.TabIndex = 1;
             this.lblNgSide.Text = "NG面：";
             // 
-            // txtCol
-            // 
-            this.txtCol.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtCol.Location = new System.Drawing.Point(89, 78);
-            this.txtCol.Name = "txtCol";
-            this.txtCol.Size = new System.Drawing.Size(53, 24);
-            this.txtCol.TabIndex = 26;
-            // 
             // lblCol
             // 
             this.lblCol.AutoSize = true;
@@ -221,14 +216,6 @@
             this.lblCol.Size = new System.Drawing.Size(30, 17);
             this.lblCol.TabIndex = 1;
             this.lblCol.Text = "列：";
-            // 
-            // txtNgSide
-            // 
-            this.txtNgSide.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtNgSide.Location = new System.Drawing.Point(281, 26);
-            this.txtNgSide.Name = "txtNgSide";
-            this.txtNgSide.Size = new System.Drawing.Size(53, 24);
-            this.txtNgSide.TabIndex = 26;
             // 
             // lblRow
             // 
@@ -242,19 +229,18 @@
             this.lblRow.TabIndex = 1;
             this.lblRow.Text = "行：";
             // 
-            // txtUserNm
+            // txtWorkerName
             // 
-            this.txtUserNm.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtUserNm.ImeMode = System.Windows.Forms.ImeMode.Disable;
-            this.txtUserNm.Location = new System.Drawing.Point(89, 26);
-            this.txtUserNm.Name = "txtUserNm";
-            this.txtUserNm.Size = new System.Drawing.Size(100, 24);
-            this.txtUserNm.TabIndex = 26;
-            this.txtUserNm.Click += new System.EventHandler(this.txtUser_FocusIn);
-            this.txtUserNm.DoubleClick += new System.EventHandler(this.txtUserNm_DoubleClick);
-            this.txtUserNm.Enter += new System.EventHandler(this.txtUser_FocusIn);
-            this.txtUserNm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtUserNm_KeyDown);
-            this.txtUserNm.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtUserNm_KeyPress);
+            this.txtWorkerName.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtWorkerName.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.txtWorkerName.Location = new System.Drawing.Point(89, 26);
+            this.txtWorkerName.MaxLength = 10;
+            this.txtWorkerName.Name = "txtWorkerName";
+            this.txtWorkerName.Size = new System.Drawing.Size(100, 24);
+            this.txtWorkerName.TabIndex = 26;
+            this.txtWorkerName.Text = "ＷＷＷＷＷＷＷＷＷＷ";
+            this.txtWorkerName.DoubleClick += new System.EventHandler(this.txtWorkerName_DoubleClick);
+            this.txtWorkerName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWorkerName_KeyPress);
             // 
             // lblTitleSearchCushionCnt
             // 
@@ -268,13 +254,17 @@
             this.lblTitleSearchCushionCnt.TabIndex = 1;
             this.lblTitleSearchCushionCnt.Text = "クッション数：";
             // 
-            // txtRow
+            // txtLine
             // 
-            this.txtRow.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtRow.Location = new System.Drawing.Point(89, 52);
-            this.txtRow.Name = "txtRow";
-            this.txtRow.Size = new System.Drawing.Size(53, 24);
-            this.txtRow.TabIndex = 26;
+            this.txtLine.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txtLine.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.txtLine.Location = new System.Drawing.Point(89, 52);
+            this.txtLine.MaxLength = 4;
+            this.txtLine.Name = "txtLine";
+            this.txtLine.Size = new System.Drawing.Size(53, 24);
+            this.txtLine.TabIndex = 26;
+            this.txtLine.Text = "9999";
+            this.txtLine.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtLine_KeyPress);
             // 
             // lblTitleSearchImageCnt
             // 
@@ -288,29 +278,29 @@
             this.lblTitleSearchImageCnt.TabIndex = 1;
             this.lblTitleSearchImageCnt.Text = "画像検査枚数：";
             // 
-            // lblSerchCushionCnt
+            // lblCushionSearchCount
             // 
-            this.lblSerchCushionCnt.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblSerchCushionCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSerchCushionCnt.Location = new System.Drawing.Point(337, 119);
-            this.lblSerchCushionCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblSerchCushionCnt.Name = "lblSerchCushionCnt";
-            this.lblSerchCushionCnt.Size = new System.Drawing.Size(77, 17);
-            this.lblSerchCushionCnt.TabIndex = 1;
-            this.lblSerchCushionCnt.Text = "9999 / 9999";
-            this.lblSerchCushionCnt.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblCushionSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblCushionSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblCushionSearchCount.Location = new System.Drawing.Point(337, 119);
+            this.lblCushionSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblCushionSearchCount.Name = "lblCushionSearchCount";
+            this.lblCushionSearchCount.Size = new System.Drawing.Size(77, 17);
+            this.lblCushionSearchCount.TabIndex = 1;
+            this.lblCushionSearchCount.Text = "9999 / 9999";
+            this.lblCushionSearchCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblSearchImageCnt
+            // lblImageSearchCount
             // 
-            this.lblSearchImageCnt.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblSearchImageCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSearchImageCnt.Location = new System.Drawing.Point(337, 102);
-            this.lblSearchImageCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblSearchImageCnt.Name = "lblSearchImageCnt";
-            this.lblSearchImageCnt.Size = new System.Drawing.Size(77, 17);
-            this.lblSearchImageCnt.TabIndex = 1;
-            this.lblSearchImageCnt.Text = "9999 / 9999";
-            this.lblSearchImageCnt.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblImageSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblImageSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblImageSearchCount.Location = new System.Drawing.Point(337, 102);
+            this.lblImageSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblImageSearchCount.Name = "lblImageSearchCount";
+            this.lblImageSearchCount.Size = new System.Drawing.Size(77, 17);
+            this.lblImageSearchCount.TabIndex = 1;
+            this.lblImageSearchCount.Text = "9999 / 9999";
+            this.lblImageSearchCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblTitleSearchCnt
             // 
@@ -324,6 +314,37 @@
             this.lblTitleSearchCnt.TabIndex = 1;
             this.lblTitleSearchCnt.Text = "検索件数：";
             // 
+            // cmbColumns
+            // 
+            this.cmbColumns.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.cmbColumns.FormattingEnabled = true;
+            this.cmbColumns.Items.AddRange(new object[] {
+            "",
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"});
+            this.cmbColumns.Location = new System.Drawing.Point(89, 78);
+            this.cmbColumns.Name = "cmbColumns";
+            this.cmbColumns.Size = new System.Drawing.Size(53, 25);
+            this.cmbColumns.TabIndex = 27;
+            this.cmbColumns.Text = "W";
+            // 
+            // cmbNgFace
+            // 
+            this.cmbNgFace.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.cmbNgFace.FormattingEnabled = true;
+            this.cmbNgFace.Items.AddRange(new object[] {
+            "",
+            "#1",
+            "#2"});
+            this.cmbNgFace.Location = new System.Drawing.Point(281, 26);
+            this.cmbNgFace.Name = "cmbNgFace";
+            this.cmbNgFace.Size = new System.Drawing.Size(53, 25);
+            this.cmbNgFace.TabIndex = 27;
+            this.cmbNgFace.Text = "WW";
+            // 
             // btnSearch
             // 
             this.btnSearch.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -336,227 +357,227 @@
             this.btnSearch.UseVisualStyleBackColor = true;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
-            // lblUser
+            // lblWorkerName
             // 
-            this.lblUser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblUser.AutoSize = true;
-            this.lblUser.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblUser.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblUser.Location = new System.Drawing.Point(854, 19);
-            this.lblUser.Margin = new System.Windows.Forms.Padding(2);
-            this.lblUser.MaximumSize = new System.Drawing.Size(300, 0);
-            this.lblUser.MinimumSize = new System.Drawing.Size(300, 0);
-            this.lblUser.Name = "lblUser";
-            this.lblUser.Size = new System.Drawing.Size(300, 17);
-            this.lblUser.TabIndex = 25;
-            this.lblUser.Text = "作業者名：XXXXXXXX";
-            this.lblUser.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.lblWorkerName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblWorkerName.AutoSize = true;
+            this.lblWorkerName.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblWorkerName.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblWorkerName.Location = new System.Drawing.Point(854, 19);
+            this.lblWorkerName.Margin = new System.Windows.Forms.Padding(2);
+            this.lblWorkerName.MaximumSize = new System.Drawing.Size(300, 0);
+            this.lblWorkerName.MinimumSize = new System.Drawing.Size(300, 0);
+            this.lblWorkerName.Name = "lblWorkerName";
+            this.lblWorkerName.Size = new System.Drawing.Size(300, 17);
+            this.lblWorkerName.TabIndex = 25;
+            this.lblWorkerName.Text = "作業者名：XXXXXXXX";
+            this.lblWorkerName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // lblEndDate
+            // lblDecisionEndTime
             // 
-            this.lblEndDate.AutoSize = true;
-            this.lblEndDate.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblEndDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblEndDate.Location = new System.Drawing.Point(157, 77);
-            this.lblEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblEndDate.Name = "lblEndDate";
-            this.lblEndDate.Size = new System.Drawing.Size(207, 17);
-            this.lblEndDate.TabIndex = 24;
-            this.lblEndDate.Text = "判定終了日時：2019/01/22 19:10:15";
+            this.lblDecisionEndTime.AutoSize = true;
+            this.lblDecisionEndTime.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblDecisionEndTime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblDecisionEndTime.Location = new System.Drawing.Point(157, 77);
+            this.lblDecisionEndTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblDecisionEndTime.Name = "lblDecisionEndTime";
+            this.lblDecisionEndTime.Size = new System.Drawing.Size(207, 17);
+            this.lblDecisionEndTime.TabIndex = 24;
+            this.lblDecisionEndTime.Text = "判定終了日時：2999/12/31 23:59:59";
             // 
-            // lblStaDate
+            // lblDecisionStartTime
             // 
-            this.lblStaDate.AutoSize = true;
-            this.lblStaDate.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblStaDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblStaDate.Location = new System.Drawing.Point(157, 60);
-            this.lblStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblStaDate.Name = "lblStaDate";
-            this.lblStaDate.Size = new System.Drawing.Size(207, 17);
-            this.lblStaDate.TabIndex = 23;
-            this.lblStaDate.Text = "判定開始日時：2019/01/22 16:30:15";
+            this.lblDecisionStartTime.AutoSize = true;
+            this.lblDecisionStartTime.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblDecisionStartTime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblDecisionStartTime.Location = new System.Drawing.Point(157, 60);
+            this.lblDecisionStartTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblDecisionStartTime.Name = "lblDecisionStartTime";
+            this.lblDecisionStartTime.Size = new System.Drawing.Size(207, 17);
+            this.lblDecisionStartTime.TabIndex = 23;
+            this.lblDecisionStartTime.Text = "判定開始日時：2999/12/31 23:59:59";
             // 
-            // label7
+            // lblInspectionLine
             // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.label7.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label7.Location = new System.Drawing.Point(157, 43);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(124, 17);
-            this.label7.TabIndex = 21;
-            this.label7.Text = "検査範囲行　：1～351";
+            this.lblInspectionLine.AutoSize = true;
+            this.lblInspectionLine.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblInspectionLine.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblInspectionLine.Location = new System.Drawing.Point(157, 43);
+            this.lblInspectionLine.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblInspectionLine.Name = "lblInspectionLine";
+            this.lblInspectionLine.Size = new System.Drawing.Size(152, 17);
+            this.lblInspectionLine.TabIndex = 21;
+            this.lblInspectionLine.Text = "検査範囲行　：9999～9999";
             // 
-            // lblHansoEndDate
+            // lblEndDatetime
             // 
-            this.lblHansoEndDate.AutoSize = true;
-            this.lblHansoEndDate.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblHansoEndDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblHansoEndDate.Location = new System.Drawing.Point(157, 26);
-            this.lblHansoEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblHansoEndDate.Name = "lblHansoEndDate";
-            this.lblHansoEndDate.Size = new System.Drawing.Size(207, 17);
-            this.lblHansoEndDate.TabIndex = 20;
-            this.lblHansoEndDate.Text = "搬送終了日時：2019/01/22 19:10:15";
+            this.lblEndDatetime.AutoSize = true;
+            this.lblEndDatetime.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblEndDatetime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblEndDatetime.Location = new System.Drawing.Point(157, 26);
+            this.lblEndDatetime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblEndDatetime.Name = "lblEndDatetime";
+            this.lblEndDatetime.Size = new System.Drawing.Size(207, 17);
+            this.lblEndDatetime.TabIndex = 20;
+            this.lblEndDatetime.Text = "搬送終了日時：2999/12/31 23:59:59";
             // 
-            // lblHansoStaDate
+            // lblStartDatetime
             // 
-            this.lblHansoStaDate.AutoSize = true;
-            this.lblHansoStaDate.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblHansoStaDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblHansoStaDate.Location = new System.Drawing.Point(157, 9);
-            this.lblHansoStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblHansoStaDate.Name = "lblHansoStaDate";
-            this.lblHansoStaDate.Size = new System.Drawing.Size(207, 17);
-            this.lblHansoStaDate.TabIndex = 19;
-            this.lblHansoStaDate.Text = "搬送開始日時：2019/01/22 16:30:15";
+            this.lblStartDatetime.AutoSize = true;
+            this.lblStartDatetime.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblStartDatetime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblStartDatetime.Location = new System.Drawing.Point(157, 9);
+            this.lblStartDatetime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblStartDatetime.Name = "lblStartDatetime";
+            this.lblStartDatetime.Size = new System.Drawing.Size(207, 17);
+            this.lblStartDatetime.TabIndex = 19;
+            this.lblStartDatetime.Text = "搬送開始日時：2999/12/31 23:59:59";
             // 
-            // label2
+            // lblCushionCount
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.label2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label2.Location = new System.Drawing.Point(157, 111);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(243, 17);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "クッション数：1404（NG：55 / OK：1349）";
+            this.lblCushionCount.AutoSize = true;
+            this.lblCushionCount.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblCushionCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblCushionCount.Location = new System.Drawing.Point(157, 111);
+            this.lblCushionCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblCushionCount.Name = "lblCushionCount";
+            this.lblCushionCount.Size = new System.Drawing.Size(257, 17);
+            this.lblCushionCount.TabIndex = 1;
+            this.lblCushionCount.Text = "クッション数：9999（NG：9999 / OK：9999）";
             // 
-            // lblNgImgCushionNum
+            // lblImageCount
             // 
-            this.lblNgImgCushionNum.AutoSize = true;
-            this.lblNgImgCushionNum.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblNgImgCushionNum.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgImgCushionNum.Location = new System.Drawing.Point(157, 94);
-            this.lblNgImgCushionNum.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblNgImgCushionNum.Name = "lblNgImgCushionNum";
-            this.lblNgImgCushionNum.Size = new System.Drawing.Size(229, 17);
-            this.lblNgImgCushionNum.TabIndex = 1;
-            this.lblNgImgCushionNum.Text = "画像検査枚数：200（NG：55 / OK：145）";
+            this.lblImageCount.AutoSize = true;
+            this.lblImageCount.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblImageCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblImageCount.Location = new System.Drawing.Point(157, 94);
+            this.lblImageCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblImageCount.Name = "lblImageCount";
+            this.lblImageCount.Size = new System.Drawing.Size(243, 17);
+            this.lblImageCount.TabIndex = 1;
+            this.lblImageCount.Text = "画像検査枚数：9999（NG：999 / OK：999）";
             // 
-            // lblKensaNo
+            // lblInspectionNum
             // 
-            this.lblKensaNo.AutoSize = true;
-            this.lblKensaNo.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblKensaNo.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblKensaNo.Location = new System.Drawing.Point(157, 128);
-            this.lblKensaNo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblKensaNo.Name = "lblKensaNo";
-            this.lblKensaNo.Size = new System.Drawing.Size(74, 17);
-            this.lblKensaNo.TabIndex = 1;
-            this.lblKensaNo.Text = "検査番号： 9";
+            this.lblInspectionNum.AutoSize = true;
+            this.lblInspectionNum.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblInspectionNum.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblInspectionNum.Location = new System.Drawing.Point(157, 128);
+            this.lblInspectionNum.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblInspectionNum.Name = "lblInspectionNum";
+            this.lblInspectionNum.Size = new System.Drawing.Size(77, 17);
+            this.lblInspectionNum.TabIndex = 1;
+            this.lblInspectionNum.Text = "検査番号：99";
             // 
-            // lblHanNo
+            // lblFabricName
             // 
-            this.lblHanNo.AutoSize = true;
-            this.lblHanNo.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblHanNo.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblHanNo.Location = new System.Drawing.Point(16, 60);
-            this.lblHanNo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblHanNo.Name = "lblHanNo";
-            this.lblHanNo.Size = new System.Drawing.Size(109, 17);
-            this.lblHanNo.TabIndex = 1;
-            this.lblHanNo.Text = "反番：470068-0AC";
+            this.lblFabricName.AutoSize = true;
+            this.lblFabricName.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblFabricName.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblFabricName.Location = new System.Drawing.Point(16, 60);
+            this.lblFabricName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblFabricName.Name = "lblFabricName";
+            this.lblFabricName.Size = new System.Drawing.Size(117, 17);
+            this.lblFabricName.TabIndex = 1;
+            this.lblFabricName.Text = "反番：999999-0WW";
             // 
-            // lblSashizu
+            // lblOrderImg
             // 
-            this.lblSashizu.AutoSize = true;
-            this.lblSashizu.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblSashizu.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblSashizu.Location = new System.Drawing.Point(16, 42);
-            this.lblSashizu.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblSashizu.Name = "lblSashizu";
-            this.lblSashizu.Size = new System.Drawing.Size(90, 17);
-            this.lblSashizu.TabIndex = 1;
-            this.lblSashizu.Text = "指図：1070551";
+            this.lblOrderImg.AutoSize = true;
+            this.lblOrderImg.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblOrderImg.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblOrderImg.Location = new System.Drawing.Point(16, 42);
+            this.lblOrderImg.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblOrderImg.Name = "lblOrderImg";
+            this.lblOrderImg.Size = new System.Drawing.Size(90, 17);
+            this.lblOrderImg.TabIndex = 1;
+            this.lblOrderImg.Text = "指図：9999999";
             // 
-            // lblShinaNm
+            // lblProductName
             // 
-            this.lblShinaNm.AutoSize = true;
-            this.lblShinaNm.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblShinaNm.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblShinaNm.Location = new System.Drawing.Point(16, 26);
-            this.lblShinaNm.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblShinaNm.Name = "lblShinaNm";
-            this.lblShinaNm.Size = new System.Drawing.Size(73, 17);
-            this.lblShinaNm.TabIndex = 1;
-            this.lblShinaNm.Text = "品名：S115 ";
+            this.lblProductName.AutoSize = true;
+            this.lblProductName.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblProductName.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblProductName.Location = new System.Drawing.Point(16, 26);
+            this.lblProductName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblProductName.Name = "lblProductName";
+            this.lblProductName.Size = new System.Drawing.Size(73, 17);
+            this.lblProductName.TabIndex = 1;
+            this.lblProductName.Text = "品名：W999";
             // 
-            // lblGoki
+            // lblUnitNum
             // 
-            this.lblGoki.AutoSize = true;
-            this.lblGoki.Font = new System.Drawing.Font("メイリオ", 8F);
-            this.lblGoki.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblGoki.Location = new System.Drawing.Point(16, 9);
-            this.lblGoki.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblGoki.Name = "lblGoki";
-            this.lblGoki.Size = new System.Drawing.Size(56, 17);
-            this.lblGoki.TabIndex = 1;
-            this.lblGoki.Text = "号機：N4";
+            this.lblUnitNum.AutoSize = true;
+            this.lblUnitNum.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.lblUnitNum.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblUnitNum.Location = new System.Drawing.Point(16, 9);
+            this.lblUnitNum.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblUnitNum.Name = "lblUnitNum";
+            this.lblUnitNum.Size = new System.Drawing.Size(63, 17);
+            this.lblUnitNum.TabIndex = 1;
+            this.lblUnitNum.Text = "号機：WW";
             // 
-            // panel4
+            // pnlBottom
             // 
-            this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.panel4.Controls.Add(this.BackResultCheck);
-            this.panel4.Controls.Add(this.btnBackTargetSelection);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 521);
-            this.panel4.Margin = new System.Windows.Forms.Padding(2);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1276, 78);
-            this.panel4.TabIndex = 3;
+            this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
+            this.pnlBottom.Controls.Add(this.btnInspectionUpdate);
+            this.pnlBottom.Controls.Add(this.btnTargetSelection);
+            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBottom.Location = new System.Drawing.Point(0, 521);
+            this.pnlBottom.Margin = new System.Windows.Forms.Padding(2);
+            this.pnlBottom.Name = "pnlBottom";
+            this.pnlBottom.Size = new System.Drawing.Size(1276, 78);
+            this.pnlBottom.TabIndex = 3;
             // 
-            // BackResultCheck
+            // btnInspectionUpdate
             // 
-            this.BackResultCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BackResultCheck.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.BackResultCheck.Location = new System.Drawing.Point(1131, 13);
-            this.BackResultCheck.Margin = new System.Windows.Forms.Padding(2);
-            this.BackResultCheck.Name = "BackResultCheck";
-            this.BackResultCheck.Size = new System.Drawing.Size(127, 54);
-            this.BackResultCheck.TabIndex = 1;
-            this.BackResultCheck.Text = "検査結果を\r\n更新する";
-            this.BackResultCheck.UseVisualStyleBackColor = true;
-            this.BackResultCheck.Click += new System.EventHandler(this.BackResultCheck_Click);
+            this.btnInspectionUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnInspectionUpdate.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.btnInspectionUpdate.Location = new System.Drawing.Point(1131, 13);
+            this.btnInspectionUpdate.Margin = new System.Windows.Forms.Padding(2);
+            this.btnInspectionUpdate.Name = "btnInspectionUpdate";
+            this.btnInspectionUpdate.Size = new System.Drawing.Size(127, 54);
+            this.btnInspectionUpdate.TabIndex = 1;
+            this.btnInspectionUpdate.Text = "検査結果を\r\n更新する";
+            this.btnInspectionUpdate.UseVisualStyleBackColor = true;
+            this.btnInspectionUpdate.Click += new System.EventHandler(this.btnInspectionUpdate_Click);
             // 
-            // btnBackTargetSelection
+            // btnTargetSelection
             // 
-            this.btnBackTargetSelection.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnBackTargetSelection.Location = new System.Drawing.Point(18, 13);
-            this.btnBackTargetSelection.Margin = new System.Windows.Forms.Padding(2);
-            this.btnBackTargetSelection.Name = "btnBackTargetSelection";
-            this.btnBackTargetSelection.Size = new System.Drawing.Size(127, 54);
-            this.btnBackTargetSelection.TabIndex = 0;
-            this.btnBackTargetSelection.Text = "検査対象\r\n選択へ戻る";
-            this.btnBackTargetSelection.UseVisualStyleBackColor = true;
-            this.btnBackTargetSelection.Click += new System.EventHandler(this.Button1_Click);
+            this.btnTargetSelection.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.btnTargetSelection.Location = new System.Drawing.Point(18, 13);
+            this.btnTargetSelection.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTargetSelection.Name = "btnTargetSelection";
+            this.btnTargetSelection.Size = new System.Drawing.Size(127, 54);
+            this.btnTargetSelection.TabIndex = 0;
+            this.btnTargetSelection.Text = "検査対象\r\n選択へ戻る";
+            this.btnTargetSelection.UseVisualStyleBackColor = true;
+            this.btnTargetSelection.Click += new System.EventHandler(this.btnTargetSelection_Click);
             // 
-            // panel2
+            // pnlLeft
             // 
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel2.Location = new System.Drawing.Point(0, 156);
-            this.panel2.Margin = new System.Windows.Forms.Padding(2);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(40, 365);
-            this.panel2.TabIndex = 4;
+            this.pnlLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
+            this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pnlLeft.Location = new System.Drawing.Point(0, 156);
+            this.pnlLeft.Margin = new System.Windows.Forms.Padding(2);
+            this.pnlLeft.Name = "pnlLeft";
+            this.pnlLeft.Size = new System.Drawing.Size(40, 365);
+            this.pnlLeft.TabIndex = 4;
             // 
-            // panel3
+            // pnlRight
             // 
-            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(1219, 156);
-            this.panel3.Margin = new System.Windows.Forms.Padding(2);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(57, 365);
-            this.panel3.TabIndex = 5;
+            this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
+            this.pnlRight.Dock = System.Windows.Forms.DockStyle.Right;
+            this.pnlRight.Location = new System.Drawing.Point(1219, 156);
+            this.pnlRight.Margin = new System.Windows.Forms.Padding(2);
+            this.pnlRight.Name = "pnlRight";
+            this.pnlRight.Size = new System.Drawing.Size(57, 365);
+            this.pnlRight.TabIndex = 5;
             // 
             // panel6
             // 
             this.panel6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.panel6.Controls.Add(this.dgvData);
+            this.panel6.Controls.Add(this.dgvDecisionResult);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(40, 156);
             this.panel6.Margin = new System.Windows.Forms.Padding(2);
@@ -564,10 +585,10 @@
             this.panel6.Size = new System.Drawing.Size(1179, 365);
             this.panel6.TabIndex = 6;
             // 
-            // dgvData
+            // dgvDecisionResult
             // 
-            this.dgvData.AllowUserToAddRows = false;
-            this.dgvData.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
+            this.dgvDecisionResult.AllowUserToAddRows = false;
+            this.dgvDecisionResult.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle1.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -575,24 +596,24 @@
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvData.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvData.ColumnHeadersHeight = 30;
-            this.dgvData.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.no,
-            this.line,
+            this.dgvDecisionResult.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvDecisionResult.ColumnHeadersHeight = 30;
+            this.dgvDecisionResult.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.No,
+            this.Row,
             this.Column,
-            this.ng,
-            this.position,
-            this.Except,
-            this.Ret,
-            this.reason,
-            this.ExceptInpDate,
-            this.ExceptUser,
-            this.CheckInpDate,
-            this.ChekUser,
-            this.UpdInpDate,
-            this.UpdUser,
-            this.UpdBefNgReason});
+            this.NGArea,
+            this.dgvLocationXY,
+            this.SearchExclude,
+            this.Check,
+            this.NGReason,
+            this.SearchTime,
+            this.SearchUser,
+            this.CheckTime,
+            this.CheckUser,
+            this.UpdateTime,
+            this.UpdateUser,
+            this.UpdateNGReason});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -600,14 +621,15 @@
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvData.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dgvData.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvData.EnableHeadersVisualStyles = false;
-            this.dgvData.Location = new System.Drawing.Point(0, 0);
-            this.dgvData.Margin = new System.Windows.Forms.Padding(2);
-            this.dgvData.MultiSelect = false;
-            this.dgvData.Name = "dgvData";
-            this.dgvData.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.dgvDecisionResult.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dgvDecisionResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvDecisionResult.EnableHeadersVisualStyles = false;
+            this.dgvDecisionResult.Location = new System.Drawing.Point(0, 0);
+            this.dgvDecisionResult.Margin = new System.Windows.Forms.Padding(2);
+            this.dgvDecisionResult.MultiSelect = false;
+            this.dgvDecisionResult.Name = "dgvDecisionResult";
+            this.dgvDecisionResult.ReadOnly = true;
+            this.dgvDecisionResult.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle3.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -615,116 +637,133 @@
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvData.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.dgvData.RowHeadersVisible = false;
-            this.dgvData.RowHeadersWidth = 51;
-            this.dgvData.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dgvData.RowTemplate.Height = 75;
-            this.dgvData.RowTemplate.ReadOnly = true;
-            this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvData.Size = new System.Drawing.Size(1179, 365);
-            this.dgvData.TabIndex = 0;
-            this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
-            this.dgvData.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dgvData_MouseUp);
+            this.dgvDecisionResult.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.dgvDecisionResult.RowHeadersVisible = false;
+            this.dgvDecisionResult.RowHeadersWidth = 51;
+            this.dgvDecisionResult.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.dgvDecisionResult.RowTemplate.Height = 75;
+            this.dgvDecisionResult.RowTemplate.ReadOnly = true;
+            this.dgvDecisionResult.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvDecisionResult.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvDecisionResult.Size = new System.Drawing.Size(1179, 365);
+            this.dgvDecisionResult.TabIndex = 0;
+            this.dgvDecisionResult.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDecisionResult_CellClick);
+            this.dgvDecisionResult.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dgvDecisionResult_MouseDown);
+            this.dgvDecisionResult.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dgvDecisionResult_MouseMove);
             // 
-            // no
+            // No
             // 
-            this.no.HeaderText = "№";
-            this.no.MinimumWidth = 6;
-            this.no.Name = "no";
-            this.no.Width = 50;
+            this.No.HeaderText = "№";
+            this.No.MinimumWidth = 6;
+            this.No.Name = "No";
+            this.No.ReadOnly = true;
+            this.No.Width = 50;
             // 
-            // line
+            // Row
             // 
-            this.line.HeaderText = "行";
-            this.line.MinimumWidth = 6;
-            this.line.Name = "line";
-            this.line.Width = 68;
+            this.Row.HeaderText = "行";
+            this.Row.MinimumWidth = 6;
+            this.Row.Name = "Row";
+            this.Row.ReadOnly = true;
+            this.Row.Width = 68;
             // 
             // Column
             // 
             this.Column.HeaderText = "列";
             this.Column.MinimumWidth = 6;
             this.Column.Name = "Column";
+            this.Column.ReadOnly = true;
             this.Column.Width = 47;
             // 
-            // ng
+            // NGArea
             // 
-            this.ng.HeaderText = "NG面";
-            this.ng.MinimumWidth = 6;
-            this.ng.Name = "ng";
-            this.ng.Width = 66;
+            this.NGArea.HeaderText = "NG面";
+            this.NGArea.MinimumWidth = 6;
+            this.NGArea.Name = "NGArea";
+            this.NGArea.ReadOnly = true;
+            this.NGArea.Width = 66;
             // 
-            // position
+            // dgvLocationXY
             // 
-            this.position.HeaderText = "位置(X,Y)cm";
-            this.position.MinimumWidth = 6;
-            this.position.Name = "position";
-            this.position.Width = 113;
+            this.dgvLocationXY.HeaderText = "位置(X,Y)cm";
+            this.dgvLocationXY.MinimumWidth = 6;
+            this.dgvLocationXY.Name = "dgvLocationXY";
+            this.dgvLocationXY.ReadOnly = true;
+            this.dgvLocationXY.Width = 113;
             // 
-            // Except
+            // SearchExclude
             // 
-            this.Except.HeaderText = "過検知除外";
-            this.Except.Name = "Except";
-            this.Except.Width = 143;
+            this.SearchExclude.HeaderText = "過検知除外";
+            this.SearchExclude.Name = "SearchExclude";
+            this.SearchExclude.ReadOnly = true;
+            this.SearchExclude.Width = 143;
             // 
-            // Ret
+            // Check
             // 
-            this.Ret.HeaderText = "合否確認";
-            this.Ret.Name = "Ret";
-            this.Ret.Width = 137;
+            this.Check.HeaderText = "合否確認";
+            this.Check.Name = "Check";
+            this.Check.ReadOnly = true;
+            this.Check.Width = 137;
             // 
-            // reason
+            // NGReason
             // 
-            this.reason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.reason.HeaderText = "NG理由";
-            this.reason.MinimumWidth = 240;
-            this.reason.Name = "reason";
-            this.reason.Width = 240;
+            this.NGReason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.NGReason.HeaderText = "NG理由";
+            this.NGReason.MinimumWidth = 240;
+            this.NGReason.Name = "NGReason";
+            this.NGReason.ReadOnly = true;
+            this.NGReason.Width = 240;
             // 
-            // ExceptInpDate
+            // SearchTime
             // 
-            this.ExceptInpDate.HeaderText = "過検知検査時刻";
-            this.ExceptInpDate.Name = "ExceptInpDate";
-            this.ExceptInpDate.Width = 240;
+            this.SearchTime.HeaderText = "過検知検査時刻";
+            this.SearchTime.Name = "SearchTime";
+            this.SearchTime.ReadOnly = true;
+            this.SearchTime.Width = 240;
             // 
-            // ExceptUser
+            // SearchUser
             // 
-            this.ExceptUser.HeaderText = "過検知検査作業者";
-            this.ExceptUser.Name = "ExceptUser";
-            this.ExceptUser.Width = 190;
+            this.SearchUser.HeaderText = "過検知検査作業者";
+            this.SearchUser.Name = "SearchUser";
+            this.SearchUser.ReadOnly = true;
+            this.SearchUser.Width = 190;
             // 
-            // CheckInpDate
+            // CheckTime
             // 
-            this.CheckInpDate.HeaderText = "合否確認時刻";
-            this.CheckInpDate.Name = "CheckInpDate";
-            this.CheckInpDate.Width = 240;
+            this.CheckTime.HeaderText = "合否確認時刻";
+            this.CheckTime.Name = "CheckTime";
+            this.CheckTime.ReadOnly = true;
+            this.CheckTime.Width = 240;
             // 
-            // ChekUser
+            // CheckUser
             // 
-            this.ChekUser.HeaderText = "合否確認作業者";
-            this.ChekUser.Name = "ChekUser";
-            this.ChekUser.Width = 190;
+            this.CheckUser.HeaderText = "合否確認作業者";
+            this.CheckUser.Name = "CheckUser";
+            this.CheckUser.ReadOnly = true;
+            this.CheckUser.Width = 190;
             // 
-            // UpdInpDate
+            // UpdateTime
             // 
-            this.UpdInpDate.HeaderText = "結果更新時刻";
-            this.UpdInpDate.Name = "UpdInpDate";
-            this.UpdInpDate.Width = 240;
+            this.UpdateTime.HeaderText = "結果更新時刻";
+            this.UpdateTime.Name = "UpdateTime";
+            this.UpdateTime.ReadOnly = true;
+            this.UpdateTime.Width = 240;
             // 
-            // UpdUser
+            // UpdateUser
             // 
-            this.UpdUser.HeaderText = "結果更新作業者";
-            this.UpdUser.Name = "UpdUser";
-            this.UpdUser.Width = 190;
+            this.UpdateUser.HeaderText = "結果更新作業者";
+            this.UpdateUser.Name = "UpdateUser";
+            this.UpdateUser.ReadOnly = true;
+            this.UpdateUser.Width = 190;
             // 
-            // UpdBefNgReason
+            // UpdateNGReason
             // 
-            this.UpdBefNgReason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.UpdBefNgReason.HeaderText = "更新前NG理由";
-            this.UpdBefNgReason.MinimumWidth = 240;
-            this.UpdBefNgReason.Name = "UpdBefNgReason";
-            this.UpdBefNgReason.Width = 240;
+            this.UpdateNGReason.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.UpdateNGReason.HeaderText = "更新前NG理由";
+            this.UpdateNGReason.MinimumWidth = 240;
+            this.UpdateNGReason.Name = "UpdateNGReason";
+            this.UpdateNGReason.ReadOnly = true;
+            this.UpdateNGReason.Width = 240;
             // 
             // DisplayResults
             // 
@@ -732,50 +771,49 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1276, 599);
             this.Controls.Add(this.panel6);
-            this.Controls.Add(this.panel3);
-            this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel4);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pnlRight);
+            this.Controls.Add(this.pnlLeft);
+            this.Controls.Add(this.pnlBottom);
+            this.Controls.Add(this.pnlTop);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "DisplayResults";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "検査結果確認";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Result_Load);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.pnlTop.ResumeLayout(false);
+            this.pnlTop.PerformLayout();
             this.grbWhere.ResumeLayout(false);
             this.grbWhere.PerformLayout();
-            this.panel4.ResumeLayout(false);
+            this.pnlBottom.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvData)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDecisionResult)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label lblHanNo;
-        private System.Windows.Forms.Label lblSashizu;
-        private System.Windows.Forms.Label lblShinaNm;
-        private System.Windows.Forms.Label lblGoki;
-        private System.Windows.Forms.Label lblEndDate;
-        private System.Windows.Forms.Label lblStaDate;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label lblHansoEndDate;
-        private System.Windows.Forms.Label lblHansoStaDate;
-        private System.Windows.Forms.Label lblUser;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Button btnBackTargetSelection;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel pnlTop;
+        private System.Windows.Forms.Label lblFabricName;
+        private System.Windows.Forms.Label lblOrderImg;
+        private System.Windows.Forms.Label lblProductName;
+        private System.Windows.Forms.Label lblUnitNum;
+        private System.Windows.Forms.Label lblDecisionEndTime;
+        private System.Windows.Forms.Label lblDecisionStartTime;
+        private System.Windows.Forms.Label lblInspectionLine;
+        private System.Windows.Forms.Label lblEndDatetime;
+        private System.Windows.Forms.Label lblStartDatetime;
+        private System.Windows.Forms.Label lblWorkerName;
+        private System.Windows.Forms.Panel pnlBottom;
+        private System.Windows.Forms.Button btnTargetSelection;
+        private System.Windows.Forms.Panel pnlLeft;
+        private System.Windows.Forms.Panel pnlRight;
         private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.DataGridView dgvData;
-        private System.Windows.Forms.TextBox txtCol;
-        private System.Windows.Forms.TextBox txtRow;
+        private System.Windows.Forms.TextBox txtLine;
         private System.Windows.Forms.TextBox txtNgReason;
-        private System.Windows.Forms.TextBox txtNgSide;
-        private System.Windows.Forms.TextBox txtUserNm;
+        private System.Windows.Forms.TextBox txtWorkerName;
         private System.Windows.Forms.Label lblNgReason;
         private System.Windows.Forms.Label lblNgSide;
         private System.Windows.Forms.Label lblCol;
@@ -783,30 +821,33 @@
         private System.Windows.Forms.Label lblTitleUserNm;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.GroupBox grbWhere;
-        private System.Windows.Forms.Button btnLogOut;
-        private System.Windows.Forms.Label lblKensaNo;
-        private System.Windows.Forms.Button BackResultCheck;
+        private System.Windows.Forms.Button btnLogout;
+        private System.Windows.Forms.Label lblInspectionNum;
+        private System.Windows.Forms.Button btnInspectionUpdate;
         private System.Windows.Forms.Label lblTitleSearchCnt;
-        private System.Windows.Forms.Label lblSearchImageCnt;
-        private System.Windows.Forms.Label lblNgImgCushionNum;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn no;
-        private System.Windows.Forms.DataGridViewTextBoxColumn line;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ng;
-        private System.Windows.Forms.DataGridViewTextBoxColumn position;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Except;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Ret;
-        private System.Windows.Forms.DataGridViewTextBoxColumn reason;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ExceptInpDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ExceptUser;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CheckInpDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ChekUser;
-        private System.Windows.Forms.DataGridViewTextBoxColumn UpdInpDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn UpdUser;
-        private System.Windows.Forms.DataGridViewTextBoxColumn UpdBefNgReason;
+        private System.Windows.Forms.Label lblImageSearchCount;
+        private System.Windows.Forms.Label lblImageCount;
+        private System.Windows.Forms.Label lblCushionCount;
         private System.Windows.Forms.Label lblTitleSearchCushionCnt;
         private System.Windows.Forms.Label lblTitleSearchImageCnt;
-        private System.Windows.Forms.Label lblSerchCushionCnt;
+        private System.Windows.Forms.Label lblCushionSearchCount;
+        private System.Windows.Forms.DataGridViewTextBoxColumn No;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Row;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NGArea;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dgvLocationXY;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SearchExclude;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Check;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NGReason;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SearchTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SearchUser;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CheckTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CheckUser;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UpdateTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UpdateUser;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UpdateNGReason;
+        private MyDataGridView dgvDecisionResult;
+        private System.Windows.Forms.ComboBox cmbColumns;
+        private System.Windows.Forms.ComboBox cmbNgFace;
     }
 }

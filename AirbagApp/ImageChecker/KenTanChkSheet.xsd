@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="KenTanChkSheet" targetNamespace="http://tempuri.org/KenTanChkSheet.xsd" xmlns:mstns="http://tempuri.org/KenTanChkSheet.xsd" xmlns="http://tempuri.org/KenTanChkSheet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="KenTanChkSheet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="KenTanChkSheet" msprop:Generator_UserDSName="KenTanChkSheet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="KenTanChkSheetTable" msprop:Generator_TableClassName="KenTanChkSheetTableDataTable" msprop:Generator_TableVarName="tableKenTanChkSheetTable" msprop:Generator_TablePropName="KenTanChkSheetTable" msprop:Generator_RowDeletingName="KenTanChkSheetTableRowDeleting" msprop:Generator_RowChangingName="KenTanChkSheetTableRowChanging" msprop:Generator_RowEvHandlerName="KenTanChkSheetTableRowChangeEventHandler" msprop:Generator_RowDeletedName="KenTanChkSheetTableRowDeleted" msprop:Generator_UserTableName="KenTanChkSheetTable" msprop:Generator_RowChangedName="KenTanChkSheetTableRowChanged" msprop:Generator_RowEvArgName="KenTanChkSheetTableRowChangeEvent" msprop:Generator_RowClassName="KenTanChkSheetTableRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="OrderImg" msprop:Generator_ColumnVarNameInTable="columnOrderImg" msprop:Generator_ColumnPropNameInRow="OrderImg" msprop:Generator_ColumnPropNameInTable="OrderImgColumn" msprop:Generator_UserColumnName="OrderImg" type="xs:string" minOccurs="0" />
+              <xs:element name="FabricName" msprop:Generator_ColumnVarNameInTable="columnFabricName" msprop:Generator_ColumnPropNameInRow="FabricName" msprop:Generator_ColumnPropNameInTable="FabricNameColumn" msprop:Generator_UserColumnName="FabricName" type="xs:string" minOccurs="0" />
+              <xs:element name="ProductName" msprop:Generator_ColumnVarNameInTable="columnProductName" msprop:Generator_ColumnPropNameInRow="ProductName" msprop:Generator_ColumnPropNameInTable="ProductNameColumn" msprop:Generator_UserColumnName="ProductName" type="xs:string" minOccurs="0" />
+              <xs:element name="UnitNum" msprop:Generator_ColumnVarNameInTable="columnUnitNum" msprop:Generator_ColumnPropNameInRow="UnitNum" msprop:Generator_ColumnPropNameInTable="UnitNumColumn" msprop:Generator_UserColumnName="UnitNum" type="xs:string" minOccurs="0" />
+              <xs:element name="InspectionLine" msprop:Generator_ColumnVarNameInTable="columnInspectionLine" msprop:Generator_ColumnPropNameInRow="InspectionLine" msprop:Generator_ColumnPropNameInTable="InspectionLineColumn" msprop:Generator_UserColumnName="InspectionLine" type="xs:string" minOccurs="0" />
+              <xs:element name="StartDatetime" msprop:Generator_ColumnVarNameInTable="columnStartDatetime" msprop:Generator_ColumnPropNameInRow="StartDatetime" msprop:Generator_ColumnPropNameInTable="StartDatetimeColumn" msprop:Generator_UserColumnName="StartDatetime" type="xs:string" minOccurs="0" />
+              <xs:element name="EndDatetime" msprop:Generator_ColumnVarNameInTable="columnEndDatetime" msprop:Generator_ColumnPropNameInRow="EndDatetime" msprop:Generator_ColumnPropNameInTable="EndDatetimeColumn" msprop:Generator_UserColumnName="EndDatetime" type="xs:string" minOccurs="0" />
+              <xs:element name="InspectionNum" msprop:Generator_ColumnVarNameInTable="columnInspectionNum" msprop:Generator_ColumnPropNameInRow="InspectionNum" msprop:Generator_ColumnPropNameInTable="InspectionNumColumn" msprop:Generator_UserColumnName="InspectionNum" type="xs:string" minOccurs="0" />
+              <xs:element name="NgCushionCnt" msprop:Generator_ColumnVarNameInTable="columnNgCushionCnt" msprop:Generator_ColumnPropNameInRow="NgCushionCnt" msprop:Generator_ColumnPropNameInTable="NgCushionCntColumn" msprop:Generator_UserColumnName="NgCushionCnt" type="xs:string" minOccurs="0" />
+              <xs:element name="NgImageCnt" msprop:Generator_ColumnVarNameInTable="columnNgImageCnt" msprop:Generator_ColumnPropNameInRow="NgImageCnt" msprop:Generator_ColumnPropNameInTable="NgImageCntColumn" msprop:Generator_UserColumnName="NgImageCnt" type="xs:string" minOccurs="0" />
+              <xs:element name="DecisionStartDatetime" msprop:Generator_ColumnVarNameInTable="columnDecisionStartDatetime" msprop:Generator_ColumnPropNameInRow="DecisionStartDatetime" msprop:Generator_ColumnPropNameInTable="DecisionStartDatetimeColumn" msprop:Generator_UserColumnName="DecisionStartDatetime" type="xs:string" minOccurs="0" />
+              <xs:element name="DecisionEndDatetime" msprop:Generator_ColumnVarNameInTable="columnDecisionEndDatetime" msprop:Generator_ColumnPropNameInRow="DecisionEndDatetime" msprop:Generator_ColumnPropNameInTable="DecisionEndDatetimeColumn" msprop:Generator_UserColumnName="DecisionEndDatetime" type="xs:string" minOccurs="0" />
+              <xs:element name="AcceptanceCheckDatetime" msprop:Generator_ColumnVarNameInTable="columnAcceptanceCheckDatetime" msprop:Generator_ColumnPropNameInRow="AcceptanceCheckDatetime" msprop:Generator_ColumnPropNameInTable="AcceptanceCheckDatetimeColumn" msprop:Generator_UserColumnName="AcceptanceCheckDatetime" type="xs:string" minOccurs="0" />
+              <xs:element name="Line" msprop:Generator_ColumnVarNameInTable="columnLine" msprop:Generator_ColumnPropNameInRow="Line" msprop:Generator_ColumnPropNameInTable="LineColumn" msprop:Generator_UserColumnName="Line" type="xs:string" minOccurs="0" />
+              <xs:element name="Cloumns" msprop:Generator_ColumnVarNameInTable="columnCloumns" msprop:Generator_ColumnPropNameInRow="Cloumns" msprop:Generator_ColumnPropNameInTable="CloumnsColumn" msprop:Generator_UserColumnName="Cloumns" type="xs:string" minOccurs="0" />
+              <xs:element name="NgFace" msprop:Generator_ColumnVarNameInTable="columnNgFace" msprop:Generator_ColumnPropNameInRow="NgFace" msprop:Generator_ColumnPropNameInTable="NgFaceColumn" msprop:Generator_UserColumnName="NgFace" type="xs:string" minOccurs="0" />
+              <xs:element name="NgDistanceXY" msprop:Generator_ColumnVarNameInTable="columnNgDistanceXY" msprop:Generator_ColumnPropNameInRow="NgDistanceXY" msprop:Generator_ColumnPropNameInTable="NgDistanceXYColumn" msprop:Generator_UserColumnName="NgDistanceXY" type="xs:string" minOccurs="0" />
+              <xs:element name="NgReason" msprop:Generator_ColumnVarNameInTable="columnNgReason" msprop:Generator_ColumnPropNameInRow="NgReason" msprop:Generator_ColumnPropNameInTable="NgReasonColumn" msprop:Generator_UserColumnName="NgReason" type="xs:string" minOccurs="0" />
+              <xs:element name="AcceptanceCheckWorker" msprop:Generator_ColumnVarNameInTable="columnAcceptanceCheckWorker" msprop:Generator_ColumnPropNameInRow="AcceptanceCheckWorker" msprop:Generator_ColumnPropNameInTable="AcceptanceCheckWorkerColumn" msprop:Generator_UserColumnName="AcceptanceCheckWorker" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

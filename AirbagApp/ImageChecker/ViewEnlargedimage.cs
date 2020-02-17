@@ -1,94 +1,144 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Threading;
 using System.Windows.Forms;
+using static ImageChecker.Common;
 
 namespace ImageChecker
 {
     public partial class ViewEnlargedimage : Form
     {
-        private Image m_ImgInit = null;
-        private string m_strImgLocationIni;
-        private string m_strImgLocation;
+        // パラメータ関連
+        string m_strOrgImagepath = "";
+        string m_strMarkingImagepath = "";
 
-        public ViewEnlargedimage(Image imgTarget, string strImgLocation)
+        private int m_intDispMode = 1;      // 表示モード： 1:マーキング 2:オリジナル;
+        private const int m_CON_DISP_MODE_MRK = 1;
+        private const int m_CON_DISP_MODE_ORG = 2;
+
+        private readonly SemaphoreSlim _clickSemaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _doubleClickSemaphore = new SemaphoreSlim(0);
+
+        #region メソッド
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="strOrgImagepath">オリジナル画像パス</param>
+        /// <param name="strMarkingImagepath">マーキング画像パス</param>
+        public ViewEnlargedimage(string strOrgImagepath, string strMarkingImagepath)
         {
+            m_strOrgImagepath = strOrgImagepath;
+            m_strMarkingImagepath = strMarkingImagepath;
+
             InitializeComponent();
 
-            m_ImgInit = imgTarget;
-            m_strImgLocationIni = strImgLocation;
-            m_strImgLocation = strImgLocation;
+            // フォーム画面サイズ計算
+            int intHeight = -1;
+            int intWidth = -1;
+            double dblRate = 1.0;
 
-            //現在フォームが存在しているディスプレイを取得
-            System.Windows.Forms.Screen s =
-                System.Windows.Forms.Screen.FromControl(this);
-            //ディスプレイの高さと幅を取得
-            int h = s.Bounds.Height;
-            int w = s.Bounds.Width;
-            // ディスプレイサイズを指定
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.Width = (int)(w * 0.7);
-            this.Height = (int)(h * 0.7);
+            // ディスプレイ高さいっぱい表示する。
+            // 補正なしの縦サイズとディスプレイ高さから比率を算出
+            dblRate = (double)(Screen.PrimaryScreen.WorkingArea.Height - 5) / (double)this.Size.Height;
+
+            intHeight = (int)((double)this.Size.Height * dblRate);
+            intWidth = (int)((double)this.Size.Width * dblRate);
+
+            this.Size = new Size(intWidth, intHeight);
+        }
+        #endregion
+
+        #region イベント
+        /// <summary>
+        /// フォームロード
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ViewEnlargedimage_Load(object sender, EventArgs e)
+        {
+            this.SuspendLayout();
 
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
 
             // 画像を設定する
-            pictureBox1.Image = imgTarget;
+            FileStream fs;
+            if (File.Exists(m_strMarkingImagepath) == false)
+                fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+            else
+                fs = new FileStream(m_strMarkingImagepath, FileMode.Open, FileAccess.Read);
+            
+            pictureBox1.Image = Image.FromStream(fs);
+            fs.Close();
 
+            m_intDispMode = m_CON_DISP_MODE_MRK;
+
+            this.ResumeLayout();
         }
 
-        private void PictureBox1_DoubleClick(object sender, EventArgs e)
+        /// <summary>
+        /// ダブルクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void picImage_DoubleClick(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void pictureBox1_Click(dynamic sender, EventArgs e)
+        /// <summary>
+        /// イメージ画像クリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void picImage_Click(object sender, EventArgs e)
         {
-            if (m_strImgLocation.IndexOf("1_04_01_S334_T1") < 0)
+            PictureBox picImage = (PictureBox)sender;
+
+            if (!_clickSemaphore.Wait(0))
+                return;
+            try
             {
-                //現在フォームが存在しているディスプレイを取得
-                System.Windows.Forms.Screen s =
-                    System.Windows.Forms.Screen.FromControl(this);
-                //ディスプレイの高さと幅を取得
-                int h = s.Bounds.Height;
-                int w = s.Bounds.Width;
-                // ディスプレイサイズを指定
-                this.FormBorderStyle = FormBorderStyle.FixedSingle;
-                this.Width = (int)(w * 0.7);
-                this.Height = (int)(h * 0.7);
-
-                // フォームの表示位置調整
-                this.StartPosition = FormStartPosition.CenterParent;
-
-                pictureBox1.Image = System.Drawing.Image.FromFile(@".\Image\1_04_01_S334_T1.jpg");
-                m_strImgLocation = @".\Image\1_04_01_S334_T1.jpg";
+                if (await _doubleClickSemaphore.WaitAsync(SystemInformation.DoubleClickTime))
+                    return;
             }
+            finally
+            {
+                _clickSemaphore.Release();
+            }
+
+            FileStream fs;
+            if (m_intDispMode == m_CON_DISP_MODE_ORG)
+            {
+                if (File.Exists(m_strMarkingImagepath) == false)
+                    fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                else
+                {
+                    fs = new FileStream(m_strMarkingImagepath, FileMode.Open, FileAccess.Read);
+                    pictureBox1.ImageLocation = m_strMarkingImagepath;
+                }
+                
+                Image.FromStream(fs);
+
+                m_intDispMode = m_CON_DISP_MODE_MRK;
+            }    
             else
             {
-                //現在フォームが存在しているディスプレイを取得
-                System.Windows.Forms.Screen s =
-                    System.Windows.Forms.Screen.FromControl(this);
-                //ディスプレイの高さと幅を取得
-                int h = s.Bounds.Height;
-                int w = s.Bounds.Width;
-                // ディスプレイサイズを指定
-                this.FormBorderStyle = FormBorderStyle.FixedSingle;
-                this.Width = (int)(w * 0.7);
-                this.Height = (int)(h * 0.7);
+                if (File.Exists(m_strOrgImagepath) == false)
+                    fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                else
+                {
+                    fs = new FileStream(m_strOrgImagepath, FileMode.Open, FileAccess.Read);
+                    pictureBox1.ImageLocation = m_strOrgImagepath;
+                }
+                    
+                Image.FromStream(fs);
 
-                // フォームの表示位置調整
-                this.StartPosition = FormStartPosition.CenterParent;
-
-                // 画像を設定する
-                pictureBox1.Image = m_ImgInit;
-                m_strImgLocation = m_strImgLocationIni;
+                m_intDispMode = m_CON_DISP_MODE_ORG;
             }
+            fs.Close();
         }
+        #endregion
     }
 }

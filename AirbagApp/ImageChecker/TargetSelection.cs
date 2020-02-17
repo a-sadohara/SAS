@@ -1,15 +1,15 @@
-﻿using System;
+﻿using ImageChecker.DTO;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
-using System.Data.OleDb;
-using ImageChecker.DTO;
+using System.IO.Compression;
+using System.Text;
+using System.Windows.Forms;
+using System.Threading.Tasks;
+
 using static ImageChecker.Common;
 
 namespace ImageChecker
@@ -17,387 +17,1142 @@ namespace ImageChecker
 
     public partial class TargetSelection : Form
     {
+        // 列インデックス関連
+        private const int m_CON_COL_IDX_OVERDETECTIONEXCEPT = 4;
+        private const int m_CON_COL_IDX_ACCEPTANCECHECK = 5;
+        private const int m_CON_COL_IDX_RESULT = 6;
 
-        TargetInfoDto dtTagetInfo;
+        // 定数
+        private const string m_CON_FORMAT_UNIT_NUM = "号機：{0}";
+        private const string m_CON_FORMAT_PRODUCT_NAME = "品名：{0}";
+        private const string m_CON_FORMAT_ORDER_IMG = "指図：{0}";
+        private const string m_CON_FORMAT_FABRIC_NAME = "反番：{0}";
+        private const string m_CON_FORMAT_START_DATETIME = "搬送開始日時：{0}";
+        private const string m_CON_FORMAT_END_DATETIME = "搬送終了日時：{0}";
+        private const string m_CON_FORMAT_INSPECTION_LINE = "検査範囲行：{0}～{1}";
+        private const string m_CON_FORMAT_DECISION_START_DATETIME = "判定開始日時：{0}";
+        private const string m_CON_FORMAT_DECISION_END_DATETIME = "判定終了日時：{0}";
+        private const string m_CON_FORMAT_INSPECTION_NUM = "検査番号：{0}";
+        private const string m_CON_FORMAT_STATUS = "状態：{0}";
+        private const string m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES = "検知撮像枚数：{0}枚（{1}/{2}）";
+        private const string m_CON_FORMAT_DETECTION_IMAGE_COUNT = "検知撮像枚数：{0}枚";
+        private const string m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES = "合否確認撮像枚数：{0}枚（{1}/{2}）";
+        private const string m_CON_OVER_DETECTION_EXCEPT_BUTTON_NAME = "過検知除外";
+        private const string m_CON_ACCEPTANCE_CHECK_BUTTON_NAME = "合否確認・判定登録";
+        private const string m_CON_INSPECTION_RESULT_BUTTON_NAME = "検査結果確認";
+        private const string m_CON_FORMAT_WORKER_NAME = "作業者：{0}";
+        private const string CON_ZIP_EXTRACT_DIR_PATH = "ZipExtractDirPath";
 
+        // フォームアクティブ処理
+        private bool m_blnFormActiveProc = true;    // true  :(初期値)フォームアクティブ処理を行う
+                                                    // false :フォームアクティブ処理を行わない。
+                                                    // 用途  :画面遷移でフォームアクティブの内部で処理は走るのだが、描画されない。
+                                                    //        その場合、処理が走ること自体無駄なので制御する。
+                                                    // 使用例:try{
+                                                    //            m_blnFormActiveProc = false;
+                                                    //            ViewData();
+                                                    //            <描画されないフォームアクティブが走る処理>...
+                                                    //        }finally{
+                                                    //            m_blnFormActiveProc = true;
+                                                    //        }
+
+        // データ保持関連
+        private DataTable m_dtData;
+
+        // 前回の連携時間
+        private DateTime datetimePrevReplicate;
+
+        #region メソッド
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public TargetSelection()
         {
             InitializeComponent();
 
-            // フォームの表示位置調整
-            this.StartPosition = FormStartPosition.CenterParent;
+            m_blnFormActiveProc = false;
 
-            dtTagetInfo = new TargetInfoDto();
-            DataTable dtWkInfo = dtTagetInfo.getTargetInfoDTO();
+            // 一時フォルダ作成
+            if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory) == false)
+                Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
 
-            foreach (string line in File.ReadLines("検査対象選択.TSV", Encoding.Default))
-            {
-
-                // 改行コードを変換
-                string strLine = line.Replace("\\rn", Environment.NewLine);
-
-                string[] csv = strLine.Split('\t');
-
-                // データテーブルにデータを格納する
-                DataRow drTargetInfo = dtWkInfo.NewRow();
-                drTargetInfo["№"] = csv[0];
-                drTargetInfo["RollInfo"] = csv[1];
-                drTargetInfo["CheckStatus"] = csv[2];
-                drTargetInfo["CheckProcess"] = csv[3];
-                drTargetInfo["Process"] = csv[7];
-                drTargetInfo["Status"] = csv[8];
-                drTargetInfo["CheckFlg"] = csv[9];
-
-                dtWkInfo.Rows.Add(drTargetInfo);
-
-            }
-
-            dtTagetInfo.setTargetInfoDTO(dtWkInfo);
-
-            // グリッドビューにボタンを追加
-            DataGridViewDisableButtonColumn btnOverdetectionexclusion = new DataGridViewDisableButtonColumn();
-            btnOverdetectionexclusion.FlatStyle = FlatStyle.Flat;
-            btnOverdetectionexclusion.Width = 180;
-            DataGridViewDisableButtonColumn btnResultCheck = new DataGridViewDisableButtonColumn();
-            btnResultCheck.FlatStyle = FlatStyle.Flat;
-            btnResultCheck.Width = 180;
-            DataGridViewDisableButtonColumn btnResult = new DataGridViewDisableButtonColumn();
-            btnResult.FlatStyle = FlatStyle.Flat;
-            btnResult.Width = 180;
-            //DataGridViewDisableButtonColumn btnNotCheck = new DataGridViewDisableButtonColumn();
-            //btnNotCheck.FlatStyle = FlatStyle.Standard;
-            //btnNotCheck.Width = 180;
-
-            this.dataGridView1.Columns.Add(btnOverdetectionexclusion);
-            this.dataGridView1.Columns.Add(btnResultCheck);
-            this.dataGridView1.Columns.Add(btnResult);
-            //this.dataGridView1.Columns.Add(btnNotCheck);
-
-            this.dataGridView1.MultiSelect = false;
-
+            // 一時ZIP解凍用フォルダ作成
+            if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH) == true)
+                Directory.Delete(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH, true);
+            Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH);
         }
 
-        //private void dispgv()
-        //{
-        //    // グリッドを初期化
-        //    dataGridView1.Rows.Clear();
-
-        //    // ターゲットデータ読み込み
-        //    DataTable dtWkInfo = dtTagetInfo.getTargetInfoDTO();
-
-        //    // 新規行の追加を位置的に許可
-        //    this.dataGridView1.AllowUserToAddRows = true;
-
-        //    foreach (DataRow drTargetInfo in dtWkInfo.Rows)
-        //    {
-
-        //        string[] lstDataGrid = new string[8];
-        //        lstDataGrid[0] = drTargetInfo["№"].ToString();
-        //        lstDataGrid[1] = drTargetInfo["RollInfo"].ToString();
-        //        lstDataGrid[2] = drTargetInfo["CheckStatus"].ToString();
-        //        lstDataGrid[3] = drTargetInfo["CheckProcess"].ToString();
-        //        lstDataGrid[4] = "過検知除外";
-        //        lstDataGrid[5] = "合否確認・判定登録";
-        //        lstDataGrid[6] = "検査結果";
-        //        lstDataGrid[7] = "結果対象外";
-
-        //        this.dataGridView1.Rows.Add(lstDataGrid);
-
-        //        this.dataGridView1.Rows[dataGridView1.Rows.Count - 2].Cells[7].Style.BackColor = Color.Black;
-
-        //        switch (drTargetInfo["Process"].ToString())
-        //        {
-        //            case "過検知除外":
-        //                changeStatus(this.dataGridView1.Rows[dataGridView1.Rows.Count - 2], 4, int.Parse(drTargetInfo["Status"].ToString()));
-        //                break;
-        //            case "合否確認・判定登録":
-        //                changeStatus(this.dataGridView1.Rows[dataGridView1.Rows.Count - 2], 5, int.Parse(drTargetInfo["Status"].ToString()));
-        //                break;
-        //            case "検査結果":
-        //                changeStatus(this.dataGridView1.Rows[dataGridView1.Rows.Count - 2], 6, int.Parse(drTargetInfo["Status"].ToString()));
-        //                break;
-        //        }
-
-        //    }
-
-        //    dataGridView1.DefaultCellStyle.Font = new Font("メイリオ", 8.25F);
-
-        //    // 新規行を追加させない
-        //    this.dataGridView1.AllowUserToAddRows = false;
-
-        //}
-
-        private void TargetSelection_Activated(object sender, EventArgs e)
+        /// <summary>
+        /// 連携基盤部連携ファイルの取込
+        /// </summary>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        private bool bolImportCooperationBaseCooperationFile()
         {
-            // グリッドを初期化
-            dataGridView1.Rows.Clear();
+            string[] strSplitFileName = new string[0];
+            string strFileName = "";
+            string strSQL = "";
+            int intCnt = 0;
+            DataTable dtData;
 
-            // ターゲットデータ読み込み
-            DataTable dtWkInfo = dtTagetInfo.getTargetInfoDTO();
+            // パラメータ
+            string strInspectionDate = "";  // 検査日付(YYYY/MM/DD)
+            string strProductName = "";     // 品名
+            string strFabricName = "";      // 反番
+            int intInspectionNum = 0;       // 検査番号
+            string strFaultImageSubDirectory = "";
 
-            //// 新規行の追加を位置的に許可
-            //this.dataGridView1.AllowUserToAddRows = true;
+            List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+            List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
 
-            foreach (DataRow drTargetInfo in dtWkInfo.Rows)
+            try
             {
-
-                string[] lstDataGrid = new string[8];
-                lstDataGrid[0] = drTargetInfo["№"].ToString();
-                lstDataGrid[1] = drTargetInfo["RollInfo"].ToString();
-                lstDataGrid[2] = drTargetInfo["CheckStatus"].ToString();
-                lstDataGrid[3] = drTargetInfo["CheckProcess"].ToString();
-                lstDataGrid[4] = "過検知除外";
-                lstDataGrid[5] = "合否確認・判定登録";
-                lstDataGrid[6] = "検査結果確認";
-                lstDataGrid[7] = "検査対象外";
-
-                this.dataGridView1.Rows.Add(lstDataGrid);
-
-                switch (drTargetInfo["Process"].ToString())
+                // 完了通知ファイル(.TXT)の確認を実施
+                foreach (string strFilePath in System.IO.Directory.GetFiles(g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory, "*.txt", System.IO.SearchOption.AllDirectories))
                 {
-                    case "過検知除外":
-                        changeStatus(this.dataGridView1.Rows[dataGridView1.Rows.Count - 1], 4, int.Parse(drTargetInfo["Status"].ToString()));
-                        break;
-                    case "合否確認・判定登録":
-                        changeStatus(this.dataGridView1.Rows[dataGridView1.Rows.Count - 1], 5, int.Parse(drTargetInfo["Status"].ToString()));
-                        break;
-                    case "検査結果":
-                        changeStatus(this.dataGridView1.Rows[dataGridView1.Rows.Count - 1], 6, int.Parse(drTargetInfo["Status"].ToString()));
-                        break;
+                    // 初期化
+                    strInspectionDate = "";
+                    strProductName = "";
+                    strFabricName = "";
+                    intInspectionNum = 0;
+                    strFaultImageSubDirectory = "";
+                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    intCnt = 0;
+
+                    // ファイル名の取得
+                    strFileName = Path.GetFileNameWithoutExtension(strFilePath);
+
+                    // ファイル名からパラメータを取得
+                    strSplitFileName = strFileName.Split('_');
+
+                    // パラメータを設定
+                    if (strSplitFileName.Length == 4)
+                    {
+                        strInspectionDate = strSplitFileName[0].Insert(6, "/").Insert(4, "/");
+                        strProductName = strSplitFileName[1];
+                        strFabricName = strSplitFileName[2];
+                        intInspectionNum = int.Parse(strSplitFileName[3]);
+
+                        strFaultImageSubDirectory = string.Join("_", strInspectionDate.Replace("/", ""),
+                                                                     strProductName,
+                                                                     strFabricName,
+                                                                     intInspectionNum);
+                    }
+
+                    // 取得失敗した場合は次のループ
+                    if (string.IsNullOrEmpty(strInspectionDate) || string.IsNullOrEmpty(strProductName) || string.IsNullOrEmpty(strFabricName) || intInspectionNum == 0)
+                        continue;
+
+                    // 連携済みチェック
+                    try
+                    {
+                        dtData = new DataTable();
+                        strSQL = @"SELECT COUNT(inspection_num) AS cnt ";
+                        strSQL += @"FROM  " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header ";
+                        strSQL += @"WHERE fabric_name = :fabric_name ";
+                        strSQL += @"AND   inspection_num = :inspection_num ";
+                        strSQL += @"AND   TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd ";
+
+                        // SQLコマンドに各パラメータを設定する
+                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+
+                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                        // 件数
+                        if (dtData.Rows.Count > 0)
+                        {
+                            intCnt = int.Parse(dtData.Rows[0]["cnt"].ToString());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0031, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return false;
+                    }
+
+                    // 欠点画像の取込み処理
+                    // フォルダの存在チェック
+                    if (Directory.Exists(g_clsSystemSettingInfo.strFaultImageDirectory + Path.DirectorySeparatorChar +
+                                         strFaultImageSubDirectory) == false)
+                    {
+                        lstTask.Add(Task<Boolean>.Run(() => bolImpFatalImage(strFaultImageSubDirectory)));
+                        System.Threading.Thread.Sleep(1000);
+                    }
+
+                    if (intCnt >= 1)
+                    {
+                        // 連携済みのため、次を処理
+                        continue;
+                    }
+
+                    // 検査情報ヘッダの取り込み処理
+                    try
+                    {
+                        strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header(
+                                           inspection_num
+                                         , branch_num
+                                         , product_name
+                                         , unit_num
+                                         , order_img
+                                         , fabric_name
+                                         , inspection_target_line
+                                         , inspection_end_line
+                                         , inspection_start_line
+                                         , worker_1
+                                         , worker_2
+                                         , start_datetime
+                                         , end_datetime
+                                         , inspection_direction
+                                         , inspection_date
+                                         , over_detection_except_status
+                                         , acceptance_check_status
+                                         , decision_start_datetime
+                                         , decision_end_datetime
+                                       )
+                                       SELECT
+                                           inspection_num
+                                         , branch_num
+                                         , product_name
+                                         , unit_num
+                                         , order_img
+                                         , fabric_name
+                                         , inspection_target_line
+                                         , inspection_end_line
+                                         , inspection_start_line
+                                         , worker_1
+                                         , worker_2
+                                         , start_datetime
+                                         , end_datetime
+                                         , inspection_direction
+                                         , inspection_date
+                                         , 0
+                                         , 0
+                                         , NULL
+                                         , NULL
+                                       FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".inspection_info_header
+                                       WHERE fabric_name = :fabric_name
+                                         AND inspection_num = :inspection_num
+                                         AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd";
+
+                        // SQLコマンドに各パラメータを設定する
+                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+
+                        // sqlを実行する
+                        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                    }
+                    catch (Exception ex)
+                    {
+                        g_clsConnectionNpgsql.DbRollback();
+
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return false;
+                    }
+
+                    try
+                    {
+                        // 判定結果の取り込み処理
+                        strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
+                                           fabric_name
+                                         , inspection_num
+                                         , inspection_date
+                                         , branch_num
+                                         , line
+                                         , cloumns
+                                         , ng_face
+                                         , ng_reason
+                                         , org_imagepath
+                                         , marking_imagepath
+                                         , master_point
+                                         , ng_distance_x
+                                         , ng_distance_y
+                                         , camera_num
+                                         , worker_1
+                                         , worker_2
+                                         , over_detection_except_result          
+                                         , over_detection_except_datetime        
+                                         , over_detection_except_worker          
+                                         , before_over_detection_except_result   
+                                         , before_over_detection_except_datetime 
+                                         , before_over_detection_except_worker   
+                                         , acceptance_check_result
+                                         , acceptance_check_datetime
+                                         , acceptance_check_worker
+                                         , before_acceptance_check_result
+                                         , before_acceptance_check_upd_datetime
+                                         , before_acceptance_check_worker
+                                         , result_update_datetime
+                                         , result_update_worker
+                                         , before_ng_reason
+                                       )
+                                       SELECT
+                                           fabric_name
+                                         , inspection_num
+                                         , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
+                                         , 1
+                                         , ng_line
+                                         , columns
+                                         , ng_face
+                                         , ng_reason
+                                         , ng_image
+                                         , marking_image
+                                         , master_point
+                                         , TO_NUMBER(ng_distance_x,'9999')
+                                         , TO_NUMBER(ng_distance_y,'9999')
+                                         , camera_num_1
+                                         , worker_1
+                                         , worker_2
+                                         , :over_detection_except_result_non
+                                         , NULL
+                                         , NULL
+                                         , :over_detection_except_result_non
+                                         , NULL
+                                         , NULL
+                                         , :acceptance_check_result_non
+                                         , NULL
+                                         , NULL
+                                         , :acceptance_check_result_non
+                                         , NULL
+                                         , NULL
+                                         , NULL
+                                         , NULL
+                                         , NULL
+                                       FROM (
+                                           SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY rapid_endtime DESC) AS SEQ
+                                                , rpd.*
+                                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + @""" rpd
+                                           WHERE fabric_name = :fabric_name
+                                           AND inspection_num = :inspection_num 
+                                           AND rapid_result = :rapid_result
+                                           AND edge_result = :edge_result
+                                           AND masking_result = :masking_result
+                                       ) rpd
+                                       WHERE SEQ = 1";
+
+                        // SQLコマンドに各パラメータを設定する
+                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultNg });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultNg });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultNg });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
+                        // sqlを実行する
+                        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                    }
+                    catch (Exception ex)
+                    {
+                        g_clsConnectionNpgsql.DbRollback();
+
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                        // メッセージ出力
+                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0045, strFabricName, intInspectionNum), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return false;
+                    }
                 }
 
+                Task.WaitAll(lstTask.ToArray());
 
-                //DataGridViewAdvancedBorderStyle newStyle =
-                //    new DataGridViewAdvancedBorderStyle();
-                //newStyle.Top = DataGridViewAdvancedCellBorderStyle.None;
-                //newStyle.Left = DataGridViewAdvancedCellBorderStyle.None;
-                //newStyle.Bottom = DataGridViewAdvancedCellBorderStyle.None;
-                //newStyle.Right = DataGridViewAdvancedCellBorderStyle.None;
-                //this.dataGridView1.Rows[dataGridView1.Rows.Count - 1].Cells[7].Style.BackColor = Color.WhiteSmoke;
-                //this.dataGridView1.Rows[dataGridView1.Rows.Count - 1].Cells[7].Style.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-                //this.dataGridView1.Rows[dataGridView1.Rows.Count - 1].Cells[7].Style.ForeColor = System.Drawing.SystemColors.ControlText;
-                ////this.dataGridView1.Rows[dataGridView1.Rows.Count - 1].Cells[7].AdjustCellBorderStyle(newStyle, newStyle, false, false, false, false);
-                //this.dataGridView1.Rows[dataGridView1.Rows.Count - 1].Cells[7].Style.SelectionBackColor = Color.WhiteSmoke;
-                //this.dataGridView1.Rows[dataGridView1.Rows.Count - 1].Cells[7].Style.SelectionForeColor = SystemColors.WindowText;
-                
+                foreach (Task<Boolean> tsk in lstTask)
+                {
+                    if (!tsk.Result)
+                    {
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
+                }
+
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
+                // DBクローズ
+                g_clsConnectionNpgsql.DbClose();
+
+                return true;
             }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0040 + "\r\n" + ex.Message);
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-            //foreach (DataGridViewRow r in dataGridView1.Rows)
-            //    r.Cells[7].Style.BackColor = Color.WhiteSmoke;
+                return false;
+            }
+            finally
+            {
+                try
+                {
+                    // 一時ZIP解凍用フォルダを削除する
+                    Directory.Delete(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH, true);
+                }
+                catch
+                {
+                    // 削除処理の例外を無視する
+                }
+            }
+        }
 
-            dataGridView1.DefaultCellStyle.Font = new Font("メイリオ", 8.25F);
+        /// <summary>
+        /// 欠点画像取り込み
+        /// </summary>
+        /// <param name="strFaultImage"></param>
+        /// <returns></returns>
+        private Boolean bolImpFatalImage(string strFaultImage)
+        {
+            try
+            {
+                WriteEventLog(g_CON_LEVEL_WARN, strFaultImage);
+                // ZIPファイルを一時ZIP解凍用フォルダにコピーする
+                File.Copy(g_clsSystemSettingInfo.strNgImageCooperationDirectory + Path.DirectorySeparatorChar +
+                          strFaultImage + ".zip",
+                          g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH + Path.DirectorySeparatorChar +
+                          strFaultImage + ".zip");
+
+                // 欠点画像Zipファイルの解凍
+                ZipFile.ExtractToDirectory(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH + Path.DirectorySeparatorChar +
+                          strFaultImage + ".zip",
+                           g_clsSystemSettingInfo.strFaultImageDirectory);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0040 + "\r\n" + ex.Message);
+
+                return false;
+            }
 
         }
 
+        /// <summary>
+        /// データグリッドビュー表示
+        /// </summary>
+        /// <param name="strKanaSta">カナ（開始）</param>
+        /// <param name="strKanaEnd">カナ（終了）</param>
+        private bool bolDispDataGridView()
+        {
+            string strSQL = "";
+            StringBuilder sbFabricInfo = new StringBuilder();
+            StringBuilder sbInspectionInfo = new StringBuilder();
+            StringBuilder sbInspectionState = new StringBuilder();
+            int intOverDetectionExceptStatus = -1;
+            int intAcceptanceCheckStatus = -1;
+            string strBefore48hourYmdhms = DateTime.Now.AddHours(-48).ToString("yyyy/MM/dd HH:mm:ss");
+            ArrayList arrRow = new ArrayList();
+
+            dgvTargetSelection.Rows.Clear();
+
+            try
+            {
+                // SQL抽出
+                m_dtData = new DataTable();
+                strSQL = @"SELECT iih.unit_num
+                                , iih.order_img
+                                , iih.fabric_name
+                                , iih.product_name
+                                , TO_CHAR(iih.inspection_date,'YYYY/MM/DD') AS inspection_date
+                                , iih.inspection_num
+                                , TO_CHAR(iih.start_datetime,'YYYY/MM/DD HH24:MI:SS') AS start_datetime
+                                , TO_CHAR(iih.end_datetime,'YYYY/MM/DD HH24:MI:SS') AS end_datetime
+                                , iih.inspection_direction
+                                , iih.inspection_start_line
+                                , iih.inspection_end_line
+                                , iih.inspection_target_line
+                                , TO_CHAR(iih.decision_start_datetime,'YYYY/MM/DD HH24:MI:SS') AS decision_start_datetime
+                                , TO_CHAR(iih.decision_end_datetime,'YYYY/MM/DD HH24:MI:SS') AS decision_end_datetime
+                                , iih.over_detection_except_status
+                                , iih.acceptance_check_status
+                                , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                   WHERE fabric_name = dr.fabric_name
+                                   AND   inspection_date = dr.inspection_date
+                                   AND   inspection_num = dr.inspection_num) AS detection_image_count
+                                , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                   WHERE over_detection_except_result = :over_detection_except_result_ok
+                                   AND   fabric_name = dr.fabric_name
+                                   AND   inspection_date = dr.inspection_date
+                                   AND   inspection_num = dr.inspection_num) AS over_detection_image_count
+                                , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                  WHERE over_detection_except_result = :over_detection_except_result_ng
+                                  AND   fabric_name = dr.fabric_name
+                                  AND   inspection_date = dr.inspection_date
+                                  AND   inspection_num = dr.inspection_num) AS acceptance_check_image_count
+                                , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                   WHERE acceptance_check_result <> :acceptance_check_result_non
+                                   AND   fabric_name = dr.fabric_name
+                                   AND   inspection_date = dr.inspection_date
+                                   AND   inspection_num = dr.inspection_num) AS determine_count
+                                , mpi.column_cnt
+                                , mpi.airbag_imagepath
+                           FROM
+                               " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header iih
+                           INNER JOIN (
+                                   SELECT fabric_name,inspection_date,inspection_num
+                                   FROM   " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                   GROUP BY fabric_name,inspection_date,inspection_num
+                               ) dr
+                           ON  iih.fabric_name = dr.fabric_name
+                           AND iih.inspection_date = dr.inspection_date
+                           AND iih.inspection_num = dr.inspection_num
+                           INNER JOIN mst_product_info mpi
+                           ON  iih.product_name = mpi.product_name
+                           WHERE (iih.decision_end_datetime IS NULL OR
+                                  iih.decision_end_datetime >= TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS'))
+                           ORDER BY iih.end_datetime ASC, iih.inspection_num ASC";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNg });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
+
+                g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL, lstNpgsqlCommand);
+
+                // データグリッドに反映
+                foreach (DataRow row in m_dtData.Rows)
+                {
+                    // 初期化
+                    sbFabricInfo = new StringBuilder();
+                    sbInspectionInfo = new StringBuilder();
+                    sbInspectionState = new StringBuilder();
+                    arrRow = new ArrayList();
+                    intOverDetectionExceptStatus = -1;
+                    intAcceptanceCheckStatus = -1;
+
+                    // No
+                    arrRow.Add(this.dgvTargetSelection.Rows.Count + 1);
+
+                    // 反物情報
+                    sbFabricInfo.AppendLine(string.Format(m_CON_FORMAT_UNIT_NUM, row["unit_num"]));
+                    sbFabricInfo.AppendLine(string.Format(m_CON_FORMAT_ORDER_IMG, row["order_img"]));
+                    sbFabricInfo.AppendLine(string.Format(m_CON_FORMAT_FABRIC_NAME, row["fabric_name"]));
+                    sbFabricInfo.AppendLine(string.Format(m_CON_FORMAT_PRODUCT_NAME, row["product_name"]));
+                    arrRow.Add(sbFabricInfo.ToString());
+
+                    // 外観検査情報
+                    sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_START_DATETIME, row["start_datetime"]));
+                    sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_END_DATETIME, row["end_datetime"]));
+                    sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_INSPECTION_LINE, row["inspection_start_line"], row["inspection_end_line"]));
+                    sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_DECISION_START_DATETIME, row["decision_start_datetime"]));
+                    sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_DECISION_END_DATETIME, row["decision_end_datetime"]));
+                    sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_INSPECTION_NUM, row["inspection_num"]));
+                    arrRow.Add(sbInspectionInfo.ToString());
+
+                    // 欠点検査状態 & ステータス
+                    if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusBef ||
+                        int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc)
+                    {
+                        //  過検知除外ステータス
+                        if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusBef)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameBef));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], "0", row["detection_image_count"]));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusBef;
+                        }
+                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusChk)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameChk));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusChk;
+                        }
+                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameStp));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusStp;
+                        }
+                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameEnd));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], "0", row["acceptance_check_image_count"]));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd;
+                        }
+                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameExc));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT, row["over_detection_image_count"].ToString()));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc;
+                        }
+                    }
+                    else
+                    {
+                        // 合否確認ステータス
+                        if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusChk)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["over_detection_image_count"], row["determine_count"], row["over_detection_image_count"]));
+                            intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusChk;
+                        }
+                        else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
+                            intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusStp;
+                        }
+                        else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameEnd));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
+                            intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd;
+                        }
+                    }
+                    arrRow.Add(sbInspectionState.ToString());
+
+                    // ボタン名
+                    arrRow.Add(m_CON_OVER_DETECTION_EXCEPT_BUTTON_NAME);
+                    arrRow.Add(m_CON_ACCEPTANCE_CHECK_BUTTON_NAME);
+                    arrRow.Add(m_CON_INSPECTION_RESULT_BUTTON_NAME);
+
+                    this.dgvTargetSelection.Rows.Add(arrRow.ToArray());
+
+                    // ボタン設定
+                    DataGridViewDisableButtonCell btnOverDetectionExcept = (DataGridViewDisableButtonCell)this.dgvTargetSelection.Rows[this.dgvTargetSelection.Rows.Count - 1].Cells[m_CON_COL_IDX_OVERDETECTIONEXCEPT];
+                    DataGridViewDisableButtonCell btnAcceptanceCheck = (DataGridViewDisableButtonCell)this.dgvTargetSelection.Rows[this.dgvTargetSelection.Rows.Count - 1].Cells[m_CON_COL_IDX_ACCEPTANCECHECK];
+                    DataGridViewDisableButtonCell btnInspectionResult = (DataGridViewDisableButtonCell)this.dgvTargetSelection.Rows[this.dgvTargetSelection.Rows.Count - 1].Cells[m_CON_COL_IDX_RESULT];
+
+                    // ボタンレイアウト設定
+                    //  背景色,有効無効
+                    if (intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusChk)
+                    {
+                        // 合否確認：検査中
+                        btnOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
+                        btnOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnAcceptanceCheck.Style.BackColor = Color.Red;
+                        btnAcceptanceCheck.Style.SelectionBackColor = Color.Red;
+                        btnInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+
+                        btnOverDetectionExcept.Enabled = false;
+                        btnAcceptanceCheck.Enabled = false;
+                        btnInspectionResult.Enabled = false;
+                    }
+                    else if (intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
+                    {
+                        // 合否確認：中断
+                        btnOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
+                        btnOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnAcceptanceCheck.Style.BackColor = Color.DarkOrange;
+                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkOrange;
+                        btnInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+
+                        btnOverDetectionExcept.Enabled = false;
+                        btnAcceptanceCheck.Enabled = true;
+                        btnInspectionResult.Enabled = false;
+                    }
+                    else if (intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
+                    {
+                        // 合否確認：検査完了
+                        btnOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
+                        btnOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnAcceptanceCheck.Style.BackColor = Color.WhiteSmoke;
+                        btnAcceptanceCheck.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnInspectionResult.Style.BackColor = Color.MediumSeaGreen;
+                        btnInspectionResult.Style.SelectionBackColor = Color.MediumSeaGreen;
+
+                        btnOverDetectionExcept.Enabled = false;
+                        btnAcceptanceCheck.Enabled = false;
+                        btnInspectionResult.Enabled = true;
+                    }
+                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusBef)
+                    {
+                        // 過検知除外：検査前
+                        btnOverDetectionExcept.Style.BackColor = Color.MediumSeaGreen;
+                        btnOverDetectionExcept.Style.SelectionBackColor = Color.MediumSeaGreen;
+                        btnAcceptanceCheck.Style.BackColor = Color.DarkGray;
+                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
+                        btnInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+
+                        btnOverDetectionExcept.Enabled = true;
+                        btnAcceptanceCheck.Enabled = false;
+                        btnInspectionResult.Enabled = false;
+                    }
+                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusChk)
+                    {
+                        // 過検知除外：検査中
+                        btnOverDetectionExcept.Style.BackColor = Color.Crimson;
+                        btnOverDetectionExcept.Style.SelectionBackColor = Color.Crimson;
+                        btnAcceptanceCheck.Style.BackColor = Color.DarkGray;
+                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
+                        btnInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+
+                        btnOverDetectionExcept.Enabled = false;
+                        btnAcceptanceCheck.Enabled = false;
+                        btnInspectionResult.Enabled = false;
+                    }
+                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
+                    {
+                        // 過検知除外：中断
+                        btnOverDetectionExcept.Style.BackColor = Color.DarkOrange;
+                        btnOverDetectionExcept.Style.SelectionBackColor = Color.DarkOrange;
+                        btnAcceptanceCheck.Style.BackColor = Color.DarkGray;
+                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
+                        btnInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+
+                        btnOverDetectionExcept.Enabled = true;
+                        btnAcceptanceCheck.Enabled = false;
+                        btnInspectionResult.Enabled = false;
+                    }
+                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
+                    {
+                        // 過検知除外：検査完了
+                        btnOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
+                        btnOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnAcceptanceCheck.Style.BackColor = Color.MediumSeaGreen;
+                        btnAcceptanceCheck.Style.SelectionBackColor = Color.MediumSeaGreen;
+                        btnInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+
+                        btnOverDetectionExcept.Enabled = false;
+                        btnAcceptanceCheck.Enabled = true;
+                        btnInspectionResult.Enabled = false;
+                    }
+                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
+                    {
+                        // 対象外
+                        btnOverDetectionExcept.Style.BackColor = Color.DarkGray;
+                        btnOverDetectionExcept.Style.SelectionBackColor = Color.DarkGray;
+                        btnAcceptanceCheck.Style.BackColor = Color.DarkGray;
+                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
+                        btnInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+
+                        btnOverDetectionExcept.Enabled = false;
+                        btnAcceptanceCheck.Enabled = false;
+                        btnInspectionResult.Enabled = false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0042, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+        }
+        #endregion
+
+        #region イベント
+
+        /// <summary>
+        /// フォームロード
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TargetSelection_Load(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Maximized;
+            this.SuspendLayout();
 
-            lblUser.Text = "作業者名：" + g_parUserNm;
+            bool bolProcOkNg = false;
 
-            // 行選択モードに変更
-            this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.MinimizeBox = false;
+            this.MaximizeBox = false;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
 
-            // 読み取り専用
-            this.dataGridView1.ReadOnly = false;
+            try
+            {
+                // 作業者名の表示
+                lblWorkerName.Text = string.Format(m_CON_FORMAT_WORKER_NAME, g_clsLoginInfo.strWorkerName);
 
-            TargetSelection_Activated(sender, e);
-            //dispgv();
-            //foreach (DataGridViewRow r in dataGridView1.Rows)
-            //    r.Cells[7].Style.BackColor = Color.WhiteSmoke;
+                // グリッドビューにボタンを追加
+                DataGridViewDisableButtonColumn btnOverDetectionExcept = new DataGridViewDisableButtonColumn();
+                btnOverDetectionExcept.FlatStyle = FlatStyle.Flat;
+                btnOverDetectionExcept.Width = 180;
+                DataGridViewDisableButtonColumn btnAcceptanceCheck = new DataGridViewDisableButtonColumn();
+                btnAcceptanceCheck.FlatStyle = FlatStyle.Flat;
+                btnAcceptanceCheck.Width = 180;
+                DataGridViewDisableButtonColumn btnInspectionResult = new DataGridViewDisableButtonColumn();
+                btnInspectionResult.FlatStyle = FlatStyle.Flat;
+                btnInspectionResult.Width = 180;
+                this.dgvTargetSelection.Columns.Add(btnOverDetectionExcept);
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "OverDetectionExcept";
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
+                this.dgvTargetSelection.Columns.Add(btnAcceptanceCheck);
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "AcceptanceCheck";
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
+                this.dgvTargetSelection.Columns.Add(btnInspectionResult);
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "InspectionResult";
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
+
+                //データ表示
+                if (bolViewData() == false)
+                    return;
+
+                bolProcOkNg = true;
+            }
+            finally
+            {
+                if (bolProcOkNg == false)
+                    this.Close();
+
+                m_blnFormActiveProc = true;
+                this.ResumeLayout();
+            }
         }
 
+        /// <summary>
+        /// 一覧セルクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            ResultCheck frmResultCheck;
-
-            DataGridView dgv = (DataGridView)sender;
-
-
-            if (e.ColumnIndex < 4)
+            try
             {
-                return;
-            }
+                DataGridView dgv = (DataGridView)sender;
+                HeaderData clsHeaderData = new HeaderData();
+                DecisionResult clsDecisionResult = new DecisionResult();
 
-            DataGridViewDisableButtonCell btnTarget = (DataGridViewDisableButtonCell)dgv.Rows[e.RowIndex].Cells[e.ColumnIndex];
-
-            if (!btnTarget.Enabled)
-            {
-                return;
-            }
-
-            switch (e.ColumnIndex)
-            {
-                case 4:
-                    Overdetectionexclusion frmOverdetectionexclusion = new Overdetectionexclusion(dtTagetInfo, e.RowIndex);
-                    frmOverdetectionexclusion.ShowDialog(this);
-                    this.Visible = true;
-                    if (frmOverdetectionexclusion.intRet == 2)
-                    {
-                        frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
-                        frmResultCheck.ShowDialog(this);
-                        this.Visible = true;
-                    }
-                    break;
-                case 5:
-                    frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
-                    frmResultCheck.ShowDialog(this);
-                    this.Visible = true;
-                    break;
-                case 6:
-                    DisplayResults frmResult = new DisplayResults(dtTagetInfo, e.RowIndex);
-                    frmResult.ShowDialog(this);
-                    this.Visible = true;
-                    if (frmResult.intRet == 1)
-                    {
-                        frmResultCheck = new ResultCheck(dtTagetInfo, e.RowIndex);
-                        frmResultCheck.ShowDialog(this);
-                        this.Visible = true;
-                    }
-                    break;
-                //case 7:
-                //    if(MessageBox.Show("No." + dgv.Rows[e.RowIndex].Cells[0].Value + "を検査対象外にしますか？"
-                //                     , "確認"
-                //                     , MessageBoxButtons.YesNo) == DialogResult.Yes)
-                //    {
-                //        DataTable dtTargetInfo = dtTagetInfo.getTargetInfoDTO();
-                //        dtTargetInfo.Rows[e.RowIndex]["CheckFlg"] = "0";
-                //        dtTagetInfo.setTargetInfoDTO(dtTargetInfo);
-                //    }
-                //    break;
-
-            }
-        }
-
-        private void changeStatus(DataGridViewRow dtRow, int intTarget, int intStatus)
-        {
-            DataGridViewDisableButtonCell btnOverdetectionexclusion = (DataGridViewDisableButtonCell)dtRow.Cells[4];
-            DataGridViewDisableButtonCell btnResultCheck = (DataGridViewDisableButtonCell)dtRow.Cells[5];
-            DataGridViewDisableButtonCell btnResult = (DataGridViewDisableButtonCell)dtRow.Cells[6];
-
-            // ボタンを非活性で初期化する
-            btnOverdetectionexclusion.Enabled = false;
-            btnResultCheck.Enabled = false;
-            btnResult.Enabled = false;
-
-            switch (intTarget)
-            {
-                case 4:
-                    dtRow.Cells[intTarget + 1].Style.BackColor = Color.DarkGray;
-                    dtRow.Cells[intTarget + 2].Style.BackColor = Color.DarkGray;
-                    break;
-                case 5:
-                    dtRow.Cells[intTarget - 1].Style.BackColor = Color.WhiteSmoke;
-                    dtRow.Cells[intTarget + 1].Style.BackColor = Color.DarkGray;
-                    break;
-                case 6:
-                    dtRow.Cells[intTarget - 1].Style.BackColor = Color.WhiteSmoke;
-                    dtRow.Cells[intTarget - 2].Style.BackColor = Color.WhiteSmoke;
-
-                    if (!btnResultCheck.Enabled)
-                    {
-                        dtRow.Cells[intTarget].Style.BackColor = Color.MediumSeaGreen;
-                        dtRow.Cells[intTarget].Style.SelectionBackColor = Color.MediumSeaGreen;
-                        btnResult.Enabled = true;
-                    }
-
+                // ボタン行以外はイベント終了
+                if (e.ColumnIndex < m_CON_COL_IDX_OVERDETECTIONEXCEPT)
                     return;
-            }
 
-            DataGridViewDisableButtonCell btnTarget = (DataGridViewDisableButtonCell)dtRow.Cells[intTarget];
-            switch (intStatus)
+                // ボタンが無効の場合は終了
+                DataGridViewDisableButtonCell btnTarget = (DataGridViewDisableButtonCell)dgv.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                if (!btnTarget.Enabled)
+                    return;
+
+                Overdetectionexclusion frmOverDetectionExcept;
+                ResultCheck frmResultCheck;
+
+                // ヘッダ情報の設定
+                clsHeaderData.strUnitNum = m_dtData.Rows[e.RowIndex]["unit_num"].ToString();
+                clsHeaderData.strProductName = m_dtData.Rows[e.RowIndex]["product_name"].ToString();
+                clsHeaderData.strOrderImg = m_dtData.Rows[e.RowIndex]["order_img"].ToString();
+                clsHeaderData.strFabricName = m_dtData.Rows[e.RowIndex]["fabric_name"].ToString();
+                clsHeaderData.strInspectionDate = m_dtData.Rows[e.RowIndex]["inspection_date"].ToString();
+                clsHeaderData.strStartDatetime = m_dtData.Rows[e.RowIndex]["start_datetime"].ToString();
+                clsHeaderData.strEndDatetime = m_dtData.Rows[e.RowIndex]["end_datetime"].ToString();
+                clsHeaderData.intInspectionStartLine = int.Parse(m_dtData.Rows[e.RowIndex]["inspection_start_line"].ToString());
+                clsHeaderData.intInspectionEndLine = int.Parse(m_dtData.Rows[e.RowIndex]["inspection_end_line"].ToString());
+                clsHeaderData.intInspectionTargetLine = int.Parse(m_dtData.Rows[e.RowIndex]["inspection_target_line"].ToString());
+                clsHeaderData.strDecisionStartDatetime = m_dtData.Rows[e.RowIndex]["decision_start_datetime"].ToString();
+                clsHeaderData.strDecisionEndDatetime = m_dtData.Rows[e.RowIndex]["decision_end_datetime"].ToString();
+                clsHeaderData.strInspectionDirection = m_dtData.Rows[e.RowIndex]["inspection_direction"].ToString();
+                clsHeaderData.intInspectionNum = int.Parse(m_dtData.Rows[e.RowIndex]["inspection_num"].ToString());
+                clsHeaderData.intOverDetectionExceptStatus = int.Parse(m_dtData.Rows[e.RowIndex]["over_detection_except_status"].ToString());
+                clsHeaderData.intAcceptanceCheckStatus = int.Parse(m_dtData.Rows[e.RowIndex]["acceptance_check_status"].ToString());
+                clsHeaderData.intColumnCnt = int.Parse(m_dtData.Rows[e.RowIndex]["column_cnt"].ToString());
+                clsHeaderData.strAirbagImagepath = m_dtData.Rows[e.RowIndex]["airbag_imagepath"].ToString();
+
+                switch (e.ColumnIndex)
+                {
+                    case m_CON_COL_IDX_OVERDETECTIONEXCEPT:
+
+                        m_blnFormActiveProc = false;
+                        this.Visible = false;
+
+                        // 過検知除外
+                        frmOverDetectionExcept = new Overdetectionexclusion(ref clsHeaderData);
+                        frmOverDetectionExcept.ShowDialog(this);
+
+                        // 過検知除外結果から合否確認に遷移
+                        if (frmOverDetectionExcept.intDestination == g_CON_DESTINATION_RESULT_CHECK)
+                        {
+                            frmResultCheck = new ResultCheck(ref clsHeaderData, ref clsDecisionResult);
+                            frmResultCheck.ShowDialog(this);
+                        }
+
+                        // 連携処理をして画面表示
+                        datetimePrevReplicate = DateTime.MinValue;
+                        if (bolViewData() == false)
+                            return;
+
+                        break;
+
+                    case m_CON_COL_IDX_ACCEPTANCECHECK:
+
+                        m_blnFormActiveProc = false;
+                        this.Visible = false;
+
+                        // 合否確認・判定登録
+                        frmResultCheck = new ResultCheck(ref clsHeaderData, ref clsDecisionResult);
+                        frmResultCheck.ShowDialog(this);
+
+                        // 連携処理をして画面表示
+                        datetimePrevReplicate = DateTime.MinValue;
+                        if (bolViewData() == false)
+                            return;
+
+                        break;
+                    case m_CON_COL_IDX_RESULT:
+
+                        m_blnFormActiveProc = false;
+                        this.Visible = false;
+
+                        // 検査結果確認
+                        DisplayResults frmInspectionResult = new DisplayResults(ref clsHeaderData);
+                        frmInspectionResult.ShowDialog(this);
+
+                        // 連携処理をして画面表示
+                        datetimePrevReplicate = DateTime.MinValue;
+                        if (bolViewData() == false)
+                            return;
+
+                        break;
+                }
+                this.Visible = true;
+            }
+            finally
             {
-                case 1:
-                    dtRow.Cells[intTarget].Style.BackColor = Color.MediumSeaGreen;
-                    dtRow.Cells[intTarget].Style.SelectionBackColor = Color.MediumSeaGreen;
-                    btnTarget.Enabled = true;
-                    break;
-                case 2:
-                    dtRow.Cells[intTarget].Style.BackColor = Color.Crimson;
-                    btnTarget.Enabled = false;
-                    break;
-                case 3:
-                    dtRow.Cells[intTarget].Style.BackColor = Color.DarkOrange;
-                    dtRow.Cells[intTarget].Style.SelectionBackColor = Color.DarkOrange;
-                    btnTarget.Enabled = true;
-                    break;
-                case 4:
-                    dtRow.Cells[intTarget].Style.BackColor = Color.MediumSeaGreen;
-                    btnTarget.Enabled = false;
-                    break;
-                default:
-                    dtRow.Cells[intTarget].Style.BackColor = Color.DarkGray;
-                    btnTarget.Enabled = false;
-                    break;
-
+                m_blnFormActiveProc = true;
             }
         }
 
-        private void btnLogOut_Click(object sender, EventArgs e)
+        /// <summary>
+        /// ログアウトボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnLogout_Click(object sender, EventArgs e)
         {
-            LogOut();
+            g_clsLoginInfo.Logout();
         }
 
+        /// <summary>
+        /// 検査履歴照会ボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnDisplayResultsAgo_Click(object sender, EventArgs e)
         {
-            DisplayResultsAgo frmResult = new DisplayResultsAgo();
-            frmResult.ShowDialog(this);
-            this.Visible = true;
+            try
+            {
+                m_blnFormActiveProc = false;
+                this.Visible = false;
+
+                DisplayResultsAgo frmResult = new DisplayResultsAgo();
+                frmResult.ShowDialog(this);
+
+                // 連携処理をして画面表示
+                datetimePrevReplicate = DateTime.MinValue;
+                if (bolViewData() == false)
+                    return;
+
+                this.Visible = true;
+            }
+            finally
+            {
+                m_blnFormActiveProc = true;
+            }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            this.dataGridView1.Rows[0].Cells[7].Style.BackColor = Color.Red;
-            this.dataGridView1.Rows[1].Cells[7].Style.BackColor = Color.Red;
-        }
-
+        /// <summary>
+        /// 検査対象外ボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
-            string[] spl1;
-            string[] spl2;
-            spl1 = this.dataGridView1.SelectedRows[0].Cells[1].Value.ToString().Replace("\r\n", "|").Split('|');
-            spl2 = this.dataGridView1.SelectedRows[0].Cells[2].Value.ToString().Replace("\r\n", "|").Split('|');
+            string strUnitNum = "";
+            string strOrderImg = "";
+            string strFabricName = "";
+            string strProductName = "";
+            string strInspectionDate = "";
+            string strStartDatetime = "";
+            string strEndDatetime = "";
+            int intInspectionStartLine = -1;
+            int intInspectionEndLine = -1;
+            int intInspectionNum = 0;
 
-            CheckExcept frmLineCorrect = new CheckExcept(spl1[0].Substring(3, 2), spl1[1].Substring(3), spl1[2].Substring(3), spl1[3].Substring(3), spl2[5].Substring(5),
-                                                         spl2[0].Substring(7), spl2[1].Substring(7), spl2[2].Substring(6));
-            frmLineCorrect.ShowDialog(this);
-            this.Visible = true;
+            int intRow = -1;
+
+            try
+            {
+                // 選択行インデックスの取得
+                foreach (DataGridViewRow dgvRow in this.dgvTargetSelection.SelectedRows)
+                {
+                    intRow = dgvRow.Index;
+                    break;
+                }
+
+                // パラメータの取得
+                strUnitNum = m_dtData.Rows[intRow]["unit_num"].ToString();
+                strOrderImg = m_dtData.Rows[intRow]["order_img"].ToString();
+                strFabricName = m_dtData.Rows[intRow]["fabric_name"].ToString();
+                strProductName = m_dtData.Rows[intRow]["product_name"].ToString();
+                strInspectionDate = m_dtData.Rows[intRow]["inspection_date"].ToString();
+                strStartDatetime = m_dtData.Rows[intRow]["start_datetime"].ToString();
+                strEndDatetime = m_dtData.Rows[intRow]["end_datetime"].ToString();
+                intInspectionStartLine = int.Parse(m_dtData.Rows[intRow]["inspection_start_line"].ToString());
+                intInspectionEndLine = int.Parse(m_dtData.Rows[intRow]["inspection_end_line"].ToString());
+                intInspectionNum = int.Parse(m_dtData.Rows[intRow]["inspection_num"].ToString());
+
+                m_blnFormActiveProc = false;
+
+                // 検査対象外画面表示
+                CheckExcept frmCheckExcept = new CheckExcept(strUnitNum,
+                                                             strOrderImg,
+                                                             strFabricName,
+                                                             strProductName,
+                                                             intInspectionNum,
+                                                             strInspectionDate,
+                                                             strStartDatetime,
+                                                             strEndDatetime,
+                                                             intInspectionStartLine,
+                                                             intInspectionEndLine);
+                frmCheckExcept.ShowDialog(this);
+
+                // 連携処理をして画面表示
+                datetimePrevReplicate = DateTime.MinValue;
+                if (bolViewData() == false)
+                    return;
+
+                this.Visible = true;
+            }
+            finally
+            {
+                m_blnFormActiveProc = true;
+            }
         }
 
+        /// <summary>
+        /// 行補正ボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click_1(object sender, EventArgs e)
         {
-            //if (MessageBox.Show("以下の情報を行補正します。よろしいですか？\r\n" +
-            //                    this.dataGridView1.SelectedRows[0].Cells[1].Value +
-            //                    this.dataGridView1.SelectedRows[0].Cells[2].Value
-            //                  , "確認"
-            //                  , MessageBoxButtons.YesNo) == DialogResult.No)
-            //{
+            try
+            {
+                string strUnitNum = "";
+                string strOrderImg = "";
+                string strFabricName = "";
+                string strProductName = "";
+                string strInspectionDate = "";
+                string strStartDatetime = "";
+                string strEndDatetime = "";
+                int intInspectionStartLine = -1;
+                int intInspectionEndLine = -1;
+                int intInspectionNum = 0;
 
+                int intRow = -1;
 
-            //    //LineCorrect();
-            //}
-            string[] spl1;
-            string[] spl2;
-            spl1 = this.dataGridView1.SelectedRows[0].Cells[1].Value.ToString().Replace("\r\n", "|").Split('|');
-            spl2 = this.dataGridView1.SelectedRows[0].Cells[2].Value.ToString().Replace("\r\n", "|").Split('|');
+                // 選択行インデックスの取得
+                foreach (DataGridViewRow dgvRow in this.dgvTargetSelection.SelectedRows)
+                {
+                    intRow = dgvRow.Index;
+                    break;
+                }
 
-            LineCorrect frmLineCorrect = new LineCorrect(spl1[0].Substring(3,2), spl1[1].Substring(3), spl1[2].Substring(3), spl1[3].Substring(3), spl2[5].Substring(5),
-                                                         spl2[0].Substring(7), spl2[1].Substring(7), spl2[2].Substring(6));
-            frmLineCorrect.ShowDialog(this);
-            this.Visible = true;
+                // パラメータの取得
+                strUnitNum = m_dtData.Rows[intRow]["unit_num"].ToString();
+                strOrderImg = m_dtData.Rows[intRow]["order_img"].ToString();
+                strFabricName = m_dtData.Rows[intRow]["fabric_name"].ToString();
+                strProductName = m_dtData.Rows[intRow]["product_name"].ToString();
+                strInspectionDate = m_dtData.Rows[intRow]["inspection_date"].ToString();
+                strStartDatetime = m_dtData.Rows[intRow]["start_datetime"].ToString();
+                strEndDatetime = m_dtData.Rows[intRow]["end_datetime"].ToString();
+                intInspectionStartLine = int.Parse(m_dtData.Rows[intRow]["inspection_start_line"].ToString());
+                intInspectionEndLine = int.Parse(m_dtData.Rows[intRow]["inspection_end_line"].ToString());
+                intInspectionNum = int.Parse(m_dtData.Rows[intRow]["inspection_num"].ToString());
+
+                m_blnFormActiveProc = false;
+
+                // 行補正画面表示
+                LineCorrect frmLineCorrect = new LineCorrect(strUnitNum,
+                                                             strOrderImg,
+                                                             strFabricName,
+                                                             strProductName,
+                                                             intInspectionNum,
+                                                             strInspectionDate,
+                                                             strStartDatetime,
+                                                             strEndDatetime,
+                                                             intInspectionStartLine,
+                                                             intInspectionEndLine);
+                frmLineCorrect.ShowDialog(this);
+
+                // 連携処理をして画面表示
+                datetimePrevReplicate = DateTime.MinValue;
+                if (bolViewData() == false)
+                    return;
+
+                this.Visible = true;
+            }
+            finally
+            {
+                m_blnFormActiveProc = true;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// データ表示
+        /// </summary>
+        private bool bolViewData()
+        {
+            try
+            {
+                // 連携基盤部との前回連携から5分以内の場合は、処理しない
+                if (datetimePrevReplicate == DateTime.MinValue || datetimePrevReplicate <= DateTime.Now)
+                {
+                    // 連携基盤部連携ファイルの取込処理
+                    if (bolImportCooperationBaseCooperationFile() == false)
+                        return false;
+
+                    // 連携時間を更新
+                    datetimePrevReplicate = DateTime.Now.AddMinutes(5);
+                }
+
+                // データグリッドビュー表示
+                if (bolDispDataGridView() == false)
+                    return false;
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
-        private void dataGridView1_MouseUp(object sender, MouseEventArgs e)
+        /// <summary>
+        /// フォームアクティブ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TargetSelection_Activated(object sender, EventArgs e)
         {
-            //string s = "";
-            //for (int i = 0; i <= dataGridView1.Columns.Count - 1; i++)
-            //{
-            //    s = s + dataGridView1.Columns[i].HeaderText + ":" + dataGridView1.Columns[i].Width.ToString() + ",";
-            //}
-            //MessageBox.Show(s);
+            if (m_blnFormActiveProc == false)
+            {
+                return;
+            }
+
+            if (bolViewData() == false)
+                return;
         }
     }
 
+    #region 独自クラス
+    /// <summary>
+    /// DataGridViewButtonColumnクラス
+    /// </summary>
     public class DataGridViewDisableButtonColumn : DataGridViewButtonColumn
     {
         public DataGridViewDisableButtonColumn()
@@ -406,6 +1161,9 @@ namespace ImageChecker
         }
     }
 
+    /// <summary>
+    /// DataGridViewButtonCellクラス
+    /// </summary>
     public class DataGridViewDisableButtonCell : DataGridViewButtonCell
     {
         private bool enabledValue;
@@ -421,7 +1179,8 @@ namespace ImageChecker
             }
         }
 
-        // Override the Clone method so that the Enabled property is copied.
+        // Cloneメソッドをオーバーライドして、
+        // Enabledプロパティがコピーされるようにします。
         public override object Clone()
         {
             DataGridViewDisableButtonCell cell =
@@ -430,7 +1189,7 @@ namespace ImageChecker
             return cell;
         }
 
-        // By default, enable the button cell.
+        // デフォルトでは、ボタンセルを有効にします。
         public DataGridViewDisableButtonCell()
         {
             this.enabledValue = true;
@@ -444,11 +1203,11 @@ namespace ImageChecker
             DataGridViewAdvancedBorderStyle advancedBorderStyle,
             DataGridViewPaintParts paintParts)
         {
-            // The button cell is disabled, so paint the border,  
-            // background, and disabled button for the cell.
+            // ボタンセルは無効になっているため、
+            // セルの境界線、背景、および無効なボタンをペイントします。
             if (!this.enabledValue)
             {
-                // Draw the cell background, if specified.
+                // 指定されている場合、セルの背景を描画します。
                 if ((paintParts & DataGridViewPaintParts.Background) ==
                     DataGridViewPaintParts.Background)
                 {
@@ -458,7 +1217,7 @@ namespace ImageChecker
                     cellBackground.Dispose();
                 }
 
-                // Draw the cell borders, if specified.
+                // 指定されている場合、セルの境界線を描画します。
                 if ((paintParts & DataGridViewPaintParts.Border) ==
                     DataGridViewPaintParts.Border)
                 {
@@ -466,7 +1225,7 @@ namespace ImageChecker
                         advancedBorderStyle);
                 }
 
-                // Calculate the area in which to draw the button.
+                // ボタンを描画する領域を計算します。
                 Rectangle buttonArea = cellBounds;
                 Rectangle buttonAdjustment =
                     this.BorderWidths(advancedBorderStyle);
@@ -475,7 +1234,7 @@ namespace ImageChecker
                 buttonArea.Height -= buttonAdjustment.Height;
                 buttonArea.Width -= buttonAdjustment.Width;
 
-                // Draw the disabled button text. 
+                // 無効なボタンのテキストを描画します。
                 if (this.FormattedValue is String)
                 {
                     TextRenderer.DrawText(graphics,
@@ -488,12 +1247,13 @@ namespace ImageChecker
             }
             else
             {
-                // The button cell is enabled, so let the base class 
-                // handle the painting.
+                // ボタンセルが有効になっているため、
+                // 基本クラスにペイントを処理させます。
                 base.Paint(graphics, clipBounds, cellBounds, rowIndex,
                     elementState, value, formattedValue, errorText,
                     cellStyle, advancedBorderStyle, paintParts);
             }
         }
     }
+    #endregion
 }
