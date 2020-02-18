@@ -119,6 +119,9 @@ namespace ImageChecker
                              , TO_CHAR(acceptance_check_datetime,'YYYY/MM/DD HH24:MI:SS') AS acceptance_check_datetime
                              , acceptance_check_worker
                              , TO_CHAR(result_update_datetime,'YYYY/MM/DD HH24:MI:SS') AS result_update_datetime
+                             , before_acceptance_check_result
+                             , TO_CHAR(before_acceptance_check_upd_datetime,'YYYY/MM/DD HH24:MI:SS') AS before_acceptance_check_upd_datetime
+                             , before_acceptance_check_worker
                              , result_update_worker
                              , before_ng_reason
                              , org_imagepath
@@ -527,12 +530,22 @@ namespace ImageChecker
             clsDecisionResult.intLine = int.Parse(m_dtData.Rows[intSelIdx]["line"].ToString());
             clsDecisionResult.strCloumns = m_dtData.Rows[intSelIdx]["cloumns"].ToString();
             clsDecisionResult.strNgReason = m_dtData.Rows[intSelIdx]["ng_reason"].ToString();
+            clsDecisionResult.strNgFace = m_dtData.Rows[intSelIdx]["ng_face"].ToString();
             clsDecisionResult.strMarkingImagepath = m_dtData.Rows[intSelIdx]["marking_imagepath"].ToString();
             clsDecisionResult.strOrgImagepath = m_dtData.Rows[intSelIdx]["org_imagepath"].ToString();
+            clsDecisionResult.intAcceptanceCheckResult = int.Parse(m_dtData.Rows[intSelIdx]["acceptance_check_result"].ToString());
+            clsDecisionResult.strAcceptanceCheckDatetime = m_dtData.Rows[intSelIdx]["acceptance_check_datetime"].ToString();
+            clsDecisionResult.strAcceptanceCheckWorker = m_dtData.Rows[intSelIdx]["acceptance_check_worker"].ToString();
+            clsDecisionResult.intBeforeAcceptanceCheckResult = int.Parse(m_dtData.Rows[intSelIdx]["before_acceptance_check_result"].ToString());
+            clsDecisionResult.strBeforeAcceptanceCheckUpdDatetime = m_dtData.Rows[intSelIdx]["before_acceptance_check_upd_datetime"].ToString();
+            clsDecisionResult.strBeforeAcceptanceCheckWorker = m_dtData.Rows[intSelIdx]["before_acceptance_check_worker"].ToString();
+            clsDecisionResult.strResultUpdateDatetime = m_dtData.Rows[intSelIdx]["result_update_datetime"].ToString();
+            clsDecisionResult.strResultUpdateWorker = m_dtData.Rows[intSelIdx]["result_update_worker"].ToString();
+            clsDecisionResult.strBeforeNgReason = m_dtData.Rows[intSelIdx]["before_ng_reason"].ToString();
 
             this.Visible = false;
 
-            ResultCheck frmResultCheck = new ResultCheck(ref m_clsHeaderData, ref clsDecisionResult);
+            ResultCheck frmResultCheck = new ResultCheck(ref m_clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS);
             frmResultCheck.ShowDialog(this);
 
             this.Visible = true;

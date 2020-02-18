@@ -32,6 +32,7 @@ namespace ImageChecker
         private int m_intAcceptanceCheckStatus = 0;             // 合否確認ステータス
         private string m_strAirbagImagepath = "";               // エアバック画像ファイルパス
         private int m_intColumnCnt = 0;                         // 列数
+        private int m_intFromApId = 0;                          // 遷移元画面ID
 
         // 定数
         private const string m_CON_FORMAT_UNIT_NUM = "号機：{0}";
@@ -84,7 +85,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="clsHeaderData">ヘッダ情報</param>
         /// <param name="clsDecisionResult">判定結果情報</param>
-        public ResultCheck(ref HeaderData clsHeaderData, ref DecisionResult clsDecisionResult)
+        public ResultCheck(ref HeaderData clsHeaderData, DecisionResult clsDecisionResult, int intFromApId = 0)
         {
             m_clsHeaderData = clsHeaderData;
             m_clsDecisionResult = clsDecisionResult;
@@ -105,6 +106,7 @@ namespace ImageChecker
             m_intAcceptanceCheckStatus = clsHeaderData.intAcceptanceCheckStatus;
             m_strAirbagImagepath = clsHeaderData.strAirbagImagepath;
             m_intColumnCnt = clsHeaderData.intColumnCnt;
+            m_intFromApId = intFromApId;
 
             m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
                                                            m_strProductName,
@@ -616,7 +618,7 @@ namespace ImageChecker
                 this.Visible = false;
 
                 // 結果確認画面に遷移
-                Result frmResult = new Result(ref m_clsHeaderData);
+                Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId, m_clsDecisionResult);
                 frmResult.ShowDialog(this);
 
                 // パラメータ更新
@@ -1145,7 +1147,7 @@ namespace ImageChecker
             this.Visible = true;
 
             // 登録済みor修正であれば、次ページを表示する。
-            if (bolRegister == true || m_clsDecisionResult.intBranchNum > 0)
+            if (bolRegister == true || m_clsDecisionResult.intBranchNum > 0 || m_clsDecisionResultComposition.intBranchNum > 0)
                 bolNextPage();
         }
 

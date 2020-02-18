@@ -36,8 +36,11 @@ namespace ImageChecker
         private static StringBuilder m_sbErrMessage = new StringBuilder();
 
         // 遷移先
-        public const int g_CON_DESTINATION_TARGET_SELECTION = 1;
-        public const int g_CON_DESTINATION_RESULT_CHECK = 2;
+        public const int g_CON_APID_LOGIN = 1;
+        public const int g_CON_APID_TARGET_SELECTION = 3;
+        public const int g_CON_APID_RESULT_CHECK = 6;
+        public const int g_CON_APID_DISPLAY_RESULTS = 9;
+        public const int g_CON_APID_DISPLAY_RESULTS_AGO = 10;
 
         // NoImage画像ファイルパス
         public const string g_CON_NO_IMAGE_FILE_PATH = @"image\NoImage.png";

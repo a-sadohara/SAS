@@ -460,6 +460,30 @@ namespace ImageChecker
 
             dgvTargetSelection.Rows.Clear();
 
+            if (dgvTargetSelection.Columns.Count != 7)
+            {
+                // グリッドビューにボタンを追加
+                DataGridViewDisableButtonColumn btnOverDetectionExcept = new DataGridViewDisableButtonColumn();
+                btnOverDetectionExcept.FlatStyle = FlatStyle.Flat;
+                btnOverDetectionExcept.Width = 180;
+                DataGridViewDisableButtonColumn btnAcceptanceCheck = new DataGridViewDisableButtonColumn();
+                btnAcceptanceCheck.FlatStyle = FlatStyle.Flat;
+                btnAcceptanceCheck.Width = 180;
+                DataGridViewDisableButtonColumn btnInspectionResult = new DataGridViewDisableButtonColumn();
+                btnInspectionResult.FlatStyle = FlatStyle.Flat;
+                btnInspectionResult.Width = 180;
+                this.dgvTargetSelection.Columns.Add(btnOverDetectionExcept);
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "OverDetectionExcept";
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
+                this.dgvTargetSelection.Columns.Add(btnAcceptanceCheck);
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "AcceptanceCheck";
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
+                this.dgvTargetSelection.Columns.Add(btnInspectionResult);
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "InspectionResult";
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
+            }
+                       
+
             try
             {
                 // SQL抽出
@@ -622,128 +646,136 @@ namespace ImageChecker
 
                     this.dgvTargetSelection.Rows.Add(arrRow.ToArray());
 
+
                     // ボタン設定
-                    DataGridViewDisableButtonCell btnOverDetectionExcept = (DataGridViewDisableButtonCell)this.dgvTargetSelection.Rows[this.dgvTargetSelection.Rows.Count - 1].Cells[m_CON_COL_IDX_OVERDETECTIONEXCEPT];
-                    DataGridViewDisableButtonCell btnAcceptanceCheck = (DataGridViewDisableButtonCell)this.dgvTargetSelection.Rows[this.dgvTargetSelection.Rows.Count - 1].Cells[m_CON_COL_IDX_ACCEPTANCECHECK];
-                    DataGridViewDisableButtonCell btnInspectionResult = (DataGridViewDisableButtonCell)this.dgvTargetSelection.Rows[this.dgvTargetSelection.Rows.Count - 1].Cells[m_CON_COL_IDX_RESULT];
+                    DataGridViewDisableButtonCell btnCellOverDetectionExcept = (DataGridViewDisableButtonCell)this.dgvTargetSelection.Rows[this.dgvTargetSelection.Rows.Count - 1].Cells[m_CON_COL_IDX_OVERDETECTIONEXCEPT];
+                    DataGridViewDisableButtonCell btnCellAcceptanceCheck = (DataGridViewDisableButtonCell)this.dgvTargetSelection.Rows[this.dgvTargetSelection.Rows.Count - 1].Cells[m_CON_COL_IDX_ACCEPTANCECHECK];
+                    DataGridViewDisableButtonCell btnCellInspectionResult = (DataGridViewDisableButtonCell)this.dgvTargetSelection.Rows[this.dgvTargetSelection.Rows.Count - 1].Cells[m_CON_COL_IDX_RESULT];
 
                     // ボタンレイアウト設定
                     //  背景色,有効無効
                     if (intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusChk)
                     {
                         // 合否確認：検査中
-                        btnOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
-                        btnOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
-                        btnAcceptanceCheck.Style.BackColor = Color.Red;
-                        btnAcceptanceCheck.Style.SelectionBackColor = Color.Red;
-                        btnInspectionResult.Style.BackColor = Color.DarkGray;
-                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
+                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnCellAcceptanceCheck.Style.BackColor = Color.Red;
+                        btnCellAcceptanceCheck.Style.SelectionBackColor = Color.Red;
+                        btnCellInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.SelectionBackColor = Color.DarkGray;
 
-                        btnOverDetectionExcept.Enabled = false;
-                        btnAcceptanceCheck.Enabled = false;
-                        btnInspectionResult.Enabled = false;
+                        btnCellOverDetectionExcept.Enabled = false;
+                        btnCellAcceptanceCheck.Enabled = false;
+                        btnCellInspectionResult.Enabled = false;
                     }
-                    else if (intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
+
+                    if (intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
                     {
                         // 合否確認：中断
-                        btnOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
-                        btnOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
-                        btnAcceptanceCheck.Style.BackColor = Color.DarkOrange;
-                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkOrange;
-                        btnInspectionResult.Style.BackColor = Color.DarkGray;
-                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
+                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnCellAcceptanceCheck.Style.BackColor = Color.DarkOrange;
+                        btnCellAcceptanceCheck.Style.SelectionBackColor = Color.DarkOrange;
+                        btnCellInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.SelectionBackColor = Color.DarkGray;
 
-                        btnOverDetectionExcept.Enabled = false;
-                        btnAcceptanceCheck.Enabled = true;
-                        btnInspectionResult.Enabled = false;
+                        btnCellOverDetectionExcept.Enabled = false;
+                        btnCellAcceptanceCheck.Enabled = true;
+                        btnCellInspectionResult.Enabled = false;
                     }
-                    else if (intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
+
+                    if (intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
                     {
                         // 合否確認：検査完了
-                        btnOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
-                        btnOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
-                        btnAcceptanceCheck.Style.BackColor = Color.WhiteSmoke;
-                        btnAcceptanceCheck.Style.SelectionBackColor = Color.WhiteSmoke;
-                        btnInspectionResult.Style.BackColor = Color.MediumSeaGreen;
-                        btnInspectionResult.Style.SelectionBackColor = Color.MediumSeaGreen;
+                        btnCellOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
+                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnCellAcceptanceCheck.Style.BackColor = Color.WhiteSmoke;
+                        btnCellAcceptanceCheck.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnCellInspectionResult.Style.BackColor = Color.MediumSeaGreen;
+                        btnCellInspectionResult.Style.SelectionBackColor = Color.MediumSeaGreen;
 
-                        btnOverDetectionExcept.Enabled = false;
-                        btnAcceptanceCheck.Enabled = false;
-                        btnInspectionResult.Enabled = true;
+                        btnCellOverDetectionExcept.Enabled = false;
+                        btnCellAcceptanceCheck.Enabled = false;
+                        btnCellInspectionResult.Enabled = true;
                     }
-                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusBef)
+
+                    if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusBef)
                     {
                         // 過検知除外：検査前
-                        btnOverDetectionExcept.Style.BackColor = Color.MediumSeaGreen;
-                        btnOverDetectionExcept.Style.SelectionBackColor = Color.MediumSeaGreen;
-                        btnAcceptanceCheck.Style.BackColor = Color.DarkGray;
-                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
-                        btnInspectionResult.Style.BackColor = Color.DarkGray;
-                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellOverDetectionExcept.Style.BackColor = Color.MediumSeaGreen;
+                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.MediumSeaGreen;
+                        btnCellAcceptanceCheck.Style.BackColor = Color.DarkGray;
+                        btnCellAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.SelectionBackColor = Color.DarkGray;
 
-                        btnOverDetectionExcept.Enabled = true;
-                        btnAcceptanceCheck.Enabled = false;
-                        btnInspectionResult.Enabled = false;
+                        btnCellOverDetectionExcept.Enabled = true;
+                        btnCellAcceptanceCheck.Enabled = false;
+                        btnCellInspectionResult.Enabled = false;
                     }
-                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusChk)
+
+                    if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusChk)
                     {
                         // 過検知除外：検査中
-                        btnOverDetectionExcept.Style.BackColor = Color.Crimson;
-                        btnOverDetectionExcept.Style.SelectionBackColor = Color.Crimson;
-                        btnAcceptanceCheck.Style.BackColor = Color.DarkGray;
-                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
-                        btnInspectionResult.Style.BackColor = Color.DarkGray;
-                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellOverDetectionExcept.Style.BackColor = Color.Crimson;
+                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.Crimson;
+                        btnCellAcceptanceCheck.Style.BackColor = Color.DarkGray;
+                        btnCellAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.SelectionBackColor = Color.DarkGray;
 
-                        btnOverDetectionExcept.Enabled = false;
-                        btnAcceptanceCheck.Enabled = false;
-                        btnInspectionResult.Enabled = false;
+                        btnCellOverDetectionExcept.Enabled = false;
+                        btnCellAcceptanceCheck.Enabled = false;
+                        btnCellInspectionResult.Enabled = false;
                     }
-                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
+
+                    if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
                     {
                         // 過検知除外：中断
-                        btnOverDetectionExcept.Style.BackColor = Color.DarkOrange;
-                        btnOverDetectionExcept.Style.SelectionBackColor = Color.DarkOrange;
-                        btnAcceptanceCheck.Style.BackColor = Color.DarkGray;
-                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
-                        btnInspectionResult.Style.BackColor = Color.DarkGray;
-                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellOverDetectionExcept.Style.BackColor = Color.DarkOrange;
+                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.DarkOrange;
+                        btnCellAcceptanceCheck.Style.BackColor = Color.DarkGray;
+                        btnCellAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.SelectionBackColor = Color.DarkGray;
 
-                        btnOverDetectionExcept.Enabled = true;
-                        btnAcceptanceCheck.Enabled = false;
-                        btnInspectionResult.Enabled = false;
+                        btnCellOverDetectionExcept.Enabled = true;
+                        btnCellAcceptanceCheck.Enabled = false;
+                        btnCellInspectionResult.Enabled = false;
                     }
-                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
+
+                    if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
                     {
                         // 過検知除外：検査完了
-                        btnOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
-                        btnOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
-                        btnAcceptanceCheck.Style.BackColor = Color.MediumSeaGreen;
-                        btnAcceptanceCheck.Style.SelectionBackColor = Color.MediumSeaGreen;
-                        btnInspectionResult.Style.BackColor = Color.DarkGray;
-                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellOverDetectionExcept.Style.BackColor = Color.WhiteSmoke;
+                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.WhiteSmoke;
+                        btnCellAcceptanceCheck.Style.BackColor = Color.MediumSeaGreen;
+                        btnCellAcceptanceCheck.Style.SelectionBackColor = Color.MediumSeaGreen;
+                        btnCellInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.SelectionBackColor = Color.DarkGray;
 
-                        btnOverDetectionExcept.Enabled = false;
-                        btnAcceptanceCheck.Enabled = true;
-                        btnInspectionResult.Enabled = false;
+                        btnCellOverDetectionExcept.Enabled = false;
+                        btnCellAcceptanceCheck.Enabled = true;
+                        btnCellInspectionResult.Enabled = false;
                     }
-                    else if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
+
+                    if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
                     {
                         // 対象外
-                        btnOverDetectionExcept.Style.BackColor = Color.DarkGray;
-                        btnOverDetectionExcept.Style.SelectionBackColor = Color.DarkGray;
-                        btnAcceptanceCheck.Style.BackColor = Color.DarkGray;
-                        btnAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
-                        btnInspectionResult.Style.BackColor = Color.DarkGray;
-                        btnInspectionResult.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellOverDetectionExcept.Style.BackColor = Color.DarkGray;
+                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellAcceptanceCheck.Style.BackColor = Color.DarkGray;
+                        btnCellAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.BackColor = Color.DarkGray;
+                        btnCellInspectionResult.Style.SelectionBackColor = Color.DarkGray;
 
-                        btnOverDetectionExcept.Enabled = false;
-                        btnAcceptanceCheck.Enabled = false;
-                        btnInspectionResult.Enabled = false;
+                        btnCellOverDetectionExcept.Enabled = false;
+                        btnCellAcceptanceCheck.Enabled = false;
+                        btnCellInspectionResult.Enabled = false;
                     }
                 }
-
-                return true;
+                    return true;
+                
             }
             catch (Exception ex)
             {
@@ -779,31 +811,6 @@ namespace ImageChecker
             {
                 // 作業者名の表示
                 lblWorkerName.Text = string.Format(m_CON_FORMAT_WORKER_NAME, g_clsLoginInfo.strWorkerName);
-
-                // グリッドビューにボタンを追加
-                DataGridViewDisableButtonColumn btnOverDetectionExcept = new DataGridViewDisableButtonColumn();
-                btnOverDetectionExcept.FlatStyle = FlatStyle.Flat;
-                btnOverDetectionExcept.Width = 180;
-                DataGridViewDisableButtonColumn btnAcceptanceCheck = new DataGridViewDisableButtonColumn();
-                btnAcceptanceCheck.FlatStyle = FlatStyle.Flat;
-                btnAcceptanceCheck.Width = 180;
-                DataGridViewDisableButtonColumn btnInspectionResult = new DataGridViewDisableButtonColumn();
-                btnInspectionResult.FlatStyle = FlatStyle.Flat;
-                btnInspectionResult.Width = 180;
-                this.dgvTargetSelection.Columns.Add(btnOverDetectionExcept);
-                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "OverDetectionExcept";
-                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
-                this.dgvTargetSelection.Columns.Add(btnAcceptanceCheck);
-                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "AcceptanceCheck";
-                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
-                this.dgvTargetSelection.Columns.Add(btnInspectionResult);
-                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "InspectionResult";
-                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
-
-                //データ表示
-                if (bolViewData() == false)
-                    return;
-
                 bolProcOkNg = true;
             }
             finally
@@ -873,16 +880,11 @@ namespace ImageChecker
                         frmOverDetectionExcept.ShowDialog(this);
 
                         // 過検知除外結果から合否確認に遷移
-                        if (frmOverDetectionExcept.intDestination == g_CON_DESTINATION_RESULT_CHECK)
+                        if (frmOverDetectionExcept.intDestination == g_CON_APID_RESULT_CHECK)
                         {
-                            frmResultCheck = new ResultCheck(ref clsHeaderData, ref clsDecisionResult);
+                            frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult);
                             frmResultCheck.ShowDialog(this);
                         }
-
-                        // 連携処理をして画面表示
-                        datetimePrevReplicate = DateTime.MinValue;
-                        if (bolViewData() == false)
-                            return;
 
                         break;
 
@@ -892,13 +894,11 @@ namespace ImageChecker
                         this.Visible = false;
 
                         // 合否確認・判定登録
-                        frmResultCheck = new ResultCheck(ref clsHeaderData, ref clsDecisionResult);
+                        frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult);
                         frmResultCheck.ShowDialog(this);
 
                         // 連携処理をして画面表示
                         datetimePrevReplicate = DateTime.MinValue;
-                        if (bolViewData() == false)
-                            return;
 
                         break;
                     case m_CON_COL_IDX_RESULT:
@@ -912,8 +912,6 @@ namespace ImageChecker
 
                         // 連携処理をして画面表示
                         datetimePrevReplicate = DateTime.MinValue;
-                        if (bolViewData() == false)
-                            return;
 
                         break;
                 }
@@ -952,8 +950,6 @@ namespace ImageChecker
 
                 // 連携処理をして画面表示
                 datetimePrevReplicate = DateTime.MinValue;
-                if (bolViewData() == false)
-                    return;
 
                 this.Visible = true;
             }
@@ -1021,8 +1017,6 @@ namespace ImageChecker
 
                 // 連携処理をして画面表示
                 datetimePrevReplicate = DateTime.MinValue;
-                if (bolViewData() == false)
-                    return;
 
                 this.Visible = true;
             }
@@ -1090,9 +1084,6 @@ namespace ImageChecker
 
                 // 連携処理をして画面表示
                 datetimePrevReplicate = DateTime.MinValue;
-                if (bolViewData() == false)
-                    return;
-
                 this.Visible = true;
             }
             finally
@@ -1102,35 +1093,6 @@ namespace ImageChecker
         }
         #endregion
 
-        /// <summary>
-        /// データ表示
-        /// </summary>
-        private bool bolViewData()
-        {
-            try
-            {
-                // 連携基盤部との前回連携から5分以内の場合は、処理しない
-                if (datetimePrevReplicate == DateTime.MinValue || datetimePrevReplicate <= DateTime.Now)
-                {
-                    // 連携基盤部連携ファイルの取込処理
-                    if (bolImportCooperationBaseCooperationFile() == false)
-                        return false;
-
-                    // 連携時間を更新
-                    datetimePrevReplicate = DateTime.Now.AddMinutes(5);
-                }
-
-                // データグリッドビュー表示
-                if (bolDispDataGridView() == false)
-                    return false;
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
         /// <summary>
         /// フォームアクティブ
@@ -1139,13 +1101,38 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void TargetSelection_Activated(object sender, EventArgs e)
         {
-            if (m_blnFormActiveProc == false)
-            {
-                return;
-            }
 
-            if (bolViewData() == false)
-                return;
+
+            try
+            {
+                // 連携基盤部との前回連携から5分以内の場合は、処理しない
+                if (datetimePrevReplicate == DateTime.MinValue || datetimePrevReplicate <= DateTime.Now)
+                {
+                    ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
+                    frmProgress.Show(this);
+
+                    // 連携基盤部連携ファイルの取込処理
+                    if (bolImportCooperationBaseCooperationFile() == false)
+                    {
+                        return;
+                    }
+
+                    frmProgress.Close();
+
+                    // 連携時間を更新
+                    datetimePrevReplicate = DateTime.Now.AddMinutes(5);
+                }
+
+                // データグリッドビュー表示
+                if (bolDispDataGridView() == false)
+                {
+                    return;
+                }
+
+            }
+            catch
+            {
+            }
         }
     }
 

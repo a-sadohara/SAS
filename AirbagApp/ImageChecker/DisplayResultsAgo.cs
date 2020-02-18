@@ -508,7 +508,7 @@ namespace ImageChecker
 
             this.Visible = false;
 
-            ResultCheck frmResultCheck = new ResultCheck(ref clsHeaderData, ref clsDecisionResult);
+            ResultCheck frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS_AGO);
             frmResultCheck.ShowDialog(this);
 
             this.Visible = true;

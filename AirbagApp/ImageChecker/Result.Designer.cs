@@ -521,6 +521,7 @@
             this.Name = "Result";
             this.Text = "判定登録";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Result_FormClosing);
             this.Load += new System.EventHandler(this.Result_Load);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();

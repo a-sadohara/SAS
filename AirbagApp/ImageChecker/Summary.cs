@@ -441,7 +441,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnTargetSelection_Click(object sender, EventArgs e)
         {
-            intDestination = g_CON_DESTINATION_TARGET_SELECTION;
+            intDestination = g_CON_APID_TARGET_SELECTION;
             this.Close();
         }
 
@@ -452,7 +452,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnAcceptanceCheck_Click(object sender, EventArgs e)
         {
-            intDestination = g_CON_DESTINATION_RESULT_CHECK;
+            intDestination = g_CON_APID_RESULT_CHECK;
             this.Close();
         }
 
@@ -535,7 +535,7 @@ namespace ImageChecker
             else if (m_bolRoadFlg == true && intSelIdx == -1 )
             {
                 if (intDestination == -1)
-                    intDestination = g_CON_DESTINATION_TARGET_SELECTION;
+                    intDestination = g_CON_APID_TARGET_SELECTION;
 
                 // 過検知除外ステータス更新(検査完了)
                 blnUpdOverDetectionExceptStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
