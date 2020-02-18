@@ -75,7 +75,7 @@ namespace ImageChecker
         static void Main(string[] args)
         {
             // Mutex名を設定する
-            string mutexName = "BeforeInspection";
+            string mutexName = "ImageChecker";
 
             // Mutexオブジェクトを作成する
             System.Threading.Mutex mutex = new System.Threading.Mutex(false, mutexName);
