@@ -548,6 +548,13 @@ namespace ImageChecker
             ResultCheck frmResultCheck = new ResultCheck(ref m_clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS);
             frmResultCheck.ShowDialog(this);
 
+            // 判定登録画面:検査開始選択へ戻るボタンで閉じる
+            if (frmResultCheck.intDestination == g_CON_APID_TARGET_SELECTION)
+            {
+                this.Close();
+                return;
+            }
+
             this.Visible = true;
 
             // 一覧表示

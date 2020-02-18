@@ -20,6 +20,8 @@ namespace ImageChecker
     {
         public bool bolMod { get; set; }
 
+        public bool bolReg { get; set; }
+
         // 判定結果情報
         public DecisionResult clsDecisionResult { get; set; }
 
@@ -117,6 +119,7 @@ namespace ImageChecker
                                                            m_intInspectionNum);
 
             bolMod = false;
+            bolReg = false;
             clsDecisionResult = new DecisionResult();
 
             InitializeComponent();
@@ -213,6 +216,7 @@ namespace ImageChecker
             {
                 // 初期化
                 bolMod = false;
+                bolReg = false;
 
                 // 列のスタイル変更
                 this.dgvDecisionResult.Columns[0].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //№
@@ -819,6 +823,9 @@ namespace ImageChecker
 
                 if (bolProcOkNg == true)
                 {
+                    // 登録
+                    bolReg = true;
+
                     this.Close();
                 }
             }

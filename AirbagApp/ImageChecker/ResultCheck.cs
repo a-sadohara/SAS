@@ -13,6 +13,11 @@ namespace ImageChecker
 {
     public partial class ResultCheck : Form
     {
+        /// <summary>
+        /// 遷移先
+        /// </summary>
+        public int intDestination { get; set; }
+
         // パラメータ関連
         private HeaderData m_clsHeaderData;                     // ヘッダ情報
         private DecisionResult m_clsDecisionResultCorrection;   // 検査結果情報(修正)
@@ -85,6 +90,8 @@ namespace ImageChecker
         /// <param name="intFromApId">遷移元画面ID</param>
         public ResultCheck(ref HeaderData clsHeaderData, DecisionResult clsDecisionResultCorrection, int intFromApId = 0)
         {
+            intDestination = 0;
+
             m_clsHeaderData = clsHeaderData;
             m_clsDecisionResultCorrection = clsDecisionResultCorrection;
 
@@ -704,6 +711,12 @@ namespace ImageChecker
                 }
                 else
                 {
+                    // 遷移先の設定
+                    if (frmResult.bolReg == false)
+                    {
+                        intDestination = g_CON_APID_TARGET_SELECTION;
+                    }
+
                     // 修正でなければ画面を閉じる
                     this.Close();
                     return false;
@@ -1158,6 +1171,8 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnTargetSelection_Click(object sender, EventArgs e)
         {
+            intDestination = g_CON_APID_TARGET_SELECTION;
+
             this.Close();
         }
 
