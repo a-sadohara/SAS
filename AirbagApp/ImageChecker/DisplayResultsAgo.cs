@@ -43,7 +43,7 @@ namespace ImageChecker
             string stResultName = "";
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<String> lststrLineColumns = new List<String>();
-            string strBefore48hourYmdhms = DateTime.Now.AddHours(-48).ToString("yyyy/MM/dd HH:mm:ss");
+            string stBefore48hourYmdhms = DateTime.Now.AddHours(-48).ToString("yyyy/MM/dd HH:mm:ss");
 
             // 一覧の表示
             dgvCheckInspectionHistory.Rows.Clear();
@@ -96,7 +96,7 @@ namespace ImageChecker
                            AND iih.inspection_num = dr.inspection_num
                            INNER JOIN mst_product_info mpi
                            ON  iih.product_name = mpi.product_name
-                           WHERE iih.end_datetime < TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS') ";
+                           WHERE iih.decision_end_datetime < TO_TIMESTAMP('" + stBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS') ";
 
                 // 検索部
                 // 号機
@@ -298,6 +298,15 @@ namespace ImageChecker
                     // 重複時はスキップ
                     if (lststrLineColumns.Contains(string.Join("|", row["line"], row["cloumns"])) == false)
                         lststrLineColumns.Add(string.Join("|", row["line"], row["cloumns"]));
+                }
+
+                if (dgvCheckInspectionHistory.Rows.Count == 0)
+                {
+                    btnResultUpdate.Enabled = false;
+                }
+                else
+                {
+                    btnResultUpdate.Enabled = true;
                 }
 
                 // 件数の表示

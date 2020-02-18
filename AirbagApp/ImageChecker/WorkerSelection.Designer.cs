@@ -49,7 +49,8 @@
             this.lblWorkerNameKanaさ = new System.Windows.Forms.Label();
             this.lblWorkerNameKanaか = new System.Windows.Forms.Label();
             this.lblWorkerNameKanaあ = new System.Windows.Forms.Label();
-            this.dgvWorker = new ImageChecker.MyDataGridView();
+            //this.dgvWorker = new System.Windows.Forms.DataGridView();
+            this.dgvWorker = new MyDataGridView();
             this.EmployeeNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.WorkerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlWorkerNameKana.SuspendLayout();

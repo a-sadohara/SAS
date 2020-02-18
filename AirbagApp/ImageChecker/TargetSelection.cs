@@ -773,8 +773,19 @@ namespace ImageChecker
                         btnCellInspectionResult.Enabled = false;
                     }
                 }
-                    return true;
-                
+
+                if (dgvTargetSelection.Rows.Count == 0)
+                {
+                    btnReviseLine.Enabled = false;
+                    btnExceptTarget.Enabled = false;
+                }
+                else
+                {
+                    btnReviseLine.Enabled = true;
+                    btnExceptTarget.Enabled = true;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
