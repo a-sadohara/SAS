@@ -68,6 +68,9 @@ namespace ImageChecker
         {
             try
             {
+                if (NpgsqlTran != null && NpgsqlTran.IsCompleted == false)
+                    DbRollback();
+
                 if (NpgsqlCon != null && NpgsqlCon.FullState == System.Data.ConnectionState.Open)
                     NpgsqlCon.Close();
             }

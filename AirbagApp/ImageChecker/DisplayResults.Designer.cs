@@ -153,7 +153,7 @@
             this.grbWhere.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.grbWhere.Location = new System.Drawing.Point(448, 4);
             this.grbWhere.Name = "grbWhere";
-            this.grbWhere.Size = new System.Drawing.Size(425, 146);
+            this.grbWhere.Size = new System.Drawing.Size(530, 146);
             this.grbWhere.TabIndex = 28;
             this.grbWhere.TabStop = false;
             this.grbWhere.Text = "検索条件";
@@ -188,7 +188,7 @@
             this.txtNgReason.Location = new System.Drawing.Point(281, 52);
             this.txtNgReason.MaxLength = 16;
             this.txtNgReason.Name = "txtNgReason";
-            this.txtNgReason.Size = new System.Drawing.Size(100, 24);
+            this.txtNgReason.Size = new System.Drawing.Size(183, 24);
             this.txtNgReason.TabIndex = 26;
             this.txtNgReason.Text = "ＷＷＷＷＷＷＷＷＷＷＷＷＷＷＷＷ";
             this.txtNgReason.DoubleClick += new System.EventHandler(this.txtNgReason_DoubleClick);
@@ -348,7 +348,7 @@
             // btnSearch
             // 
             this.btnSearch.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnSearch.Location = new System.Drawing.Point(878, 114);
+            this.btnSearch.Location = new System.Drawing.Point(1001, 114);
             this.btnSearch.Margin = new System.Windows.Forms.Padding(2);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(107, 36);

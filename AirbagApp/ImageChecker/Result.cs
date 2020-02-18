@@ -25,7 +25,6 @@ namespace ImageChecker
 
         // パラメータ関連
         private HeaderData m_clsHeaderData;             // ヘッダ情報
-        private DecisionResult m_clsDecisionResultBef;  // 判定結果情報(更新前)
         private string m_strUnitNum = "";               // 号機
         private string m_strProductName = "";           // 品名
         private string m_strOrderImg = "";              // 指図
@@ -74,6 +73,9 @@ namespace ImageChecker
         // [X]ボタン判定
         private bool m_bolXButton = true;
 
+        // [X]ボタン無効
+        private bool m_bolXButtonDisable = false;
+
         // PDF作成関連
         private IList<Stream> m_streams;
         private const int m_DETAIL_CNT = 7;
@@ -87,7 +89,7 @@ namespace ImageChecker
         /// <param name="clsHeaderData">ヘッダ情報</param>
         /// <param name="clsDecisionResultBef">判定結果情報(更新前)</param>
         /// <param name="intFromApId">遷移元画面ID</param>
-        public Result(ref HeaderData clsHeaderData, int intFromApId = 0, DecisionResult clsDecisionResult = null)
+        public Result(ref HeaderData clsHeaderData, int intFromApId = 0)
         {
             m_clsHeaderData = clsHeaderData;
 
@@ -113,8 +115,6 @@ namespace ImageChecker
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
-
-            m_clsDecisionResultBef = clsDecisionResult;
 
             bolMod = false;
             clsDecisionResult = new DecisionResult();
@@ -449,6 +449,15 @@ namespace ImageChecker
                     return;
                 }
 
+                if (dgvDecisionResult.Rows.Count == 0)
+                {
+                    btnAcceptanceCheck.Enabled = false;
+                }
+                else
+                {
+                    btnAcceptanceCheck.Enabled = true;
+                }
+
                 bolProcOkNg = true;
             }
             finally
@@ -471,14 +480,6 @@ namespace ImageChecker
         private bool bolDisposeUpd(int intToApId)
         {
             string strApName = "";
-            string strSQL = "";
-            DataTable dtData = new DataTable();
-
-            // 遷移元画面IDがなければ処理継続
-            if (intToApId == 0)
-            {
-                return true;
-            }
 
             // 遷移画面名の設定
             switch (intToApId)
@@ -508,66 +509,11 @@ namespace ImageChecker
             }                
 
             // 更新前の状態に戻す
-            dtData = new DataTable();
             try
             {
-                strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
-                              SET ng_reason = :ng_reason
-                                , line = :line
-                                , cloumns = :cloumns
-                                , before_ng_reason = :before_ng_reason
-                                , acceptance_check_result = :acceptance_check_result
-                                , acceptance_check_datetime = TO_TIMESTAMP(:acceptance_check_datetime, 'YYYY/MM/DD HH24:MI:SS')
-                                , acceptance_check_worker = :acceptance_check_worker
-                                , before_acceptance_check_result = :before_acceptance_check_result
-                                , before_acceptance_check_upd_datetime = TO_TIMESTAMP(:before_acceptance_check_upd_datetime, 'YYYY/MM/DD HH24:MI:SS')
-                                , before_acceptance_check_worker = :before_acceptance_check_worker
-                                , result_update_datetime = TO_TIMESTAMP(:result_update_datetime, 'YYYY/MM/DD HH24:MI:SS')
-                                , result_update_worker = :result_update_worker
-                            WHERE fabric_name = :fabric_name
-                              AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
-                              AND inspection_num = :inspection_num
-                              AND branch_num = :branch_num
-                              AND ng_face = :ng_face
-                              AND marking_imagepath = :marking_imagepath
-                              AND org_imagepath = :org_imagepath";
-
-                // SQLコマンドに各パラメータを設定する
-                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = m_clsDecisionResultBef.intLine });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = m_clsDecisionResultBef.strCloumns });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_reason", DbType = DbType.String, Value = m_clsDecisionResultBef.strNgReason });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result", DbType = DbType.Int16, Value = m_clsDecisionResultBef.intAcceptanceCheckResult });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_datetime", DbType = DbType.String, Value = m_clsDecisionResultBef.strAcceptanceCheckDatetime });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_worker", DbType = DbType.String, Value = m_clsDecisionResultBef.strAcceptanceCheckWorker });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "before_acceptance_check_result", DbType = DbType.Int16, Value = m_clsDecisionResultBef.intBeforeAcceptanceCheckResult });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "before_acceptance_check_upd_datetime", DbType = DbType.String, Value = m_clsDecisionResultBef.strBeforeAcceptanceCheckUpdDatetime });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "before_acceptance_check_worker", DbType = DbType.String, Value = m_clsDecisionResultBef.strBeforeAcceptanceCheckWorker });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "result_update_datetime", DbType = DbType.String, Value = m_clsDecisionResultBef.strResultUpdateDatetime });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "result_update_worker", DbType = DbType.String, Value = m_clsDecisionResultBef.strResultUpdateWorker });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "before_ng_reason", DbType = DbType.String, Value = m_clsDecisionResultBef.strBeforeNgReason });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = m_clsDecisionResultBef.intBranchNum });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_face", DbType = DbType.String, Value = m_clsDecisionResultBef.strNgFace });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_clsDecisionResultBef.strMarkingImagepath });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "org_imagepath", DbType = DbType.String, Value = m_clsDecisionResultBef.strOrgImagepath });
-
-                g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
-
-                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbRollback();
 
                 return true;
-            }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
-                // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return false;
             }
             finally
             {
@@ -582,9 +528,13 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnTargetSelection_Click(object sender, EventArgs e)
         {
-            if (bolDisposeUpd(m_intFromApId) == false)
+            if (m_intFromApId != 0)
             {
-                return;
+                // 変更破棄
+                if (bolDisposeUpd(m_intFromApId) == false)
+                {
+                    return;
+                }
             }
 
             m_bolXButton = false;
@@ -598,14 +548,31 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnRegstDecision_Click(object sender, EventArgs e)
         {
+            bool bolProcOkNg = false;
+
             string strSQL = "";
             DataTable dtData;
             string strWriteLine = "";
+            List<Control> lstctlEnable = null;
+
+            if (MessageBox.Show(g_clsMessageInfo.strMsgQ0012, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                return;
 
             try
             {
-                if (MessageBox.Show(g_clsMessageInfo.strMsgQ0012, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                    return;
+                // コントロール無効
+                m_bolXButtonDisable = true;
+                lstctlEnable = new List<Control>();
+                lstctlEnable.Add(btnLogout);
+                lstctlEnable.Add(btnTargetSelection);
+                lstctlEnable.Add(btnAcceptanceCheck);
+                lstctlEnable.Add(btnRegstDecision);
+                lstctlEnable.Add(dgvDecisionResult);
+
+                foreach (Control ctr in lstctlEnable)
+                {
+                    ctr.Enabled = false;
+                }
 
                 // 終了日時(仮)を保持
                 m_strDecisionEndTimeBeta = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
@@ -835,11 +802,25 @@ namespace ImageChecker
                 m_strDecisionEndTime = m_clsHeaderData.strDecisionEndDatetime;
 
                 m_bolXButton = false;
-                this.Close();
+                bolProcOkNg = true;
             }
             finally
             {
                 g_clsConnectionNpgsql.DbClose();
+
+                if (lstctlEnable != null)
+                {
+                    foreach (Control ctr in lstctlEnable)
+                    {
+                        ctr.Enabled = true;
+                    }
+                }
+                m_bolXButtonDisable = false;
+
+                if (bolProcOkNg == true)
+                {
+                    this.Close();
+                }
             }
         }
 
@@ -850,40 +831,27 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnAcceptanceCheck_Click(object sender, EventArgs e)
         {
-            if (bolDisposeUpd(m_intFromApId) == false)
-                return;
-
             int intSelIdx = -1;
 
             // 選択行インデックスの取得
-            if (m_clsDecisionResultBef.intBranchNum > 0)
+            foreach (DataGridViewRow dgvRow in this.dgvDecisionResult.SelectedRows)
             {
-                // 修正の場合
-                clsDecisionResult = new DecisionResult();
-                clsDecisionResult.intBranchNum = m_clsDecisionResultBef.intBranchNum;
-                clsDecisionResult.intLine = m_clsDecisionResultBef.intLine;
-                clsDecisionResult.strCloumns = m_clsDecisionResultBef.strCloumns;
-                clsDecisionResult.strNgReason = m_clsDecisionResultBef.strNgReason;
-                clsDecisionResult.strMarkingImagepath = m_clsDecisionResultBef.strMarkingImagepath;
-                clsDecisionResult.strOrgImagepath = m_clsDecisionResultBef.strOrgImagepath;
+                intSelIdx = dgvRow.Index;
+                break;
             }
-            else
-            {
-                // 新規の場合
-                foreach (DataGridViewRow dgvRow in this.dgvDecisionResult.SelectedRows)
-                {
-                    intSelIdx = dgvRow.Index;
-                    break;
-                }
 
-                clsDecisionResult = new DecisionResult();
-                clsDecisionResult.intBranchNum = int.Parse(m_dtData.Rows[intSelIdx]["branch_num"].ToString());
-                clsDecisionResult.intLine = int.Parse(m_dtData.Rows[intSelIdx]["line"].ToString());
-                clsDecisionResult.strCloumns = m_dtData.Rows[intSelIdx]["cloumns"].ToString();
-                clsDecisionResult.strNgReason = m_dtData.Rows[intSelIdx]["ng_reason"].ToString();
-                clsDecisionResult.strMarkingImagepath = m_dtData.Rows[intSelIdx]["marking_imagepath"].ToString();
-                clsDecisionResult.strOrgImagepath = m_dtData.Rows[intSelIdx]["org_imagepath"].ToString();
+            if (intSelIdx == -1)
+            {
+                return;
             }
+
+            clsDecisionResult = new DecisionResult();
+            clsDecisionResult.intBranchNum = int.Parse(m_dtData.Rows[intSelIdx]["branch_num"].ToString());
+            clsDecisionResult.intLine = int.Parse(m_dtData.Rows[intSelIdx]["line"].ToString());
+            clsDecisionResult.strCloumns = m_dtData.Rows[intSelIdx]["cloumns"].ToString();
+            clsDecisionResult.strNgReason = m_dtData.Rows[intSelIdx]["ng_reason"].ToString();
+            clsDecisionResult.strMarkingImagepath = m_dtData.Rows[intSelIdx]["marking_imagepath"].ToString();
+            clsDecisionResult.strOrgImagepath = m_dtData.Rows[intSelIdx]["org_imagepath"].ToString();
 
             // 修正する
             bolMod = true;
@@ -919,9 +887,16 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            if (bolDisposeUpd(m_intFromApId) == false)
-                return;
-
+            if (m_intFromApId != 0)
+            {
+                // 変更破棄
+                if (bolDisposeUpd(g_CON_APID_LOGIN) == false)
+                {
+                    return;
+                }
+            }
+            
+            m_bolXButton = false;
             g_clsLoginInfo.Logout();
         }
 
@@ -1194,16 +1169,30 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void Result_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (m_bolXButtonDisable == true)
+            {
+                if (e.CloseReason == CloseReason.UserClosing)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
             if (m_bolXButton == false)
             {
                 return;
             }
 
-            if (bolDisposeUpd(m_intFromApId) == false)
+            if (m_intFromApId != 0)
             {
-                if (e.CloseReason == CloseReason.UserClosing)
+                // 変更破棄
+                if (bolDisposeUpd(m_intFromApId) == false)
                 {
-                    e.Cancel = true;
+                    if (e.CloseReason == CloseReason.UserClosing)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
                 }
             }
         }

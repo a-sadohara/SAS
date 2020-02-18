@@ -203,10 +203,10 @@
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.12998F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 74.87002F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 169F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.74101F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.259F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 161F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 223F));
             this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel4, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
@@ -243,10 +243,10 @@
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.label6);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(143, 0);
+            this.panel2.Location = new System.Drawing.Point(131, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(428, 141);
+            this.panel2.Size = new System.Drawing.Size(424, 141);
             this.panel2.TabIndex = 28;
             // 
             // lblHansoStaDate
@@ -255,7 +255,7 @@
             this.lblHansoStaDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblHansoStaDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblHansoStaDate.Location = new System.Drawing.Point(2, 4);
-            this.lblHansoStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblHansoStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblHansoStaDate.Name = "lblHansoStaDate";
             this.lblHansoStaDate.Size = new System.Drawing.Size(85, 17);
             this.lblHansoStaDate.TabIndex = 19;
@@ -267,7 +267,7 @@
             this.lblHansoEndDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblHansoEndDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblHansoEndDate.Location = new System.Drawing.Point(2, 30);
-            this.lblHansoEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblHansoEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblHansoEndDate.Name = "lblHansoEndDate";
             this.lblHansoEndDate.Size = new System.Drawing.Size(85, 17);
             this.lblHansoEndDate.TabIndex = 20;
@@ -279,8 +279,8 @@
             this.dtpEndDatetimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpEndDatetimeTo.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpEndDatetimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpEndDatetimeTo.Location = new System.Drawing.Point(267, 27);
-            this.dtpEndDatetimeTo.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.dtpEndDatetimeTo.Location = new System.Drawing.Point(265, 27);
+            this.dtpEndDatetimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpEndDatetimeTo.Name = "dtpEndDatetimeTo";
             this.dtpEndDatetimeTo.Size = new System.Drawing.Size(155, 24);
             this.dtpEndDatetimeTo.TabIndex = 8;
@@ -294,8 +294,8 @@
             this.dtpStartDatetimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpStartDatetimeTo.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpStartDatetimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpStartDatetimeTo.Location = new System.Drawing.Point(267, 1);
-            this.dtpStartDatetimeTo.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.dtpStartDatetimeTo.Location = new System.Drawing.Point(265, 1);
+            this.dtpStartDatetimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpStartDatetimeTo.Name = "dtpStartDatetimeTo";
             this.dtpStartDatetimeTo.Size = new System.Drawing.Size(155, 24);
             this.dtpStartDatetimeTo.TabIndex = 6;
@@ -309,7 +309,7 @@
             this.lblTitleKenhan1.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleKenhan1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblTitleKenhan1.Location = new System.Drawing.Point(2, 56);
-            this.lblTitleKenhan1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTitleKenhan1.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblTitleKenhan1.Name = "lblTitleKenhan1";
             this.lblTitleKenhan1.Size = new System.Drawing.Size(63, 17);
             this.lblTitleKenhan1.TabIndex = 21;
@@ -320,8 +320,8 @@
             this.dtpDecisionStartTimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpDecisionStartTimeTo.Font = new System.Drawing.Font("メイリオ", 8F);
             this.dtpDecisionStartTimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpDecisionStartTimeTo.Location = new System.Drawing.Point(267, 80);
-            this.dtpDecisionStartTimeTo.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.dtpDecisionStartTimeTo.Location = new System.Drawing.Point(265, 80);
+            this.dtpDecisionStartTimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionStartTimeTo.Name = "dtpDecisionStartTimeTo";
             this.dtpDecisionStartTimeTo.Size = new System.Drawing.Size(155, 23);
             this.dtpDecisionStartTimeTo.TabIndex = 12;
@@ -334,8 +334,8 @@
             this.dtpDecisionEndTimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpDecisionEndTimeTo.Font = new System.Drawing.Font("メイリオ", 8F);
             this.dtpDecisionEndTimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpDecisionEndTimeTo.Location = new System.Drawing.Point(267, 106);
-            this.dtpDecisionEndTimeTo.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.dtpDecisionEndTimeTo.Location = new System.Drawing.Point(265, 106);
+            this.dtpDecisionEndTimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionEndTimeTo.Name = "dtpDecisionEndTimeTo";
             this.dtpDecisionEndTimeTo.Size = new System.Drawing.Size(155, 23);
             this.dtpDecisionEndTimeTo.TabIndex = 14;
@@ -348,8 +348,8 @@
             this.dtpDecisionEndTimeFrom.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpDecisionEndTimeFrom.Font = new System.Drawing.Font("メイリオ", 8F);
             this.dtpDecisionEndTimeFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpDecisionEndTimeFrom.Location = new System.Drawing.Point(92, 106);
-            this.dtpDecisionEndTimeFrom.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.dtpDecisionEndTimeFrom.Location = new System.Drawing.Point(87, 106);
+            this.dtpDecisionEndTimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionEndTimeFrom.Name = "dtpDecisionEndTimeFrom";
             this.dtpDecisionEndTimeFrom.Size = new System.Drawing.Size(155, 23);
             this.dtpDecisionEndTimeFrom.TabIndex = 13;
@@ -363,7 +363,7 @@
             this.lblEndDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblEndDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblEndDate.Location = new System.Drawing.Point(2, 109);
-            this.lblEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblEndDate.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblEndDate.Name = "lblEndDate";
             this.lblEndDate.Size = new System.Drawing.Size(85, 17);
             this.lblEndDate.TabIndex = 24;
@@ -374,8 +374,8 @@
             this.dtpDecisionStartTimeFrom.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpDecisionStartTimeFrom.Font = new System.Drawing.Font("メイリオ", 8F);
             this.dtpDecisionStartTimeFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpDecisionStartTimeFrom.Location = new System.Drawing.Point(92, 80);
-            this.dtpDecisionStartTimeFrom.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.dtpDecisionStartTimeFrom.Location = new System.Drawing.Point(87, 80);
+            this.dtpDecisionStartTimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionStartTimeFrom.Name = "dtpDecisionStartTimeFrom";
             this.dtpDecisionStartTimeFrom.Size = new System.Drawing.Size(155, 23);
             this.dtpDecisionStartTimeFrom.TabIndex = 11;
@@ -389,8 +389,8 @@
             this.dtpEndDatetimeFrom.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpEndDatetimeFrom.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpEndDatetimeFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpEndDatetimeFrom.Location = new System.Drawing.Point(92, 27);
-            this.dtpEndDatetimeFrom.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.dtpEndDatetimeFrom.Location = new System.Drawing.Point(87, 27);
+            this.dtpEndDatetimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpEndDatetimeFrom.Name = "dtpEndDatetimeFrom";
             this.dtpEndDatetimeFrom.Size = new System.Drawing.Size(155, 24);
             this.dtpEndDatetimeFrom.TabIndex = 7;
@@ -404,8 +404,8 @@
             this.dtpStartDatetimeFrom.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpStartDatetimeFrom.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpStartDatetimeFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpStartDatetimeFrom.Location = new System.Drawing.Point(92, 1);
-            this.dtpStartDatetimeFrom.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.dtpStartDatetimeFrom.Location = new System.Drawing.Point(87, 1);
+            this.dtpStartDatetimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpStartDatetimeFrom.Name = "dtpStartDatetimeFrom";
             this.dtpStartDatetimeFrom.Size = new System.Drawing.Size(155, 24);
             this.dtpStartDatetimeFrom.TabIndex = 5;
@@ -419,7 +419,7 @@
             this.lblStaDate.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblStaDate.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblStaDate.Location = new System.Drawing.Point(2, 82);
-            this.lblStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblStaDate.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblStaDate.Name = "lblStaDate";
             this.lblStaDate.Size = new System.Drawing.Size(85, 17);
             this.lblStaDate.TabIndex = 23;
@@ -429,8 +429,8 @@
             // 
             this.txtSearchFrom.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtSearchFrom.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtSearchFrom.Location = new System.Drawing.Point(92, 53);
-            this.txtSearchFrom.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtSearchFrom.Location = new System.Drawing.Point(87, 53);
+            this.txtSearchFrom.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtSearchFrom.MaxLength = 4;
             this.txtSearchFrom.Name = "txtSearchFrom";
             this.txtSearchFrom.Size = new System.Drawing.Size(35, 24);
@@ -442,8 +442,8 @@
             // 
             this.txtSearchTo.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtSearchTo.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtSearchTo.Location = new System.Drawing.Point(157, 53);
-            this.txtSearchTo.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtSearchTo.Location = new System.Drawing.Point(150, 53);
+            this.txtSearchTo.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtSearchTo.MaxLength = 4;
             this.txtSearchTo.Name = "txtSearchTo";
             this.txtSearchTo.Size = new System.Drawing.Size(35, 24);
@@ -457,7 +457,7 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label3.Location = new System.Drawing.Point(247, 6);
+            this.label3.Location = new System.Drawing.Point(242, 6);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(20, 18);
@@ -470,7 +470,7 @@
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label4.Location = new System.Drawing.Point(247, 29);
+            this.label4.Location = new System.Drawing.Point(242, 29);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(20, 18);
@@ -483,7 +483,7 @@
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(132, 55);
+            this.label1.Location = new System.Drawing.Point(127, 56);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(20, 18);
@@ -496,7 +496,7 @@
             this.label5.BackColor = System.Drawing.Color.Transparent;
             this.label5.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label5.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label5.Location = new System.Drawing.Point(247, 82);
+            this.label5.Location = new System.Drawing.Point(242, 83);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(20, 18);
@@ -509,7 +509,7 @@
             this.label6.BackColor = System.Drawing.Color.Transparent;
             this.label6.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label6.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label6.Location = new System.Drawing.Point(247, 108);
+            this.label6.Location = new System.Drawing.Point(242, 108);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(20, 18);
@@ -528,10 +528,10 @@
             this.panel4.Controls.Add(this.lblImageSearchCount);
             this.panel4.Controls.Add(this.cmbNgFace);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(740, 0);
+            this.panel4.Location = new System.Drawing.Point(716, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(200, 141);
+            this.panel4.Size = new System.Drawing.Size(224, 141);
             this.panel4.TabIndex = 28;
             // 
             // lblNgSide
@@ -540,7 +540,7 @@
             this.lblNgSide.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblNgSide.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblNgSide.Location = new System.Drawing.Point(2, 8);
-            this.lblNgSide.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblNgSide.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblNgSide.Name = "lblNgSide";
             this.lblNgSide.Size = new System.Drawing.Size(46, 17);
             this.lblNgSide.TabIndex = 1;
@@ -562,13 +562,13 @@
             // 
             this.txtNgReason.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtNgReason.ImeMode = System.Windows.Forms.ImeMode.Hiragana;
-            this.txtNgReason.Location = new System.Drawing.Point(70, 31);
-            this.txtNgReason.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtNgReason.Location = new System.Drawing.Point(56, 31);
+            this.txtNgReason.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtNgReason.MaxLength = 16;
             this.txtNgReason.Name = "txtNgReason";
-            this.txtNgReason.Size = new System.Drawing.Size(85, 24);
+            this.txtNgReason.Size = new System.Drawing.Size(148, 24);
             this.txtNgReason.TabIndex = 20;
-            this.txtNgReason.Text = "ＷＷＷＷＷＷＷ";
+            this.txtNgReason.Text = "WWWWWWWWWWWWWWWW";
             this.txtNgReason.DoubleClick += new System.EventHandler(this.txtNgReason_DoubleClick);
             // 
             // lblTitleSearchImageCnt
@@ -589,7 +589,7 @@
             this.lblNgReason.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblNgReason.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblNgReason.Location = new System.Drawing.Point(2, 34);
-            this.lblNgReason.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblNgReason.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblNgReason.Name = "lblNgReason";
             this.lblNgReason.Size = new System.Drawing.Size(57, 17);
             this.lblNgReason.TabIndex = 1;
@@ -639,8 +639,8 @@
             "",
             "#1",
             "#2"});
-            this.cmbNgFace.Location = new System.Drawing.Point(70, 4);
-            this.cmbNgFace.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.cmbNgFace.Location = new System.Drawing.Point(56, 2);
+            this.cmbNgFace.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.cmbNgFace.MaxLength = 2;
             this.cmbNgFace.Name = "cmbNgFace";
             this.cmbNgFace.Size = new System.Drawing.Size(47, 25);
@@ -661,7 +661,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(143, 141);
+            this.panel1.Size = new System.Drawing.Size(131, 141);
             this.panel1.TabIndex = 28;
             // 
             // lblGoki
@@ -670,7 +670,7 @@
             this.lblGoki.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblGoki.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblGoki.Location = new System.Drawing.Point(2, 5);
-            this.lblGoki.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblGoki.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblGoki.Name = "lblGoki";
             this.lblGoki.Size = new System.Drawing.Size(41, 17);
             this.lblGoki.TabIndex = 1;
@@ -682,7 +682,7 @@
             this.lblHanNo.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblHanNo.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblHanNo.Location = new System.Drawing.Point(2, 83);
-            this.lblHanNo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblHanNo.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblHanNo.Name = "lblHanNo";
             this.lblHanNo.Size = new System.Drawing.Size(41, 17);
             this.lblHanNo.TabIndex = 1;
@@ -692,8 +692,8 @@
             // 
             this.txtUnitNum.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtUnitNum.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtUnitNum.Location = new System.Drawing.Point(48, 2);
-            this.txtUnitNum.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtUnitNum.Location = new System.Drawing.Point(44, 2);
+            this.txtUnitNum.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtUnitNum.MaxLength = 2;
             this.txtUnitNum.Name = "txtUnitNum";
             this.txtUnitNum.Size = new System.Drawing.Size(24, 24);
@@ -704,8 +704,8 @@
             // 
             this.txtProductName.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtProductName.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtProductName.Location = new System.Drawing.Point(48, 28);
-            this.txtProductName.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtProductName.Location = new System.Drawing.Point(44, 28);
+            this.txtProductName.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtProductName.MaxLength = 10;
             this.txtProductName.Name = "txtProductName";
             this.txtProductName.Size = new System.Drawing.Size(80, 24);
@@ -716,8 +716,8 @@
             // 
             this.txtOrderImg.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtOrderImg.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtOrderImg.Location = new System.Drawing.Point(48, 54);
-            this.txtOrderImg.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtOrderImg.Location = new System.Drawing.Point(44, 54);
+            this.txtOrderImg.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtOrderImg.MaxLength = 7;
             this.txtOrderImg.Name = "txtOrderImg";
             this.txtOrderImg.Size = new System.Drawing.Size(55, 24);
@@ -728,8 +728,8 @@
             // 
             this.txtFabricName.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtFabricName.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtFabricName.Location = new System.Drawing.Point(48, 80);
-            this.txtFabricName.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtFabricName.Location = new System.Drawing.Point(44, 80);
+            this.txtFabricName.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtFabricName.MaxLength = 10;
             this.txtFabricName.Name = "txtFabricName";
             this.txtFabricName.Size = new System.Drawing.Size(80, 24);
@@ -743,7 +743,7 @@
             this.lblSashizu.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblSashizu.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblSashizu.Location = new System.Drawing.Point(2, 57);
-            this.lblSashizu.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblSashizu.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblSashizu.Name = "lblSashizu";
             this.lblSashizu.Size = new System.Drawing.Size(41, 17);
             this.lblSashizu.TabIndex = 1;
@@ -755,7 +755,7 @@
             this.lblHinNm.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblHinNm.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblHinNm.Location = new System.Drawing.Point(2, 31);
-            this.lblHinNm.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblHinNm.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblHinNm.Name = "lblHinNm";
             this.lblHinNm.Size = new System.Drawing.Size(41, 17);
             this.lblHinNm.TabIndex = 1;
@@ -772,10 +772,10 @@
             this.panel3.Controls.Add(this.lblTitleUserNm);
             this.panel3.Controls.Add(this.cmbColumns);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(571, 0);
+            this.panel3.Location = new System.Drawing.Point(555, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(169, 141);
+            this.panel3.Size = new System.Drawing.Size(161, 141);
             this.panel3.TabIndex = 28;
             // 
             // lblKensaNo
@@ -784,7 +784,7 @@
             this.lblKensaNo.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblKensaNo.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblKensaNo.Location = new System.Drawing.Point(2, 5);
-            this.lblKensaNo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblKensaNo.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblKensaNo.Name = "lblKensaNo";
             this.lblKensaNo.Size = new System.Drawing.Size(63, 17);
             this.lblKensaNo.TabIndex = 1;
@@ -794,8 +794,8 @@
             // 
             this.txtInspectionNum.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtInspectionNum.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtInspectionNum.Location = new System.Drawing.Point(70, 2);
-            this.txtInspectionNum.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtInspectionNum.Location = new System.Drawing.Point(66, 2);
+            this.txtInspectionNum.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtInspectionNum.MaxLength = 8;
             this.txtInspectionNum.Name = "txtInspectionNum";
             this.txtInspectionNum.Size = new System.Drawing.Size(20, 24);
@@ -809,7 +809,7 @@
             this.lblRow.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblRow.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblRow.Location = new System.Drawing.Point(2, 57);
-            this.lblRow.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblRow.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblRow.Name = "lblRow";
             this.lblRow.Size = new System.Drawing.Size(30, 17);
             this.lblRow.TabIndex = 1;
@@ -821,7 +821,7 @@
             this.lblCol.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblCol.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblCol.Location = new System.Drawing.Point(2, 84);
-            this.lblCol.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblCol.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblCol.Name = "lblCol";
             this.lblCol.Size = new System.Drawing.Size(30, 17);
             this.lblCol.TabIndex = 1;
@@ -831,8 +831,8 @@
             // 
             this.txtWorkerName.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtWorkerName.ImeMode = System.Windows.Forms.ImeMode.Hiragana;
-            this.txtWorkerName.Location = new System.Drawing.Point(70, 28);
-            this.txtWorkerName.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtWorkerName.Location = new System.Drawing.Point(66, 28);
+            this.txtWorkerName.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtWorkerName.MaxLength = 20;
             this.txtWorkerName.Name = "txtWorkerName";
             this.txtWorkerName.Size = new System.Drawing.Size(85, 24);
@@ -845,8 +845,8 @@
             // 
             this.txtLine.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtLine.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtLine.Location = new System.Drawing.Point(70, 54);
-            this.txtLine.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.txtLine.Location = new System.Drawing.Point(66, 54);
+            this.txtLine.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtLine.MaxLength = 4;
             this.txtLine.Name = "txtLine";
             this.txtLine.Size = new System.Drawing.Size(35, 24);
@@ -860,7 +860,7 @@
             this.lblTitleUserNm.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleUserNm.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblTitleUserNm.Location = new System.Drawing.Point(2, 31);
-            this.lblTitleUserNm.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTitleUserNm.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblTitleUserNm.Name = "lblTitleUserNm";
             this.lblTitleUserNm.Size = new System.Drawing.Size(63, 17);
             this.lblTitleUserNm.TabIndex = 1;
@@ -878,8 +878,8 @@
             "C",
             "D",
             "E"});
-            this.cmbColumns.Location = new System.Drawing.Point(70, 81);
-            this.cmbColumns.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.cmbColumns.Location = new System.Drawing.Point(66, 79);
+            this.cmbColumns.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.cmbColumns.MaxLength = 1;
             this.cmbColumns.Name = "cmbColumns";
             this.cmbColumns.Size = new System.Drawing.Size(35, 25);

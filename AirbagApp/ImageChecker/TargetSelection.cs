@@ -483,7 +483,6 @@ namespace ImageChecker
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
             }
                        
-
             try
             {
                 // SQL抽出
@@ -866,7 +865,9 @@ namespace ImageChecker
                 clsHeaderData.intOverDetectionExceptStatus = int.Parse(m_dtData.Rows[e.RowIndex]["over_detection_except_status"].ToString());
                 clsHeaderData.intAcceptanceCheckStatus = int.Parse(m_dtData.Rows[e.RowIndex]["acceptance_check_status"].ToString());
                 clsHeaderData.intColumnCnt = int.Parse(m_dtData.Rows[e.RowIndex]["column_cnt"].ToString());
-                clsHeaderData.strAirbagImagepath = m_dtData.Rows[e.RowIndex]["airbag_imagepath"].ToString();
+                clsHeaderData.strAirbagImagepath = g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar +
+                                                   g_CON_DIR_MASTER_IMAGE + Path.DirectorySeparatorChar + 
+                                                   Path.GetFileName(m_dtData.Rows[e.RowIndex]["airbag_imagepath"].ToString());
 
                 switch (e.ColumnIndex)
                 {

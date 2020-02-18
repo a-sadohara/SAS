@@ -207,6 +207,9 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void dgvWorker_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0)
+                return;
+
             string strSelEmployeeNum = "0000";
 
             // 選択行の社員番号取得

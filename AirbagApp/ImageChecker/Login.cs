@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ImageChecker.Common;
 
@@ -13,6 +14,9 @@ namespace ImageChecker
         public string m_strEmployeeNum;
         public string m_strWorkerNm;
 
+        // 平行処理
+        List<Task<Boolean>> m_lstTask = new List<Task<Boolean>>();
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -21,7 +25,58 @@ namespace ImageChecker
         {
             InitializeComponent();
 
+            // 一時フォルダ作成
+            if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory) == false)
+                Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
+
+            // 一時ZIP解凍用フォルダ作成
+            if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + g_CON_DIR_MASTER_IMAGE) == false)
+                Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + g_CON_DIR_MASTER_IMAGE);
+
             this.StartPosition = FormStartPosition.CenterScreen;
+        }
+
+        /// <summary>
+        /// 欠点画像取り込み
+        /// </summary>
+        /// <returns></returns>
+        private Boolean bolImpMasterImage()
+        {
+            string strTempFilePath = "";
+
+            // マスタ画像の更新
+            try
+            {
+                // マスタ画像格納ディレクトリを列挙
+                foreach (string FilePath in Directory.GetFiles(g_clsSystemSettingInfo.strMasterImageDirectory, "*", SearchOption.AllDirectories))
+                {
+                    strTempFilePath = g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar +
+                                      g_CON_DIR_MASTER_IMAGE + Path.DirectorySeparatorChar + Path.GetFileName(FilePath);
+
+                    // 無い場合処理継続
+                    if (File.Exists(strTempFilePath) == true)
+                    {
+                        // タイムスタンプ比較
+                        if (File.GetLastWriteTime(FilePath).CompareTo(File.GetLastWriteTime(strTempFilePath)) <= 0)
+                        {
+                            continue;
+                        }
+                    }
+
+                    // マスタ画像を一時フォルダにコピーする
+                    File.Copy(FilePath,
+                              g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar +
+                              g_CON_DIR_MASTER_IMAGE + Path.DirectorySeparatorChar + Path.GetFileName(FilePath),
+                              true);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                WriteEventLog(g_CON_LEVEL_WARN, ex.Message);
+                return false;
+            }
         }
         #endregion
 
@@ -34,6 +89,21 @@ namespace ImageChecker
         private void Login_Load(object sender, EventArgs e)
         {
             this.SuspendLayout();
+
+            m_lstTask.Add(Task<Boolean>.Run(() => bolImpMasterImage()));
+            System.Threading.Thread.Sleep(1000);
+
+            Task.WaitAll(m_lstTask.ToArray());
+
+            foreach (Task<Boolean> tsk in m_lstTask)
+            {
+                if (!tsk.Result)
+                {
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
 
             // ユーザIDを初期選択
             txtUserId.Select();

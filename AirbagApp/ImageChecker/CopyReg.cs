@@ -24,6 +24,7 @@ namespace ImageChecker
         private string m_strOrgImagepath = "";          // オリジナル画像ファイル名
         private string m_strMarkingImagepath = "";      // マーキング画像ファイル名
         private int m_intBranchNum = 0;                 // 枝番
+        private int m_intFromApId = 0;                  // 遷移元画面ID
         private int m_intLine = -1;                     // 行
         private string m_strColumns = "";               // 列
         private string m_strNgReason = "";              // NG理由
@@ -54,6 +55,7 @@ namespace ImageChecker
         /// <param name="strMarkingImagepath">マーキング画像ファイル名</param>
         /// <param name="strOrgImagepath">オリジナル画像ファイル名</param>
         /// <param name="intBranchNum">枝番</param>
+        /// <param name="intFromApId">遷移元画面ID</param>
         public CopyReg(HeaderData clsHeaderData,
                        ComboBox cmbBoxLine,
                        ComboBox cmbBoxColumns,
@@ -62,7 +64,8 @@ namespace ImageChecker
                        string strNgReason,
                        string strMarkingImagepath,
                        string strOrgImagepath,
-                       int intBranchNum)
+                       int intBranchNum,
+                       int intFromApId)
         {
             m_strProductName = clsHeaderData.strProductName;
             m_strFabricName = clsHeaderData.strFabricName;
@@ -74,6 +77,7 @@ namespace ImageChecker
             m_strMarkingImagepath = strMarkingImagepath;
             m_strOrgImagepath = strOrgImagepath;
             m_intBranchNum = intBranchNum;
+            m_intFromApId = intFromApId;
 
             m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
                                                            m_strProductName,
@@ -293,7 +297,10 @@ namespace ImageChecker
                     // sqlを実行する
                     g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
 
-                    g_clsConnectionNpgsql.DbCommit();
+                    if (m_intFromApId == 0)
+                    {
+                        g_clsConnectionNpgsql.DbCommit();
+                    }
 
                     bolRegister = true;
                 }
@@ -313,7 +320,10 @@ namespace ImageChecker
             }
             finally
             {
-                g_clsConnectionNpgsql.DbClose();
+                if (m_intFromApId == 0)
+                {
+                    g_clsConnectionNpgsql.DbClose();
+                }
             }
         }
 

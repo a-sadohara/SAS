@@ -64,6 +64,10 @@ namespace ImageChecker
         // ログイン関連
         public static bool g_bolStatus = false; //0:ログアウト 1:ログイン
 
+        // 一時サブディレクトリ
+        public const string g_CON_DIR_MASTER_IMAGE = "MasterImage";                 // マスタ画像格納
+        public const string g_CON_DIR_MASTER_IMAGE_MARKING = "MasterImageMarking";  // マーキングマスタ画像格納先
+
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>

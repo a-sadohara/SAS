@@ -95,9 +95,14 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void txtEmployeeNum_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //0～9と、バックスペース以外の時は、イベントをキャンセルする
-            if ((e.KeyChar < '0' || '9' < e.KeyChar) && e.KeyChar != '\b')
+            if (e.KeyChar == '\r')
             {
+                // 改行の時は、次のコントロールをアクティブにする
+                this.SelectNextControl(this.ActiveControl, true, true, true, true);
+            }
+            else if ((e.KeyChar < '0' || '9' < e.KeyChar) && e.KeyChar != '\b')
+            {
+                // 0～9と、バックスペース以外の時は、イベントをキャンセルする
                 e.Handled = true;
             }
         }
@@ -357,9 +362,14 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void txtWorkerName_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //カタカナ以外の時は、イベントをキャンセルする
-            if (!(Encoding.GetEncoding("Shift-JIS").GetByteCount(e.KeyChar.ToString()) == e.KeyChar.ToString().Length * 2) && e.KeyChar != '\b')
+            if (e.KeyChar == '\r')
             {
+                // 改行の時は、次のコントロールをアクティブにする
+                this.SelectNextControl(this.ActiveControl, true, true, true, true);
+            }
+            else if (!(Encoding.GetEncoding("Shift-JIS").GetByteCount(e.KeyChar.ToString()) == e.KeyChar.ToString().Length * 2) && e.KeyChar != '\b')
+            {
+                // 全角文字以外の時は、イベントをキャンセルする
                 e.Handled = true;
             }
         }
@@ -370,10 +380,15 @@ namespace WokerMstManagement
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void txtWorkerNameKana_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            //カタカナ以外の時は、イベントをキャンセルする
-            if (Regex.IsMatch(e.KeyChar.ToString(), @"^\p{IsKatakana}*$") == false && e.KeyChar != '\b')
+        { 
+            if (e.KeyChar == '\r')
             {
+                // 改行の時は、次のコントロールをアクティブにする
+                this.SelectNextControl(this.ActiveControl, true, true, true, true);
+            }
+            else if (Regex.IsMatch(e.KeyChar.ToString(), @"^\p{IsKatakana}*$") == false && e.KeyChar != '\b')
+            {
+                // カタカナ以外の時は、イベントをキャンセルする
                 e.Handled = true;
             }
         }
