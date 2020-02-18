@@ -34,6 +34,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WorkerSelection));
             this.lblTiitle = new System.Windows.Forms.Label();
             this.pnlWorkerNameKana = new System.Windows.Forms.Panel();
             this.lblWorkerNameKanaわ = new System.Windows.Forms.Label();
@@ -48,8 +49,7 @@
             this.lblWorkerNameKanaさ = new System.Windows.Forms.Label();
             this.lblWorkerNameKanaか = new System.Windows.Forms.Label();
             this.lblWorkerNameKanaあ = new System.Windows.Forms.Label();
-            //this.dgvWorker = new System.Windows.Forms.DataGridView();
-            this.dgvWorker = new MyDataGridView();
+            this.dgvWorker = new ImageChecker.MyDataGridView();
             this.EmployeeNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.WorkerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlWorkerNameKana.SuspendLayout();
@@ -346,7 +346,7 @@
             this.WorkerName.ReadOnly = true;
             this.WorkerName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // UserSelection
+            // WorkerSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
@@ -355,9 +355,11 @@
             this.Controls.Add(this.pnlWorkerNameKana);
             this.Controls.Add(this.lblTiitle);
             this.Controls.Add(this.dgvWorker);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "UserSelection";
+            this.Name = "WorkerSelection";
             this.Text = "作業者検索";
             this.Load += new System.EventHandler(this.UserSelection_Load);
             this.pnlWorkerNameKana.ResumeLayout(false);
