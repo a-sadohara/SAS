@@ -22,6 +22,10 @@ namespace ImageChecker
             InitializeComponent();
 
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
         }
         #endregion
 
@@ -135,7 +139,8 @@ namespace ImageChecker
             if (String.IsNullOrEmpty(m_strEmployeeNum))
             {
                 MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0038, "作業者"), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                txtUserId_Click(null, null);
+                return;
             }
 
             // 共通パラメータ設定
