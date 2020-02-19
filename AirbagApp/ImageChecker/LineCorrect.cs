@@ -115,9 +115,9 @@ namespace ImageChecker
             }
 
             if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0009,
-                                              m_intInspectionNum,
                                               strCorrect), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
+                // 検査行範囲の補正
                 try
                 {
                     // SQL文を作成する
@@ -138,6 +138,39 @@ namespace ImageChecker
 
                     // sqlを実行する
                     g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                }
+                catch (Exception ex)
+                {
+                    // ロールバック
+                    g_clsConnectionNpgsql.DbRollback();
+
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
+                // 行の補正
+                try
+                {
+                    // SQL文を作成する
+                    strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                  SET line = line + :line_correct
+                                WHERE fabric_name = :fabric_name
+                                  AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
+                                  AND inspection_num = :inspection_num";
+
+                    // SQLコマンドに各パラメータを設定する
+                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line_correct", DbType = DbType.Int16, Value = m_Correct });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+
+                    // sqlを実行する
+                    g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
 
                     // DBコミット
                     g_clsConnectionNpgsql.DbCommit();
@@ -152,7 +185,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
                     // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0043, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }

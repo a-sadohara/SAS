@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckExcept));
             this.lblTitleUnitNum = new System.Windows.Forms.Label();
             this.lblTitleOrderImg = new System.Windows.Forms.Label();
             this.lblTitleFabricName = new System.Windows.Forms.Label();
@@ -142,7 +143,7 @@
             this.btnOK.Location = new System.Drawing.Point(53, 245);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(115, 45);
-            this.btnOK.TabIndex = 2;
+            this.btnOK.TabIndex = 1;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -407,6 +408,7 @@
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "CheckExcept";

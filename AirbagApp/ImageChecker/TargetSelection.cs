@@ -49,6 +49,10 @@ namespace ImageChecker
         // 前回の連携時間
         private DateTime datetimePrevReplicate;
 
+        // 選択行保持
+        private int m_intSelRowIdx = -1;
+        private int m_intFirstDisplayedScrollingRowIndex = -1;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -431,6 +435,18 @@ namespace ImageChecker
                         btnCellInspectionResult.Enabled = false;
                     }
                 }
+                
+                // 行選択
+                if (m_intSelRowIdx != -1)
+                {
+                    this.dgvTargetSelection.Rows[m_intSelRowIdx].Selected = true;
+                }
+
+                // スクロールバー調整
+                if (m_intFirstDisplayedScrollingRowIndex != -1)
+                {
+                    this.dgvTargetSelection.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIndex;
+                }
 
                 if (dgvTargetSelection.Rows.Count == 0)
                 {
@@ -783,7 +799,6 @@ namespace ImageChecker
                 return;
             }
 
-
             // 連携時間を更新
             datetimePrevReplicate = DateTime.Now.AddMinutes(5);
 
@@ -1070,7 +1085,7 @@ namespace ImageChecker
                         // ログ出力
                         WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
                         // メッセージ出力
-                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0045, strFabricName, intInspectionNum), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0039, strFabricName, intInspectionNum), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         frmProgress.Close();
                         return;
@@ -1098,9 +1113,9 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0040 , Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0058 , Environment.NewLine, ex.Message));
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0059, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -1112,8 +1127,31 @@ namespace ImageChecker
             bolDispDataGridView();
 
             this.ResumeLayout();
+        }
 
+        /// <summary>
+        /// 一覧スクロール
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dgvTargetSelection_Scroll(object sender, ScrollEventArgs e)
+        {
+            m_intFirstDisplayedScrollingRowIndex = dgvTargetSelection.FirstDisplayedScrollingRowIndex;
+        }
 
+        /// <summary>
+        /// 一覧再描画
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dgvTargetSelection_Paint(object sender, PaintEventArgs e)
+        {
+            // 選択行インデックスの保持
+            foreach (DataGridViewRow dgvRow in this.dgvTargetSelection.SelectedRows)
+            {
+                m_intSelRowIdx = dgvRow.Index;
+                break;
+            }
         }
 
         #region 最大化画面制御

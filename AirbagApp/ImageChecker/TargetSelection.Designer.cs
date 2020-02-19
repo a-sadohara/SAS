@@ -49,28 +49,27 @@ namespace ImageChecker
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TargetSelection));
             this.lblWorkerName = new System.Windows.Forms.Label();
             this.pnlTop = new System.Windows.Forms.Panel();
             this.btnLogout = new System.Windows.Forms.Button();
             this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
-            //this.dgvTargetSelection = new System.Windows.Forms.DataGridView();
-            this.dgvTargetSelection = new MyDataGridView();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CheckInfo = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TargetInfo = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.No = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlBottom = new System.Windows.Forms.Panel();
-            this.btnReviseLine = new System.Windows.Forms.Button();
-            this.btnExceptTarget = new System.Windows.Forms.Button();
             this.btnCheckInspectionHistory = new System.Windows.Forms.Button();
+            this.btnExceptTarget = new System.Windows.Forms.Button();
+            this.btnReviseLine = new System.Windows.Forms.Button();
+            this.dgvTargetSelection = new ImageChecker.MyDataGridView();
+            this.No = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TargetInfo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CheckInfo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlTop.SuspendLayout();
             this.tlpMain.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvTargetSelection)).BeginInit();
             this.pnlBottom.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTargetSelection)).BeginInit();
             this.SuspendLayout();
             // 
             // lblWorkerName
@@ -81,7 +80,7 @@ namespace ImageChecker
             this.lblWorkerName.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblWorkerName.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblWorkerName.Location = new System.Drawing.Point(539, 19);
-            this.lblWorkerName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lblWorkerName.Margin = new System.Windows.Forms.Padding(2);
             this.lblWorkerName.MaximumSize = new System.Drawing.Size(300, 0);
             this.lblWorkerName.MinimumSize = new System.Drawing.Size(300, 0);
             this.lblWorkerName.Name = "lblWorkerName";
@@ -126,6 +125,55 @@ namespace ImageChecker
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 69F));
             this.tlpMain.Size = new System.Drawing.Size(963, 470);
             this.tlpMain.TabIndex = 5;
+            // 
+            // pnlBottom
+            // 
+            this.pnlBottom.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlBottom.Controls.Add(this.btnCheckInspectionHistory);
+            this.pnlBottom.Controls.Add(this.btnExceptTarget);
+            this.pnlBottom.Controls.Add(this.btnReviseLine);
+            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlBottom.Location = new System.Drawing.Point(0, 401);
+            this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlBottom.Name = "pnlBottom";
+            this.pnlBottom.Size = new System.Drawing.Size(963, 69);
+            this.pnlBottom.TabIndex = 4;
+            // 
+            // btnCheckInspectionHistory
+            // 
+            this.btnCheckInspectionHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCheckInspectionHistory.Font = new System.Drawing.Font("メイリオ", 9.75F);
+            this.btnCheckInspectionHistory.Location = new System.Drawing.Point(794, 7);
+            this.btnCheckInspectionHistory.Name = "btnCheckInspectionHistory";
+            this.btnCheckInspectionHistory.Size = new System.Drawing.Size(156, 54);
+            this.btnCheckInspectionHistory.TabIndex = 3;
+            this.btnCheckInspectionHistory.Text = "検査履歴照会";
+            this.btnCheckInspectionHistory.UseVisualStyleBackColor = true;
+            this.btnCheckInspectionHistory.Click += new System.EventHandler(this.btnDisplayResultsAgo_Click);
+            // 
+            // btnExceptTarget
+            // 
+            this.btnExceptTarget.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnExceptTarget.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnExceptTarget.Location = new System.Drawing.Point(181, 7);
+            this.btnExceptTarget.Name = "btnExceptTarget";
+            this.btnExceptTarget.Size = new System.Drawing.Size(156, 54);
+            this.btnExceptTarget.TabIndex = 3;
+            this.btnExceptTarget.Text = "検査対象外";
+            this.btnExceptTarget.UseVisualStyleBackColor = true;
+            this.btnExceptTarget.Click += new System.EventHandler(this.btnExceptTarget_Click);
+            // 
+            // btnReviseLine
+            // 
+            this.btnReviseLine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnReviseLine.Font = new System.Drawing.Font("メイリオ", 9.75F);
+            this.btnReviseLine.Location = new System.Drawing.Point(11, 7);
+            this.btnReviseLine.Name = "btnReviseLine";
+            this.btnReviseLine.Size = new System.Drawing.Size(156, 54);
+            this.btnReviseLine.TabIndex = 3;
+            this.btnReviseLine.Text = "行補正";
+            this.btnReviseLine.UseVisualStyleBackColor = true;
+            this.btnReviseLine.Click += new System.EventHandler(this.btnReviseLine_Click);
             // 
             // dgvTargetSelection
             // 
@@ -172,6 +220,39 @@ namespace ImageChecker
             this.dgvTargetSelection.Size = new System.Drawing.Size(959, 397);
             this.dgvTargetSelection.TabIndex = 0;
             this.dgvTargetSelection.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
+            this.dgvTargetSelection.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dgvTargetSelection_Scroll);
+            this.dgvTargetSelection.Paint += new System.Windows.Forms.PaintEventHandler(this.dgvTargetSelection_Paint);
+            // 
+            // No
+            // 
+            this.No.HeaderText = "№";
+            this.No.MinimumWidth = 6;
+            this.No.Name = "No";
+            this.No.ReadOnly = true;
+            this.No.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.No.Width = 60;
+            // 
+            // TargetInfo
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            this.TargetInfo.DefaultCellStyle = dataGridViewCellStyle2;
+            this.TargetInfo.HeaderText = "反物情報";
+            this.TargetInfo.MinimumWidth = 6;
+            this.TargetInfo.Name = "TargetInfo";
+            this.TargetInfo.ReadOnly = true;
+            this.TargetInfo.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.TargetInfo.Width = 200;
+            // 
+            // CheckInfo
+            // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            this.CheckInfo.DefaultCellStyle = dataGridViewCellStyle3;
+            this.CheckInfo.HeaderText = "外観検査情報";
+            this.CheckInfo.MinimumWidth = 6;
+            this.CheckInfo.Name = "CheckInfo";
+            this.CheckInfo.ReadOnly = true;
+            this.CheckInfo.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.CheckInfo.Width = 350;
             // 
             // Status
             // 
@@ -185,86 +266,6 @@ namespace ImageChecker
             this.Status.ReadOnly = true;
             this.Status.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
-            // CheckInfo
-            // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            this.CheckInfo.DefaultCellStyle = dataGridViewCellStyle3;
-            this.CheckInfo.HeaderText = "外観検査情報";
-            this.CheckInfo.MinimumWidth = 6;
-            this.CheckInfo.Name = "CheckInfo";
-            this.CheckInfo.ReadOnly = true;
-            this.CheckInfo.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.CheckInfo.Width = 350;
-            // 
-            // TargetInfo
-            // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            this.TargetInfo.DefaultCellStyle = dataGridViewCellStyle2;
-            this.TargetInfo.HeaderText = "反物情報";
-            this.TargetInfo.MinimumWidth = 6;
-            this.TargetInfo.Name = "TargetInfo";
-            this.TargetInfo.ReadOnly = true;
-            this.TargetInfo.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.TargetInfo.Width = 200;
-            // 
-            // No
-            // 
-            this.No.HeaderText = "№";
-            this.No.MinimumWidth = 6;
-            this.No.Name = "No";
-            this.No.ReadOnly = true;
-            this.No.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.No.Width = 60;
-            // 
-            // pnlBottom
-            // 
-            this.pnlBottom.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlBottom.Controls.Add(this.btnCheckInspectionHistory);
-            this.pnlBottom.Controls.Add(this.btnExceptTarget);
-            this.pnlBottom.Controls.Add(this.btnReviseLine);
-            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 401);
-            this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
-            this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(963, 69);
-            this.pnlBottom.TabIndex = 4;
-            // 
-            // btnReviseLine
-            // 
-            this.btnReviseLine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnReviseLine.Font = new System.Drawing.Font("メイリオ", 9.75F);
-            this.btnReviseLine.Location = new System.Drawing.Point(11, 7);
-            this.btnReviseLine.Name = "btnReviseLine";
-            this.btnReviseLine.Size = new System.Drawing.Size(156, 54);
-            this.btnReviseLine.TabIndex = 3;
-            this.btnReviseLine.Text = "行補正";
-            this.btnReviseLine.UseVisualStyleBackColor = true;
-            this.btnReviseLine.Click += new System.EventHandler(this.btnReviseLine_Click);
-            // 
-            // btnExceptTarget
-            // 
-            this.btnExceptTarget.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnExceptTarget.Font = new System.Drawing.Font("メイリオ", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnExceptTarget.Location = new System.Drawing.Point(181, 7);
-            this.btnExceptTarget.Name = "btnExceptTarget";
-            this.btnExceptTarget.Size = new System.Drawing.Size(156, 54);
-            this.btnExceptTarget.TabIndex = 3;
-            this.btnExceptTarget.Text = "検査対象外";
-            this.btnExceptTarget.UseVisualStyleBackColor = true;
-            this.btnExceptTarget.Click += new System.EventHandler(this.btnExceptTarget_Click);
-            // 
-            // btnCheckInspectionHistory
-            // 
-            this.btnCheckInspectionHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCheckInspectionHistory.Font = new System.Drawing.Font("メイリオ", 9.75F);
-            this.btnCheckInspectionHistory.Location = new System.Drawing.Point(794, 7);
-            this.btnCheckInspectionHistory.Name = "btnCheckInspectionHistory";
-            this.btnCheckInspectionHistory.Size = new System.Drawing.Size(156, 54);
-            this.btnCheckInspectionHistory.TabIndex = 3;
-            this.btnCheckInspectionHistory.Text = "検査履歴照会";
-            this.btnCheckInspectionHistory.UseVisualStyleBackColor = true;
-            this.btnCheckInspectionHistory.Click += new System.EventHandler(this.btnDisplayResultsAgo_Click);
-            // 
             // TargetSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -274,7 +275,7 @@ namespace ImageChecker
             this.Controls.Add(this.tlpMain);
             this.Controls.Add(this.pnlTop);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "TargetSelection";
             this.Text = "検査対象選択";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -283,8 +284,8 @@ namespace ImageChecker
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
             this.tlpMain.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvTargetSelection)).EndInit();
             this.pnlBottom.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTargetSelection)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -298,10 +299,10 @@ namespace ImageChecker
         private Button btnCheckInspectionHistory;
         private Button btnExceptTarget;
         private Button btnReviseLine;
-        private DataGridView dgvTargetSelection;
         private DataGridViewTextBoxColumn No;
         private DataGridViewTextBoxColumn TargetInfo;
         private DataGridViewTextBoxColumn CheckInfo;
         private DataGridViewTextBoxColumn Status;
+        private MyDataGridView dgvTargetSelection;
     }
 }

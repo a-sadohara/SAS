@@ -96,7 +96,7 @@ namespace ImageChecker
         {
             string strSQL = "";
 
-            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0010, m_intInspectionNum), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(g_clsMessageInfo.strMsgQ0010, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
@@ -104,6 +104,8 @@ namespace ImageChecker
                     strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                                   SET over_detection_except_status = 4
                                     , acceptance_check_status = 4
+                                    , decision_start_datetime = current_timestamp
+                                    , decision_end_datetime = current_timestamp
                                 WHERE fabric_name = :fabric_name
                                   AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
                                   AND inspection_num = :inspection_num";

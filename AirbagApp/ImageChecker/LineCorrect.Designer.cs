@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LineCorrect));
             this.lblTitleUnitNum = new System.Windows.Forms.Label();
             this.lblTitleOrderImg = new System.Windows.Forms.Label();
             this.lblTitleFabricName = new System.Windows.Forms.Label();
@@ -165,7 +166,7 @@
             this.btnOK.Location = new System.Drawing.Point(50, 435);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(115, 45);
-            this.btnOK.TabIndex = 2;
+            this.btnOK.TabIndex = 1;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -499,7 +500,7 @@
             this.btnMinus.Location = new System.Drawing.Point(191, 276);
             this.btnMinus.Name = "btnMinus";
             this.btnMinus.Size = new System.Drawing.Size(75, 53);
-            this.btnMinus.TabIndex = 5;
+            this.btnMinus.TabIndex = 4;
             this.btnMinus.Text = "－";
             this.btnMinus.UseVisualStyleBackColor = true;
             this.btnMinus.Click += new System.EventHandler(this.btnMinus_Click);
@@ -510,7 +511,7 @@
             this.btnPlus.Location = new System.Drawing.Point(95, 276);
             this.btnPlus.Name = "btnPlus";
             this.btnPlus.Size = new System.Drawing.Size(75, 53);
-            this.btnPlus.TabIndex = 5;
+            this.btnPlus.TabIndex = 3;
             this.btnPlus.Text = "＋";
             this.btnPlus.UseVisualStyleBackColor = true;
             this.btnPlus.Click += new System.EventHandler(this.btnPlus_Click);
@@ -530,6 +531,7 @@
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.lblCorrect);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "LineCorrect";
