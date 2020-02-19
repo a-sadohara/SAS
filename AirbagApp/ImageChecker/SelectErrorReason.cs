@@ -62,14 +62,30 @@ namespace ImageChecker
                     this.dgvMstDecisionReason.Rows.Add(new object[] { 0, g_CON_NG_REASON_OK });
                     this.dgvMstDecisionReason.Rows.Add(new object[] { 0, g_CON_NG_REASON_WHITE_THREAD_ONE });
                     this.dgvMstDecisionReason.Rows.Add(new object[] { 0, g_CON_NG_REASON_WHITE_THREAD_MULTI });
-                    this.dgvMstDecisionReason.Rows.Add(new object[] { 0, g_CON_NG_REASON_WHITE_THREAD_ONE });
-                    this.dgvMstDecisionReason.Rows.Add(new object[] { 0, g_CON_NG_REASON_WHITE_THREAD_MULTI });
+                    this.dgvMstDecisionReason.Rows.Add(new object[] { 0, g_CON_NG_REASON_BLACK_THREAD_ONE });
+                    this.dgvMstDecisionReason.Rows.Add(new object[] { 0, g_CON_NG_REASON_BLACK_THREAD_MULTI });
                     this.dgvMstDecisionReason.Rows.Add(new object[] { 0, g_CON_NG_REASON_OTHER_NG_JUDGEMENT });
                 }
 
                 // その他
                 foreach (DataRow dr in dtData.Rows)
                 {
+                    // 主要が含まれていたら除く
+                    if (m_bolMainReason == true)
+                    {
+                        switch (dr["decision_reason"].ToString())
+                        {
+                            case g_CON_NG_REASON_OK:
+                            case g_CON_NG_REASON_WHITE_THREAD_ONE:
+                            case g_CON_NG_REASON_WHITE_THREAD_MULTI:
+                            case g_CON_NG_REASON_BLACK_THREAD_ONE:
+                            case g_CON_NG_REASON_BLACK_THREAD_MULTI:
+                            case g_CON_NG_REASON_OTHER_NG_JUDGEMENT:
+
+                                continue;
+                        }
+                    }
+
                     this.dgvMstDecisionReason.Rows.Add(dr.ItemArray);
                 }
             }

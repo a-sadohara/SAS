@@ -106,6 +106,8 @@ namespace ImageChecker
                 foreach (string value in m_cmbBoxLine.Items)
                     cmbBoxLine.Items.Add(value);
                 cmbBoxLine.SelectedItem = m_intLine.ToString();
+                // 行逆さを調整
+                cmbBoxLine.DropDownHeight = this.Size.Height;
                 // 列
                 foreach (string value in m_cmbBoxColumns.Items)
                     cmbBoxColumns.Items.Add(value);

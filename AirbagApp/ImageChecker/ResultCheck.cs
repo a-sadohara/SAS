@@ -319,13 +319,11 @@ namespace ImageChecker
                     return false;
                 }
 
-                if (intPageIdx > 0)
+                // 同一行列がNGに登録済みになっている場合、他画面でNG登録済みにする
+                dtData = new DataTable();
+                try
                 {
-                    // 同一行列がNGに登録済みになっている場合、他画面でNG登録済みにする
-                    dtData = new DataTable();
-                    try
-                    {
-                        strSQL = @"SELECT COUNT(*) AS cnt
+                    strSQL = @"SELECT COUNT(*) AS cnt
                                    FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                    WHERE fabric_name = :fabric_name
                                    AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
@@ -335,37 +333,36 @@ namespace ImageChecker
                                    AND   acceptance_check_result IN(:acceptance_check_result_ng_detect, 
                                                                     :acceptance_check_result_ng_nondetect)";
 
-                        // SQLコマンドに各パラメータを設定する
-                        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = int.Parse(m_dtData.Rows[intPageIdx - 1]["line"].ToString()) });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = m_dtData.Rows[intPageIdx - 1]["cloumns"].ToString() });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_nondetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
+                    // SQLコマンドに各パラメータを設定する
+                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = int.Parse(m_dtData.Rows[intPageIdx]["line"].ToString()) });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = m_dtData.Rows[intPageIdx]["cloumns"].ToString() });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_nondetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
 
-                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
-                        if (dtData.Rows.Count > 0)
+                    if (dtData.Rows.Count > 0)
+                    {
+                        // 他画像でＮＧ判定済みの表示
+                        if (int.Parse(dtData.Rows[0]["cnt"].ToString()) > 0)
                         {
-                            // 他画像でＮＧ判定済みの表示
-                            if (int.Parse(dtData.Rows[0]["cnt"].ToString()) > 1)
-                            {
-                                lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON, g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
-                                btnOtherNgJudgement.Focus();
-                            }
+                            lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON, g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
+                            btnOtherNgJudgement.Focus();
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
-                        // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        return false;
-                    }
+                    return false;
                 }
 
                 return true;
@@ -799,6 +796,43 @@ namespace ImageChecker
                 return false;
             }
         }
+
+        /// <summary>
+        /// 必須入力チェック
+        /// </summary>
+        /// <param name="strItemName">項目名</param>
+        /// <param name="strValue">値</param>
+        /// <returns>true:OK false:NG</returns>
+        private bool bolChkRequiredInput()
+        {
+            // 必須入力チェック
+            if (bolChkRequiredInputByItem(cmbBoxLine, "行", cmbBoxLine.Text) == false ||
+                bolChkRequiredInputByItem(cmbBoxColumns, "列", cmbBoxColumns.Text) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 必須入力チェック
+        /// </summary>
+        /// <param name="strItemName">項目名</param>
+        /// <param name="strValue">値</param>
+        /// <returns>true:OK false:NG</returns>
+        private bool bolChkRequiredInputByItem(Control ctlItem , string strItemName, string strValue)
+        {
+            // 必須入力チェック
+            if (string.IsNullOrEmpty(strValue) == true)
+            {
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0011, strItemName), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ctlItem.Focus();
+                return false;
+            }
+
+            return true;
+        }
         #endregion
 
         #region イベント
@@ -1077,6 +1111,12 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOk_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(g_clsSystemSettingInfo.intAcceptanceCheckResultOk,
                                      "",
                                      "過検知");
@@ -1090,6 +1130,12 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnWhiteThreadOne_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
                                      "□結節有（白糸上単発）",
                                      "□結節有（白糸上単発）");
@@ -1102,6 +1148,12 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnWhiteThreadMulti_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
                                      "□結節有（白糸上連続）",
                                      "□結節有（白糸上連続）");
@@ -1114,6 +1166,12 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnBlackThreadOne_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
                                      "□結節有（黒糸上単発）",
                                      "□結節有（黒糸上単発）");
@@ -1126,6 +1184,12 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnBlackThreadMulti_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
                                      "□結節有（黒糸上連続）",
                                      "□結節有（黒糸上連続）");
@@ -1138,6 +1202,12 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOtherNgJudgement_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
                                      "●他画像でNG判定済み",
                                      "●他画像でNG判定済み");
@@ -1150,6 +1220,12 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOther_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             string strDecisionReason = "";
 
             SelectErrorReason frmErrorReason = new SelectErrorReason(false);
@@ -1257,6 +1333,7 @@ namespace ImageChecker
             string strFaultImageSubDirectory = "";
             List<string> lststrZipExtractToDirectory = new List<string>();
             DataTable dtData = new DataTable();
+            int intParse = -1;
 
             try
             {
@@ -1291,11 +1368,11 @@ namespace ImageChecker
 
                     // ファイル名妥当性チェック
                     strFileParam = strFileName.Split('_');
-                    if ((strFileParam.Length < 3 || m_strFabricName != strFileParam[2]) ||
-                        (strFileParam.Length < 4 || m_intInspectionNum.ToString() != strFileParam[3]) ||
-                        (strFileParam.Length < 5 || m_strInspectionDate.Replace("/","") != strFileParam[4]))
+                    if ((strFileParam.Length < 2 || m_strFabricName != strFileParam[1]) ||
+                        (strFileParam.Length < 3 || m_strInspectionDate.Replace("/", "") != strFileParam[2]) ||
+                        (strFileParam.Length < 4 || int.TryParse(strFileParam[3], out intParse) == false || int.Parse(m_intInspectionNum.ToString()) != intParse))
                     {
-                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0005, 
+                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0005,
                                                       m_strInspectionDate,
                                                       m_strFabricName,
                                                       m_intInspectionNum), "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1593,6 +1670,31 @@ namespace ImageChecker
                     g_clsConnectionNpgsql.DbClose();
                 }
             }
+        }
+        #endregion
+
+        #region 最大化画面制御
+        protected override void WndProc(ref Message m)
+        {
+            const int WM_NCLBUTTONDBLCLK = 0x00A3;
+            const int WM_SYSCOMMAND = 0x0112;
+            const long SC_MOVE = 0xF010L;
+
+            // ダブルクリック禁止
+            if (m.Msg == WM_NCLBUTTONDBLCLK)
+            {
+                return;
+            }
+
+            // フォーム移動禁止
+            if (m.Msg == WM_SYSCOMMAND &&
+                (m.WParam.ToInt64() & 0xFFF0L) == SC_MOVE)
+            {
+                m.Result = IntPtr.Zero;
+                return;
+            }
+
+            base.WndProc(ref m);
         }
         #endregion
     }

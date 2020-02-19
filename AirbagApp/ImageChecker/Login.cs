@@ -226,6 +226,9 @@ namespace ImageChecker
             this.Visible = false;
             TargetSelection frmTargetSelection = new TargetSelection();
             frmTargetSelection.ShowDialog(this);
+
+            this.Refresh();
+
             this.Visible = true;
         }
         #endregion

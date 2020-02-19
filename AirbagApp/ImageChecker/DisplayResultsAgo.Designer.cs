@@ -72,7 +72,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblGoki = new System.Windows.Forms.Label();
             this.lblHanNo = new System.Windows.Forms.Label();
-            this.txtUnitNum = new System.Windows.Forms.TextBox();
             this.txtProductName = new System.Windows.Forms.TextBox();
             this.txtOrderImg = new System.Windows.Forms.TextBox();
             this.txtFabricName = new System.Windows.Forms.TextBox();
@@ -121,6 +120,7 @@
             this.ResultUpdateDatetime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ResultUpdateWorker = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BeforeNgReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cmbUnitNum = new System.Windows.Forms.ComboBox();
             this.pnlTop.SuspendLayout();
             this.grbWhere.SuspendLayout();
             this.pnlWhere.SuspendLayout();
@@ -206,7 +206,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.74101F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.259F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 161F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 223F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 225F));
             this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel4, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
@@ -246,7 +246,7 @@
             this.panel2.Location = new System.Drawing.Point(131, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(424, 141);
+            this.panel2.Size = new System.Drawing.Size(422, 141);
             this.panel2.TabIndex = 28;
             // 
             // lblHansoStaDate
@@ -528,10 +528,10 @@
             this.panel4.Controls.Add(this.lblImageSearchCount);
             this.panel4.Controls.Add(this.cmbNgFace);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(716, 0);
+            this.panel4.Location = new System.Drawing.Point(714, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(224, 141);
+            this.panel4.Size = new System.Drawing.Size(226, 141);
             this.panel4.TabIndex = 28;
             // 
             // lblNgSide
@@ -651,11 +651,11 @@
             // 
             this.panel1.Controls.Add(this.lblGoki);
             this.panel1.Controls.Add(this.lblHanNo);
-            this.panel1.Controls.Add(this.txtUnitNum);
             this.panel1.Controls.Add(this.txtProductName);
             this.panel1.Controls.Add(this.txtOrderImg);
             this.panel1.Controls.Add(this.txtFabricName);
             this.panel1.Controls.Add(this.lblSashizu);
+            this.panel1.Controls.Add(this.cmbUnitNum);
             this.panel1.Controls.Add(this.lblHinNm);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
@@ -687,18 +687,6 @@
             this.lblHanNo.Size = new System.Drawing.Size(41, 17);
             this.lblHanNo.TabIndex = 1;
             this.lblHanNo.Text = "反番：";
-            // 
-            // txtUnitNum
-            // 
-            this.txtUnitNum.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtUnitNum.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtUnitNum.Location = new System.Drawing.Point(44, 2);
-            this.txtUnitNum.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
-            this.txtUnitNum.MaxLength = 2;
-            this.txtUnitNum.Name = "txtUnitNum";
-            this.txtUnitNum.Size = new System.Drawing.Size(24, 24);
-            this.txtUnitNum.TabIndex = 1;
-            this.txtUnitNum.Text = "99";
             // 
             // txtProductName
             // 
@@ -772,7 +760,7 @@
             this.panel3.Controls.Add(this.lblTitleUserNm);
             this.panel3.Controls.Add(this.cmbColumns);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(555, 0);
+            this.panel3.Location = new System.Drawing.Point(553, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(0);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(161, 141);
@@ -1228,6 +1216,25 @@
             this.BeforeNgReason.ReadOnly = true;
             this.BeforeNgReason.Width = 200;
             // 
+            // cmbUnitNum
+            // 
+            this.cmbUnitNum.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.cmbUnitNum.FormattingEnabled = true;
+            this.cmbUnitNum.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.cmbUnitNum.Items.AddRange(new object[] {
+            "",
+            "N1",
+            "N2",
+            "N3",
+            "N4"});
+            this.cmbUnitNum.Location = new System.Drawing.Point(44, 1);
+            this.cmbUnitNum.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
+            this.cmbUnitNum.MaxLength = 2;
+            this.cmbUnitNum.Name = "cmbUnitNum";
+            this.cmbUnitNum.Size = new System.Drawing.Size(39, 25);
+            this.cmbUnitNum.TabIndex = 18;
+            this.cmbUnitNum.Text = "99";
+            // 
             // DisplayResultsAgo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1297,7 +1304,6 @@
         private System.Windows.Forms.TextBox txtFabricName;
         private System.Windows.Forms.TextBox txtOrderImg;
         private System.Windows.Forms.TextBox txtProductName;
-        private System.Windows.Forms.TextBox txtUnitNum;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
@@ -1355,5 +1361,6 @@
         private System.Windows.Forms.ComboBox cmbNgFace;
         private System.Windows.Forms.ComboBox cmbColumns;
         private MyDataGridView dgvCheckInspectionHistory;
+        private System.Windows.Forms.ComboBox cmbUnitNum;
     }
 }

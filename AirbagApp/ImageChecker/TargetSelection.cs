@@ -43,19 +43,6 @@ namespace ImageChecker
         private const string m_CON_FORMAT_WORKER_NAME = "作業者：{0}";
         private const string CON_ZIP_EXTRACT_DIR_PATH = "ZipExtractDirPath";
 
-        // フォームアクティブ処理
-        private bool m_blnFormActiveProc = true;    // true  :(初期値)フォームアクティブ処理を行う
-                                                    // false :フォームアクティブ処理を行わない。
-                                                    // 用途  :画面遷移でフォームアクティブの内部で処理は走るのだが、描画されない。
-                                                    //        その場合、処理が走ること自体無駄なので制御する。
-                                                    // 使用例:try{
-                                                    //            m_blnFormActiveProc = false;
-                                                    //            ViewData();
-                                                    //            <描画されないフォームアクティブが走る処理>...
-                                                    //        }finally{
-                                                    //            m_blnFormActiveProc = true;
-                                                    //        }
-
         // データ保持関連
         private DataTable m_dtData;
 
@@ -70,8 +57,6 @@ namespace ImageChecker
         {
             InitializeComponent();
 
-            m_blnFormActiveProc = false;
-
             // 一時フォルダ作成
             if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory) == false)
                 Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
@@ -83,359 +68,32 @@ namespace ImageChecker
         }
 
         /// <summary>
-        /// 連携基盤部連携ファイルの取込
-        /// </summary>
-        /// <returns>true:正常終了 false:異常終了</returns>
-        private bool bolImportCooperationBaseCooperationFile()
-        {
-            string[] strSplitFileName = new string[0];
-            string strFileName = "";
-            string strSQL = "";
-            int intCnt = 0;
-            DataTable dtData;
-
-            // パラメータ
-            string strInspectionDate = "";  // 検査日付(YYYY/MM/DD)
-            string strProductName = "";     // 品名
-            string strFabricName = "";      // 反番
-            int intInspectionNum = 0;       // 検査番号
-            string strFaultImageSubDirectory = "";
-
-            List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-            List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
-
-            try
-            {
-                // 完了通知ファイル(.TXT)の確認を実施
-                foreach (string strFilePath in System.IO.Directory.GetFiles(g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory, "*.txt", System.IO.SearchOption.AllDirectories))
-                {
-                    // 初期化
-                    strInspectionDate = "";
-                    strProductName = "";
-                    strFabricName = "";
-                    intInspectionNum = 0;
-                    strFaultImageSubDirectory = "";
-                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                    intCnt = 0;
-
-                    // ファイル名の取得
-                    strFileName = Path.GetFileNameWithoutExtension(strFilePath);
-
-                    // ファイル名からパラメータを取得
-                    strSplitFileName = strFileName.Split('_');
-
-                    // パラメータを設定
-                    if (strSplitFileName.Length == 4)
-                    {
-                        strInspectionDate = strSplitFileName[0].Insert(6, "/").Insert(4, "/");
-                        strProductName = strSplitFileName[1];
-                        strFabricName = strSplitFileName[2];
-                        intInspectionNum = int.Parse(strSplitFileName[3]);
-
-                        strFaultImageSubDirectory = string.Join("_", strInspectionDate.Replace("/", ""),
-                                                                     strProductName,
-                                                                     strFabricName,
-                                                                     intInspectionNum);
-                    }
-
-                    // 取得失敗した場合は次のループ
-                    if (string.IsNullOrEmpty(strInspectionDate) || string.IsNullOrEmpty(strProductName) || string.IsNullOrEmpty(strFabricName) || intInspectionNum == 0)
-                        continue;
-
-                    // 連携済みチェック
-                    try
-                    {
-                        dtData = new DataTable();
-                        strSQL = @"SELECT COUNT(inspection_num) AS cnt ";
-                        strSQL += @"FROM  " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header ";
-                        strSQL += @"WHERE fabric_name = :fabric_name ";
-                        strSQL += @"AND   inspection_num = :inspection_num ";
-                        strSQL += @"AND   TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd ";
-
-                        // SQLコマンドに各パラメータを設定する
-                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
-
-                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
-
-                        // 件数
-                        if (dtData.Rows.Count > 0)
-                        {
-                            intCnt = int.Parse(dtData.Rows[0]["cnt"].ToString());
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
-                        // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0031, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        return false;
-                    }
-
-                    // 欠点画像の取込み処理
-                    // フォルダの存在チェック
-                    if (Directory.Exists(g_clsSystemSettingInfo.strFaultImageDirectory + Path.DirectorySeparatorChar +
-                                         strFaultImageSubDirectory) == false)
-                    {
-                        lstTask.Add(Task<Boolean>.Run(() => bolImpFatalImage(strFaultImageSubDirectory)));
-                        System.Threading.Thread.Sleep(1000);
-                    }
-
-                    if (intCnt >= 1)
-                    {
-                        // 連携済みのため、次を処理
-                        continue;
-                    }
-
-                    // 検査情報ヘッダの取り込み処理
-                    try
-                    {
-                        strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header(
-                                           inspection_num
-                                         , branch_num
-                                         , product_name
-                                         , unit_num
-                                         , order_img
-                                         , fabric_name
-                                         , inspection_target_line
-                                         , inspection_end_line
-                                         , inspection_start_line
-                                         , worker_1
-                                         , worker_2
-                                         , start_datetime
-                                         , end_datetime
-                                         , inspection_direction
-                                         , inspection_date
-                                         , over_detection_except_status
-                                         , acceptance_check_status
-                                         , decision_start_datetime
-                                         , decision_end_datetime
-                                       )
-                                       SELECT
-                                           inspection_num
-                                         , branch_num
-                                         , product_name
-                                         , unit_num
-                                         , order_img
-                                         , fabric_name
-                                         , inspection_target_line
-                                         , inspection_end_line
-                                         , inspection_start_line
-                                         , worker_1
-                                         , worker_2
-                                         , start_datetime
-                                         , end_datetime
-                                         , inspection_direction
-                                         , inspection_date
-                                         , 0
-                                         , 0
-                                         , NULL
-                                         , NULL
-                                       FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".inspection_info_header
-                                       WHERE fabric_name = :fabric_name
-                                         AND inspection_num = :inspection_num
-                                         AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd";
-
-                        // SQLコマンドに各パラメータを設定する
-                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
-
-                        // sqlを実行する
-                        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
-                    }
-                    catch (Exception ex)
-                    {
-                        g_clsConnectionNpgsql.DbRollback();
-
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
-                        // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        return false;
-                    }
-
-                    try
-                    {
-                        // 判定結果の取り込み処理
-                        strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
-                                           fabric_name
-                                         , inspection_num
-                                         , inspection_date
-                                         , branch_num
-                                         , line
-                                         , cloumns
-                                         , ng_face
-                                         , ng_reason
-                                         , org_imagepath
-                                         , marking_imagepath
-                                         , master_point
-                                         , ng_distance_x
-                                         , ng_distance_y
-                                         , camera_num
-                                         , worker_1
-                                         , worker_2
-                                         , over_detection_except_result          
-                                         , over_detection_except_datetime        
-                                         , over_detection_except_worker          
-                                         , before_over_detection_except_result   
-                                         , before_over_detection_except_datetime 
-                                         , before_over_detection_except_worker   
-                                         , acceptance_check_result
-                                         , acceptance_check_datetime
-                                         , acceptance_check_worker
-                                         , before_acceptance_check_result
-                                         , before_acceptance_check_upd_datetime
-                                         , before_acceptance_check_worker
-                                         , result_update_datetime
-                                         , result_update_worker
-                                         , before_ng_reason
-                                       )
-                                       SELECT
-                                           fabric_name
-                                         , inspection_num
-                                         , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
-                                         , 1
-                                         , ng_line
-                                         , columns
-                                         , ng_face
-                                         , ng_reason
-                                         , ng_image
-                                         , marking_image
-                                         , master_point
-                                         , TO_NUMBER(ng_distance_x,'9999')
-                                         , TO_NUMBER(ng_distance_y,'9999')
-                                         , camera_num_1
-                                         , worker_1
-                                         , worker_2
-                                         , :over_detection_except_result_non
-                                         , NULL
-                                         , NULL
-                                         , :over_detection_except_result_non
-                                         , NULL
-                                         , NULL
-                                         , :acceptance_check_result_non
-                                         , NULL
-                                         , NULL
-                                         , :acceptance_check_result_non
-                                         , NULL
-                                         , NULL
-                                         , NULL
-                                         , NULL
-                                         , NULL
-                                       FROM (
-                                           SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY rapid_endtime DESC) AS SEQ
-                                                , rpd.*
-                                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + @""" rpd
-                                           WHERE fabric_name = :fabric_name
-                                           AND inspection_num = :inspection_num 
-                                           AND rapid_result = :rapid_result
-                                           AND edge_result = :edge_result
-                                           AND masking_result = :masking_result
-                                       ) rpd
-                                       WHERE SEQ = 1";
-
-                        // SQLコマンドに各パラメータを設定する
-                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultNg });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultNg });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultNg });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
-                        // sqlを実行する
-                        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
-                    }
-                    catch (Exception ex)
-                    {
-                        g_clsConnectionNpgsql.DbRollback();
-
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
-                        // メッセージ出力
-                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0045, strFabricName, intInspectionNum), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        return false;
-                    }
-                }
-
-                Task.WaitAll(lstTask.ToArray());
-
-                foreach (Task<Boolean> tsk in lstTask)
-                {
-                    if (!tsk.Result)
-                    {
-                        // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return false;
-                    }
-                }
-
-                // DBコミット
-                g_clsConnectionNpgsql.DbCommit();
-                // DBクローズ
-                g_clsConnectionNpgsql.DbClose();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0040 + "\r\n" + ex.Message);
-                // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return false;
-            }
-            finally
-            {
-                try
-                {
-                    // 一時ZIP解凍用フォルダを削除する
-                    Directory.Delete(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH, true);
-                }
-                catch
-                {
-                    // 削除処理の例外を無視する
-                }
-            }
-        }
-
-        /// <summary>
         /// 欠点画像取り込み
         /// </summary>
         /// <param name="strFaultImage"></param>
         /// <returns></returns>
-        private Boolean bolImpFatalImage(string strFaultImage)
+        private async Task<Boolean> BolImpFatalImage(string strFaultImage)
         {
             try
             {
-                WriteEventLog(g_CON_LEVEL_WARN, strFaultImage);
+
                 // ZIPファイルを一時ZIP解凍用フォルダにコピーする
-                File.Copy(g_clsSystemSettingInfo.strNgImageCooperationDirectory + Path.DirectorySeparatorChar +
-                          strFaultImage + ".zip",
-                          g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH + Path.DirectorySeparatorChar +
-                          strFaultImage + ".zip");
+                File.Copy(Path.Combine( g_clsSystemSettingInfo.strNgImageCooperationDirectory , strFaultImage + ".zip"),
+                          Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory , CON_ZIP_EXTRACT_DIR_PATH ,strFaultImage + ".zip"),true);
 
                 // 欠点画像Zipファイルの解凍
-                ZipFile.ExtractToDirectory(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH + Path.DirectorySeparatorChar +
-                          strFaultImage + ".zip",
+                ZipFile.ExtractToDirectory(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory , CON_ZIP_EXTRACT_DIR_PATH , strFaultImage + ".zip"),
                            g_clsSystemSettingInfo.strFaultImageDirectory);
+
+                // 一時ファイルの削除
+                File.Delete(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, CON_ZIP_EXTRACT_DIR_PATH, strFaultImage + ".zip"));
 
                 return true;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0040 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040 , Environment.NewLine , ex.Message));
 
                 return false;
             }
@@ -828,7 +486,6 @@ namespace ImageChecker
                 if (bolProcOkNg == false)
                     this.Close();
 
-                m_blnFormActiveProc = true;
                 this.ResumeLayout();
             }
         }
@@ -845,6 +502,7 @@ namespace ImageChecker
                 DataGridView dgv = (DataGridView)sender;
                 HeaderData clsHeaderData = new HeaderData();
                 DecisionResult clsDecisionResult = new DecisionResult();
+                string strFaultImageSubDirectory = "";
 
                 // ボタン行以外はイベント終了
                 if (e.ColumnIndex < m_CON_COL_IDX_OVERDETECTIONEXCEPT)
@@ -880,11 +538,22 @@ namespace ImageChecker
                                                    g_CON_DIR_MASTER_IMAGE + Path.DirectorySeparatorChar + 
                                                    Path.GetFileName(m_dtData.Rows[e.RowIndex]["airbag_imagepath"].ToString());
 
+                strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", ""),
+                                                             m_dtData.Rows[e.RowIndex]["product_name"],
+                                                             m_dtData.Rows[e.RowIndex]["fabric_name"],
+                                                             m_dtData.Rows[e.RowIndex]["inspection_num"]);
+
+                // ディレクトリ存在チェック
+                if (Directory.Exists(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" + strFaultImageSubDirectory) == false)
+                {
+                    MessageBox.Show(g_clsMessageInfo.strMsgW0006, "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 switch (e.ColumnIndex)
                 {
                     case m_CON_COL_IDX_OVERDETECTIONEXCEPT:
 
-                        m_blnFormActiveProc = false;
                         this.Visible = false;
 
                         // 過検知除外
@@ -902,7 +571,6 @@ namespace ImageChecker
 
                     case m_CON_COL_IDX_ACCEPTANCECHECK:
 
-                        m_blnFormActiveProc = false;
                         this.Visible = false;
 
                         // 合否確認・判定登録
@@ -915,7 +583,6 @@ namespace ImageChecker
                         break;
                     case m_CON_COL_IDX_RESULT:
 
-                        m_blnFormActiveProc = false;
                         this.Visible = false;
 
                         // 検査結果確認
@@ -931,7 +598,6 @@ namespace ImageChecker
             }
             finally
             {
-                m_blnFormActiveProc = true;
             }
         }
 
@@ -954,7 +620,6 @@ namespace ImageChecker
         {
             try
             {
-                m_blnFormActiveProc = false;
                 this.Visible = false;
 
                 DisplayResultsAgo frmResult = new DisplayResultsAgo();
@@ -967,7 +632,6 @@ namespace ImageChecker
             }
             finally
             {
-                m_blnFormActiveProc = true;
             }
         }
 
@@ -976,7 +640,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button2_Click(object sender, EventArgs e)
+        private void btnExceptTarget_Click(object sender, EventArgs e)
         {
             string strUnitNum = "";
             string strOrderImg = "";
@@ -1012,7 +676,6 @@ namespace ImageChecker
                 intInspectionEndLine = int.Parse(m_dtData.Rows[intRow]["inspection_end_line"].ToString());
                 intInspectionNum = int.Parse(m_dtData.Rows[intRow]["inspection_num"].ToString());
 
-                m_blnFormActiveProc = false;
 
                 // 検査対象外画面表示
                 CheckExcept frmCheckExcept = new CheckExcept(strUnitNum,
@@ -1034,7 +697,6 @@ namespace ImageChecker
             }
             finally
             {
-                m_blnFormActiveProc = true;
             }
         }
 
@@ -1043,7 +705,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click_1(object sender, EventArgs e)
+        private void btnReviseLine_Click(object sender, EventArgs e)
         {
             try
             {
@@ -1079,8 +741,6 @@ namespace ImageChecker
                 intInspectionEndLine = int.Parse(m_dtData.Rows[intRow]["inspection_end_line"].ToString());
                 intInspectionNum = int.Parse(m_dtData.Rows[intRow]["inspection_num"].ToString());
 
-                m_blnFormActiveProc = false;
-
                 // 行補正画面表示
                 LineCorrect frmLineCorrect = new LineCorrect(strUnitNum,
                                                              strOrderImg,
@@ -1100,7 +760,6 @@ namespace ImageChecker
             }
             finally
             {
-                m_blnFormActiveProc = true;
             }
         }
         #endregion
@@ -1111,41 +770,376 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TargetSelection_Activated(object sender, EventArgs e)
+        private async void TargetSelection_Activated(object sender, EventArgs e)
         {
+            this.SuspendLayout();
+            if(datetimePrevReplicate != DateTime.MinValue &&
+                datetimePrevReplicate > DateTime.Now)
+            {
+                // 連携基盤部との前回連携から5分以内の場合は、処理しない
+                // データグリッドビュー表示
+                bolDispDataGridView();
+                this.ResumeLayout();
+                return;
+            }
 
+
+            // 連携時間を更新
+            datetimePrevReplicate = DateTime.Now.AddMinutes(5);
+
+            ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
+            frmProgress.StartPosition = FormStartPosition.CenterScreen;
+            frmProgress.Size = this.Size;
+            frmProgress.Show(this);
+            
+            // 連携基盤部連携ファイルの取込処理
+            string[] strSplitFileName = new string[0];
+            string strFileName = "";
+            string strSQL = "";
+            int intCnt = 0;
+            DataTable dtData;
+
+            // パラメータ
+            string strInspectionDate = "";  // 検査日付(YYYY/MM/DD)
+            string strProductName = "";     // 品名
+            string strFabricName = "";      // 反番
+            int intInspectionNum = 0;       // 検査番号
+            string strFaultImageSubDirectory = "";
+
+            List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+            List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
 
             try
             {
-                // 連携基盤部との前回連携から5分以内の場合は、処理しない
-                if (datetimePrevReplicate == DateTime.MinValue || datetimePrevReplicate <= DateTime.Now)
+                // 完了通知ファイル(.TXT)の確認を実施
+                foreach (string strFilePath in System.IO.Directory.GetFiles(g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory, "*.txt",
+                    System.IO.SearchOption.TopDirectoryOnly))
                 {
-                    ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
-                    frmProgress.Show(this);
+                    // 初期化
+                    strInspectionDate = "";
+                    strProductName = "";
+                    strFabricName = "";
+                    intInspectionNum = 0;
+                    strFaultImageSubDirectory = "";
+                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    intCnt = 0;
 
-                    // 連携基盤部連携ファイルの取込処理
-                    if (bolImportCooperationBaseCooperationFile() == false)
+                    // ファイル名の取得
+                    strFileName = Path.GetFileNameWithoutExtension(strFilePath);
+
+                    // ファイル名からパラメータを取得
+                    strSplitFileName = strFileName.Split('_');
+
+                    // パラメータを設定
+                    if (strSplitFileName.Length == 4)
                     {
+                        strInspectionDate = strSplitFileName[0].Insert(6, "/").Insert(4, "/");
+                        strProductName = strSplitFileName[1];
+                        strFabricName = strSplitFileName[2];
+                        intInspectionNum = int.Parse(strSplitFileName[3]);
+
+                        strFaultImageSubDirectory = string.Join("_", strInspectionDate.Replace("/", ""),
+                                                                        strProductName,
+                                                                        strFabricName,
+                                                                        intInspectionNum);
+                    }
+
+                    // 取得失敗した場合は次のループ
+                    if (string.IsNullOrEmpty(strInspectionDate) || string.IsNullOrEmpty(strProductName) || string.IsNullOrEmpty(strFabricName) || intInspectionNum == 0)
+                    {
+                        continue;
+                    }
+
+                    // 連携済みチェック
+                    try
+                    {
+                        dtData = new DataTable();
+                        strSQL = @"SELECT COUNT(inspection_num) AS cnt ";
+                        strSQL += @"FROM  " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header ";
+                        strSQL += @"WHERE fabric_name = :fabric_name ";
+                        strSQL += @"AND   inspection_num = :inspection_num ";
+                        strSQL += @"AND   TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd ";
+
+                        // SQLコマンドに各パラメータを設定する
+                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+
+                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                        // 件数
+                        if (dtData.Rows.Count > 0)
+                        {
+                            intCnt = int.Parse(dtData.Rows[0]["cnt"].ToString());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 , Environment.NewLine , ex.Message));
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0031, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        frmProgress.Close();
                         return;
                     }
 
-                    frmProgress.Close();
+                    // 欠点画像の取込み処理
+                    // フォルダの存在チェック
+                    if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,strFaultImageSubDirectory)) == false)
+                    {
+                        lstTask.Add(Task<Boolean>.Run(() => BolImpFatalImage(strFaultImageSubDirectory)));
+                        System.Threading.Thread.Sleep(1000);
+                    }
 
-                    // 連携時間を更新
-                    datetimePrevReplicate = DateTime.Now.AddMinutes(5);
+                    if (intCnt >= 1)
+                    {
+                        // 連携済みのため、次を処理
+                        continue;
+                    }
+
+                    // 検査情報ヘッダの取り込み処理
+                    try
+                    {
+                        strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header(
+                                    inspection_num
+                                    , branch_num
+                                    , product_name
+                                    , unit_num
+                                    , order_img
+                                    , fabric_name
+                                    , inspection_target_line
+                                    , inspection_end_line
+                                    , inspection_start_line
+                                    , worker_1
+                                    , worker_2
+                                    , start_datetime
+                                    , end_datetime
+                                    , inspection_direction
+                                    , inspection_date
+                                    , over_detection_except_status
+                                    , acceptance_check_status
+                                    , decision_start_datetime
+                                    , decision_end_datetime
+                                )
+                                SELECT
+                                    inspection_num
+                                    , branch_num
+                                    , product_name
+                                    , unit_num
+                                    , order_img
+                                    , fabric_name
+                                    , inspection_target_line
+                                    , inspection_end_line
+                                    , inspection_start_line
+                                    , worker_1
+                                    , worker_2
+                                    , start_datetime
+                                    , end_datetime
+                                    , inspection_direction
+                                    , inspection_date
+                                    , 0
+                                    , 0
+                                    , NULL
+                                    , NULL
+                                FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".inspection_info_header
+                                WHERE fabric_name = :fabric_name
+                                    AND inspection_num = :inspection_num
+                                    AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd";
+
+                        // SQLコマンドに各パラメータを設定する
+                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+
+                        // sqlを実行する
+                        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                    }
+                    catch (Exception ex)
+                    {
+                        g_clsConnectionNpgsql.DbRollback();
+
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        frmProgress.Close();
+                        return; 
+                    }
+
+                    try
+                    {
+                        // 判定結果の取り込み処理
+                        strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
+                                    fabric_name
+                                    , inspection_num
+                                    , inspection_date
+                                    , branch_num
+                                    , line
+                                    , cloumns
+                                    , ng_face
+                                    , ng_reason
+                                    , org_imagepath
+                                    , marking_imagepath
+                                    , master_point
+                                    , ng_distance_x
+                                    , ng_distance_y
+                                    , camera_num
+                                    , worker_1
+                                    , worker_2
+                                    , over_detection_except_result          
+                                    , over_detection_except_datetime        
+                                    , over_detection_except_worker          
+                                    , before_over_detection_except_result   
+                                    , before_over_detection_except_datetime 
+                                    , before_over_detection_except_worker   
+                                    , acceptance_check_result
+                                    , acceptance_check_datetime
+                                    , acceptance_check_worker
+                                    , before_acceptance_check_result
+                                    , before_acceptance_check_upd_datetime
+                                    , before_acceptance_check_worker
+                                    , result_update_datetime
+                                    , result_update_worker
+                                    , before_ng_reason
+                                )
+                                SELECT
+                                    fabric_name
+                                    , inspection_num
+                                    , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
+                                    , 1
+                                    , ng_line
+                                    , columns
+                                    , ng_face
+                                    , ng_reason
+                                    , ng_image
+                                    , marking_image
+                                    , master_point
+                                    , TO_NUMBER(ng_distance_x,'9999')
+                                    , TO_NUMBER(ng_distance_y,'9999')
+                                    , camera_num_1
+                                    , worker_1
+                                    , worker_2
+                                    , :over_detection_except_result_non
+                                    , NULL
+                                    , NULL
+                                    , :over_detection_except_result_non
+                                    , NULL
+                                    , NULL
+                                    , :acceptance_check_result_non
+                                    , NULL
+                                    , NULL
+                                    , :acceptance_check_result_non
+                                    , NULL
+                                    , NULL
+                                    , NULL
+                                    , NULL
+                                    , NULL
+                                FROM (
+                                    SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY rapid_endtime DESC) AS SEQ
+                                        , rpd.*
+                                    FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + @""" rpd
+                                    WHERE fabric_name = :fabric_name
+                                    AND inspection_num = :inspection_num 
+                                    AND rapid_result = :rapid_result
+                                    AND edge_result = :edge_result
+                                    AND masking_result = :masking_result
+                                ) rpd
+                                WHERE SEQ = 1";
+
+                        // SQLコマンドに各パラメータを設定する
+                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultNg });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultNg });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultNg });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
+                        // sqlを実行する
+                        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                    }
+                    catch (Exception ex)
+                    {
+                        g_clsConnectionNpgsql.DbRollback();
+
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
+                        // メッセージ出力
+                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0045, strFabricName, intInspectionNum), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        frmProgress.Close();
+                        return;
+                    }
                 }
 
-                // データグリッドビュー表示
-                if (bolDispDataGridView() == false)
+                // 欠点画像の取込み待ち
+                await Task.WhenAll(lstTask.ToArray());
+                foreach (Task<Boolean> tsk in lstTask)
                 {
-                    return;
+                    if (!tsk.Result)
+                    {
+                        // メッセージ出力
+                        MessageBox.Show( g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        frmProgress.Close();
+                        return;
+                    }
                 }
 
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
+                // DBクローズ
+                g_clsConnectionNpgsql.DbClose();
             }
-            catch
+            catch (Exception ex)
             {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0040 , Environment.NewLine, ex.Message));
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                frmProgress.Close();
+              
+            }
+
+            // データグリッドビュー表示
+            bolDispDataGridView();
+
+            this.ResumeLayout();
+
+
         }
+
+        #region 最大化画面制御
+        protected override void WndProc(ref Message m)
+        {
+            const int WM_NCLBUTTONDBLCLK = 0x00A3;
+            const int WM_SYSCOMMAND = 0x0112;
+            const long SC_MOVE = 0xF010L;
+
+            // ダブルクリック禁止
+            if (m.Msg == WM_NCLBUTTONDBLCLK)
+            {
+                return;
+            }
+
+            // フォーム移動禁止
+            if (m.Msg == WM_SYSCOMMAND &&
+                (m.WParam.ToInt64() & 0xFFF0L) == SC_MOVE)
+            {
+                m.Result = IntPtr.Zero;
+                return;
+            }
+
+            base.WndProc(ref m);
+        }
+        #endregion
     }
 
     #region 独自クラス

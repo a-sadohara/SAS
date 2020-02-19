@@ -23,6 +23,7 @@ namespace ImageChecker.DTO
         public readonly string strMsgE0001;
         public readonly string strMsgE0002;
         public readonly string strMsgE0003;
+        public readonly string strMsgE0011;
         public readonly string strMsgE0021;
         public readonly string strMsgE0031;
         public readonly string strMsgE0035;
@@ -46,6 +47,7 @@ namespace ImageChecker.DTO
         public readonly string strMsgQ0013;
         public readonly string strMsgW0003;
         public readonly string strMsgW0005;
+        public readonly string strMsgW0006;
 
         /// <summary>
         /// コンストラクタ
@@ -60,6 +62,7 @@ namespace ImageChecker.DTO
                 GetMessageContent("E0001", ref strMsgE0001);
                 GetMessageContent("E0002", ref strMsgE0002);
                 GetMessageContent("E0003", ref strMsgE0003);
+                GetMessageContent("E0011", ref strMsgE0011);
                 GetMessageContent("E0021", ref strMsgE0021);
                 GetMessageContent("E0031", ref strMsgE0031);
                 GetMessageContent("E0035", ref strMsgE0035);
@@ -83,6 +86,7 @@ namespace ImageChecker.DTO
                 GetMessageContent("Q0013", ref strMsgQ0013);
                 GetMessageContent("W0003", ref strMsgW0003);
                 GetMessageContent("W0005", ref strMsgW0005);
+                GetMessageContent("W0006", ref strMsgW0006);
 
                 if (m_sbErrMessage.Length > 0)
                     throw new Exception(m_sbErrMessage.ToString());

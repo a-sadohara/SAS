@@ -100,49 +100,56 @@ namespace ImageChecker
 
                 // 検索部
                 // 号機
-                if (txtProductName.Text != "")
+                if (string.IsNullOrEmpty(cmbUnitNum.Text) == false)
+                {
+                    strSQL += @"AND iih.unit_num = :unit_num ";
+
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = cmbUnitNum.Text });
+                }
+                // 品名
+                if (string.IsNullOrEmpty(txtProductName.Text) == false)
                 {
                     strSQL += @"AND iih.product_name = :product_name ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "product_name", DbType = DbType.String, Value = txtProductName.Text });
                 }
                 // 指図
-                if (txtOrderImg.Text != "")
+                if (string.IsNullOrEmpty(txtOrderImg.Text) == false)
                 {
                     strSQL += @"AND iih.order_img = :order_img ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "order_img", DbType = DbType.String, Value = txtOrderImg.Text });
                 }
                 // 反番
-                if (txtFabricName.Text != "")
+                if (string.IsNullOrEmpty(txtFabricName.Text) == false)
                 {
                     strSQL += @"AND iih.fabric_name = :fabric_name ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = txtFabricName.Text });
                 }
                 // 搬送開始日時(From)
-                if (dtpStartDatetimeFrom.Text.Trim() != "")
+                if (string.IsNullOrEmpty(dtpStartDatetimeFrom.Text.Trim()) == false)
                 {
                     strSQL += @"AND iih.start_datetime >= TO_TIMESTAMP(:start_datetime_from, 'YYYY/MM/DD HH24:MI:SS') ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_datetime_from", DbType = DbType.String, Value = dtpStartDatetimeFrom.Text });
                 }
                 // 搬送開始日時(To)
-                if (dtpStartDatetimeTo.Text.Trim() != "")
+                if (string.IsNullOrEmpty(dtpStartDatetimeTo.Text.Trim()) == false)
                 {
                     strSQL += @"AND iih.start_datetime <= TO_TIMESTAMP(:start_datetime_to, 'YYYY/MM/DD HH24:MI:SS') ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_datetime_to", DbType = DbType.String, Value = dtpStartDatetimeTo.Text });
                 }
                 // 搬送終了日時(From)
-                if (dtpEndDatetimeFrom.Text.Trim() != "")
+                if (string.IsNullOrEmpty(dtpEndDatetimeFrom.Text.Trim()) == false)
                 {
                     strSQL += @"AND iih.end_datetime >= TO_TIMESTAMP(:end_datetime_from, 'YYYY/MM/DD HH24:MI:SS') ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_datetime_from", DbType = DbType.String, Value = dtpEndDatetimeFrom.Text });
                 }
                 // 搬送終了日時(To)
-                if (dtpEndDatetimeTo.Text.Trim() != "")
+                if (string.IsNullOrEmpty(dtpEndDatetimeTo.Text.Trim()) == false)
                 {
                     strSQL += @"AND iih.end_datetime <= TO_TIMESTAMP(:end_datetime_to, 'YYYY/MM/DD HH24:MI:SS') ";
 
@@ -150,75 +157,75 @@ namespace ImageChecker
 
                 }
                 // 検査範囲行(From)
-                if (txtSearchFrom.Text != "")
+                if (string.IsNullOrEmpty(txtSearchFrom.Text) == false)
                 {
                     strSQL += @"AND dr.line >= :line_from ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line_from", DbType = DbType.Int16, Value = int.Parse(txtSearchFrom.Text) });
                 }
                 // 検査範囲行(To)
-                if (txtSearchTo.Text != "")
+                if (string.IsNullOrEmpty(txtSearchTo.Text) == false)
                 {
                     strSQL += @"AND dr.line <= :line_to ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line_to", DbType = DbType.Int16, Value = int.Parse(txtSearchTo.Text) });
                 }
                 // 判定開始日時(From)
-                if (dtpDecisionStartTimeFrom.Text.Trim() != "")
+                if (string.IsNullOrEmpty(dtpDecisionStartTimeFrom.Text.Trim()) == false)
                 {
                     strSQL += @"AND iih.decision_start_datetime >= TO_TIMESTAMP(:decision_start_datetime_from, 'YYYY/MM/DD HH24:MI:SS') ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_start_datetime_from", DbType = DbType.String, Value = dtpDecisionStartTimeFrom.Text });
                 }
                 // 判定開始日時(To)
-                if (dtpDecisionStartTimeTo.Text.Trim() != "")
+                if (string.IsNullOrEmpty(dtpDecisionStartTimeTo.Text.Trim()) == false)
                 {
                     strSQL += @"AND iih.decision_start_datetime <= TO_TIMESTAMP(:decision_start_datetime_to, 'YYYY/MM/DD HH24:MI:SS') ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_start_datetime_to", DbType = DbType.String, Value = dtpDecisionStartTimeTo.Text });
                 }
                 // 判定終了日時(From)
-                if (dtpDecisionEndTimeFrom.Text.Trim() != "")
+                if (string.IsNullOrEmpty(dtpDecisionEndTimeFrom.Text.Trim()) == false)
                 {
                     strSQL += @"AND iih.decision_end_datetime >= TO_TIMESTAMP(:decision_end_datetime_from, 'YYYY/MM/DD HH24:MI:SS') ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_end_datetime_from", DbType = DbType.String, Value = dtpDecisionEndTimeFrom.Text });
                 }
                 // 判定終了日時(To)
-                if (dtpDecisionEndTimeTo.Text.Trim() != "")
+                if (string.IsNullOrEmpty(dtpDecisionEndTimeTo.Text.Trim()) == false)
                 {
                     strSQL += @"AND iih.decision_end_datetime <= TO_TIMESTAMP(:decision_end_datetime_to, 'YYYY/MM/DD HH24:MI:SS') ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_end_datetime_to", DbType = DbType.String, Value = dtpDecisionEndTimeTo.Text });
                 }
                 // 検査番号
-                if (txtInspectionNum.Text != "")
+                if (string.IsNullOrEmpty(txtInspectionNum.Text) == false)
                 {
                     strSQL += @"AND iih.inspection_num = :inspection_num ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = int.Parse(txtInspectionNum.Text) });
                 }
                 // 作業者
-                if (txtInspectionNum.Text != "")
+                if (string.IsNullOrEmpty(txtWorkerName.Text) == false)
                 {
-                    strSQL += @"AND (dr.acceptance_check_worker LIKE '%" + txtInspectionNum.Text + "%' OR dr.result_update_worker LIKE '%" + txtInspectionNum.Text + "%') ";
+                    strSQL += @"AND (dr.acceptance_check_worker LIKE '%" + txtWorkerName.Text + "%' OR dr.result_update_worker LIKE '%" + txtWorkerName.Text + "%') ";
                 }
                 // 行
-                if (txtLine.Text != "")
+                if (string.IsNullOrEmpty(txtLine.Text) == false)
                 {
                     strSQL += @"AND dr.line = :line ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = int.Parse(txtLine.Text) });
                 }
                 // 列
-                if (cmbColumns.Text != "")
+                if (string.IsNullOrEmpty(cmbColumns.Text) == false)
                 {
                     strSQL += @"AND dr.cloumns = :columns ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "columns", DbType = DbType.String, Value = cmbColumns.Text });
                 }
                 // NG面
-                if (cmbNgFace.Text != "")
+                if (string.IsNullOrEmpty(cmbNgFace.Text) == false)
                 {
                     strSQL += @"AND dr.ng_face = :ng_face ";
 
@@ -229,7 +236,7 @@ namespace ImageChecker
                 {
                     strSQL += @"AND dr.ng_reason IS NULL ";
                 }
-                else if (txtNgReason.Text != "")
+                else if (string.IsNullOrEmpty(txtNgReason.Text) == false)
                 {
                     strSQL += @"AND dr.ng_reason LIKE '%" + txtNgReason.Text + "%' ";
                 }
@@ -410,7 +417,7 @@ namespace ImageChecker
             lblWorkerName.Text = string.Format(m_CON_FORMAT_WORKER_NAME, g_clsLoginInfo.strWorkerName);
 
             // 初期化
-            txtUnitNum.Text = "";
+            cmbUnitNum.Text = "";
             txtProductName.Text = "";
             txtOrderImg.Text = "";
             txtFabricName.Text = "";
@@ -585,54 +592,6 @@ namespace ImageChecker
             g_clsLoginInfo.Logout();
         }
 
-        #region 横スクロール対応
-        Point mouseDownPosition;
-        /// <summary>
-        /// 一覧マウスオーバー
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dgvCheckInspectionHistory_MouseMove(object sender, MouseEventArgs e)
-        {
-            switch (e.Button)
-            {
-                case MouseButtons.Left:
-
-                    if (mouseDownPosition.X != e.Location.X)
-                    {
-                        try
-                        {
-                            int movePosi_X = dgvCheckInspectionHistory.HorizontalScrollingOffset - (e.Location.X - mouseDownPosition.X);
-
-                            if (movePosi_X < 10)
-                            {
-                                movePosi_X = 0;
-                            }
-
-                            dgvCheckInspectionHistory.HorizontalScrollingOffset = movePosi_X;
-                        }
-                        catch (Exception)
-                        {
-
-                        }
-                    }
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 一覧マウスダウン
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dgvCheckInspectionHistory_MouseDown(object sender, MouseEventArgs e)
-        {
-            mouseDownPosition = e.Location;
-        }
-        #endregion
-
-        #endregion
-
         /// <summary>
         /// 作業者ダブルクリック
         /// </summary>
@@ -717,5 +676,78 @@ namespace ImageChecker
         {
             bolDispDataGridView();
         }
+
+        #region 横スクロール対応
+        Point mouseDownPosition;
+        /// <summary>
+        /// 一覧マウスオーバー
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dgvCheckInspectionHistory_MouseMove(object sender, MouseEventArgs e)
+        {
+            switch (e.Button)
+            {
+                case MouseButtons.Left:
+
+                    if (mouseDownPosition.X != e.Location.X)
+                    {
+                        try
+                        {
+                            int movePosi_X = dgvCheckInspectionHistory.HorizontalScrollingOffset - (e.Location.X - mouseDownPosition.X);
+
+                            if (movePosi_X < 10)
+                            {
+                                movePosi_X = 0;
+                            }
+
+                            dgvCheckInspectionHistory.HorizontalScrollingOffset = movePosi_X;
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 一覧マウスダウン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dgvCheckInspectionHistory_MouseDown(object sender, MouseEventArgs e)
+        {
+            mouseDownPosition = e.Location;
+        }
+        #endregion
+
+        #endregion
+
+        #region 最大化画面制御
+        protected override void WndProc(ref Message m)
+        {
+            const int WM_NCLBUTTONDBLCLK = 0x00A3;
+            const int WM_SYSCOMMAND = 0x0112;
+            const long SC_MOVE = 0xF010L;
+
+            // ダブルクリック禁止
+            if (m.Msg == WM_NCLBUTTONDBLCLK)
+            {
+                return;
+            }
+
+            // フォーム移動禁止
+            if (m.Msg == WM_SYSCOMMAND &&
+                (m.WParam.ToInt64() & 0xFFF0L) == SC_MOVE)
+            {
+                m.Result = IntPtr.Zero;
+                return;
+            }
+
+            base.WndProc(ref m);
+        }
+        #endregion
     }
 }

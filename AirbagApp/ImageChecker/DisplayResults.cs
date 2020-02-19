@@ -595,6 +595,7 @@ namespace ImageChecker
             frmSelectErrorReason.ShowDialog(this);
             txtNgReason.Text = frmSelectErrorReason.strDecisionReason;
         }
+        
         #region 横スクロール対応
         Point mouseDownPosition;
         /// <summary>
@@ -640,7 +641,31 @@ namespace ImageChecker
             mouseDownPosition = e.Location;
         }
         #endregion
+        #endregion
 
+        #region 最大化画面制御
+        protected override void WndProc(ref Message m)
+        {
+            const int WM_NCLBUTTONDBLCLK = 0x00A3;
+            const int WM_SYSCOMMAND = 0x0112;
+            const long SC_MOVE = 0xF010L;
+
+            // ダブルクリック禁止
+            if (m.Msg == WM_NCLBUTTONDBLCLK)
+            {
+                return;
+            }
+
+            // フォーム移動禁止
+            if (m.Msg == WM_SYSCOMMAND &&
+                (m.WParam.ToInt64() & 0xFFF0L) == SC_MOVE)
+            {
+                m.Result = IntPtr.Zero;
+                return;
+            }
+
+            base.WndProc(ref m);
+        }
         #endregion
     }
 }

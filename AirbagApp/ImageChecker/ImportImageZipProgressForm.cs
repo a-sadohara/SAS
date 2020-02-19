@@ -19,8 +19,6 @@ namespace ImageChecker
         {
             InitializeComponent();
 
-            this.StartPosition = FormStartPosition.CenterParent;
-            //this.WindowState = FormWindowState.Minimized;
             this.TopMost = true;
         }
 
@@ -35,7 +33,7 @@ namespace ImageChecker
         private void ProgressForm_Load(object sender, EventArgs e)
         {
             this.SuspendLayout();
-            timer1.Start();
+            this.TransparencyKey = this.BackColor;
             this.ResumeLayout();
         }
         #endregion
@@ -44,7 +42,6 @@ namespace ImageChecker
         {
             //this.WindowState = FormWindowState.Normal;
             this.Activate();
-            timer1.Stop();
         }
     }
 }

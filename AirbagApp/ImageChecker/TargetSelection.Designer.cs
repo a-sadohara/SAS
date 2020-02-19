@@ -239,7 +239,7 @@ namespace ImageChecker
             this.btnReviseLine.TabIndex = 3;
             this.btnReviseLine.Text = "行補正";
             this.btnReviseLine.UseVisualStyleBackColor = true;
-            this.btnReviseLine.Click += new System.EventHandler(this.button1_Click_1);
+            this.btnReviseLine.Click += new System.EventHandler(this.btnReviseLine_Click);
             // 
             // btnExceptTarget
             // 
@@ -251,7 +251,7 @@ namespace ImageChecker
             this.btnExceptTarget.TabIndex = 3;
             this.btnExceptTarget.Text = "検査対象外";
             this.btnExceptTarget.UseVisualStyleBackColor = true;
-            this.btnExceptTarget.Click += new System.EventHandler(this.button2_Click);
+            this.btnExceptTarget.Click += new System.EventHandler(this.btnExceptTarget_Click);
             // 
             // btnCheckInspectionHistory
             // 
