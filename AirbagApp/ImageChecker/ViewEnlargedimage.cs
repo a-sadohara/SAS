@@ -65,9 +65,13 @@ namespace ImageChecker
             // 画像を設定する
             FileStream fs;
             if (File.Exists(m_strMarkingImagepath) == false)
+            {
                 fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+            }
             else
+            {
                 fs = new FileStream(m_strMarkingImagepath, FileMode.Open, FileAccess.Read);
+            }
             
             pictureBox1.Image = Image.FromStream(fs);
             fs.Close();
@@ -101,7 +105,9 @@ namespace ImageChecker
             try
             {
                 if (await _doubleClickSemaphore.WaitAsync(SystemInformation.DoubleClickTime))
+                {
                     return;
+                }
             }
             finally
             {
@@ -112,7 +118,9 @@ namespace ImageChecker
             if (m_intDispMode == m_CON_DISP_MODE_ORG)
             {
                 if (File.Exists(m_strMarkingImagepath) == false)
+                {
                     fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                }
                 else
                 {
                     fs = new FileStream(m_strMarkingImagepath, FileMode.Open, FileAccess.Read);
@@ -126,7 +134,9 @@ namespace ImageChecker
             else
             {
                 if (File.Exists(m_strOrgImagepath) == false)
+                {
                     fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                }
                 else
                 {
                     fs = new FileStream(m_strOrgImagepath, FileMode.Open, FileAccess.Read);

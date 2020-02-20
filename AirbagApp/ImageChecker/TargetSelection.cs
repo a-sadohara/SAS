@@ -439,7 +439,14 @@ namespace ImageChecker
                 // 行選択
                 if (m_intSelRowIdx != -1)
                 {
-                    this.dgvTargetSelection.Rows[m_intSelRowIdx].Selected = true;
+                    try
+                    {
+                        this.dgvTargetSelection.Rows[m_intSelRowIdx].Selected = true;
+                    }
+                    catch
+                    {
+                        // 一覧がリセットされる瞬間においては例外が発生するが、無視する
+                    }
                 }
 
                 // スクロールバー調整

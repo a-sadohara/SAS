@@ -43,6 +43,7 @@ namespace ImageChecker
         private bool m_bolRegFlg = false;       // 登録済み　　※true : 結果画面から修正以外で遷移
                                                 // 　　　　　　　false: 初期表示,ログアウト,結果画面から修正で遷移
                                                 // 　　　　　　　用途 : 本画面を閉じた時、ステータスを中断にするか否か制御する
+
         private bool m_bolUpdFlg = false;       // 修正モード　※true : 結果画面から修正で遷移
                                                 // 　　　　　　　false: それ以外
                                                 // 　　　　　　　用途 : 次ページを押下した時、結果画面に遷移するか否か制御する
@@ -100,7 +101,7 @@ namespace ImageChecker
         /// <returns>true:正常終了 false:異常終了</returns>
         private bool bolGetImagePath()
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             int intIdx = 0;
 
             try
@@ -127,7 +128,7 @@ namespace ImageChecker
                 else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
                     strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
                 else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
-                    strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
+                    strSQL += "line DESC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC";
                 else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
                     strSQL += "line DESC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
 
@@ -152,19 +153,23 @@ namespace ImageChecker
                                              dr["marking_imagepath"].ToString()));
 
                     if (dr["over_detection_except_result"].ToString() != g_clsSystemSettingInfo.intOverDetectionExceptResultNg.ToString())
-                        m_dicState.Add(string.Join(m_CON_DELIMIT_KEY, 
-                                                   dr["line"].ToString(),
-                                                   dr["cloumns"].ToString(),
-                                                   dr["ng_face"].ToString(),
-                                                   dr["marking_imagepath"].ToString()), 
-                                       g_clsSystemSettingInfo.intOverDetectionExceptResultOk.ToString());
-                    else
+                    {
                         m_dicState.Add(string.Join(m_CON_DELIMIT_KEY,
                                                    dr["line"].ToString(),
                                                    dr["cloumns"].ToString(),
                                                    dr["ng_face"].ToString(),
-                                                   dr["marking_imagepath"].ToString()), 
-                                       g_clsSystemSettingInfo.intOverDetectionExceptResultNg.ToString());
+                                                   dr["marking_imagepath"].ToString()),
+                                       g_clsSystemSettingInfo.intOverDetectionExceptResultOk.ToString());
+                    }
+                    else
+                    {
+                        m_dicState.Add(string.Join(m_CON_DELIMIT_KEY,
+                                                  dr["line"].ToString(),
+                                                  dr["cloumns"].ToString(),
+                                                  dr["ng_face"].ToString(),
+                                                  dr["marking_imagepath"].ToString()),
+                                      g_clsSystemSettingInfo.intOverDetectionExceptResultNg.ToString());
+                    }
 
                     intIdx++;
                 }
@@ -174,7 +179,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog( g_CON_LEVEL_ERROR,string.Format("{0},{1},{2}" ,g_clsMessageInfo.strMsgE0001,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -191,7 +196,7 @@ namespace ImageChecker
         {
             intIdxStartPage = 0;
 
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData;
 
             try
@@ -202,13 +207,24 @@ namespace ImageChecker
                                  SELECT ";
 
                 if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS)
+                {
                     strSQL += "ROW_NUMBER() OVER(ORDER BY line ASC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC) AS sort_num";
+                }
+
                 if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
+                {
                     strSQL += "ROW_NUMBER() OVER(ORDER BY line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC) AS sort_num";
+                }
+
                 if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
-                    strSQL += "ROW_NUMBER() OVER(ORDER BY line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC) AS sort_num";
+                {
+                    strSQL += "ROW_NUMBER() OVER(ORDER BY line DESC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC) AS sort_num";
+                }
+
                 if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
+                {
                     strSQL += "ROW_NUMBER() OVER(ORDER BY line DESC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC) AS sort_num";
+                }
 
                 strSQL += @"       FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                   WHERE fabric_name = :fabric_name
@@ -225,18 +241,26 @@ namespace ImageChecker
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
-                if (dtData.Rows.Count > 0)
-                    if (int.Parse(dtData.Rows[0]["max_sort_num"].ToString()) == m_dtData.Rows.Count)
-                        intIdxStartPage = (int.Parse(dtData.Rows[0]["max_sort_num"].ToString()) - 1) / g_clsLoginInfo.intDispNum;
-                    else
-                        intIdxStartPage = int.Parse(dtData.Rows[0]["max_sort_num"].ToString()) / g_clsLoginInfo.intDispNum;
+                if (dtData.Rows.Count < 0)
+                {
+                    return true;
+                }
+
+                if (int.Parse(dtData.Rows[0]["max_sort_num"].ToString()) == m_dtData.Rows.Count)
+                {
+                    intIdxStartPage = (int.Parse(dtData.Rows[0]["max_sort_num"].ToString()) - 1) / g_clsLoginInfo.intDispNum;
+                }
+                else
+                {
+                    intIdxStartPage = int.Parse(dtData.Rows[0]["max_sort_num"].ToString()) / g_clsLoginInfo.intDispNum;
+                }
 
                 return true;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR,string.Format( "{0}{1}{2}",g_clsMessageInfo.strMsgE0001, Environment.NewLine , ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -251,22 +275,24 @@ namespace ImageChecker
         private void changePanelState(Label lblCtr)
         {
             int intIdxCtr = 0;
-            string strKey = "";
+            string strKey = string.Empty;
 
             intIdxCtr = int.Parse(lblCtr.Name.Replace(string.Format(m_CON_FORMAT_LABEL_NAME, ""), ""));
-            if (m_dicKey.ContainsKey(intIdxCtr))
-                strKey = m_dicKey[(g_clsLoginInfo.intDispNum * m_intPageIdx) + intIdxCtr]; 
-            else
+            if (!m_dicKey.ContainsKey(intIdxCtr))
+            {
                 return;
+            }
 
-            if (lblCtr.Text == "")
+            strKey = m_dicKey[(g_clsLoginInfo.intDispNum * m_intPageIdx) + intIdxCtr];
+
+            if (string.IsNullOrEmpty(lblCtr.Text))
             {
                 lblCtr.Text = "NG";
                 m_dicState[strKey] = g_clsSystemSettingInfo.intOverDetectionExceptResultNg.ToString();
             }
             else
             {
-                lblCtr.Text = "";
+                lblCtr.Text = string.Empty;
                 m_dicState[strKey] = g_clsSystemSettingInfo.intOverDetectionExceptResultOk.ToString();
             }
         }
@@ -297,42 +323,51 @@ namespace ImageChecker
 
                     pctImage = (PictureBox)ctr;
 
-                    if (i < m_dtData.Rows.Count)
-                    {
-                        // 画像イメージ表示
-                        FileStream fs;
-                        if (File.Exists(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                        m_strFaultImageSubDirectory + @"\" +
-                                        m_dtData.Rows[i]["marking_imagepath"].ToString()) == false)
-                            fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
-                        else
-                            fs = new FileStream(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                                m_strFaultImageSubDirectory + @"\" +
-                                                m_dtData.Rows[i]["marking_imagepath"].ToString(), FileMode.Open, FileAccess.Read);
-
-                        pctImage.Image = System.Drawing.Image.FromStream(fs);
-                        fs.Close();
-
-                        // ステータス設定
-                        lblImage = (Label)pctImage.Controls[0];
-                        if (m_dicState[string.Join(m_CON_DELIMIT_KEY, 
-                                                   m_dtData.Rows[i]["line"].ToString(),
-                                                   m_dtData.Rows[i]["cloumns"].ToString(),
-                                                   m_dtData.Rows[i]["ng_face"].ToString(),
-                                                   m_dtData.Rows[i]["marking_imagepath"].ToString())] != g_clsSystemSettingInfo.intOverDetectionExceptResultNg.ToString())
-                            lblImage.Text = "";
-                        else
-                            lblImage.Text = "NG";
-                    }
-                    else
+                    if(i >= m_dtData.Rows.Count)
                     {
                         // 画像イメージ非表示
                         pctImage.Image = null;
                         // ラベルステータス非表示
                         lblImage = (Label)pctImage.Controls[0];
-                        lblImage.Text = "";
+                        lblImage.Text = string.Empty;
+
+                        continue;
                     }
 
+
+                    // 画像イメージ表示
+                    FileStream fs;
+                    if (File.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
+                                    m_strFaultImageSubDirectory,
+                                    m_dtData.Rows[i]["marking_imagepath"].ToString())) == false)
+                    {
+                        fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                    }
+                    else
+                    {
+                        fs = new FileStream(Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory ,
+                                            m_strFaultImageSubDirectory ,
+                                            m_dtData.Rows[i]["marking_imagepath"].ToString()), FileMode.Open, FileAccess.Read);
+                    }
+
+                    pctImage.Image = System.Drawing.Image.FromStream(fs);
+                    fs.Close();
+
+                    // ステータス設定
+                    lblImage = (Label)pctImage.Controls[0];
+                    if (m_dicState[string.Join(m_CON_DELIMIT_KEY,
+                                                m_dtData.Rows[i]["line"].ToString(),
+                                                m_dtData.Rows[i]["cloumns"].ToString(),
+                                                m_dtData.Rows[i]["ng_face"].ToString(),
+                                                m_dtData.Rows[i]["marking_imagepath"].ToString())] != g_clsSystemSettingInfo.intOverDetectionExceptResultNg.ToString())
+                    {
+                        lblImage.Text = string.Empty;
+                    }
+                    else
+                    {
+                        lblImage.Text = "NG";
+                    }
+                  
                     break;
                 }
 
@@ -364,6 +399,12 @@ namespace ImageChecker
                 dtEnablebtnRight.Stop();
                 btnRight.Enabled = true;
             };
+
+
+            // 画像の1件目にフォーカスをセットする
+            tlpImage.Controls[0].Focus();
+            tlpImage.Controls[0].Select();
+
         }
 
         /// <summary>
@@ -393,7 +434,7 @@ namespace ImageChecker
                                                               int intStatus,
                                                               string strStartDatetime = "")
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             try
             {
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -402,7 +443,7 @@ namespace ImageChecker
                 strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                               SET over_detection_except_status = :over_detection_except_status ";
 
-                if (strStartDatetime != "")
+                if (!string.IsNullOrEmpty( strStartDatetime))
                 {
                     strSQL += @", decision_start_datetime = TO_TIMESTAMP(:decision_start_datetime_yyyymmdd_hhmmss, 'YYYY/MM/DD HH24:MI:SS') ";
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_start_datetime_yyyymmdd_hhmmss", DbType = DbType.String, Value = strStartDatetime });
@@ -425,7 +466,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "{0}{1}{2}",g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -451,7 +492,7 @@ namespace ImageChecker
 
             int intImgIdxNum = 0;
             PictureBox pctImage = new PictureBox();
-            string strNowYmdhms = "";
+            string strNowYmdhms = string.Empty;
             int intbtnLeftRightLocationY = -1;
 
             // 作業者の表示
@@ -518,6 +559,7 @@ namespace ImageChecker
 
             // 画像の追加
             for (int r = 0; r < tlpImage.RowCount; r++)
+            {
                 for (int c = 0; c < tlpImage.ColumnCount; c++)
                 {
                     // 画像コントロール生成
@@ -547,15 +589,24 @@ namespace ImageChecker
 
                     intImgIdxNum++;
                 }
+            }
+
+            // 画像の1件目にフォーカスをセットする
+            tlpImage.Controls[0].Focus();
+            tlpImage.Controls[0].Select();
 
             // 画像パス一覧を取得
             if (bolGetImagePath() == false)
+            {
                 return;
+            }
 
             // 総ページ数設定
             m_intPageCnt = m_dtData.Rows.Count / g_clsLoginInfo.intDispNum;
             if (m_dtData.Rows.Count % g_clsLoginInfo.intDispNum > 0)
+            {
                 m_intPageCnt++;
+            }
 
             // ページIdx設定
             if (m_intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusBef)
@@ -565,11 +616,14 @@ namespace ImageChecker
 
                 strNowYmdhms = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             }
-            else if (m_intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
+            
+            if (m_intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
             {
                 // 過検知除外ステータス：中断
                 if (bolGetStartPageIdx(ref m_intPageIdx) == false)
+                {
                     return;
+                }
             }
 
             // 画像表示
@@ -579,13 +633,18 @@ namespace ImageChecker
             if (blnUpdOverDetectionExceptStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
                                                 g_clsSystemSettingInfo.intOverDetectionExceptStatusChk,
                                                 strNowYmdhms) == false)
+            {
                 return;
+            }
+
             g_clsConnectionNpgsql.DbCommit();
             g_clsConnectionNpgsql.DbClose();
 
             // パラメータの更新
-            if (strNowYmdhms != "")
+            if (!string.IsNullOrEmpty(strNowYmdhms))
+            {
                 g_clsHeaderData.strDecisionStartDatetime = strNowYmdhms;
+            }
 
             this.ResumeLayout();
         }
@@ -602,10 +661,15 @@ namespace ImageChecker
 
             // 画像存在チェック
             if (bicState.Image == null)
+            {
                 return;
+            }
 
             if (!_clickSemaphore.Wait(0))
+            {
                 return;
+            }
+
             try
             {
                 if (await _doubleClickSemaphore.WaitAsync(SystemInformation.DoubleClickTime))
@@ -626,18 +690,20 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void lblState_DoubleClick(object sender, EventArgs e)
         {
-            string strOrgImagepath = "";
-            string strMarkingImagepath = "";
+            string strOrgImagepath = string.Empty;
+            string strMarkingImagepath = string.Empty;
 
             _doubleClickSemaphore.Release();
 
             // マーキング画像パスとオリジナル画像パスを取得
-            strOrgImagepath = g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                              m_strFaultImageSubDirectory + @"\" +
-                              m_dtData.Rows[(m_intPageIdx * g_clsLoginInfo.intDispNum) + int.Parse(((PictureBox)((Label)sender).Parent).Name.Replace(string.Format(string.Format(m_CON_FORMAT_PICTUREBOX_NAME, ""), ""), ""))]["org_imagepath"].ToString();
-            strMarkingImagepath = g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                  m_strFaultImageSubDirectory + @"\" +
-                                  m_dtData.Rows[(m_intPageIdx * g_clsLoginInfo.intDispNum) + int.Parse(((PictureBox)((Label)sender).Parent).Name.Replace(string.Format(string.Format(m_CON_FORMAT_PICTUREBOX_NAME, ""), ""), ""))]["marking_imagepath"].ToString();
+            strOrgImagepath = Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory ,
+                              m_strFaultImageSubDirectory ,
+                              m_dtData.Rows[(m_intPageIdx * g_clsLoginInfo.intDispNum) + 
+                              int.Parse(((PictureBox)((Label)sender).Parent).Name.Replace(string.Format(string.Format(m_CON_FORMAT_PICTUREBOX_NAME, ""), ""), ""))]["org_imagepath"].ToString());
+            strMarkingImagepath = Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory ,
+                                  m_strFaultImageSubDirectory ,
+                                  m_dtData.Rows[(m_intPageIdx * g_clsLoginInfo.intDispNum) + 
+                                  int.Parse(((PictureBox)((Label)sender).Parent).Name.Replace(string.Format(string.Format(m_CON_FORMAT_PICTUREBOX_NAME, ""), ""), ""))]["marking_imagepath"].ToString());
 
             // 画像拡大フォームに遷移
             ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath);
@@ -666,20 +732,22 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnRight_Click(object sender, EventArgs e)
         {
-            string strSQL = "";
-            string strKey = "";
+            string strSQL = string.Empty;
+            string strKey = string.Empty;
             int intLine = -1;
-            string strCloumns = "";
-            string strNgFace = "";
-            string strMarkingImagepath = "";
+            string strCloumns = string.Empty;
+            string strNgFace = string.Empty;
+            string strMarkingImagepath = string.Empty;
 
             try
             {
                 for (int IdxCtr = 0; IdxCtr < g_clsLoginInfo.intDispNum; IdxCtr++)
                 {
                     if (m_dicKey.ContainsKey((g_clsLoginInfo.intDispNum * m_intPageIdx) + IdxCtr) == false)
+                    {
                         continue;
-
+                    }
+                    
                     strKey = m_dicKey[(g_clsLoginInfo.intDispNum * m_intPageIdx) + IdxCtr];
                     intLine = int.Parse(strKey.Split(m_CON_DELIMIT_KEY.ToCharArray(0,1))[0]);
                     strCloumns = strKey.Split(m_CON_DELIMIT_KEY.ToCharArray(0, 1))[1];
@@ -722,7 +790,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0043, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 

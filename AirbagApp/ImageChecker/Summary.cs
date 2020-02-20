@@ -23,17 +23,17 @@ namespace ImageChecker
         public int intDestination { get; set; }
 
         // パラメータ関連
-        private string m_strUnitNum = "";               // 号機
-        private string m_strProductName = "";           // 品名
-        private string m_strOrderImg = "";              // 指図
-        private string m_strFabricName = "";            // 反番
-        private string m_strInspectionDate = "";        // 検査日付
-        private string m_strStartDatetime = "";         // 搬送開始日時
-        private string m_strEndDatetime = "";           // 搬送終了日時
+        private string m_strUnitNum = string.Empty;               // 号機
+        private string m_strProductName = string.Empty;           // 品名
+        private string m_strOrderImg = string.Empty;              // 指図
+        private string m_strFabricName = string.Empty;            // 反番
+        private string m_strInspectionDate = string.Empty;        // 検査日付
+        private string m_strStartDatetime = string.Empty;         // 搬送開始日時
+        private string m_strEndDatetime = string.Empty;           // 搬送終了日時
         private int m_intInspectionStartLine = -1;      // 検査開始行
         private int m_intInspectionEndLine = -1;        // 最終行数
         private int m_intInspectionTargetLine = -1;     // 検査対象数
-        private string m_strInspectionDirection = "";   // 検査方向
+        private string m_strInspectionDirection = string.Empty;   // 検査方向
         private int m_intInspectionNum = 0;             // 検査番号
         private int m_intColumnCnt = 0;                 // 列数
 
@@ -54,7 +54,7 @@ namespace ImageChecker
         private const string m_CON_FORMAT_CUSHION_COUNT = "クッション数：{0}(NG：{1}/OK：{2})";
 
         // 欠点画像サブディレクトリパス
-        private string m_strFaultImageSubDirectory = "";
+        private string m_strFaultImageSubDirectory = string.Empty;
 
         // フラグ関連
         private bool m_bolRoadFlg = false;       // ロード済み　※true : フォームロード処理が正常完了
@@ -117,7 +117,7 @@ namespace ImageChecker
                                                               int intInspectionNum,
                                                               int intStatus)
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             try
             {
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -142,7 +142,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -168,10 +168,10 @@ namespace ImageChecker
 
             bool bolProcOkNg = false;
 
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData;
             ArrayList arrRow = new ArrayList();
-            string stResultName = "";
+            string stResultName = string.Empty;
             int intImageInspectionCount = -1;
             int intImageInspectionCountOk = -1;
             int intImageInspectionCountNg = -1;
@@ -223,7 +223,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -287,7 +287,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -334,7 +334,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -369,7 +369,7 @@ namespace ImageChecker
                     else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
                         strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
                     else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
-                        strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
+                        strSQL += "line DESC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC";
                     else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
                         strSQL += "line DESC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
 
@@ -418,7 +418,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -428,7 +428,9 @@ namespace ImageChecker
             finally
             {
                 if (bolProcOkNg == false)
+                {
                     this.Close();
+                }
 
                 this.ResumeLayout();
             }
@@ -475,14 +477,21 @@ namespace ImageChecker
         private async void dgvDecisionResult_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
+            {
                 return;
+            }
 
             if (!_clickSemaphore.Wait(0))
+            {
                 return;
+            }
+
             try
             {
                 if (await _doubleClickSemaphore.WaitAsync(SystemInformation.DoubleClickTime))
+                {
                     return;
+                }
             }
             finally
             {
@@ -507,7 +516,9 @@ namespace ImageChecker
         private void dgvDecisionResult_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
+            {
                 return;
+            }
 
             _doubleClickSemaphore.Release();
 
@@ -535,7 +546,9 @@ namespace ImageChecker
             else if (m_bolRoadFlg == true && intSelIdx == -1 )
             {
                 if (intDestination == -1)
+                {
                     intDestination = g_CON_APID_TARGET_SELECTION;
+                }
 
                 // 過検知除外ステータス更新(検査完了)
                 blnUpdOverDetectionExceptStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,

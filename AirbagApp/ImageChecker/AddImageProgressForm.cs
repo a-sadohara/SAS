@@ -11,6 +11,8 @@ namespace ImageChecker
     {
         public bool bolChgFile { get; set; }
 
+        private string m_strChkFilePath = "";
+
         private FileSystemWatcher m_fsWatcher;
 
         private delegate void Del();
@@ -19,11 +21,14 @@ namespace ImageChecker
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public AddImageProgressForm()
+        /// <param name="strChkFilePath">確認ファイルパス</param>
+        public AddImageProgressForm(string strChkFilePath)
         {
             this.SuspendLayout();
 
             bolChgFile = false;
+
+            m_strChkFilePath = strChkFilePath;
 
             InitializeComponent();
 
@@ -93,12 +98,18 @@ namespace ImageChecker
         }
 
         /// <summary>
-        /// ファイル監視(ファイル変更)
+        /// ファイル監視(変更)
         /// </summary>
         /// <param name="source"></param>
         /// <param name="e"></param>
         private void fsWatcher_Changed(System.Object source, System.IO.FileSystemEventArgs e)
         {
+            // ファイル存在チェック
+            if (File.Exists(m_strChkFilePath) == false)
+            {
+                return;
+            }
+
             bolChgFile = true;
 
             StopSysFileWatcher();

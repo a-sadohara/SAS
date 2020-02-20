@@ -385,7 +385,7 @@ namespace ImageChecker
                     else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
                         strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
                     else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
-                        strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
+                        strSQL += "line DESC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
                     else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
                         strSQL += "line DESC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
 
@@ -491,11 +491,8 @@ namespace ImageChecker
                 case g_CON_APID_LOGIN:
                     strApName = "ログイン";
                     break;
-                case g_CON_APID_DISPLAY_RESULTS:
-                    strApName = "検査結果確認";
-                    break;
-                case g_CON_APID_DISPLAY_RESULTS_AGO:
-                    strApName = "検査履歴照会";
+                case g_CON_APID_TARGET_SELECTION:
+                    strApName = "検査対象選択";
                     break;
             }
 
@@ -535,7 +532,7 @@ namespace ImageChecker
             if (m_intFromApId != 0)
             {
                 // 変更破棄
-                if (bolDisposeUpd(m_intFromApId) == false)
+                if (bolDisposeUpd(g_CON_APID_TARGET_SELECTION) == false)
                 {
                     return;
                 }
@@ -1192,7 +1189,7 @@ namespace ImageChecker
             if (m_intFromApId != 0)
             {
                 // 変更破棄
-                if (bolDisposeUpd(m_intFromApId) == false)
+                if (bolDisposeUpd(g_CON_APID_TARGET_SELECTION) == false)
                 {
                     if (e.CloseReason == CloseReason.UserClosing)
                     {

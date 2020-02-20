@@ -176,7 +176,7 @@ namespace ImageChecker
                 else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
                     strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
                 else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
-                    strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
+                    strSQL += "line DESC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
                 else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
                     strSQL += "line DESC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
 

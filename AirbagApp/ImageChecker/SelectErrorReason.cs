@@ -21,7 +21,7 @@ namespace ImageChecker
         {
             m_bolMainReason = bolMainReason;
 
-            strDecisionReason = "";
+            strDecisionReason = string.Empty;
 
             InitializeComponent();
 
@@ -39,7 +39,7 @@ namespace ImageChecker
         {
             this.SuspendLayout();
 
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData = new DataTable();
 
             dgvMstDecisionReason.Rows.Clear();
@@ -92,7 +92,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 

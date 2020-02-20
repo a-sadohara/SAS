@@ -161,7 +161,7 @@ namespace ImageChecker
                 else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
                     strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
                 else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
-                    strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
+                    strSQL += "line DESC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC";
                 else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
                     strSQL += "line DESC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
 
@@ -758,7 +758,7 @@ namespace ImageChecker
                 if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
                     strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
                 if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
-                    strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
+                    strSQL += "line DESC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC";
                 if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
                     strSQL += "line DESC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
 
@@ -1327,9 +1327,10 @@ namespace ImageChecker
             string strFileNameWithExtension = "";
             string strFileName = "";
             string strOutPutFilePath = "";
-            OpenFileDialog ofDialog;
+            string strChkExistsFilePath = "";
+            OpenFileDialog ofDialog = null;
             string[] strFileParam;
-            AddImageProgressForm frmProgressForm;
+            AddImageProgressForm frmProgressForm = null;
             string strFaultImageSubDirectory = "";
             List<string> lststrZipExtractToDirectory = new List<string>();
             DataTable dtData = new DataTable();
@@ -1337,6 +1338,19 @@ namespace ImageChecker
 
             try
             {
+                frmProgressForm = null;
+
+                // 初期化
+                if (ofDialog != null)
+                {
+                    ofDialog.Dispose();
+                }
+                if (frmProgressForm != null)
+                {
+                    frmProgressForm.Dispose();
+                }
+
+                // 画像ファイルZIPを選択する
                 try
                 {
                     ofDialog = new OpenFileDialog();
@@ -1386,7 +1400,6 @@ namespace ImageChecker
                     {
                         // 空ファイルの生成
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -1398,8 +1411,13 @@ namespace ImageChecker
                     return;
                 }
 
+                strChkExistsFilePath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory + @"\"
+                                                                                                      + strFileName
+                                                                                                      + ".txt";
+
+                // 完了通知の存在が確認できるまでループ
                 // フォーム表示
-                frmProgressForm = new AddImageProgressForm();
+                frmProgressForm = new AddImageProgressForm(strChkExistsFilePath);
                 frmProgressForm.ShowDialog(this);
 
                 this.Visible = true;
@@ -1410,7 +1428,6 @@ namespace ImageChecker
                                                                  m_strProductName,
                                                                  m_strFabricName,
                                                                  m_intInspectionNum);
-
                     try
                     {
                         // 判定結果の取り込み処理
@@ -1576,6 +1593,8 @@ namespace ImageChecker
                             if (Directory.Exists(DirectoryPath) == true)
                                 Directory.Delete(DirectoryPath, true);
                         }
+
+                        // 取り込み完了
                     }
                     catch (Exception ex)
                     {
@@ -1586,73 +1605,89 @@ namespace ImageChecker
 
                         return;
                     }
+                }
+                else
+                {
+                    // キャンセル
+                    return;
+                }
 
-                    // 追加分を画面に表示できるようにする
-                    try
-                    {
-                        strSQL = @"SELECT
-                                       line
-                                     , cloumns
-                                     , ng_face
-                                     , ng_reason
-                                     , master_point
-                                     , ng_distance_x
-                                     , ng_distance_y
-                                     , camera_num
-                                     , org_imagepath
-                                     , marking_imagepath
-                                     , over_detection_except_result
-                                     , acceptance_check_result
-                                   FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
-                                   WHERE fabric_name = :fabric_name
-                                   AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
-                                   AND   inspection_num = :inspection_num
-                                   AND   org_imagepath = :org_imagepath";
+                // 追加分を画面に表示できるようにする
+                try
+                {
+                    strSQL = @"SELECT
+                                   line
+                                 , cloumns
+                                 , ng_face
+                                 , ng_reason
+                                 , master_point
+                                 , ng_distance_x
+                                 , ng_distance_y
+                                 , camera_num
+                                 , org_imagepath
+                                 , marking_imagepath
+                                 , over_detection_except_result
+                                 , acceptance_check_result
+                               FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                               WHERE fabric_name = :fabric_name
+                               AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                               AND   inspection_num = :inspection_num
+                               AND   org_imagepath = :org_imagepath";
 
-                        // SQLコマンドに各パラメータを設定する
-                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "org_imagepath", DbType = DbType.String, Value = strFileNameWithExtension });
+                    // SQLコマンドに各パラメータを設定する
+                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "org_imagepath", DbType = DbType.String, Value = strFileNameWithExtension });
 
-                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
-                        // データに挿入する
-                        DataRow drNew = m_dtData.NewRow();
-                        drNew["line"] = dtData.Rows[0]["line"];
-                        drNew["cloumns"] = dtData.Rows[0]["cloumns"];
-                        drNew["ng_face"] = dtData.Rows[0]["ng_face"];
-                        drNew["ng_reason"] = dtData.Rows[0]["ng_reason"];
-                        drNew["master_point"] = dtData.Rows[0]["master_point"];
-                        drNew["ng_distance_x"] = dtData.Rows[0]["ng_distance_x"];
-                        drNew["ng_distance_y"] = dtData.Rows[0]["ng_distance_y"];
-                        drNew["camera_num"] = dtData.Rows[0]["camera_num"];
-                        drNew["org_imagepath"] = dtData.Rows[0]["org_imagepath"];
-                        drNew["marking_imagepath"] = dtData.Rows[0]["marking_imagepath"];
-                        drNew["over_detection_except_result"] = dtData.Rows[0]["over_detection_except_result"];
-                        drNew["acceptance_check_result"] = dtData.Rows[0]["acceptance_check_result"];
+                    // データに挿入する
+                    DataRow drNew = m_dtData.NewRow();
+                    drNew["line"] = dtData.Rows[0]["line"];
+                    drNew["cloumns"] = dtData.Rows[0]["cloumns"];
+                    drNew["ng_face"] = dtData.Rows[0]["ng_face"];
+                    drNew["ng_reason"] = dtData.Rows[0]["ng_reason"];
+                    drNew["master_point"] = dtData.Rows[0]["master_point"];
+                    drNew["ng_distance_x"] = dtData.Rows[0]["ng_distance_x"];
+                    drNew["ng_distance_y"] = dtData.Rows[0]["ng_distance_y"];
+                    drNew["camera_num"] = dtData.Rows[0]["camera_num"];
+                    drNew["org_imagepath"] = dtData.Rows[0]["org_imagepath"];
+                    drNew["marking_imagepath"] = dtData.Rows[0]["marking_imagepath"];
+                    drNew["over_detection_except_result"] = dtData.Rows[0]["over_detection_except_result"];
+                    drNew["acceptance_check_result"] = dtData.Rows[0]["acceptance_check_result"];
 
-                        m_dtData.Rows.InsertAt(drNew, m_intPageIdx);
+                    m_dtData.Rows.InsertAt(drNew, m_intPageIdx);
 
-                        if (bolDispImageInfo(m_intPageIdx) == false)
-                            return;
-                    }
-                    catch (Exception ex)
-                    {
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
-                        // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0039, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                    if (bolDispImageInfo(m_intPageIdx) == false)
                         return;
-                    }
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0039, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
                 }
 
                 bolProcOkNg = true;
             }
             finally
             {
+                // オブジェクトの破棄
+                if (ofDialog != null)
+                {
+                    ofDialog.Dispose();
+                }
+                if (frmProgressForm != null)
+                {
+                    frmProgressForm.Dispose();
+                }
+
+                // DB処理
                 if (bolProcOkNg == true)
                 {
                     if (m_intFromApId == 0)
