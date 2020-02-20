@@ -11,7 +11,7 @@ namespace ImageChecker
     {
         public bool bolChgFile { get; set; }
 
-        private string m_strChkFilePath = "";
+        private string m_strChkFilePath = string.Empty;
 
         private FileSystemWatcher m_fsWatcher;
 
@@ -68,7 +68,7 @@ namespace ImageChecker
             m_fsWatcher = new FileSystemWatcher();
 
             m_fsWatcher.Path = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory;
-            m_fsWatcher.Filter = "";
+            m_fsWatcher.Filter = string.Empty;
             m_fsWatcher.IncludeSubdirectories = false;
             //ファイル名とディレクトリ名と最終書き込む日時の変更を監視
             m_fsWatcher.NotifyFilter =

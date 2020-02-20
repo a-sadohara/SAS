@@ -12,13 +12,13 @@ namespace ImageChecker
     static class Common
     {
         // 接続情報情報
-        public static string g_strConnectionString = "";
+        public static string g_strConnectionString = string.Empty;
         private const string g_CON_CONNECTION_STRING = "Server={0};Port={1};User ID={2};Database={3};Password={4};Enlist=true";
-        public static string g_strDBName = "";
-        public static string g_strDBUser = "";
-        public static string g_strDBUserPassword = "";
-        public static string g_strDBServerName = "";
-        public static string g_strDBPort = "";
+        public static string g_strDBName = string.Empty;
+        public static string g_strDBUser = string.Empty;
+        public static string g_strDBUserPassword = string.Empty;
+        public static string g_strDBServerName = string.Empty;
+        public static string g_strDBPort = string.Empty;
 
         // コネクションクラス
         public static ConnectionNpgsql g_clsConnectionNpgsql;
@@ -111,7 +111,7 @@ namespace ImageChecker
                 if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, "接続文字列取得時にエラーが発生しました。\r\n" + m_sbErrMessage.ToString());
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}",Environment.NewLine , m_sbErrMessage.ToString()));
                     // メッセージ出力
                     System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -131,12 +131,16 @@ namespace ImageChecker
                 // システム設定情報取得
                 g_clsSystemSettingInfo = new SystemSettingInfo();
                 if (g_clsSystemSettingInfo.bolNormalEnd == false)
+                {
                     return;
+                }
 
                 // メッセージ情報取得
                 g_clsMessageInfo = new MessageInfo();
                 if (g_clsMessageInfo.bolNormalEnd == false)
+                {
                     return;
+                }
 
                 // ログイン情報インスタンス生成
                 g_clsLoginInfo = new LoginInfo();
@@ -144,7 +148,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "初期起動時にエラーが発生しました。" + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "初期起動時にエラーが発生しました。{0}{1}" ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 

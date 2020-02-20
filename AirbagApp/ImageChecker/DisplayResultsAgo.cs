@@ -38,9 +38,9 @@ namespace ImageChecker
         /// <param name="strKanaEnd">カナ（終了）</param>
         private bool bolDispDataGridView()
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             ArrayList arrRow = new ArrayList();
-            string stResultName = "";
+            string stResultName = string.Empty;
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<String> lststrLineColumns = new List<String>();
             string stBefore48hourYmdhms = DateTime.Now.AddHours(-48).ToString("yyyy/MM/dd HH:mm:ss");
@@ -238,7 +238,7 @@ namespace ImageChecker
                 }
                 else if (string.IsNullOrEmpty(txtNgReason.Text) == false)
                 {
-                    strSQL += @"AND dr.ng_reason LIKE '%" + txtNgReason.Text + "%' ";
+                    strSQL += string.Format("AND dr.ng_reason LIKE '%{0}%'" , txtNgReason.Text );
                 }
 
                 strSQL += @"ORDER BY iih.end_datetime ASC, iih.inspection_num ASC, dr.over_detection_except_datetime, dr.org_imagepath ASC, dr.branch_num";
@@ -272,22 +272,44 @@ namespace ImageChecker
 
                     // 過検知除外結果：名称を表示
                     if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon)
+                    {
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNon;
-                    else if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
+
+                    }
+
+                    if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
+                    {
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameOk;
-                    else if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
+                    }
+
+                    if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
+                    {
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNg;
+                    }
+
                     arrRow.Add(stResultName);
 
                     // 合否確認結果：名称を表示
                     if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNon)
+                    {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNon;
-                    else if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultOk)
+                    }
+
+                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultOk)
+                    {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameOk;
-                    else if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect)
+                    }
+
+                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect)
+                    {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNgDetect;
-                    else if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect)
+                    }
+
+                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect)
+                    {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNgNonDetect;
+                    }
+
                     arrRow.Add(stResultName);
 
                     arrRow.Add(row["ng_reason"]);
@@ -303,8 +325,12 @@ namespace ImageChecker
 
                     // 行列情報を保持
                     // 重複時はスキップ
-                    if (lststrLineColumns.Contains(string.Join("|", row["line"], row["cloumns"])) == false)
-                        lststrLineColumns.Add(string.Join("|", row["line"], row["cloumns"]));
+                    if (lststrLineColumns.Contains(string.Join("|", row["line"], row["cloumns"])))
+                    {
+                        continue;
+                    }
+
+                    lststrLineColumns.Add(string.Join("|", row["line"], row["cloumns"]));
                 }
 
                 if (dgvCheckInspectionHistory.Rows.Count == 0)
@@ -324,7 +350,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -338,7 +364,7 @@ namespace ImageChecker
         /// <returns>true:正常終了 false:異常終了</returns>
         private bool bolGetCushionCnt()
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData;
             string strBefore48hourYmdhms = DateTime.Now.AddHours(-48).ToString("yyyy/MM/dd HH:mm:ss");
             int intImageInspectionCount = 0;
@@ -384,7 +410,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}",g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -446,11 +472,15 @@ namespace ImageChecker
             {
                 // 件数取得
                 if (bolGetCushionCnt() == false)
+                {
                     return;
+                }
 
                 // 一覧表示
                 if (bolDispDataGridView() == false)
+                {
                     return;
+                }
 
                 bolProcOkNg = true;
             }
@@ -471,7 +501,7 @@ namespace ImageChecker
         private void btnResultUpdate_Click(object sender, EventArgs e)
         {
             int intSelIdx = -1;
-            string strFaultImageSubDirectory = "";
+            string strFaultImageSubDirectory = string.Empty;
 
             // 選択行インデックスの取得
             foreach (DataGridViewRow dgvRow in this.dgvCheckInspectionHistory.SelectedRows)
@@ -486,7 +516,7 @@ namespace ImageChecker
                                                          m_dtData.Rows[intSelIdx]["inspection_num"]);
 
             // ディレクトリ存在チェック
-            if (Directory.Exists(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" + strFaultImageSubDirectory) == false)
+            if (Directory.Exists(Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory ,  strFaultImageSubDirectory)) == false)
             {
                 MessageBox.Show(g_clsMessageInfo.strMsgW0003, "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -540,11 +570,15 @@ namespace ImageChecker
 
             // 件数取得
             if (bolGetCushionCnt() == false)
+            {
                 return;
+            }
 
             // 一覧表示
             if (bolDispDataGridView() == false)
+            {
                 return;
+            }
         }
 
         /// <summary>
@@ -555,19 +589,21 @@ namespace ImageChecker
         private void dgvCheckInspectionHistory_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
+            {
                 return;
+            }
 
             string strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", ""),
                                                                 m_dtData.Rows[e.RowIndex]["product_name"],
                                                                 m_dtData.Rows[e.RowIndex]["fabric_name"],
                                                                 m_dtData.Rows[e.RowIndex]["inspection_num"]);
 
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                                                           strFaultImageSubDirectory + @"\" +
-                                                                           m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString(),
-                                                                           g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                                                           strFaultImageSubDirectory + @"\" +
-                                                                           m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString());
+            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory 
+                                                                           ,strFaultImageSubDirectory
+                                                                           ,m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
+                                                                           Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory 
+                                                                           ,strFaultImageSubDirectory 
+                                                                           ,m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
         }
@@ -624,7 +660,7 @@ namespace ImageChecker
         private void dtpDatetime_DropDown(object sender, EventArgs e)
         {
             DateTimePicker dtpCtrol = (DateTimePicker)sender;
-            dtpCtrol.Text = "";
+            dtpCtrol.Text = string.Empty;
             dtpCtrol.CustomFormat = " ";
         }
 

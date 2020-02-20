@@ -17,17 +17,17 @@ namespace ImageChecker
         public bool bolRegister { get; set; }
 
         // パラメータ関連
-        private string m_strProductName = "";           // 品名
-        private string m_strFabricName = "";            // 反番
-        private string m_strInspectionDate = "";        // 検査日付
+        private string m_strProductName = string.Empty;           // 品名
+        private string m_strFabricName = string.Empty;            // 反番
+        private string m_strInspectionDate = string.Empty;        // 検査日付
         private int m_intInspectionNum = 0;             // 検査番号
-        private string m_strOrgImagepath = "";          // オリジナル画像ファイル名
-        private string m_strMarkingImagepath = "";      // マーキング画像ファイル名
+        private string m_strOrgImagepath = string.Empty;          // オリジナル画像ファイル名
+        private string m_strMarkingImagepath = string.Empty;      // マーキング画像ファイル名
         private int m_intBranchNum = 0;                 // 枝番
         private int m_intFromApId = 0;                  // 遷移元画面ID
         private int m_intLine = -1;                     // 行
-        private string m_strColumns = "";               // 列
-        private string m_strNgReason = "";              // NG理由
+        private string m_strColumns = string.Empty;               // 列
+        private string m_strNgReason = string.Empty;              // NG理由
         private ComboBox m_cmbBoxLine;                  // 行コンボボックス
         private ComboBox m_cmbBoxColumns;               // 列コンボボックス
 
@@ -37,7 +37,7 @@ namespace ImageChecker
         private const string m_CON_FORMAT_NG_REASON = "NG理由選択：{0}";
 
         // 欠点画像サブディレクトリパス
-        private string m_strFaultImageSubDirectory = "";
+        private string m_strFaultImageSubDirectory = string.Empty;
 
         // データ保持関連
         private DataTable m_dtData;
@@ -104,13 +104,17 @@ namespace ImageChecker
                 // コンボボックスの設定
                 // 行
                 foreach (string value in m_cmbBoxLine.Items)
+                {
                     cmbBoxLine.Items.Add(value);
+                }
                 cmbBoxLine.SelectedItem = m_intLine.ToString();
                 // 行逆さを調整
                 cmbBoxLine.DropDownHeight = this.Size.Height;
                 // 列
                 foreach (string value in m_cmbBoxColumns.Items)
+                {
                     cmbBoxColumns.Items.Add(value);
+                }
                 cmbBoxColumns.SelectedItem = m_strColumns;
 
                 // NG選択理由
@@ -136,11 +140,11 @@ namespace ImageChecker
         /// <param name="strDispResult">表示結果</param>
         private void UpdAcceptanceCheckResult(int intResult, string strNgReason, string strDispResult)
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             int intLine = -1;
-            string strCloumns = "";
-            string strNgFace = "";
+            string strCloumns = string.Empty;
+            string strNgFace = string.Empty;
             int intCopyRegistInfo = -1;
             
             if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0011, strDispResult), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
@@ -159,7 +163,8 @@ namespace ImageChecker
                     // エラー
                     return;
                 }
-                else if (intCopyRegistInfo == 0)
+                
+                if (intCopyRegistInfo == 0)
                 {
                     // 合否判定結果に複写情報が存在しない場合、複写する。
                     try
@@ -253,7 +258,7 @@ namespace ImageChecker
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
                         // メッセージ出力
                         MessageBox.Show(g_clsMessageInfo.strMsgE0046, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -309,7 +314,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0002 , Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0043, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -335,7 +340,7 @@ namespace ImageChecker
         /// <returns>0以上:件数 -1:異常終了</returns>
         private int intGetCopyRegistInfo()
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData = new DataTable();
             int intCnt = 0;
 
@@ -362,14 +367,16 @@ namespace ImageChecker
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
                 if (dtData.Rows.Count > 0)
+                {
                     intCnt = int.Parse(dtData.Rows[0]["cnt"].ToString());
+                }
 
                 return intCnt;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0002 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0043, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -402,7 +409,7 @@ namespace ImageChecker
 
             bool bolProcOkNg = false;
 
-            string strSQL = "";
+            string strSQL = string.Empty;
 
             try
             {
@@ -438,12 +445,14 @@ namespace ImageChecker
                     g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL, lstNpgsqlCommand);
 
                     if (m_dtData.Rows.Count > 0)
+                    {
                         m_intBranchNum = int.Parse(m_dtData.Rows[0]["branch_num"].ToString());
+                    }
                 }
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0039, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -451,9 +460,9 @@ namespace ImageChecker
                 }
 
                 // 画像イメージ表示
-                FileStream fs = new FileStream(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                               m_strFaultImageSubDirectory + @"\" +
-                                               m_strMarkingImagepath, FileMode.Open, FileAccess.Read);
+                FileStream fs = new FileStream(Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory 
+                                               ,m_strFaultImageSubDirectory 
+                                               ,m_strMarkingImagepath), FileMode.Open, FileAccess.Read);
                 picMarkingImage.Image = Image.FromStream(fs);
                 fs.Close();
 
@@ -470,7 +479,9 @@ namespace ImageChecker
             finally
             {
                 if (bolProcOkNg == false)
+                {
                     this.Close();
+                }
 
                 this.ResumeLayout();
             }
@@ -483,16 +494,16 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void picMarkingImage_Click(object sender, EventArgs e)
         {
-            string strOrgImagepath = "";
-            string strMarkingImagepath = "";
+            string strOrgImagepath = string.Empty;
+            string strMarkingImagepath = string.Empty;
 
             // マーキング画像パスとオリジナル画像パスを取得
-            strOrgImagepath = g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                              m_strFaultImageSubDirectory + @"\" +
-                              m_strOrgImagepath;
-            strMarkingImagepath = g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                  m_strFaultImageSubDirectory + @"\" +
-                                  m_strMarkingImagepath ;
+            strOrgImagepath = Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory 
+                              ,m_strFaultImageSubDirectory 
+                              ,m_strOrgImagepath);
+            strMarkingImagepath = Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory 
+                                  ,m_strFaultImageSubDirectory 
+                                  ,m_strMarkingImagepath );
 
             // 画像拡大フォームに遷移
             ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath);
@@ -508,7 +519,7 @@ namespace ImageChecker
         private void btnOKSelect_Click(object sender, EventArgs e)
         {
             UpdAcceptanceCheckResult(g_clsSystemSettingInfo.intAcceptanceCheckResultOk,
-                                     "",
+                                     string.Empty,
                                      "過検知");
         }
 
@@ -579,7 +590,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOther_Click(object sender, EventArgs e)
         {
-            string strDecisionReason = "";
+            string strDecisionReason = string.Empty;
 
             SelectErrorReason frmErrorReason = new SelectErrorReason(false);
             frmErrorReason.ShowDialog(this);
@@ -587,10 +598,12 @@ namespace ImageChecker
 
             this.Visible = true;
 
-            if (strDecisionReason != "")
+            if (!string.IsNullOrEmpty(strDecisionReason))
+            {
                 UpdAcceptanceCheckResult(intGetStatusNg(),
                                          strDecisionReason,
                                          strDecisionReason);
+            }
 
             lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON, strDecisionReason);
         }

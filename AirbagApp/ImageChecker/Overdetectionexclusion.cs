@@ -30,12 +30,12 @@ namespace ImageChecker
 
         // パラメータ関連
         private HeaderData g_clsHeaderData;             // ヘッダ情報
-        private string m_strUnitNum = "";               // 号機
-        private string m_strProductName = "";           // 品名
-        private string m_strOrderImg = "";              // 指図
-        private string m_strFabricName = "";            // 反番
-        private string m_strInspectionDate = "";        // 検査日付
-        private string m_strInspectionDirection = "";   // 検査方向
+        private string m_strUnitNum = string.Empty;               // 号機
+        private string m_strProductName = string.Empty;           // 品名
+        private string m_strOrderImg = string.Empty;              // 指図
+        private string m_strFabricName = string.Empty;            // 反番
+        private string m_strInspectionDate = string.Empty;        // 検査日付
+        private string m_strInspectionDirection = string.Empty;   // 検査方向
         private int m_intInspectionNum = 0;             // 検査番号
         private int m_intOverDetectionExceptStatus = 0; // 過検知除外ステータス
 
@@ -53,7 +53,7 @@ namespace ImageChecker
         private int m_intPageCnt = 1;
 
         // 欠点画像サブディレクトリパス
-        private string m_strFaultImageSubDirectory = "";
+        private string m_strFaultImageSubDirectory = string.Empty;
 
         // 動的コントロール命名規則関連
         private const string m_CON_FORMAT_PICTUREBOX_NAME = "picImage{0}";
@@ -123,14 +123,26 @@ namespace ImageChecker
                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                            AND   inspection_num = :inspection_num
                            ORDER BY ";
+                
                 if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS)
+                {
                     strSQL += "line ASC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC";
-                else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
+                }
+
+                if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
+                {
                     strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
-                else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
+                }
+
+                if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
+                {
                     strSQL += "line DESC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC";
-                else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
+                }
+
+                if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
+                {
                     strSQL += "line DESC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC";
+                }
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();

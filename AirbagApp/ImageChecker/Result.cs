@@ -27,19 +27,19 @@ namespace ImageChecker
 
         // パラメータ関連
         private HeaderData m_clsHeaderData;             // ヘッダ情報
-        private string m_strUnitNum = "";               // 号機
-        private string m_strProductName = "";           // 品名
-        private string m_strOrderImg = "";              // 指図
-        private string m_strFabricName = "";            // 反番
-        private string m_strInspectionDate = "";        // 検査日付
-        private string m_strStartDatetime = "";         // 搬送開始日時
-        private string m_strEndDatetime = "";           // 搬送終了日時
+        private string m_strUnitNum = string.Empty;               // 号機
+        private string m_strProductName = string.Empty;           // 品名
+        private string m_strOrderImg = string.Empty;              // 指図
+        private string m_strFabricName = string.Empty;            // 反番
+        private string m_strInspectionDate = string.Empty;        // 検査日付
+        private string m_strStartDatetime = string.Empty;         // 搬送開始日時
+        private string m_strEndDatetime = string.Empty;           // 搬送終了日時
         private int m_intInspectionStartLine = -1;      // 検査開始行
         private int m_intInspectionEndLine = -1;        // 最終行数
         private int m_intInspectionTargetLine = -1;     // 検査対象数
-        private string m_strDecisionStartTime = "";     // 判定開始日時
-        private string m_strDecisionEndTime = "";       // 判定終了日時
-        private string m_strInspectionDirection = "";   // 検査方向
+        private string m_strDecisionStartTime = string.Empty;     // 判定開始日時
+        private string m_strDecisionEndTime = string.Empty;       // 判定終了日時
+        private string m_strInspectionDirection = string.Empty;   // 検査方向
         private int m_intInspectionNum = 0;             // 検査番号
         private int m_intAcceptanceCheckStatus = 0;     // 合否確認ステータス
         private int m_intColumnCnt = 0;                 // 列数
@@ -64,10 +64,10 @@ namespace ImageChecker
         private const string m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME = "{0}_N.csv";
 
         // 欠点画像サブディレクトリパス
-        private string m_strFaultImageSubDirectory = "";
+        private string m_strFaultImageSubDirectory = string.Empty;
 
         // 判定終了日時（仮）　※判定登録でDBに登録できるまでは未確定。印刷とDB登録に使用
-        private string m_strDecisionEndTimeBeta = "";
+        private string m_strDecisionEndTimeBeta = string.Empty;
 
         // データ保持関連
         private DataTable m_dtData;
@@ -143,7 +143,7 @@ namespace ImageChecker
                                                           int intStatus,
                                                           string strEndDatetime = "")
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             try
             {
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -152,7 +152,7 @@ namespace ImageChecker
                 strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                               SET acceptance_check_status = :acceptance_check_status ";
 
-                if (strEndDatetime != "")
+                if (!string.IsNullOrEmpty(strEndDatetime))
                 {
                     strSQL += @", decision_end_datetime = TO_TIMESTAMP(:decision_end_datetime_yyyymmdd_hhmmss, 'YYYY/MM/DD HH24:MI:SS') ";
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_end_datetime_yyyymmdd_hhmmss", DbType = DbType.String, Value = strEndDatetime });
@@ -175,7 +175,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -201,10 +201,10 @@ namespace ImageChecker
 
             bool bolProcOkNg = false;
 
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData;
             ArrayList arrRow = new ArrayList();
-            string stResultName = "";
+            string stResultName = string.Empty;
             int intImageInspectionCount = -1;
             int intImageInspectionCountOk = -1;
             int intImageInspectionCountNg = -1;
@@ -293,7 +293,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1},{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -345,7 +345,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine,ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -381,13 +381,24 @@ namespace ImageChecker
                            ORDER BY ";
 
                     if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS)
+                    {
                         strSQL += "line ASC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
-                    else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
+                    }
+
+                    if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
+                    {
                         strSQL += "line ASC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
-                    else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
+                    }
+
+                    if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
+                    {
                         strSQL += "line DESC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
-                    else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
+                    }
+
+                    if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
+                    {
                         strSQL += "line DESC, cloumns DESC, ng_face ASC, camera_num ASC, org_imagepath ASC, branch_num ASC";
+                    }
 
                     // SQLコマンドに各パラメータを設定する
                     List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -414,22 +425,43 @@ namespace ImageChecker
 
                         // 過検知除外結果：名称を表示
                         if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon)
+                        {
                             stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNon;
-                        else if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
+                        }
+
+                        if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
+                        { 
                             stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameOk;
-                        else if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
+                        }
+
+                        if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
+                        {
                             stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNg;
+                        }
+
                         arrRow.Add(stResultName);
 
                         // 合否確認結果：名称を表示
                         if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNon)
+                        {
                             stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNon;
-                        else if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultOk)
+                        }
+
+                        if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultOk)
+                        {
                             stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameOk;
-                        else if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect)
+                        }
+
+                        if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect)
+                        {
                             stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNgDetect;
-                        else if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect)
+                        }
+
+                        if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect)
+                        {
                             stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNgNonDetect;
+                        }
+
                         arrRow.Add(stResultName);
 
                         arrRow.Add(row["ng_reason"]);
@@ -446,7 +478,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 , Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -483,7 +515,7 @@ namespace ImageChecker
         /// <returns>true:処理継続 false:処理中断</returns>
         private bool bolDisposeUpd(int intToApId)
         {
-            string strApName = "";
+            string strApName = string.Empty;
 
             // 遷移画面名の設定
             switch (intToApId)
@@ -551,13 +583,15 @@ namespace ImageChecker
         {
             bool bolProcOkNg = false;
 
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData;
-            string strWriteLine = "";
+            string strWriteLine = string.Empty;
             List<Control> lstctlEnable = null;
 
             if (MessageBox.Show(g_clsMessageInfo.strMsgQ0012, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            {
                 return;
+            }
 
             try
             {
@@ -582,7 +616,9 @@ namespace ImageChecker
                 if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
                                                 g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd,
                                                 m_strDecisionEndTimeBeta) == false)
+                {
                     return;
+                }
 
                 // 帳票印刷
                 try
@@ -633,7 +669,7 @@ namespace ImageChecker
 
                     // LocalReport作成
                     lReport = new LocalReport();
-                    lReport.ReportPath = ".\\KenTanChkSheet.rdlc";
+                    lReport.ReportPath = @".\KenTanChkSheet.rdlc";
                     m_streams = new List<Stream>();
 
                     KenTanChkSheet KTCSDs = new KenTanChkSheet();
@@ -676,7 +712,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
                     System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0054, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -722,13 +758,13 @@ namespace ImageChecker
                     // 保存先ディレクトリに作成
                     // Shift JISで書き込む
                     // 書き込むファイルが既に存在している場合は、上書きする
-                    using (StreamWriter sw = new StreamWriter(g_clsSystemSettingInfo.strInspectionResltCsvDirectory + @"\" +
-                                                              string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName)
+                    using (StreamWriter sw = new StreamWriter(Path.Combine( g_clsSystemSettingInfo.strInspectionResltCsvDirectory 
+                                                              ,string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName))
                                                             , false
                                                             , Encoding.GetEncoding("shift_jis")))
                     {
                         // １行目
-                        strWriteLine = "";
+                        strWriteLine = string.Empty;
                         // カンマ区切りで1行文字列にする
                         strWriteLine += "#反番毎結果ファイル#,";
                         strWriteLine += ",";
@@ -747,24 +783,40 @@ namespace ImageChecker
                         foreach (DataRow dr in dtData.Rows)
                         {
                             // カンマ区切りで1行文字列にする
-                            strWriteLine = "";
+                            strWriteLine = string.Empty;
                             strWriteLine += dr["acceptance_check_datetime"].ToString();
                             strWriteLine += "," + dr["order_img"].ToString();
                             strWriteLine += "," + dr["fabric_name"].ToString();
                             strWriteLine += "," + dr["line"].ToString();
 
                             if (dr["cloumns"].ToString() == "A")
+                            {
                                 strWriteLine += ",Ａ";
-                            else if (dr["cloumns"].ToString() == "B")
+                            }
+
+                            if (dr["cloumns"].ToString() == "B")
+                            {
                                 strWriteLine += ",Ｂ";
-                            else if (dr["cloumns"].ToString() == "C")
+                            }
+
+                            if (dr["cloumns"].ToString() == "C")
+                            {
                                 strWriteLine += ",Ｃ";
-                            else if (dr["cloumns"].ToString() == "D")
+                            }
+
+                            if (dr["cloumns"].ToString() == "D")
+                            {
                                 strWriteLine += ",Ｄ";
-                            else if (dr["cloumns"].ToString() == "E")
+                            }
+
+                            if (dr["cloumns"].ToString() == "E")
+                            {
                                 strWriteLine += ",Ｅ";
-                            else 
+                            }
+                            else
+                            {
                                 strWriteLine += "," + dr["cloumns"].ToString();
+                            }
 
                             strWriteLine += "," + dr["ng_face"].ToString();
                             strWriteLine += "," + dr["ng_reason"].ToString();
@@ -778,15 +830,15 @@ namespace ImageChecker
                     }
 
                     // 検査結果CSVを生産管理システム連携ディレクトリにコピー
-                    File.Copy(g_clsSystemSettingInfo.strInspectionResltCsvDirectory + @"\" +
-                              string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName),
-                              g_clsSystemSettingInfo.strProductionManagementCooperationDirectory + @"\" +
-                              string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName), true);
+                    File.Copy(Path.Combine( g_clsSystemSettingInfo.strInspectionResltCsvDirectory 
+                              ,string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName)),
+                              Path.Combine( g_clsSystemSettingInfo.strProductionManagementCooperationDirectory 
+                              ,string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName)), true);
                 }
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
                     System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0054, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -872,14 +924,16 @@ namespace ImageChecker
         private void dgvDecisionResult_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
+            {
                 return;
+            }
 
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                                                           m_strFaultImageSubDirectory + @"\" +
-                                                                           m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString(),
-                                                                           g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                                                           m_strFaultImageSubDirectory + @"\" +
-                                                                           m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString());
+            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory 
+                                                                           ,m_strFaultImageSubDirectory 
+                                                                           ,m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
+                                                                           Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
+                                                                           ,m_strFaultImageSubDirectory 
+                                                                           ,m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
         }
@@ -962,8 +1016,8 @@ namespace ImageChecker
                 autoprintme.Print();
 
                 // 一時フォルダにPDFを作成
-                string fileName = "Report" + DateTime.Now.ToString("yyyyMMddhhmmssfff") + ".pdf";
-                using (FileStream fs = new FileStream(g_clsSystemSettingInfo.strTemporaryDirectory + @"\" + fileName, FileMode.Create))
+                string fileName = string.Format("Report{0}.pdf" , DateTime.Now.ToString("yyyyMMddhhmmssfff"));
+                using (FileStream fs = new FileStream(Path.Combine( g_clsSystemSettingInfo.strTemporaryDirectory ,  fileName), FileMode.Create))
                 {
                     fs.Write(bytes, 0, bytes.Length);
                 }

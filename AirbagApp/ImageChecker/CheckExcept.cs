@@ -10,13 +10,13 @@ namespace ImageChecker
     {
         //パラメータ関連
         private int m_intInspectionNum = 0;
-        private string m_strUnitNum = "";
-        private string m_strOrderImg = "";
-        private string m_strFabricName = "";
-        private string m_strProductName = "";
-        private string m_strInspectionDate = "";
-        private string m_strStartDatetime = "";
-        private string m_strEndDatetime = "";
+        private string m_strUnitNum = string.Empty;
+        private string m_strOrderImg = string.Empty;
+        private string m_strFabricName = string.Empty;
+        private string m_strProductName = string.Empty;
+        private string m_strInspectionDate = string.Empty;
+        private string m_strStartDatetime = string.Empty;
+        private string m_strEndDatetime = string.Empty;
         private int m_intInspectionStartLine = -1;
         private int m_intInspectionEndLine = -1;
 
@@ -94,54 +94,56 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOK_Click(object sender, EventArgs e)
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
 
-            if (MessageBox.Show(g_clsMessageInfo.strMsgQ0010, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(g_clsMessageInfo.strMsgQ0010, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
-                try
-                {
-                    // SQL文を作成する
-                    strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
-                                  SET over_detection_except_status = 4
-                                    , acceptance_check_status = 4
-                                    , decision_start_datetime = current_timestamp
-                                    , decision_end_datetime = current_timestamp
-                                WHERE fabric_name = :fabric_name
-                                  AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
-                                  AND inspection_num = :inspection_num";
-
-                    // SQLコマンドに各パラメータを設定する
-                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
-
-                    // sqlを実行する
-                    g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
-
-                    // DBコミット
-                    g_clsConnectionNpgsql.DbCommit();
-                }
-                catch (Exception ex)
-                {
-                    // ロールバック
-                    g_clsConnectionNpgsql.DbRollback();
-
-                    // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
-                    // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return;
-                }
-                finally
-                {
-                    // DBクローズ
-                    g_clsConnectionNpgsql.DbClose();
-                }
-
-                this.Close();
+                return;
             }
+            
+            try
+            {
+                // SQL文を作成する
+                strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
+                                SET over_detection_except_status = 4
+                                , acceptance_check_status = 4
+                                , decision_start_datetime = current_timestamp
+                                , decision_end_datetime = current_timestamp
+                            WHERE fabric_name = :fabric_name
+                                AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
+                                AND inspection_num = :inspection_num";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+
+                // sqlを実行する
+                g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
+            }
+            catch (Exception ex)
+            {
+                // ロールバック
+                g_clsConnectionNpgsql.DbRollback();
+
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+            finally
+            {
+                // DBクローズ
+                g_clsConnectionNpgsql.DbClose();
+            }
+
+            this.Close();
         }
 
         /// <summary>
