@@ -48,10 +48,14 @@ namespace WokerMstManagement
             try
             {
                 if (NpgsqlCon == null)
+                {
                     NpgsqlCon = new NpgsqlConnection(m_strConnectionString);
+                }
 
                 if (NpgsqlCon.FullState != System.Data.ConnectionState.Open)
+                {
                     NpgsqlCon.Open();
+                }
 
             }
             catch (Exception ex)
@@ -69,7 +73,9 @@ namespace WokerMstManagement
             try
             {
                 if (NpgsqlCon != null && NpgsqlCon.FullState == System.Data.ConnectionState.Open)
+                {
                     NpgsqlCon.Close();
+                }
             }
             catch (Exception ex)
             {
@@ -99,10 +105,14 @@ namespace WokerMstManagement
             try
             {
                 if (NpgsqlCon == null || NpgsqlCon.FullState != System.Data.ConnectionState.Open)
+                {
                     DbOpen();
+                }
 
                 if (NpgsqlTran == null || NpgsqlTran.IsCompleted == true)
+                {
                     NpgsqlTran = NpgsqlCon.BeginTransaction();
+                }
             }
             catch (Exception ex)
             {
@@ -118,7 +128,9 @@ namespace WokerMstManagement
             try
             {
                 if (NpgsqlTran != null && NpgsqlTran.IsCompleted == false)
+                {
                     NpgsqlTran.Commit();
+                }
             }
             catch (Exception ex)
             {
@@ -134,7 +146,9 @@ namespace WokerMstManagement
             try
             {
                 if (NpgsqlTran != null && NpgsqlTran.IsCompleted == false)
+                {
                     NpgsqlTran.Rollback();
+                }
             }
             catch (Exception ex)
             {
@@ -159,8 +173,12 @@ namespace WokerMstManagement
 
                 // パラメータ引数
                 if (lstNpgsqlCommand != null)
+                {
                     foreach (structParameter Parameter in lstNpgsqlCommand)
+                    {
                         NpgsqlDtAd.SelectCommand.Parameters.Add(new NpgsqlParameter(Parameter.ParameterName, Parameter.DbType) { Value = Parameter.Value });
+                    }
+                }
 
                 NpgsqlDtAd.Fill(dtData);
             }
@@ -193,8 +211,12 @@ namespace WokerMstManagement
 
                 // パラメータ引数
                 if (lstNpgsqlCommand != null)
+                {
                     foreach (structParameter Parameter in lstNpgsqlCommand)
+                    {
                         command.Parameters.Add(new NpgsqlParameter(Parameter.ParameterName, Parameter.DbType) { Value = Parameter.Value });
+                    }
+                }
 
                 // トランザクション開始
                 DbBeginTran();
