@@ -272,7 +272,7 @@ namespace ImageChecker
                         else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
                         {
                             sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameExc));
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT, row["over_detection_image_count"].ToString()));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT, row["detection_image_count"].ToString()));
                             intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc;
                         }
                     }
