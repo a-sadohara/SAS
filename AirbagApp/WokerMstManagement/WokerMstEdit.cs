@@ -14,7 +14,7 @@ namespace WokerMstManagement
         #region 定数・変数
         private int m_intEditMode;
         public int g_intUpdateFlg = 0;
-        public string g_strRegWorkerNo = "";
+        public string g_strRegWorkerNo = string.Empty;
         #endregion
 
         #region イベント
@@ -36,7 +36,9 @@ namespace WokerMstManagement
                                    , "確認"
                                    , MessageBoxButtons.YesNo
                                    , MessageBoxIcon.Question) != DialogResult.Yes)
+                {
                     return;
+                }
 
 
                 // 入力チェックを行う
@@ -55,6 +57,9 @@ namespace WokerMstManagement
                     return;
                 }
             }
+
+
+
             if (m_intEditMode == g_CON_EDITMODE_UPD) 
             {
                 if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0003
@@ -66,7 +71,9 @@ namespace WokerMstManagement
                                    , "確認"
                                    , MessageBoxButtons.YesNo
                                    , MessageBoxIcon.Question) != DialogResult.Yes)
+                {
                     return;
+                }
 
                 // 入力チェックを行う
                 if (InputDataCheck() == false)
@@ -140,48 +147,47 @@ namespace WokerMstManagement
 
             m_intEditMode = parEditMode;
 
-            // 更新モードで起動された場合、引数の情報を初期表示する
-            if (m_intEditMode == g_CON_EDITMODE_UPD)
-            {
-                // 社員番号
-                txtEmployeeNum.Text = parUserNo;
-                txtEmployeeNum.Enabled = false;
-                // 作業者名
-                if (parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE)).Count() == 2)
-                {
-                    txtWorkerNameSei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
-                    txtWorkerNameMei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
-                }
-                else
-                {
-                    if (txtWorkerNameSei.MaxLength < parUserNm.Length)
-                    {
-                        txtWorkerNameSei.MaxLength = parUserNm.Length;
-                    }
-                    txtWorkerNameSei.Text = parUserNm;
-                }
-                // 読みカナ
-                if (parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE)).Count() == 2)
-                {
-                    txtWorkerNameSeiKana.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
-                    txtWorkerNameMeiKana.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
-                }
-                else
-                {
-                    if (txtWorkerNameSeiKana.MaxLength < parUserYomiGana.Length)
-                    {
-                        txtWorkerNameSeiKana.MaxLength = parUserYomiGana.Length;
-                    }
-                    txtWorkerNameSeiKana.Text = parUserYomiGana;
-                }
-            }
-            else
+            if (m_intEditMode != g_CON_EDITMODE_UPD)
             {
                 // 登録モードで起動された場合、画面の各項目を空白で表示する
                 txtEmployeeNum.Clear();
                 txtWorkerNameSei.Clear();
                 txtWorkerNameMei.Clear();
                 txtWorkerNameSeiKana.Clear();
+                return;
+            }
+
+            // 更新モードで起動された場合、引数の情報を初期表示する
+            // 社員番号
+            txtEmployeeNum.Text = parUserNo;
+            txtEmployeeNum.Enabled = false;
+            // 作業者名
+            if (parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE)).Count() == 2)
+            {
+                txtWorkerNameSei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
+                txtWorkerNameMei.Text = parUserNm.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
+            }
+            else
+            {
+                if (txtWorkerNameSei.MaxLength < parUserNm.Length)
+                {
+                    txtWorkerNameSei.MaxLength = parUserNm.Length;
+                }
+                txtWorkerNameSei.Text = parUserNm;
+            }
+            // 読みカナ
+            if (parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE)).Count() == 2)
+            {
+                txtWorkerNameSeiKana.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[0];
+                txtWorkerNameMeiKana.Text = parUserYomiGana.Split(Convert.ToChar(g_CON_NAME_SEPARATE))[1];
+            }
+            else
+            {
+                if (txtWorkerNameSeiKana.MaxLength < parUserYomiGana.Length)
+                {
+                    txtWorkerNameSeiKana.MaxLength = parUserYomiGana.Length;
+                }
+                txtWorkerNameSeiKana.Text = parUserYomiGana;
             }
         }
 
@@ -213,7 +219,7 @@ namespace WokerMstManagement
         private Boolean CheckRequiredInput(TextBox tbxCheckData, String strItemName) 
         {
             // 必須入力チェック
-            if (tbxCheckData.Text == "")
+            if (string.IsNullOrEmpty(tbxCheckData.Text))
             {
                 MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0007, strItemName), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 tbxCheckData.Focus();
@@ -282,7 +288,7 @@ namespace WokerMstManagement
                         // それ以外の例外時
 
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
 
                         // メッセージ出力
                         MessageBox.Show(g_clsMessageInfo.strMsgE0004, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -293,7 +299,7 @@ namespace WokerMstManagement
                     // ※DB非接続時は重複時の判断でエラーになる考慮
 
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
 
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0004, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -343,7 +349,7 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0005, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
