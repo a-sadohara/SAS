@@ -93,14 +93,16 @@ namespace ImageChecker.DTO
                 GetMessageContent("W0006", ref strMsgW0006);
 
                 if (m_sbErrMessage.Length > 0)
+                {
                     throw new Exception(m_sbErrMessage.ToString());
+                }
 
                 bolNormalEnd = true;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "メッセージ情報取得時にエラーが発生しました。" + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "メッセージ情報取得時にエラーが発生しました。{0}{1} ",Environment.NewLine , ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show("メッセージ情報取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -112,7 +114,7 @@ namespace ImageChecker.DTO
         /// </summary>
         public void GetMessageInfo()
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
 
             try
             {

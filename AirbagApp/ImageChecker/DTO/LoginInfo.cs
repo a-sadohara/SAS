@@ -5,8 +5,8 @@ namespace ImageChecker.DTO
     class LoginInfo
     {
         // パラメータ
-        public string strEmployeeNum = "";
-        public string strWorkerName = "";
+        public string strEmployeeNum = string.Empty;
+        public string strWorkerName = string.Empty;
         public int intDispNum = -1;
         public bool bolStatus = false;
 
@@ -29,8 +29,8 @@ namespace ImageChecker.DTO
         /// </summary>
         public void Logout()
         {
-            strEmployeeNum = "";
-            strWorkerName = "";
+            strEmployeeNum = string.Empty;
+            strWorkerName = string.Empty;
             intDispNum = -1;
             bolStatus = false;
 

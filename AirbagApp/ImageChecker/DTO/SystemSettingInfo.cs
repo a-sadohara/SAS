@@ -177,8 +177,10 @@ namespace ImageChecker.DTO
                 if (lststrErrorMessage.Count > 0)
                 {
                     foreach (string Message in lststrErrorMessage)
+                    {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, "システム設定取得時にエラーが発生しました。" + "\r\n" + Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "システム設定取得時にエラーが発生しました。{0}{1}",Environment.NewLine, Message));
+                    }
 
                     // メッセージ出力
                     MessageBox.Show("システム設定取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -191,7 +193,7 @@ namespace ImageChecker.DTO
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "システム設定取得時にエラーが発生しました。" + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR,string.Format( "システム設定取得時にエラーが発生しました。{0}{1}" ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 MessageBox.Show("システム設定取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -206,9 +208,9 @@ namespace ImageChecker.DTO
         private void GetAppConfigValue(string strKey, ref string strValue)
         {
             strValue = ConfigurationManager.AppSettings[strKey];
-            if (strValue == null)
+            if (string.IsNullOrEmpty(strValue))
             {
-                lststrErrorMessage.Add("Key[" + strKey + "] AppConfigに存在しません。");
+                lststrErrorMessage.Add(string.Format( "Key[{0}] AppConfigに存在しません。", strKey));
             }
         }
 
@@ -220,7 +222,7 @@ namespace ImageChecker.DTO
         /// <returns>true:正常終了 false:異常終了</returns>
         private void GetAppConfigValue(string strKey, ref int intValue)
         {
-            string strValue = "";
+            string strValue = string.Empty;
 
             try
             {
@@ -229,7 +231,7 @@ namespace ImageChecker.DTO
             }
             catch (Exception ex)
             {
-                lststrErrorMessage.Add("Key[" + strKey + "] " + ex.Message);
+                lststrErrorMessage.Add(string.Format("Key[{0}]{1}" , strKey , ex.Message));
             }
         }
 
@@ -239,7 +241,7 @@ namespace ImageChecker.DTO
         /// <returns>true:正常終了 false:異常終了</returns>
         private void GetSystemSettingValue()
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
 
             try
             {
@@ -263,7 +265,7 @@ namespace ImageChecker.DTO
         /// <returns>true:正常終了 false:異常終了</returns>
         private void GetSystemSettingValue(string strId, ref int intValue)
         {
-            string strValue = "";
+            string strValue = string.Empty;
 
             try
             {
@@ -272,7 +274,7 @@ namespace ImageChecker.DTO
             }
             catch (Exception ex)
             {
-                lststrErrorMessage.Add("Id[" + strId + "] " + ex.Message);
+                lststrErrorMessage.Add(string.Format("Id[{0}]{1}", strId, ex.Message));
             }
         }
 
@@ -291,7 +293,7 @@ namespace ImageChecker.DTO
             }
             else
             {
-                lststrErrorMessage.Add("Id[" + strId + "] システム情報設定テーブルに存在しません。");
+                lststrErrorMessage.Add(string.Format("Id[{0}] システム情報設定テーブルに存在しません。", strId));
             }
         }
     }
