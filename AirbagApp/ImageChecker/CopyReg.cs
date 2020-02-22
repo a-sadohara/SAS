@@ -488,6 +488,17 @@ namespace ImageChecker
         }
 
         /// <summary>
+        /// フォーム表示
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CopyReg_Shown(object sender, EventArgs e)
+        {
+            // 初期表示時のフォーカス設定
+            picMarkingImage.Focus();
+        }
+
+        /// <summary>
         /// 欠点画像クリック
         /// </summary>
         /// <param name="sender"></param>
