@@ -30,6 +30,10 @@ namespace ImageChecker
             InitializeComponent();
         }
 
+        // 選択行保持
+        private int m_intSelIdx = -1;
+        private int m_intFirstDisplayedScrollingRowIdx = -1;
+
         #region メソッド
         /// <summary>
         /// データグリッドビュー表示
@@ -345,6 +349,23 @@ namespace ImageChecker
                 // 件数の表示
                 lblImageSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, m_dtData.Rows.Count, m_intAllImageInspectionCount);
                 lblCushionSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, lststrLineColumns.Count, m_intAllCushionspectionCount);
+
+                // 行選択
+                if (m_intSelIdx != -1)
+                {
+                    this.dgvCheckInspectionHistory.Rows[m_intSelIdx].Selected = true;
+                }
+
+                // スクロールバー調整
+                if (m_intFirstDisplayedScrollingRowIdx != -1)
+                {
+                    this.dgvCheckInspectionHistory.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIdx;
+                }
+
+                // 初期化
+                m_intSelIdx = -1;
+                m_intFirstDisplayedScrollingRowIdx = -1;
+
                 return true;
             }
             catch (Exception ex)
@@ -553,6 +574,9 @@ namespace ImageChecker
             clsDecisionResult.strNgReason = m_dtData.Rows[intSelIdx]["ng_reason"].ToString();
             clsDecisionResult.strMarkingImagepath = m_dtData.Rows[intSelIdx]["marking_imagepath"].ToString();
             clsDecisionResult.strOrgImagepath = m_dtData.Rows[intSelIdx]["org_imagepath"].ToString();
+
+            m_intSelIdx = intSelIdx;
+            m_intFirstDisplayedScrollingRowIdx = this.dgvCheckInspectionHistory.FirstDisplayedScrollingRowIndex;
 
             this.Visible = false;
 

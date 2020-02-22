@@ -55,6 +55,10 @@ namespace ImageChecker
         // データ保持関連
         private DataTable m_dtData;
 
+        // 選択行保持
+        private int m_intSelIdx = -1;
+        private int m_intFirstDisplayedScrollingRowIdx = -1;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -285,6 +289,23 @@ namespace ImageChecker
                 // 件数の表示
                 lblImageSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, m_dtData.Rows.Count, m_intCountInit);
                 lblCushionSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, lststrLineColumns.Count, m_intColumnCnt * m_intInspectionTargetLine);
+
+                // 行選択
+                if (m_intSelIdx != -1)
+                {
+                    this.dgvDecisionResult.Rows[m_intSelIdx].Selected = true;
+                }
+
+                // スクロールバー調整
+                if (m_intFirstDisplayedScrollingRowIdx != -1)
+                {
+                    this.dgvDecisionResult.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIdx;
+                }
+
+                // 初期化
+                m_intSelIdx = -1;
+                m_intFirstDisplayedScrollingRowIdx = -1;
+
                 return true;
             }
             catch (Exception ex)
@@ -589,6 +610,9 @@ namespace ImageChecker
             clsDecisionResult.strResultUpdateDatetime = m_dtData.Rows[intSelIdx]["result_update_datetime"].ToString();
             clsDecisionResult.strResultUpdateWorker = m_dtData.Rows[intSelIdx]["result_update_worker"].ToString();
             clsDecisionResult.strBeforeNgReason = m_dtData.Rows[intSelIdx]["before_ng_reason"].ToString();
+
+            m_intSelIdx = intSelIdx;
+            m_intFirstDisplayedScrollingRowIdx = this.dgvDecisionResult.FirstDisplayedScrollingRowIndex;
 
             this.Visible = false;
 
