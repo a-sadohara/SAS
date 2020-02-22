@@ -908,6 +908,8 @@ namespace ImageChecker
             bool bolDispForm = false;
 
             List<string> lstCmbItem = new List<string>();
+            int intMinLine = 0;
+            int intMaxLine = 0;
 
             try
             {
@@ -928,10 +930,22 @@ namespace ImageChecker
                 lblDecisionEndTime.Text = string.Format(m_CON_FORMAT_DECISION_END_DATETIME, m_strDecisionEndTime);
                 lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
+                // コンボボックスのFrom-To
+                if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS || m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
+                {
+                    intMinLine = m_intInspectionStartLine;
+                    intMaxLine = m_intInspectionEndLine;
+                }
+                else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY || m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
+                {
+                    intMinLine = m_intInspectionEndLine;
+                    intMaxLine = m_intInspectionStartLine;
+                }
+
                 // コンボボックスの設定
                 // 行
                 cmbBoxLine.Items.Clear();
-                for (int i = m_intInspectionStartLine; i <= m_intInspectionEndLine; i++)
+                for (int i = intMinLine; i <= intMaxLine; i++)
                 {
                     lstCmbItem.Add(i.ToString());
                 }
@@ -1051,6 +1065,9 @@ namespace ImageChecker
                         return;
                     }
                 }
+
+                // 欠点画像にフォーカスセット
+                picMarkingImage.Focus();
 
                 bolDispForm = true;
             }

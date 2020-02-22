@@ -561,6 +561,17 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnTargetSelection_Click(object sender, EventArgs e)
         {
+            // 合否確認ステータス更新(中断)
+            if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
+                                            g_clsSystemSettingInfo.intAcceptanceCheckStatusStp) == false)
+            {
+                // エラー時
+                g_clsConnectionNpgsql.DbRollback();
+                g_clsConnectionNpgsql.DbClose();
+
+                return;
+            }
+
             if (m_intFromApId != 0)
             {
                 // 変更破棄
@@ -569,6 +580,9 @@ namespace ImageChecker
                     return;
                 }
             }
+
+            g_clsConnectionNpgsql.DbCommit();
+            g_clsConnectionNpgsql.DbClose();
 
             m_bolXButton = false;
             this.Close();
@@ -945,6 +959,17 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnLogout_Click(object sender, EventArgs e)
         {
+            // 合否確認ステータス更新(中断)
+            if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
+                                            g_clsSystemSettingInfo.intAcceptanceCheckStatusStp) == false)
+            {
+                // エラー時
+                g_clsConnectionNpgsql.DbRollback();
+                g_clsConnectionNpgsql.DbClose();
+
+                return;
+            }
+
             if (m_intFromApId != 0)
             {
                 // 変更破棄
@@ -953,7 +978,10 @@ namespace ImageChecker
                     return;
                 }
             }
-            
+
+            g_clsConnectionNpgsql.DbCommit();
+            g_clsConnectionNpgsql.DbClose();
+
             m_bolXButton = false;
             g_clsLoginInfo.Logout();
         }
@@ -1226,6 +1254,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void Result_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // 判定登録処理中は無効にする
             if (m_bolXButtonDisable == true)
             {
                 if (e.CloseReason == CloseReason.UserClosing)
@@ -1235,6 +1264,7 @@ namespace ImageChecker
                 }
             }
 
+            // [X]ボタンを押下していない場合は終了
             if (m_bolXButton == false)
             {
                 return;
