@@ -12,10 +12,9 @@ namespace ImageChecker
 {
     public partial class Summary : Form
     {
-        /// <summary>
-        /// 選択No
-        /// </summary>
+        // 選択行保持
         public int intSelIdx { get; set; }
+        public int intFirstDisplayedScrollingRowIdx { get; set; }
 
         /// <summary>
         /// 遷移先
@@ -67,9 +66,6 @@ namespace ImageChecker
         // データ保持関連
         private DataTable m_dtData;
 
-        // 選択行保持
-        private int m_intSelRowIdx = -1;
-
         // クリックイベントとダブルクリックイベントの同時実装関連
         private readonly SemaphoreSlim _clickSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _doubleClickSemaphore = new SemaphoreSlim(0);
@@ -79,7 +75,7 @@ namespace ImageChecker
         /// コンストラクタ
         /// </summary>
         /// <param name="clsHeaderData">ヘッダ情報</param>
-        public Summary(HeaderData clsHeaderData, int intSelRowIdx)
+        public Summary(HeaderData clsHeaderData, int intSelIndex, int intFirstDisplayedScrollingRowIndex)
         {
             m_strUnitNum = clsHeaderData.strUnitNum;
             m_strProductName = clsHeaderData.strProductName;
@@ -94,15 +90,14 @@ namespace ImageChecker
             m_strInspectionDirection = clsHeaderData.strInspectionDirection;
             m_intInspectionNum = clsHeaderData.intInspectionNum;
             m_intColumnCnt = clsHeaderData.intColumnCnt;
-            m_intSelRowIdx = intSelRowIdx;
+
+            intSelIdx = intSelIndex;
+            intFirstDisplayedScrollingRowIdx = intFirstDisplayedScrollingRowIndex;
 
             m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
-
-            intSelIdx = -1;
-            intDestination = -1;
 
             InitializeComponent();
         }
@@ -430,9 +425,15 @@ namespace ImageChecker
                 }
 
                 // 行選択
-                if (m_intSelRowIdx != -1)
+                if (intSelIdx != -1)
                 {
-                    this.dgvDecisionResult.Rows[m_intSelRowIdx].Selected = true;
+                    this.dgvDecisionResult.Rows[intSelIdx].Selected = true;
+                }
+
+                // スクロールバー調整
+                if (intFirstDisplayedScrollingRowIdx != -1)
+                {
+                    this.dgvDecisionResult.FirstDisplayedScrollingRowIndex = intFirstDisplayedScrollingRowIdx;
                 }
 
             }
@@ -535,6 +536,7 @@ namespace ImageChecker
 
             // 選択枝番を設定
             intSelIdx = e.RowIndex;
+            intFirstDisplayedScrollingRowIdx = this.dgvDecisionResult.FirstDisplayedScrollingRowIndex;
 
             this.Close();
         }
@@ -549,8 +551,19 @@ namespace ImageChecker
             if (m_bolRoadFlg == false || m_bolLogout == true)
             {
                 // 過検知除外ステータス更新(中断)
-                blnUpdOverDetectionExceptStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                                g_clsSystemSettingInfo.intOverDetectionExceptStatusStp);
+                if (blnUpdOverDetectionExceptStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
+                                                    g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)== false)
+                {
+                    g_clsConnectionNpgsql.DbRollback();
+                    g_clsConnectionNpgsql.DbClose();
+
+                    // エラー時
+                    if (e.CloseReason == CloseReason.UserClosing)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                }
                 g_clsConnectionNpgsql.DbCommit();
                 g_clsConnectionNpgsql.DbClose();
             }
@@ -562,8 +575,18 @@ namespace ImageChecker
                 }
 
                 // 過検知除外ステータス更新(検査完了)
-                blnUpdOverDetectionExceptStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                                g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd);
+                if (blnUpdOverDetectionExceptStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
+                                                    g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd) == false)
+                {
+                    g_clsConnectionNpgsql.DbRollback();
+                    g_clsConnectionNpgsql.DbClose();
+
+                    if (e.CloseReason == CloseReason.UserClosing)
+                    {                        
+                        e.Cancel = true;
+                        return;
+                    }
+                }
                 g_clsConnectionNpgsql.DbCommit();
                 g_clsConnectionNpgsql.DbClose();
             }

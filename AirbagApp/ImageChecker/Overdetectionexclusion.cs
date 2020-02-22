@@ -68,8 +68,9 @@ namespace ImageChecker
         private readonly SemaphoreSlim _clickSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _doubleClickSemaphore = new SemaphoreSlim(0);
 
-        // 選択行保持
-        private int m_intSelRowIdx = -1;
+        // 選択行保持(結果画面用)
+        private int m_intSelIdx = -1;
+        private int m_intFirstDisplayedScrollingRowIdx = -1;
 
         #region メソッド
         /// <summary>
@@ -838,12 +839,13 @@ namespace ImageChecker
             {
                 this.Visible = false;
 
-                Summary frmSummary = new Summary(g_clsHeaderData, m_intSelRowIdx);
+                Summary frmSummary = new Summary(g_clsHeaderData, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx);
                 frmSummary.ShowDialog(this);
 
                 if (frmSummary.intSelIdx != -1)
                 {
-                    m_intSelRowIdx = frmSummary.intSelIdx;
+                    m_intSelIdx = frmSummary.intSelIdx;
+                    m_intFirstDisplayedScrollingRowIdx = frmSummary.intFirstDisplayedScrollingRowIdx;
 
                     m_bolRegFlg = false;
                     m_bolUpdFlg = true;
