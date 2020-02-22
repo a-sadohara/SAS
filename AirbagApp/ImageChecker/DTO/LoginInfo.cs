@@ -33,20 +33,41 @@ namespace ImageChecker.DTO
             strWorkerName = string.Empty;
             intDispNum = -1;
             bolStatus = false;
+            int intIdx = 0;
+            int intIdxMax = -1;
 
-            // ログイン画面以外を閉じる
-            // 起動画面ループ
-            foreach (Form frm in Application.OpenForms)
+            intIdxMax = Application.OpenForms.Count - 1;
+
+            // ログイン画面以外を最後から閉じる
+            while (intIdxMax > 0) 
             {
-                if (frm is Login)
+                // 起動画面ループ
+                foreach (Form frm in Application.OpenForms)
                 {
-                    // ログイン画面　⇒　再表示
-                    frm.Visible = true;
-                }
-                else
-                {
-                    // ログイン画面以外　⇒　閉じる
-                    frm.Close();
+                    // 最後のIdxまでカウントアップ
+                    if (intIdx < intIdxMax)
+                    {
+                        intIdx++;
+                        continue;
+                    }
+
+                    if (frm is Login)
+                    {
+                        // ログイン画面　⇒　再表示
+                        frm.Visible = true;
+                    }
+                    else
+                    {
+                        // ログイン画面以外　⇒　閉じる
+                        frm.Close();
+
+                        // 最終インデックス調整
+                        intIdxMax--;
+                        // インデックスリセット
+                        intIdx = 0;
+
+                        break;
+                    }
                 }
             }
         }

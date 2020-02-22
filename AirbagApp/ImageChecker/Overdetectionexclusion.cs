@@ -68,6 +68,10 @@ namespace ImageChecker
         private readonly SemaphoreSlim _clickSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _doubleClickSemaphore = new SemaphoreSlim(0);
 
+        // 選択行保持(結果画面用)
+        private int m_intSelIdx = -1;
+        private int m_intFirstDisplayedScrollingRowIdx = -1;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -506,6 +510,7 @@ namespace ImageChecker
             PictureBox pctImage = new PictureBox();
             string strNowYmdhms = string.Empty;
             int intbtnLeftRightLocationY = -1;
+            Single sngFontSize = 0;
 
             // 作業者の表示
             lblWorkerName.Text = string.Format(m_CON_FORMAT_WORKER_NAME, g_clsLoginInfo.strWorkerName);
@@ -586,9 +591,25 @@ namespace ImageChecker
                     lblState.Name = string.Format(m_CON_FORMAT_LABEL_NAME, intImgIdxNum);
                     lblState.AutoSize = false;
                     lblState.Dock = DockStyle.Fill;
-                    lblState.Font = new System.Drawing.Font("メイリオ", 50F);
                     lblState.ForeColor = Color.DodgerBlue;
                     lblState.TextAlign = ContentAlignment.MiddleCenter;
+                    
+                    switch (g_clsLoginInfo.intDispNum)
+                    {
+                        case 2:
+                            sngFontSize = 80;
+                            break;
+                        case 4:
+                            sngFontSize = 60;
+                            break;
+                        case 6:
+                            sngFontSize = 60;
+                            break;
+                        case 9:
+                            sngFontSize = 50;
+                            break;
+                    }
+                    lblState.Font = new System.Drawing.Font("メイリオ", sngFontSize);
 
                     // NG表示用ラベル追加
                     pctImage.Controls.Clear();
@@ -818,11 +839,14 @@ namespace ImageChecker
             {
                 this.Visible = false;
 
-                Summary frmSummary = new Summary(g_clsHeaderData);
+                Summary frmSummary = new Summary(g_clsHeaderData, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx);
                 frmSummary.ShowDialog(this);
 
                 if (frmSummary.intSelIdx != -1)
                 {
+                    m_intSelIdx = frmSummary.intSelIdx;
+                    m_intFirstDisplayedScrollingRowIdx = frmSummary.intFirstDisplayedScrollingRowIdx;
+
                     m_bolRegFlg = false;
                     m_bolUpdFlg = true;
 

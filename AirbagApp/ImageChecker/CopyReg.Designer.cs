@@ -456,9 +456,9 @@
             this.picMarkingImage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.picMarkingImage.Location = new System.Drawing.Point(3, 18);
+            this.picMarkingImage.Location = new System.Drawing.Point(3, 19);
             this.picMarkingImage.Name = "picMarkingImage";
-            this.picMarkingImage.Size = new System.Drawing.Size(788, 437);
+            this.picMarkingImage.Size = new System.Drawing.Size(788, 436);
             this.picMarkingImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picMarkingImage.TabIndex = 10;
             this.picMarkingImage.TabStop = false;
@@ -473,7 +473,7 @@
             this.lblMarkingImagepath.Location = new System.Drawing.Point(591, 0);
             this.lblMarkingImagepath.Margin = new System.Windows.Forms.Padding(2, 0, 100, 0);
             this.lblMarkingImagepath.Name = "lblMarkingImagepath";
-            this.lblMarkingImagepath.Size = new System.Drawing.Size(103, 15);
+            this.lblMarkingImagepath.Size = new System.Drawing.Size(103, 16);
             this.lblMarkingImagepath.TabIndex = 30;
             this.lblMarkingImagepath.Text = "XXXXXXXXXX.XXX";
             // 
@@ -535,7 +535,7 @@
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(810, 631);
             this.Name = "CopyReg";
-            this.Text = "複写して登録";
+            this.Text = "複写指定画面";
             this.Load += new System.EventHandler(this.CopyReg_Load);
             this.panel11.ResumeLayout(false);
             this.panel11.PerformLayout();

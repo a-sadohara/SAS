@@ -92,6 +92,12 @@ namespace ImageChecker
             lblInspectionLineBefore.Text = m_intInspectionStartLine.ToString() + "～" + m_intInspectionEndLine.ToString();
             lblInspectionLineAfter.Text = m_intInspectionStartLine.ToString() + "～" + m_intInspectionEndLine.ToString();
 
+            // マイナスにならないように無効にする
+            if (m_intInspectionStartLine + m_Correct <= 0)
+            {
+                btnMinus.Enabled = false;
+            }
+
             this.ResumeLayout();
         }
 
@@ -122,7 +128,7 @@ namespace ImageChecker
                 {
                     // SQL文を作成する
                     strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
-                                  SET inspection_target_line = inspection_target_line + :inspection_line_correct
+                                  SET inspection_start_line = inspection_start_line + :inspection_line_correct
                                     , inspection_end_line = inspection_end_line + :inspection_line_correct
                                 WHERE fabric_name = :fabric_name
                                   AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
@@ -215,6 +221,7 @@ namespace ImageChecker
         private void btnMinus_Click(object sender, EventArgs e)
         {
             m_Correct -= 1;
+            m_intInspectionStartLine -= 1;
             m_intInspectionEndLine -= 1;
 
             if (m_Correct == 0)
@@ -225,6 +232,12 @@ namespace ImageChecker
                 lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, m_Correct.ToString());
 
             lblInspectionLineAfter.Text = m_intInspectionStartLine.ToString() + "～" + m_intInspectionEndLine.ToString();
+
+            // マイナスにならないように無効にする
+            if (m_intInspectionStartLine <= 0)
+            {
+                btnMinus.Enabled = false;
+            }
         }
 
         /// <summary>
@@ -235,6 +248,7 @@ namespace ImageChecker
         private void btnPlus_Click(object sender, EventArgs e)
         {
             m_Correct += 1;
+            m_intInspectionStartLine += 1;
             m_intInspectionEndLine += 1;
 
             if (m_Correct == 0)
@@ -245,6 +259,12 @@ namespace ImageChecker
                 lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, m_Correct.ToString());
 
             lblInspectionLineAfter.Text = m_intInspectionStartLine.ToString() + "～" + m_intInspectionEndLine.ToString();
+
+            // マイナスにはならないので有効にする
+            if (m_intInspectionStartLine > 0)
+            {
+                btnMinus.Enabled = true;
+            }
         }
         #endregion
     }
