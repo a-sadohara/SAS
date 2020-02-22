@@ -11,8 +11,8 @@ namespace WokerMstManagement
         #region 定数・変数
         private DataTable m_dtData;
 
-        private string m_strKanaSta = "";
-        private string m_strKanaEnd = "";
+        private string m_strKanaSta = string.Empty;
+        private string m_strKanaEnd = string.Empty;
 
         private const Int32 m_CON_COL_USERNO = 0;
         private const Int32 m_CON_COL_USERNAME = 1;
@@ -39,14 +39,17 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
-                if (bolProcOkNg == false)
+                if (bolProcOkNg == false) 
+                {
                     this.Close();
+                }
+
             }
         }
 
@@ -81,7 +84,7 @@ namespace WokerMstManagement
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -95,9 +98,9 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            string strSelUserNo = "";
-            string strSelUserName = "";
-            string strSelUserNameKana = "";
+            string strSelUserNo = string.Empty;
+            string strSelUserName = string.Empty;
+            string strSelUserNameKana = string.Empty;
             int intSelRow = 0;
 
             foreach (DataGridViewRow r in dgvWorker.SelectedRows)
@@ -131,7 +134,7 @@ namespace WokerMstManagement
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                         // メッセージ出力
                         MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
@@ -158,7 +161,7 @@ namespace WokerMstManagement
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}",g_clsMessageInfo.strMsgE0001,Environment.NewLine , ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -208,7 +211,9 @@ namespace WokerMstManagement
         private void dgvWorker_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
+            {
                 return;
+            }
 
             string strSelEmployeeNum = "0000";
 
@@ -235,7 +240,7 @@ namespace WokerMstManagement
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -257,7 +262,7 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -319,7 +324,7 @@ namespace WokerMstManagement
                                     , string strSelWorkerNo
                                     , int intLastTimeSelLine)
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
 
             dgvWorker.Rows.Clear();
 
@@ -382,12 +387,12 @@ namespace WokerMstManagement
                     {
                         strSQL += "AND SUBSTRING(worker_name_sei_kana,1,1) <= '" + m_strKanaEnd + "' ";
                     }
-                    if (txtEmployeeNumFrom.Text != "")
+                    if (!string.IsNullOrEmpty(txtEmployeeNumFrom.Text))
                     {
                         Int32.TryParse(txtEmployeeNumFrom.Text, out intUserNoSta);
                         strSQL += "AND TO_NUMBER(employee_num, '0000') >= " + intUserNoSta + " ";
                     }
-                    if (txtEmployeeNumTo.Text != "")
+                    if (!string.IsNullOrEmpty(txtEmployeeNumTo.Text))
                     {
                         Int32.TryParse(txtEmployeeNumTo.Text, out intUserNoEnd);
                         strSQL += "AND TO_NUMBER(employee_num, '0000') <= " + intUserNoEnd + " ";
@@ -419,7 +424,8 @@ namespace WokerMstManagement
                     dgvWorker.Rows[0].Selected = true;
                     dgvWorker.FirstDisplayedScrollingRowIndex = 0;
                 }
-                else if (intExecMode == 1) 
+                
+                if (intExecMode == 1) 
                 {
                     int intSelRow = 0;
 
@@ -442,8 +448,9 @@ namespace WokerMstManagement
                     }
                     dgvWorker.FirstDisplayedScrollingRowIndex = intSelRow;
                 }
+                
                 // 表示モードが更新表示の場合
-                else if (intExecMode == 2)
+                if (intExecMode == 2)
                 {
                     // 更新行表示
                     dgvWorker.Rows[intLastTimeSelLine].Selected = true;
@@ -487,7 +494,7 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0006, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
