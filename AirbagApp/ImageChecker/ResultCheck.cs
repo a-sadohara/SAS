@@ -81,6 +81,10 @@ namespace ImageChecker
         private Bitmap m_bmpMasterImageMarking1 = null;
         private Bitmap m_bmpMasterImageMarking2 = null;
 
+        // 選択行保持(結果画面用)
+        private int m_intSelIdx = -1;
+        private int m_intFirstDisplayedScrollingRowIdx = -1;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -738,12 +742,15 @@ namespace ImageChecker
             this.Visible = false;
 
             // 結果確認画面に遷移
-            Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId);
+            Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx);
             frmResult.ShowDialog(this);
 
             // パラメータ更新
             m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
             m_strDecisionEndTime = m_clsHeaderData.strDecisionEndDatetime;
+
+            m_intSelIdx = frmResult.intSelIdx;
+            m_intFirstDisplayedScrollingRowIdx = frmResult.intFirstDisplayedScrollingRowIdx;
 
             if (frmResult.bolMod == true)
             {

@@ -574,7 +574,7 @@ namespace ImageChecker
 
             _doubleClickSemaphore.Release();
 
-            // 選択枝番を設定
+            // 選択行情報を保持
             intSelIdx = e.RowIndex;
             intFirstDisplayedScrollingRowIdx = this.dgvDecisionResult.FirstDisplayedScrollingRowIndex;
 
