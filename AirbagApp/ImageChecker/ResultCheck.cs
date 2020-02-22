@@ -214,6 +214,9 @@ namespace ImageChecker
 
             try
             {
+                // 欠点画像にフォーカスセット
+                picMarkingImage.Focus();
+
                 // ページ数表示
                 lblPageCount.Text = string.Format(m_CON_FORMAT_COUNT_SCORES, (intPageIdx + 1).ToString(), m_dtData.Rows.Count.ToString());
 
