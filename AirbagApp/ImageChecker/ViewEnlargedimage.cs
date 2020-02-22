@@ -59,6 +59,11 @@ namespace ImageChecker
         {
             this.SuspendLayout();
 
+            this.MinimizeBox = false;
+            this.MaximizeBox = false;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
+
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
 

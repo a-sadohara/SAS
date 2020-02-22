@@ -67,6 +67,9 @@ namespace ImageChecker
         // データ保持関連
         private DataTable m_dtData;
 
+        // 選択行保持
+        private int m_intSelRowIdx = -1;
+
         // クリックイベントとダブルクリックイベントの同時実装関連
         private readonly SemaphoreSlim _clickSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _doubleClickSemaphore = new SemaphoreSlim(0);
@@ -76,7 +79,7 @@ namespace ImageChecker
         /// コンストラクタ
         /// </summary>
         /// <param name="clsHeaderData">ヘッダ情報</param>
-        public Summary(HeaderData clsHeaderData)
+        public Summary(HeaderData clsHeaderData, int intSelRowIdx)
         {
             m_strUnitNum = clsHeaderData.strUnitNum;
             m_strProductName = clsHeaderData.strProductName;
@@ -91,6 +94,7 @@ namespace ImageChecker
             m_strInspectionDirection = clsHeaderData.strInspectionDirection;
             m_intInspectionNum = clsHeaderData.intInspectionNum;
             m_intColumnCnt = clsHeaderData.intColumnCnt;
+            m_intSelRowIdx = intSelRowIdx;
 
             m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
                                                            m_strProductName,
@@ -424,6 +428,13 @@ namespace ImageChecker
 
                     return;
                 }
+
+                // 行選択
+                if (m_intSelRowIdx != -1)
+                {
+                    this.dgvDecisionResult.Rows[m_intSelRowIdx].Selected = true;
+                }
+
             }
             finally
             {
