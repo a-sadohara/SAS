@@ -1066,6 +1066,9 @@ namespace ImageChecker
                     }
                 }
 
+                // 欠点画像にフォーカスセット
+                picMarkingImage.Focus();
+
                 bolDispForm = true;
             }
             finally
