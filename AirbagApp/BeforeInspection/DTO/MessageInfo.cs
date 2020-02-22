@@ -59,14 +59,16 @@ namespace BeforeInspection.DTO
                 GetMessageContent("Q0008", ref strMsgQ0008);
 
                 if (m_sbErrMessage.Length > 0)
+                {
                     throw new Exception(m_sbErrMessage.ToString());
+                }
 
                 bolNormalEnd = true;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, "メッセージ情報取得時にエラーが発生しました。" + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "メッセージ情報取得時にエラーが発生しました。{0}{1}" ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show("メッセージ情報取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -78,7 +80,7 @@ namespace BeforeInspection.DTO
         /// </summary>
         public void GetMessageInfo()
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
 
             try
             {
@@ -102,14 +104,14 @@ namespace BeforeInspection.DTO
         /// <returns>true:正常終了 false:異常終了</returns>
         private void GetMessageContent(string strId, ref string strValue)
         {
-            DataRow[] dr = m_dtMessageInfo.Select("id = '" + strId + "'");
+            DataRow[] dr = m_dtMessageInfo.Select(string.Format("id = '{0}'" , strId ));
             if (dr.Length > 0)
             {
                 strValue = dr[0]["content"].ToString();
             }
             else
             {
-                m_sbErrMessage.AppendLine("Id[" + strId + "] メッセージ情報テーブルに存在しません。");
+                m_sbErrMessage.AppendLine(string.Format("Id[{0}] メッセージ情報テーブルに存在しません。" , strId ));
             }
         }
     }
