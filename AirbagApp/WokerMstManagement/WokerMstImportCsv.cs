@@ -26,7 +26,7 @@ namespace WokerMstManagement
         private static bool m_bolProcEnd = false;
         private static bool m_bolAppendFlag = false;
 
-        private static string m_strOutPutFilePath = "";
+        private static string m_strOutPutFilePath = string.Empty;
 
         /// <summary>
         /// 作業者登録CSVファイル
@@ -128,7 +128,7 @@ namespace WokerMstManagement
             int intDNgCount = 0;
 
             // 未入力チェック
-            if (txtImportFilePath.Text == "")
+            if (string.IsNullOrEmpty(txtImportFilePath.Text))
             {
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0009, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -156,7 +156,7 @@ namespace WokerMstManagement
 
                             // マーカCSVファイルを１行読み込む
                             string strFileTextLine = sr.ReadLine();
-                            if (strFileTextLine == "" || bolTitleRow == true)
+                            if (string.IsNullOrEmpty(strFileTextLine) || bolTitleRow == true)
                             {
                                 // ヘッダ行(1行目)または空行（最終行）の場合読み飛ばす
                                 bolTitleRow = false;
@@ -168,39 +168,61 @@ namespace WokerMstManagement
 
                             // 件数(登録,更新,削除)
                             if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeCre)
+                            {
                                 intCCount++;
+                            }
                             else if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeUpd)
+                            {
                                 intUCount++;
+                            }
                             else if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeDel)
+                            {
                                 intDCount++;
+                            }
 
                             // CSVファイル読み込み＆入力データチェックを行う
                             if (ReadCsvData(strFileTextLine, intRowCount, out uciWorkerData) == false)
                             {
                                 // NG件数(登録,更新,削除)
                                 if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeCre)
+                                {
                                     intCNgCount++;
+                                }
                                 else if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeUpd)
+                                {
                                     intUNgCount++;
+                                }
                                 else if (strFileTextLine.Split(',')[m_CON_COL_WORKER_INFO_PROCESS_TYPE] == g_clsSystemSettingInfo.strProcessTypeDel)
+                                {
                                     intDNgCount++;
+                                }
 
                                 intImpNgCount++;
 
                                 continue;
                             }
-                            if (m_bolProcEnd == true) return;
+
+                            if (m_bolProcEnd == true)
+                            {
+                                return;
+                            }
 
                             // 登録処理実施
                             if (RegistrationWorker(uciWorkerData) == true)
                             {
                                 // OK件数(登録,更新,削除)
                                 if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeCre)
+                                {
                                     intCOkCount++;
+                                }
                                 else if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeUpd)
+                                {
                                     intUOkCount++;
+                                }
                                 else if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeDel)
+                                {
                                     intDOkCount++;
+                                }
 
                                 intImpOkCount++;
                             }
@@ -216,7 +238,11 @@ namespace WokerMstManagement
 
                                 intImpNgCount++;
                             }
-                            if (m_bolProcEnd == true) return;
+
+                            if (m_bolProcEnd == true)
+                            {
+                                return;
+                            }
 
                         }
 
@@ -227,10 +253,13 @@ namespace WokerMstManagement
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 , Environment.NewLine, ex.Message));
 
-                    OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message + "\"");
-                    if (m_bolProcEnd == true) return;
+                    OutPutImportLog(string.Format("{0}{1}{2}{3}{4}" , "\"",g_clsMessageInfo.strMsgE0015 , Environment.NewLine , ex.Message , "\""));
+                    if (m_bolProcEnd == true)
+                    {
+                        return;
+                    }
 
                     intImpNgCount++;
                 }
@@ -246,15 +275,22 @@ namespace WokerMstManagement
                                                          intCCount, intCOkCount, intCNgCount,
                                                          intUCount, intUOkCount, intUNgCount,
                                                          intDCount, intDOkCount, intDNgCount) + "\"");
-                    if (m_bolProcEnd == true) return;
+                    if (m_bolProcEnd == true)
+                    {
+                        return;
+                    }
+
                     MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0001,
                                                   intImpCount, intImpOkCount, intImpNgCount,
                                                   intCCount, intCOkCount, intCNgCount,
                                                   intUCount, intUOkCount, intUNgCount,
-                                                  intDCount, intDOkCount, intDNgCount) + "\n" +
+                                                  intDCount, intDOkCount, intDNgCount) + Environment.NewLine +
                                     string.Format(g_clsMessageInfo.strMsgI0002, m_strOutPutFilePath),
                                     "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    if (m_bolProcEnd == true) return;
+                    if (m_bolProcEnd == true) 
+                    {
+                        return;
+                    }
                 }
                 else
                 {
@@ -263,15 +299,22 @@ namespace WokerMstManagement
                                                          intCCount, intCOkCount, intCNgCount,
                                                          intUCount, intUOkCount, intUNgCount,
                                                          intDCount, intDOkCount, intDNgCount) + "\"");
-                    if (m_bolProcEnd == true) return;
+                    if (m_bolProcEnd == true)
+                    {
+                        return;
+                    }
+
                     MessageBox.Show(string.Format(g_clsMessageInfo.strMsgI0001,
                                                   intImpCount, intImpOkCount, intImpNgCount,
                                                   intCCount, intCOkCount, intCNgCount,
                                                   intUCount, intUOkCount, intUNgCount,
-                                                  intDCount, intDOkCount, intDNgCount) + "\n" +
+                                                  intDCount, intDOkCount, intDNgCount) + Environment.NewLine +
                                     string.Format(g_clsMessageInfo.strMsgI0002, m_strOutPutFilePath),
                                     "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    if (m_bolProcEnd == true) return;
+                    if (m_bolProcEnd == true)
+                    {
+                        return;
+                    }
                 }
 
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
@@ -305,7 +348,10 @@ namespace WokerMstManagement
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0010, intRowCount) + ",\"" + strFileTextLine + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
@@ -374,21 +420,28 @@ namespace WokerMstManagement
             //----------
             // 必須チェック
             if (CheckRequiredInput(uciCheckData.strProcessType, "処理区分", intRowCount, strData) == false)
+            {
                 return false;
+            }
 
             // 型チェック（アルファベット）
             if (!Regex.IsMatch(uciCheckData.strProcessType, @"[^a-zA-zａ-ｚＡ-Ｚ]") == false)
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "処理区分", "アルファベット") + ",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
 
             // 桁数チェック
             if (CheckLength(uciCheckData.strProcessType, "処理区分", 1, 1, strData) == false)
+            {
                 return false;
+            }
 
             // 設定可能値チェック
             if (uciCheckData.strProcessType != g_clsSystemSettingInfo.strProcessTypeCre &&
@@ -399,9 +452,12 @@ namespace WokerMstManagement
                 OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0014, "処理区分", String.Join(",",
                                                                                                            g_clsSystemSettingInfo.strProcessTypeCre,
                                                                                                            g_clsSystemSettingInfo.strProcessTypeUpd,
-                                                                                                           g_clsSystemSettingInfo.strProcessTypeDel)) + 
+                                                                                                           g_clsSystemSettingInfo.strProcessTypeDel)) +
                                                                                                "\",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
@@ -411,109 +467,146 @@ namespace WokerMstManagement
             //----------
             // 必須チェック
             if (CheckRequiredInput(uciCheckData.strWorkerID, "社員番号", intRowCount, strData) == false)
+            {
                 return false;
+            }
 
             // 型チェック(数字)
             if (Int32.TryParse(uciCheckData.strWorkerID, out intWorkerNo) == false)
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "社員番号", "数値") + ",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
 
             // 桁数チェック
             if (CheckLength(uciCheckData.strWorkerID, "社員番号", 4, 4, strData) == false)
+            {
                 return false;
+            }
 
             // 範囲チェック
             if (CheckRange(uciCheckData.strWorkerID, "社員番号", "0001", "9999", strData) == false)
+            {
                 return false;
+            }
 
             //--------------
             // 作業者名＿姓
             //--------------
             // 必須チェック
             if (CheckRequiredInput(uciCheckData.strWorkerNameSei, "作業者名＿姓", intRowCount, strData) == false)
+            {
                 return false;
+            }
 
             // 全角文字チェック
             if (!(Encoding.GetEncoding("Shift-JIS").GetByteCount(uciCheckData.strWorkerNameSei) == uciCheckData.strWorkerNameSei.Length * 2))
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "作業者名＿性", "全角文字") + ",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
 
             // 桁数チェック
             if (CheckLength(uciCheckData.strWorkerNameSei, "作業者名＿姓", 1, 10, strData) == false)
+            {
                 return false;
+            }
 
             //--------------
             // 作業者名＿名
             //--------------
             // 必須チェック
             if (CheckRequiredInput(uciCheckData.strWorkerNameMei, "作業者名＿名", intRowCount, strData) == false)
+            {
                 return false;
+            }
 
             // 全角文字チェック
             if (!(Encoding.GetEncoding("Shift-JIS").GetByteCount(uciCheckData.strWorkerNameMei) == uciCheckData.strWorkerNameMei.Length * 2))
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "作業者名＿名", "全角文字") + ",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
 
             // 桁数チェック
             if (CheckLength(uciCheckData.strWorkerNameMei, "作業者名＿名", 1, 10, strData) == false)
+            {
                 return false;
+            }
 
             //--------------
             // 読みカナ＿姓
             //--------------
             // 必須チェック
             if (CheckRequiredInput(uciCheckData.strWorkerKanaSei, "読みカナ＿姓", intRowCount, strData) == false)
+            {
                 return false;
+            }
 
             // カナ入力チェック
             if (Regex.IsMatch(uciCheckData.strWorkerKanaSei, "^[ァ-ヶー]*$") == false)
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "読みカナ＿性", "全角カナ") + ",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
 
             // 桁数チェック
             if (CheckLength(uciCheckData.strWorkerKanaSei, "読みカナ＿姓", 1, 30, strData) == false)
+            {
                 return false;
+            }
 
             //--------------
             // 読みカナ＿名
             //--------------
             // 必須チェック
             if (CheckRequiredInput(uciCheckData.strWorkerKanaMei, "読みカナ＿名", intRowCount, strData) == false)
+            {
                 return false;
+            }
 
             // カナ入力チェック
             if (Regex.IsMatch(uciCheckData.strWorkerKanaMei, "^[ァ-ヶー]*$") == false)
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0014, "読みカナ＿名", "全角カナ") + ",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
 
             // 桁数チェック
             if (CheckLength(uciCheckData.strWorkerKanaMei, "読みカナ＿名", 1, 30, strData) == false)
+            {
                 return false;
+            }
 
             return true;
         }
@@ -532,11 +625,14 @@ namespace WokerMstManagement
                                          , String strData)
         {
             // 必須入力チェック
-            if (strCheckData == "")
+            if (string.IsNullOrEmpty(strCheckData))
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0011 , strItemName) + ",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
@@ -564,7 +660,10 @@ namespace WokerMstManagement
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0012, strItemName, intMinLength, intMaxLength) + ",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
@@ -592,7 +691,10 @@ namespace WokerMstManagement
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0013, strItemName, strMinValue, strMaxValue) + ",\"" + strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
@@ -642,11 +744,14 @@ namespace WokerMstManagement
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0017 + "\r\n" + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0017 , Environment.NewLine , ex.Message));
 
                         // ログファイル出力
                         OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0017 + "\r\n" + ex.Message + "\",\"" + strData + "\"");
-                        if (m_bolProcEnd == true) return false;
+                        if (m_bolProcEnd == true)
+                        {
+                            return false;
+                        }
 
                         return false;
                     }
@@ -655,6 +760,7 @@ namespace WokerMstManagement
                         g_clsConnectionNpgsql.DbClose();
                     }
                 }
+
                 // 更新
                 if (uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeUpd)
                 {
@@ -685,11 +791,14 @@ namespace WokerMstManagement
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0018 , Environment.NewLine , ex.Message));
 
                         // ログファイル出力
                         OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message + "\",\"" + strData + "\"");
-                        if (m_bolProcEnd == true) return false;
+                        if (m_bolProcEnd == true)
+                        {
+                            return false;
+                        }
 
                         return false;
                     }
@@ -700,7 +809,7 @@ namespace WokerMstManagement
                 }
 
                 // 削除
-                else if (uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeDel)
+                if (uciCheckData.strProcessType == g_clsSystemSettingInfo.strProcessTypeDel)
                 {
                     string strSelWorkerNo = String.Format("{0:D4}", Int32.Parse(uciCheckData.strWorkerID));
 
@@ -716,7 +825,7 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0017 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0017 ,Environment.NewLine , ex.Message));
 
                 return false;
             }
@@ -753,11 +862,14 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0018 ,Environment.NewLine, ex.Message));
 
                 // ログファイル出力
                 OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message + "\",\""+ strData + "\"");
-                if (m_bolProcEnd == true) return false;
+                if (m_bolProcEnd == true)
+                {
+                    return false;
+                }
 
                 return false;
             }
@@ -795,7 +907,7 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0016 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0016 , Environment.NewLine , ex.Message));
 
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0055, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
