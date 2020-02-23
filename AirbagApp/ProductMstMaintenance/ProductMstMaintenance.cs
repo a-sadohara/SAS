@@ -975,16 +975,16 @@ namespace ProductMstMaintenance
             // 行判定用境界線設定
             txtColumnThresholdBFrom.Visible = bolVsbColumn2Flg;
             txtColumnThresholdBTo.Visible = bolVsbColumn2Flg;
-            lblDashColumnThresholdB.Visible = bolVsbColumn2Flg;
+            lblBDash.Visible = bolVsbColumn2Flg;
             txtColumnThresholdCFrom.Visible = bolVsbColumn3Flg;
             txtColumnThresholdCTo.Visible = bolVsbColumn3Flg;
-            lblDashColumnThresholdC.Visible = bolVsbColumn3Flg;
+            lblCDash.Visible = bolVsbColumn3Flg;
             txtColumnThresholdDFrom.Visible = bolVsbColumn4Flg;
             txtColumnThresholdDTo.Visible = bolVsbColumn4Flg;
-            lblDashColumnThresholdD.Visible = bolVsbColumn4Flg;
+            lblDDash.Visible = bolVsbColumn4Flg;
             txtColumnThresholdEFrom.Visible = bolVsbColumn5Flg;
             txtColumnThresholdETo.Visible = bolVsbColumn5Flg;
-            lblDashColumnThresholdE.Visible = bolVsbColumn5Flg;
+            lblEDash.Visible = bolVsbColumn5Flg;
         }
 
         /// <summary>
