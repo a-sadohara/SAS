@@ -23,13 +23,15 @@ namespace ImageChecker
         private int m_intInspectionNum = 0;                     // 検査番号
         private string m_strOrgImagepath = string.Empty;        // オリジナル画像ファイル名
         private string m_strMarkingImagepath = string.Empty;    // マーキング画像ファイル名
-        private int m_intBranchNum = 0;                         // 枝番
+        private int m_intBranchNumGet = 0;                      // 枝番
+        private int m_intBranchNumUpCnt = 0;                    // 枝番繰り上げ
         private int m_intFromApId = 0;                          // 遷移元画面ID
         private int m_intLine = -1;                             // 行
         private string m_strColumns = string.Empty;             // 列
         private string m_strNgReason = string.Empty;            // NG理由
         private ComboBox m_cmbBoxLine;                          // 行コンボボックス
         private ComboBox m_cmbBoxColumns;                       // 列コンボボックス
+        private bool m_bolUpdMode = false;                      // 更新モード
 
         // 定数
         private const string m_CON_FORMAT_NG_FACE = "NG面：{0}";
@@ -57,6 +59,7 @@ namespace ImageChecker
         /// <param name="strOrgImagepath">オリジナル画像ファイル名</param>
         /// <param name="intBranchNum">枝番</param>
         /// <param name="intFromApId">遷移元画面ID</param>
+        /// <param name="bolUpdMode">修正モード</param>
         public CopyReg(HeaderData clsHeaderData,
                        ComboBox cmbBoxLine,
                        ComboBox cmbBoxColumns,
@@ -66,7 +69,8 @@ namespace ImageChecker
                        string strMarkingImagepath,
                        string strOrgImagepath,
                        int intBranchNum,
-                       int intFromApId)
+                       int intFromApId,
+                       bool bolUpdMode)
         {
             m_strProductName = clsHeaderData.strProductName;
             m_strFabricName = clsHeaderData.strFabricName;
@@ -78,8 +82,10 @@ namespace ImageChecker
             m_strNgReason = strNgReason;
             m_strMarkingImagepath = strMarkingImagepath;
             m_strOrgImagepath = strOrgImagepath;
-            m_intBranchNum = intBranchNum;
+            m_intBranchNumGet = intBranchNum;
+            m_intBranchNumUpCnt = 0;
             m_intFromApId = intFromApId;
+            m_bolUpdMode = bolUpdMode;
 
             m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
                                                            m_strProductName,
@@ -146,6 +152,7 @@ namespace ImageChecker
         {
             string strSQL = string.Empty;
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+            int intBranchNum = 0;
             string strNgFace = string.Empty;
             int intCopyRegistInfo = -1;
             string strDispResultMsg = "";
@@ -168,6 +175,7 @@ namespace ImageChecker
 
             try
             {
+                intBranchNum = m_intBranchNumGet + m_intBranchNumUpCnt;
                 strNgFace = m_dtData.Rows[0]["ng_face"].ToString();
 
                 intCopyRegistInfo = intGetCopyRegistInfo();
@@ -262,7 +270,7 @@ namespace ImageChecker
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = m_intBranchNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
 
                         // sqlを実行する
@@ -273,7 +281,7 @@ namespace ImageChecker
                         // ログ出力
                         WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
                         // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0046, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         return;
                     }
@@ -306,7 +314,7 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = m_intBranchNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_face", DbType = DbType.String, Value = strNgFace });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
 
@@ -352,6 +360,7 @@ namespace ImageChecker
             string strSQL = string.Empty;
             DataTable dtData = new DataTable();
             int intCnt = 0;
+            int intBranchNum = m_intBranchNumGet + m_intBranchNumUpCnt;
 
             try
             {
@@ -369,7 +378,7 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = m_intBranchNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
 
                 // sqlを実行する
@@ -387,7 +396,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0002 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0043, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return -1;
             }
@@ -490,15 +499,10 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = m_intBranchNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = m_intBranchNumGet });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
 
                     g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL, lstNpgsqlCommand);
-
-                    if (m_dtData.Rows.Count > 0)
-                    {
-                        m_intBranchNum = int.Parse(m_dtData.Rows[0]["branch_num"].ToString());
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -714,9 +718,53 @@ namespace ImageChecker
         private void btnNextDefect_Click(object sender, EventArgs e)
         {
             btnNextDefect.Enabled = true;
+            string strSQL = string.Empty;
+            DataTable dtData = new DataTable();
+
+            // 枝番を採番する。
+            if (m_bolUpdMode == true && m_intBranchNumUpCnt == 0)
+            {
+                // 複写登録がある場合は子画面を表示する
+                dtData = new DataTable();
+                try
+                {
+                    strSQL = @"SELECT COALESCE(MAX(branch_num),0) AS branch_num_max
+                               FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                               WHERE fabric_name = :fabric_name
+                               AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                               AND   inspection_num = :inspection_num
+                               AND   marking_imagepath = :marking_imagepath";
+
+                    // SQLコマンドに各パラメータを設定する
+                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
+
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                    if (dtData.Rows.Count > 0)
+                    {
+                        if (int.Parse(dtData.Rows[0]["branch_num_max"].ToString()) > 1)
+                        {
+                            m_intBranchNumGet = int.Parse(dtData.Rows[0]["branch_num_max"].ToString());
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+            }
 
             // 枝番のカウントアップ
-            m_intBranchNum++;
+            m_intBranchNumUpCnt++;
 
             dispInitialize();
         }

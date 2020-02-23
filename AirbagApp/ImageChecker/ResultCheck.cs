@@ -1404,6 +1404,7 @@ namespace ImageChecker
             string strNgReason = string.Empty;
             string strOrgImagepath = string.Empty;
             string strMarkingImagepath = string.Empty;
+            bool bolUpdMode = false;
 
             // パラメータを設定
             if (m_clsDecisionResultCorrection.intBranchNum > 0)
@@ -1414,6 +1415,7 @@ namespace ImageChecker
                 strNgReason = m_clsDecisionResultCorrection.strNgReason;
                 strMarkingImagepath = m_clsDecisionResultCorrection.strMarkingImagepath;
                 strOrgImagepath = m_clsDecisionResultCorrection.strOrgImagepath;
+                bolUpdMode = true;
             }
             else
             {
@@ -1434,7 +1436,8 @@ namespace ImageChecker
                                              strMarkingImagepath,
                                              strOrgImagepath,
                                              intBranch,
-                                             m_intFromApId);
+                                             m_intFromApId,
+                                             bolUpdMode);
 
             frmCopyReg.ShowDialog(this);
             bolRegister = frmCopyReg.bolRegister;
