@@ -7,7 +7,7 @@ namespace BeforeInspection
     public partial class ErrorMessageBox : Form
     {
         // パラメータ
-        private string m_strDetail = "";    // 詳細
+        private string m_strDetail = string.Empty;    // 詳細
 
         /// <summary>
         /// コンストラクタ

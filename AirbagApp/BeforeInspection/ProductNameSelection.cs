@@ -30,7 +30,7 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void ProductNameSelection_Load(object sender, EventArgs e)
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData = new DataTable();
 
             // フォームの表示位置調整
@@ -59,7 +59,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}",  g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 
