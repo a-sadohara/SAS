@@ -395,6 +395,43 @@ namespace ImageChecker
                    g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect :
                    g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect;
         }
+
+        /// <summary>
+        /// 必須入力チェック
+        /// </summary>
+        /// <param name="strItemName">項目名</param>
+        /// <param name="strValue">値</param>
+        /// <returns>true:OK false:NG</returns>
+        private bool bolChkRequiredInput()
+        {
+            // 必須入力チェック
+            if (bolChkRequiredInputByItem(cmbBoxLine, "行", cmbBoxLine.Text) == false ||
+                bolChkRequiredInputByItem(cmbBoxColumns, "列", cmbBoxColumns.Text) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 必須入力チェック
+        /// </summary>
+        /// <param name="strItemName">項目名</param>
+        /// <param name="strValue">値</param>
+        /// <returns>true:OK false:NG</returns>
+        private bool bolChkRequiredInputByItem(Control ctlItem, string strItemName, string strValue)
+        {
+            // 必須入力チェック
+            if (string.IsNullOrEmpty(strValue) == true)
+            {
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0011, strItemName), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ctlItem.Focus();
+                return false;
+            }
+
+            return true;
+        }
         #endregion
 
         #region イベント
@@ -406,6 +443,11 @@ namespace ImageChecker
         private void CopyReg_Load(object sender, EventArgs e)
         {
             this.SuspendLayout();
+
+            this.MinimizeBox = false;
+            this.MaximizeBox = false;
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
 
             bool bolProcOkNg = false;
 
@@ -529,6 +571,12 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOKSelect_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(g_clsSystemSettingInfo.intAcceptanceCheckResultOk,
                                      string.Empty,
                                      "過検知");
@@ -541,9 +589,15 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnWhiteThreadOne_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（白糸上単発）",
-                                     "□結節有（白糸上単発）");
+                                     g_CON_NG_REASON_WHITE_THREAD_ONE,
+                                     g_CON_NG_REASON_WHITE_THREAD_ONE);
         }
 
         /// <summary>
@@ -553,9 +607,15 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnWhiteThreadMulti_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（白糸上連続）",
-                                     "□結節有（白糸上連続）");
+                                     g_CON_NG_REASON_WHITE_THREAD_MULTI,
+                                     g_CON_NG_REASON_WHITE_THREAD_MULTI);
         }
 
         /// <summary>
@@ -565,9 +625,15 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnBlackThreadOne_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（黒糸上単発）",
-                                     "□結節有（黒糸上単発）");
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
         }
 
         /// <summary>
@@ -577,9 +643,15 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnBlackThreadMulti_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（黒糸上連続）",
-                                     "□結節有（黒糸上連続）");
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
         }
 
         /// <summary>
@@ -589,9 +661,15 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOtherNg_Click(object sender, EventArgs e)
         {
+            // 必須入力チェック
+            if (bolChkRequiredInput() == false)
+            {
+                return;
+            }
+
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "●他画像でNG判定済み",
-                                     "●他画像でNG判定済み");
+                                     g_CON_NG_REASON_OTHER_NG_JUDGEMENT,
+                                     g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
         }
 
         /// <summary>

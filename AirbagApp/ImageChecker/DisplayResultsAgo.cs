@@ -491,17 +491,7 @@ namespace ImageChecker
 
             try
             {
-                // 件数取得
-                if (bolGetCushionCnt() == false)
-                {
-                    return;
-                }
-
-                // 一覧表示
-                if (bolDispDataGridView() == false)
-                {
-                    return;
-                }
+                // 処理なし
 
                 bolProcOkNg = true;
             }

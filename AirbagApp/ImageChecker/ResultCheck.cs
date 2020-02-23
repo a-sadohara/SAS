@@ -1243,8 +1243,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（白糸上単発）",
-                                     "□結節有（白糸上単発）");
+                                     g_CON_NG_REASON_WHITE_THREAD_ONE,
+                                     g_CON_NG_REASON_WHITE_THREAD_ONE);
         }
 
         /// <summary>
@@ -1261,8 +1261,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（白糸上連続）",
-                                     "□結節有（白糸上連続）");
+                                     g_CON_NG_REASON_WHITE_THREAD_MULTI,
+                                     g_CON_NG_REASON_WHITE_THREAD_MULTI);
         }
 
         /// <summary>
@@ -1279,8 +1279,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（黒糸上単発）",
-                                     "□結節有（黒糸上単発）");
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
         }
 
         /// <summary>
@@ -1297,8 +1297,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（黒糸上連続）",
-                                     "□結節有（黒糸上連続）");
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
         }
 
         /// <summary>
@@ -1315,8 +1315,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "●他画像でNG判定済み",
-                                     "●他画像でNG判定済み");
+                                     g_CON_NG_REASON_OTHER_NG_JUDGEMENT,
+                                     g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
         }
 
         /// <summary>
