@@ -907,6 +907,12 @@ namespace ImageChecker
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
 
+            // ボタン名設定
+            btnWhiteThreadOne.Text = g_CON_NG_REASON_WHITE_THREAD_ONE;
+            btnWhiteThreadMulti.Text = g_CON_NG_REASON_WHITE_THREAD_MULTI;
+            btnBlackThreadOne.Text = g_CON_NG_REASON_BLACK_THREAD_ONE;
+            btnBlackThreadMulti.Text = g_CON_NG_REASON_BLACK_THREAD_MULTI;
+
             bool bolDispForm = false;
 
             List<string> lstCmbItem = new List<string>();
