@@ -1028,6 +1028,8 @@ namespace ImageChecker
                 // ページIdx設定
                 if (m_clsDecisionResultCorrection.intBranchNum > 0)
                 {
+                    // 判定結果情報が譲渡された（履歴系の画面から遷移した）場合
+
                     // ページIdxを検索
                     for (int idx = 0; idx < m_dtData.Rows.Count; idx++)
                     {
@@ -1038,17 +1040,22 @@ namespace ImageChecker
                         }
                     }
                 }
-                
-                if (m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
-                {
-                    if (bolGetStartPageIdx(ref m_intPageIdx) == false)
-                    {
-                        return;
-                    }
-                }
                 else
                 {
-                    m_intPageIdx = 0;
+                    // 新規登録の場合
+
+                    if (m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
+                    {
+                        // 合否確認ステータス：中断であれば、途中からのページIdxを探す
+                        if (bolGetStartPageIdx(ref m_intPageIdx) == false)
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        m_intPageIdx = 0;
+                    }
                 }
 
                 // 全ての合否確認が済んでいなければ画面を表示
