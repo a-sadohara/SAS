@@ -109,26 +109,15 @@ namespace ImageChecker
         {
             try
             {
-                // コンボボックスの設定
                 // 行
-                cmbBoxLine.Items.Clear();
-                foreach (string value in m_cmbBoxLine.Items)
-                {
-                    cmbBoxLine.Items.Add(value);
-                }
                 cmbBoxLine.SelectedItem = m_intLine.ToString();
-                // 行逆さを調整
-                cmbBoxLine.DropDownHeight = this.Size.Height;
                 // 列
-                cmbBoxColumns.Items.Clear();
-                foreach (string value in m_cmbBoxColumns.Items)
-                {
-                    cmbBoxColumns.Items.Add(value);
-                }
                 cmbBoxColumns.SelectedItem = m_strColumns;
-
                 // NG選択理由
-                lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, m_strNgReason);
+                if (m_intBranchNumUpCnt > 0)
+                {
+                    lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, string.Empty);
+                }
 
                 // 次の欠点を登録するの制御
                 btnNextDefect.Enabled = false;
@@ -394,7 +383,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0002 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -509,7 +498,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0039, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -526,8 +515,31 @@ namespace ImageChecker
                 lblNgDistance.Text = string.Format(m_CON_FORMAT_NG_DISTANCE, m_dtData.Rows[0]["ng_distance_x"].ToString(), m_dtData.Rows[0]["ng_distance_y"].ToString());
                 lblMarkingImagepath.Text = m_strMarkingImagepath;
 
-                // 初期化 
+                // コントロール初期化 
+                // 行
+                cmbBoxLine.Items.Clear();
+                foreach (string value in m_cmbBoxLine.Items)
+                {
+                    cmbBoxLine.Items.Add(value);
+                }
+                // 高さを調整
+                cmbBoxLine.DropDownHeight = this.Size.Height;
+                // 列
+                cmbBoxColumns.Items.Clear();
+                foreach (string value in m_cmbBoxColumns.Items)
+                {
+                    cmbBoxColumns.Items.Add(value);
+                }
+                // NG選択理由
+                lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, m_strNgReason);
+
                 dispInitialize();
+
+                // 修正の場合、次の欠点を登録するを有効にする
+                if (m_bolUpdMode == true)
+                {
+                    btnNextDefect.Enabled = true;
+                }
 
                 bolProcOkNg = true;
             }
@@ -721,7 +733,7 @@ namespace ImageChecker
             string strSQL = string.Empty;
             DataTable dtData = new DataTable();
 
-            // 枝番を採番する。
+            // 修正の場合、枝番を採番する。
             if (m_bolUpdMode == true && m_intBranchNumUpCnt == 0)
             {
                 // 複写登録がある場合は子画面を表示する
