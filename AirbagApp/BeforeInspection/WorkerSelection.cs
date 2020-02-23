@@ -34,7 +34,7 @@ namespace BeforeInspection
         /// <param name="strKanaEnd">カナ（終了）</param>
         private void dispDataGridView(string strKanaSta = "", string strKanaEnd = "")
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
 
             dgvWorker.Rows.Clear();
 
@@ -132,14 +132,16 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
                 if (bolProcOkNg == false)
+                {
                     this.Close();
+                }
             }
         }
 
@@ -152,8 +154,8 @@ namespace BeforeInspection
         {
             Label lblSearch = (Label)sender;
 
-            string strKanaSta = "";
-            string strKanaEnd = "";
+            string strKanaSta = string.Empty;
+            string strKanaEnd = string.Empty;
 
             if (lblSearch == lblWorkerNameKanaあ) { strKanaSta = "ア"; strKanaEnd = "オ"; }
             else if (lblSearch == lblWorkerNameKanaか) { strKanaSta = "カ"; strKanaEnd = "コ"; }
@@ -189,7 +191,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -202,7 +204,10 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void dgvWorker_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) { return; }
+            if (e.RowIndex < 0) 
+            { 
+                return; 
+            }
 
             // 選択行の情報をパラメータにセット
             strEmployeeNum = dgvWorker.Rows[e.RowIndex].Cells[0].Value.ToString();

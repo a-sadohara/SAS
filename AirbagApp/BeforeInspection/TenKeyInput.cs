@@ -59,9 +59,9 @@ namespace BeforeInspection
             Button btnObj = (Button)sender;
             int intSelIdx = txtInput.SelectionStart;
 
-                // 値を挿入
-                txtInput.Text = txtInput.Text.Insert(txtInput.SelectionStart, btnObj.Text);
-                txtInput.SelectionStart = intSelIdx + 1;
+            // 値を挿入
+            txtInput.Text = txtInput.Text.Insert(txtInput.SelectionStart, btnObj.Text);
+            txtInput.SelectionStart = intSelIdx + 1;
 
             // カーソル位置を調整
             txtInput.Select();
@@ -74,7 +74,7 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnAllClear_Click(object sender, EventArgs e)
         {
-            txtInput.Text = "";
+            txtInput.Text = string.Empty;
             txtInput.Select();
         }
 
@@ -104,12 +104,10 @@ namespace BeforeInspection
             {
                 return;
             }
-            else
+
+            if (txtInput.SelectionStart > 0)
             {
-                if (txtInput.SelectionStart > 0)
-                {
-                    txtInput.Text = txtInput.Text.Remove(txtInput.SelectionStart - 1, 1);
-                }
+                txtInput.Text = txtInput.Text.Remove(txtInput.SelectionStart - 1, 1);
             }
 
             // カーソル位置を調整
@@ -118,7 +116,7 @@ namespace BeforeInspection
 
             if (txtInput.Text == "-")
             {
-                txtInput.Text = "";
+                txtInput.Text = string.Empty;
             }
         }
 
