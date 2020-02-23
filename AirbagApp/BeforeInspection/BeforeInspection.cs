@@ -13,12 +13,12 @@ namespace BeforeInspection
         // パラメータ変数
         private int m_intInspectionNum = 0;             // 検査番号
         private int m_intBranchNum = 0;                 // 枝番
-        private string m_strUnitNum = "";               // 号機
+        private string m_strUnitNum = string.Empty;               // 号機
         private int m_intIlluminationInformation = -1;  // 照度情報
         private int m_intStartRegimarkCameraNum = 0;    // 開始レジマークカメラ番号
         private int m_intEndRegimarkCameraNum = 0;      // 終了レジマークカメラ番号
-        private string m_strWorker1 = "";               // 作業者情報(社員番号)検反部No.1
-        private string m_strWorker2 = "";               // 作業者情報(社員番号)検反部No.2
+        private string m_strWorker1 = string.Empty;               // 作業者情報(社員番号)検反部No.1
+        private string m_strWorker2 = string.Empty;               // 作業者情報(社員番号)検反部No.2
         private string m_strInspectionDirection;        // 検査方向
         private DateTime m_datInspectionDate;           // 検査日付
 
@@ -68,8 +68,10 @@ namespace BeforeInspection
             frmTenKeyInput.ShowDialog(this);
             this.Visible = true;
 
-            if (frmTenKeyInput.strInput != null)
+            if (!string.IsNullOrEmpty(frmTenKeyInput.strInput))
+            {
                 txtBox.Text = frmTenKeyInput.strInput;
+            }
         }
 
         /// <summary>
@@ -77,25 +79,42 @@ namespace BeforeInspection
         /// </summary>
         private void CalcMaxLine()
         {
-            // 最終行計算
-            if (txtInspectionTargetLine.Text != "" && txtInspectionStartLine.Text != "")
+
+            // 最終行番のラベルを初期化
+            lblInspectionEndLine.Text = string.Empty;
+            lblInspectionEndLine.ForeColor = System.Drawing.SystemColors.ControlText;
+
+            // 最終行番の算出
+            int intStartLine = 0;
+            int intInspectionTargetLine = 0;
+            int intEndLine = 0;
+
+            if (string.IsNullOrEmpty(txtInspectionTargetLine.Text) || string.IsNullOrEmpty(txtInspectionStartLine.Text))
             {
-                if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS || m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
-                {
-                    lblInspectionEndLine.Text = (int.Parse(txtInspectionStartLine.Text) + int.Parse(txtInspectionTargetLine.Text) - 1).ToString();
-                }
-                else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY || m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
-                {
-                    lblInspectionEndLine.Text = (int.Parse(txtInspectionStartLine.Text) - int.Parse(txtInspectionTargetLine.Text) + 1).ToString();
-                }
-            }
-            else
-            {
-                lblInspectionEndLine.Text = "";
+                return;
             }
 
+
+            // 最終行計算
+            intStartLine = int.Parse(txtInspectionStartLine.Text);
+            intInspectionTargetLine = int.Parse(txtInspectionTargetLine.Text);
+
+            if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS || 
+                m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
+            {
+                intEndLine = intStartLine + intInspectionTargetLine - 1;
+            }
+                
+            if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY || 
+                m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
+            {
+                intEndLine = intStartLine + intInspectionTargetLine + 1;
+            }
+
+            lblInspectionEndLine.Text = intEndLine.ToString();
+
             // 整合性チェック
-            if (lblInspectionEndLine.Text != "" && int.Parse(lblInspectionEndLine.Text) <= 0)
+            if (intEndLine <= 0)
             {
                 // 不正の場合はメッセージを表示
                 lblInspectionEndLine.ForeColor = Color.Red;
@@ -105,10 +124,7 @@ namespace BeforeInspection
                 // フォーカスセット
                 txtInspectionTargetLine.Focus();
             }
-            else
-            {
-                lblInspectionEndLine.ForeColor = System.Drawing.SystemColors.ControlText;
-            }
+
         }
 
         /// <summary>
@@ -126,7 +142,9 @@ namespace BeforeInspection
                     (m_intStatus == g_clsSystemSettingInfo.intStatusChk && lblStatus == lblStatusChk) ||
                     (m_intStatus == g_clsSystemSettingInfo.intStatusStp && lblStatus == lblStatusStp) ||
                     (m_intStatus == g_clsSystemSettingInfo.intStatusEnd && lblStatus == lblStatusEnd))
+                {
                     continue;
+                }
 
                 lblStatus.ForeColor = m_clrStatusNonActFore;
                 lblStatus.BackColor = m_clrStatusNonActBack;
@@ -157,7 +175,8 @@ namespace BeforeInspection
                 btnSet.Enabled = true;
                 btnNextFabric.Enabled = false;
             }
-            else if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
+            
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
             {
                 // 背景色変更(協調)
                 lblStatusChk.ForeColor = m_clrStatusActFore;
@@ -181,7 +200,8 @@ namespace BeforeInspection
                 btnSet.Enabled = true;
                 btnNextFabric.Enabled = false;
             }
-            else if (m_intStatus == g_clsSystemSettingInfo.intStatusStp)
+            
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusStp)
             {
                 // 背景色変更(協調)
                 lblStatusStp.ForeColor = m_clrStatusActFore;
@@ -205,7 +225,8 @@ namespace BeforeInspection
                 btnSet.Enabled = true;
                 btnNextFabric.Enabled = false;
             }
-            else if (m_intStatus == g_clsSystemSettingInfo.intStatusEnd)
+            
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusEnd)
             {
                 // 背景色変更(協調)
                 lblStatusEnd.ForeColor = m_clrStatusActFore;
@@ -244,56 +265,47 @@ namespace BeforeInspection
                     (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX && btnInspectionDirection != btnInspectionDirectionX) ||
                     (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY && btnInspectionDirection != btnInspectionDirectionY) ||
                     (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR && btnInspectionDirection != btnInspectionDirectionR))
+                {
                     btnInspectionDirection.BackColor = m_clrInspectionDirectionActBack;
+                }
             }
+
+            lblSEWNo1Top.Text = string.Format(" ↓↓↓ {0} ↓↓↓ ", m_CON_EW);
+            lblSEWNo1Bot.Text = string.Format(" ↓↓↓ {0} ↓↓↓ ", m_CON_SW);
+            lblSEWNo2Top.Text = string.Format(" ↓↓↓ {0} ↓↓↓ ", m_CON_EW);
+            lblSEWNo2Bot.Text = string.Format(" ↓↓↓ {0} ↓↓↓ ", m_CON_SW);
+
 
             // アクティブ化
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS)
             {
                 picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_S_PATH);
-                lblSEWNo1Top.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
-                lblSEWNo1Bot.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
                 picInspectionDirectionNo2.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_X_PATH);
-                lblSEWNo2Top.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
-                lblSEWNo2Bot.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
                 btnInspectionDirectionS.BackColor = m_clrInspectionDirectionActFore;
-
                 m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionS;
             }
-            else if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
+            
+            if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
             {
                 picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_X_PATH);
-                lblSEWNo1Top.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
-                lblSEWNo1Bot.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
                 picInspectionDirectionNo2.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_S_PATH);
-                lblSEWNo2Top.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
-                lblSEWNo2Bot.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
                 btnInspectionDirectionX.BackColor = m_clrInspectionDirectionActFore;
-
                 m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionX;
             }
-            else if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
+            
+            if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
             {
                 picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_Y_PATH);
-                lblSEWNo1Top.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
-                lblSEWNo1Bot.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
                 picInspectionDirectionNo2.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_R_PATH);
-                lblSEWNo2Top.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
-                lblSEWNo2Bot.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
                 btnInspectionDirectionY.BackColor = m_clrInspectionDirectionActFore;
-
                 m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionY;
             }
-            else if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
+            
+            if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
             {
                 picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_R_PATH);
-                lblSEWNo1Top.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
-                lblSEWNo1Bot.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
                 picInspectionDirectionNo2.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_Y_PATH);
-                lblSEWNo2Top.Text = " ↓↓↓ " + m_CON_SW + " ↓↓↓ ";
-                lblSEWNo2Bot.Text = " ↓↓↓ " + m_CON_EW + " ↓↓↓ ";
                 btnInspectionDirectionR.BackColor = m_clrInspectionDirectionActFore;
-
                 m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionR;
             }
 
@@ -340,7 +352,7 @@ namespace BeforeInspection
             }
 
             // 開始時刻入力チェック
-            if (lblStartDatetime.Text == "")
+            if (string.IsNullOrEmpty(lblStartDatetime.Text))
             {
                 // メッセージ出力
                 MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0007, "開始時刻"), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -361,7 +373,7 @@ namespace BeforeInspection
         private Boolean CheckRequiredInput(TextBox tbxCheckData, String strItemName)
         {
             // 必須入力チェック
-            if (tbxCheckData.Text == "")
+            if (string.IsNullOrEmpty(tbxCheckData.Text))
             {
                 // メッセージ出力
                 MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0007, strItemName), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -463,7 +475,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0033 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0033 , Environment.NewLine ,ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0034)).ShowDialog(this);
 
@@ -488,7 +500,7 @@ namespace BeforeInspection
         /// <returns>true:正常終了 false:異常終了</returns>
         private Boolean UpdEndInspectionInfoHeader(int intInspectionNum, int intBranchNum, string strEndDateTime)
         {
-            string strSql = "";
+            string strSql = string.Empty;
             try
             {
                 // SQL文を作成する
@@ -527,7 +539,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0033 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0033 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0035)).ShowDialog(this);
 
@@ -553,7 +565,7 @@ namespace BeforeInspection
         {
             // 初期化
             intInspectionNum = 0;
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData;
 
             try
@@ -588,7 +600,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -625,7 +637,7 @@ namespace BeforeInspection
         private bool bolGetBranchNum(out int intBranchNum, string strInspectionDate, int intInspectionNum)
         {
             // 初期化
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData;
             intBranchNum = 0;
 
@@ -658,7 +670,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -684,7 +696,7 @@ namespace BeforeInspection
             intStartRegimarkCameraNum = 0;
             intEndRegimarkCameraNum = 0;
 
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData;
 
             try
@@ -717,7 +729,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0021)).ShowDialog(this);
 
@@ -735,7 +747,7 @@ namespace BeforeInspection
         private bool bolOutFile(string strFabricName, int intInspectionNum, int intBranchNum)
         {
             StreamWriter sw = null;
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData = new DataTable();
 
             try
@@ -801,7 +813,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0036 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0036 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0037)).ShowDialog(this);
 
@@ -825,7 +837,7 @@ namespace BeforeInspection
         {
             bool bolProcOkNg = false;
 
-            string strSQL = "";
+            string strSQL = string.Empty;
             DataTable dtData;
 
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -863,7 +875,7 @@ namespace BeforeInspection
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
                     new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -874,21 +886,23 @@ namespace BeforeInspection
                 {
                     // 検査番号の取得
                     if (bolGetInspectionNum(out m_intInspectionNum) == false)
+                    {
                         return;
+                    }
 
                     // 値の初期化
                     lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum.ToString());
                     lblUnitNum.Text = string.Format(m_CON_FORMAT_UNIT_NUM, m_strUnitNum);
-                    txtProductName.Text = "";
-                    txtOrderImg.Text = "";
-                    txtFabricName.Text = "";
-                    txtInspectionTargetLine.Text = "";
-                    lblInspectionEndLine.Text = "";
-                    txtInspectionStartLine.Text = "";
-                    txtWorker1.Text = "";
-                    txtWorker2.Text = "";
-                    lblStartDatetime.Text = "";
-                    lblEndDatetime.Text = "";
+                    txtProductName.Text = string.Empty;
+                    txtOrderImg.Text = string.Empty;
+                    txtFabricName.Text = string.Empty;
+                    txtInspectionTargetLine.Text = string.Empty;
+                    lblInspectionEndLine.Text = string.Empty;
+                    txtInspectionStartLine.Text = string.Empty;
+                    txtWorker1.Text = string.Empty;
+                    txtWorker2.Text = string.Empty;
+                    lblStartDatetime.Text = string.Empty;
+                    lblEndDatetime.Text = string.Empty;
                     SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionS);
 
                     // 変数の設定
@@ -954,7 +968,7 @@ namespace BeforeInspection
                         txtWorker1.Text = dtData.Rows[0]["worker_1_name"].ToString();
                         txtWorker2.Text = dtData.Rows[0]["worker_2_name"].ToString();
                         lblStartDatetime.Text = dtData.Rows[0]["start_datetime"].ToString();
-                        lblEndDatetime.Text = "";
+                        lblEndDatetime.Text = string.Empty;
                         SetInspectionDirectionSetting(dtData.Rows[0]["inspection_direction"].ToString());
 
                         // 変数の設定
@@ -968,7 +982,7 @@ namespace BeforeInspection
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                         // メッセージ出力
                         new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -1000,7 +1014,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -1014,7 +1028,9 @@ namespace BeforeInspection
                 this.ResumeLayout();
 
                 if (bolProcOkNg == false)
+                {
                     this.Close();
+                }
             }
         }
 
@@ -1040,15 +1056,22 @@ namespace BeforeInspection
 
             // 枝番の取得
             if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
+            {
                 return;
+            }
 
             // 検査情報ヘッダーの更新
             if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
+            {
                 return;
+            }
 
             // 検査番号の取得
             if (bolGetInspectionNum(out m_intInspectionNum) == false)
+            {
                 return;
+            }
+
             // 検査番号の表示
             lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
@@ -1069,14 +1092,16 @@ namespace BeforeInspection
             // 品番選択画面
             ProductNameSelection frmHinNoSelection = new ProductNameSelection();
             frmHinNoSelection.ShowDialog(this);
-            if (frmHinNoSelection.strProductName != null)
+            if (!string.IsNullOrEmpty(frmHinNoSelection.strProductName))
             {
                 // 品番登録情報の取得(照度情報,開始レジマークカメラ番号,終了レジマークカメラ番号)
                 if (bolGetMstProductInfo(out m_intIlluminationInformation,
                                          out m_intStartRegimarkCameraNum,
                                          out m_intEndRegimarkCameraNum,
                                          frmHinNoSelection.strProductName) == false)
+                {
                     return;
+                }
 
                 // 品名の表示
                 txtProductName.Text = frmHinNoSelection.strProductName;
@@ -1097,14 +1122,15 @@ namespace BeforeInspection
             frmWorkerSelection.ShowDialog(this);
             this.Visible = true;
 
-            if (frmWorkerSelection.strEmployeeNum != null || frmWorkerSelection.strWorkerName != null)
+            if ( !string.IsNullOrEmpty(frmWorkerSelection.strEmployeeNum) || !string.IsNullOrEmpty(frmWorkerSelection.strWorkerName))
             {
                 // 社員番号を変数に保持
                 if (txtWorker == txtWorker1)
                 {
                     m_strWorker1 = frmWorkerSelection.strEmployeeNum;
                 }
-                else if (txtWorker == txtWorker2)
+                
+                if (txtWorker == txtWorker2)
                 {
 
                     m_strWorker2 = frmWorkerSelection.strEmployeeNum;
@@ -1148,15 +1174,18 @@ namespace BeforeInspection
             {
                 SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionS);
             }
-            else if (btn == btnInspectionDirectionX)
+            
+            if (btn == btnInspectionDirectionX)
             {
                 SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionX);
             }
-            else if (btn == btnInspectionDirectionY)
+            
+            if (btn == btnInspectionDirectionY)
             {
                 SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionY);
             }
-            else if (btn == btnInspectionDirectionR)
+            
+            if (btn == btnInspectionDirectionR)
             {
                 SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionR);
             }
@@ -1174,11 +1203,15 @@ namespace BeforeInspection
 
             // 枝番の取得
             if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
+            {
                 return;
+            }
 
             // 検査情報ヘッダーの更新
             if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
+            {
                 return;
+            }
 
             // ステータスの表示設定(検査中断)
             SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusStp);
@@ -1192,7 +1225,9 @@ namespace BeforeInspection
         private void btnSet_Click(object sender, EventArgs e)
         {
             if (InputDataCheck() == false)
+            {
                 return;
+            }
 
             // 確認メッセージ出力
             DialogResult result = System.Windows.Forms.MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0008,
@@ -1206,7 +1241,9 @@ namespace BeforeInspection
                                                                                      m_strInspectionDirection),
                                                                        "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result != DialogResult.Yes)
+            {
                 return;
+            }
 
             if (m_intStatus == g_clsSystemSettingInfo.intStatusBef ||
                 m_intStatus == g_clsSystemSettingInfo.intStatusEnd)
@@ -1214,42 +1251,55 @@ namespace BeforeInspection
                 // ステータス：検査開始前 or 終了から
 
                 // 終了時刻
-                lblEndDatetime.Text = "";
+                lblEndDatetime.Text = string.Empty;
 
                 // 検査番号の採番
                 if (bolNumberInspectionNum(out m_intInspectionNum) == false)
+                {
                     return;
+                }
+
                 // 検査番号の表示
                 lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
                 // 検査情報ヘッダーの登録
                 if (RegStartInspectionInfoHeader(m_intInspectionNum, 1) == false)
+                {
                     return;
+                }
 
                 // ステータスの表示設定(検査準備完了)
                 SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
 
                 // 検査対象数(行数)にフォーカスを設定
                 btnSet.Focus();
+                return;
             }
-            else if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
+
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
             {
                 // ステータス：検査準備完了から
 
                 // 枝番の取得
                 if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
+                {
                     return;
+                }
 
                 // 検査情報ヘッダーの更新
                 if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")) == false)
+                {
                     return;
+                }
 
                 // 枝番の採番
                 m_intBranchNum++;
 
                 // 検査情報ヘッダーの登録
                 if (RegStartInspectionInfoHeader(m_intInspectionNum, m_intBranchNum) == false)
+                {
                     return;
+                }
 
                 // ステータスの表示設定(検査準備完了)
                 SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
@@ -1258,38 +1308,50 @@ namespace BeforeInspection
                 btnNextFabric.Focus();
 
                 // 終了時刻
-                lblEndDatetime.Text = "";
+                lblEndDatetime.Text = string.Empty;
+                return;
             }
-            else if (m_intStatus == g_clsSystemSettingInfo.intStatusStp)
+
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusStp)
             {
                 // ステータス：検査中断から
 
                 // 枝番の取得
                 if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
+                {
                     return;
+                }
 
                 // 検査情報ヘッダーの更新
                 if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
+                {
                     return;
+                }
 
                 // 終了時刻
-                lblEndDatetime.Text = "";
+                lblEndDatetime.Text = string.Empty;
 
                 // 検査番号の採番
                 if (bolNumberInspectionNum(out m_intInspectionNum) == false)
+                {
                     return;
+                }
+
                 // 検査番号の表示
                 lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
                 // 検査情報ヘッダーの登録
                 if (RegStartInspectionInfoHeader(m_intInspectionNum, m_intBranchNum) == false)
+                {
                     return;
+                }
 
                 // ステータスの表示設定(検査準備完了)
                 SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
 
                 // 検査対象数(行数)のフォーカスセット
                 txtInspectionTargetLine.Focus();
+                return;
             }
         }
 
@@ -1306,16 +1368,16 @@ namespace BeforeInspection
             // 値の初期化
             lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum.ToString());
             lblUnitNum.Text = string.Format(m_CON_FORMAT_UNIT_NUM, m_strUnitNum);
-            txtProductName.Text = "";
-            txtOrderImg.Text = "";
-            txtFabricName.Text = "";
-            txtInspectionTargetLine.Text = "";
-            lblInspectionEndLine.Text = "";
-            txtInspectionStartLine.Text = "";
-            txtWorker1.Text = "";
-            txtWorker2.Text = "";
-            lblStartDatetime.Text = "";
-            lblEndDatetime.Text = "";
+            txtProductName.Text = string.Empty;
+            txtOrderImg.Text = string.Empty;
+            txtFabricName.Text = string.Empty;
+            txtInspectionTargetLine.Text = string.Empty;
+            lblInspectionEndLine.Text = string.Empty;
+            txtInspectionStartLine.Text = string.Empty;
+            txtWorker1.Text = string.Empty;
+            txtWorker2.Text = string.Empty;
+            lblStartDatetime.Text = string.Empty;
+            lblEndDatetime.Text = string.Empty;
             SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionS);
 
             // 変数の設定
