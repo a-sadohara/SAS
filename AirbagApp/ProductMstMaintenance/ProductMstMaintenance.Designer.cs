@@ -95,11 +95,11 @@
             this.label30 = new System.Windows.Forms.Label();
             this.label58 = new System.Windows.Forms.Label();
             this.label60 = new System.Windows.Forms.Label();
-            this.lblDashColumnThresholdA = new System.Windows.Forms.Label();
+            this.lblADash = new System.Windows.Forms.Label();
             this.label59 = new System.Windows.Forms.Label();
-            this.lblDashColumnThresholdB = new System.Windows.Forms.Label();
-            this.lblDashColumnThresholdC = new System.Windows.Forms.Label();
-            this.lblDashColumnThresholdD = new System.Windows.Forms.Label();
+            this.lblBDash = new System.Windows.Forms.Label();
+            this.lblCDash = new System.Windows.Forms.Label();
+            this.lblDDash = new System.Windows.Forms.Label();
             this.txtColumnThresholdEFrom = new System.Windows.Forms.TextBox();
             this.txtColumnThresholdDFrom = new System.Windows.Forms.TextBox();
             this.txtColumnThresholdCFrom = new System.Windows.Forms.TextBox();
@@ -110,7 +110,7 @@
             this.txtColumnThresholdCTo = new System.Windows.Forms.TextBox();
             this.txtColumnThresholdDTo = new System.Windows.Forms.TextBox();
             this.txtColumnThresholdETo = new System.Windows.Forms.TextBox();
-            this.lblDashColumnThresholdE = new System.Windows.Forms.Label();
+            this.lblEDash = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label73 = new System.Windows.Forms.Label();
@@ -188,8 +188,8 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.tableLayoutPanel12);
             this.groupBox2.Location = new System.Drawing.Point(3, 4);
@@ -221,8 +221,8 @@
             // 
             // tableLayoutPanel13
             // 
-            this.tableLayoutPanel13.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel13.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel13.ColumnCount = 2;
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 66.4311F));
@@ -336,8 +336,8 @@
             // 
             // tableLayoutPanel11
             // 
-            this.tableLayoutPanel11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel11.ColumnCount = 3;
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40.87591F));
@@ -460,8 +460,8 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.tableLayoutPanel8);
             this.groupBox3.Location = new System.Drawing.Point(0, 0);
@@ -495,8 +495,8 @@
             // 
             // tableLayoutPanel10
             // 
-            this.tableLayoutPanel10.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel10.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel10.ColumnCount = 3;
             this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 29.87013F));
@@ -567,8 +567,8 @@
             // 
             // tableLayoutPanel9
             // 
-            this.tableLayoutPanel9.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel9.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel9.ColumnCount = 3;
             this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 29.87F));
@@ -640,7 +640,7 @@
             // lblIlluminationInformation
             // 
             this.lblIlluminationInformation.AutoSize = true;
-            this.lblIlluminationInformation.Location = new System.Drawing.Point(97, 85);
+            this.lblIlluminationInformation.Location = new System.Drawing.Point(99, 85);
             this.lblIlluminationInformation.Name = "lblIlluminationInformation";
             this.lblIlluminationInformation.Size = new System.Drawing.Size(39, 19);
             this.lblIlluminationInformation.TabIndex = 6;
@@ -683,8 +683,8 @@
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -705,8 +705,8 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.tableLayoutPanel5);
             this.groupBox1.Location = new System.Drawing.Point(0, 4);
@@ -726,7 +726,7 @@
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.06985F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.27006F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.76753F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 58F));
             this.tableLayoutPanel5.Controls.Add(this.label46, 1, 1);
             this.tableLayoutPanel5.Controls.Add(this.label49, 1, 4);
             this.tableLayoutPanel5.Controls.Add(this.label48, 2, 3);
@@ -772,7 +772,7 @@
             // 
             this.label48.AutoSize = true;
             this.tableLayoutPanel5.SetColumnSpan(this.label48, 2);
-            this.label48.Location = new System.Drawing.Point(56, 60);
+            this.label48.Location = new System.Drawing.Point(57, 60);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(107, 25);
             this.label48.TabIndex = 3;
@@ -782,7 +782,7 @@
             // 
             this.label47.AutoSize = true;
             this.tableLayoutPanel5.SetColumnSpan(this.label47, 2);
-            this.label47.Location = new System.Drawing.Point(56, 35);
+            this.label47.Location = new System.Drawing.Point(57, 35);
             this.label47.Name = "label47";
             this.label47.Size = new System.Drawing.Size(107, 25);
             this.label47.TabIndex = 1;
@@ -792,7 +792,7 @@
             // 
             this.lblStartRegimarkCameraNum.AutoSize = true;
             this.tableLayoutPanel5.SetColumnSpan(this.lblStartRegimarkCameraNum, 2);
-            this.lblStartRegimarkCameraNum.Location = new System.Drawing.Point(177, 35);
+            this.lblStartRegimarkCameraNum.Location = new System.Drawing.Point(180, 35);
             this.lblStartRegimarkCameraNum.Name = "lblStartRegimarkCameraNum";
             this.lblStartRegimarkCameraNum.Size = new System.Drawing.Size(29, 19);
             this.lblStartRegimarkCameraNum.TabIndex = 2;
@@ -802,7 +802,7 @@
             // 
             this.lblEndRegimarkCameraNum.AutoSize = true;
             this.tableLayoutPanel5.SetColumnSpan(this.lblEndRegimarkCameraNum, 2);
-            this.lblEndRegimarkCameraNum.Location = new System.Drawing.Point(177, 60);
+            this.lblEndRegimarkCameraNum.Location = new System.Drawing.Point(180, 60);
             this.lblEndRegimarkCameraNum.Name = "lblEndRegimarkCameraNum";
             this.lblEndRegimarkCameraNum.Size = new System.Drawing.Size(29, 19);
             this.lblEndRegimarkCameraNum.TabIndex = 4;
@@ -810,8 +810,8 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox5.Controls.Add(this.tableLayoutPanel6);
             this.groupBox5.Location = new System.Drawing.Point(0, 155);
@@ -829,7 +829,7 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 63.04348F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 36.95652F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 108F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 107F));
             this.tableLayoutPanel6.Controls.Add(this.label11, 1, 1);
             this.tableLayoutPanel6.Controls.Add(this.label15, 1, 2);
             this.tableLayoutPanel6.Controls.Add(this.label25, 1, 3);
@@ -894,14 +894,14 @@
             // 
             // txtColumnThresholdAB
             // 
-            this.txtColumnThresholdAB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdAB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdAB.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtColumnThresholdAB.Location = new System.Drawing.Point(119, 15);
             this.txtColumnThresholdAB.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdAB.MaxLength = 3;
             this.txtColumnThresholdAB.Name = "txtColumnThresholdAB";
-            this.txtColumnThresholdAB.Size = new System.Drawing.Size(39, 26);
+            this.txtColumnThresholdAB.Size = new System.Drawing.Size(40, 26);
             this.txtColumnThresholdAB.TabIndex = 1;
             this.txtColumnThresholdAB.Text = "480";
             this.txtColumnThresholdAB.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -911,14 +911,14 @@
             // 
             // txtColumnThresholdBC
             // 
-            this.txtColumnThresholdBC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdBC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdBC.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtColumnThresholdBC.Location = new System.Drawing.Point(119, 47);
             this.txtColumnThresholdBC.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdBC.MaxLength = 3;
             this.txtColumnThresholdBC.Name = "txtColumnThresholdBC";
-            this.txtColumnThresholdBC.Size = new System.Drawing.Size(39, 26);
+            this.txtColumnThresholdBC.Size = new System.Drawing.Size(40, 26);
             this.txtColumnThresholdBC.TabIndex = 3;
             this.txtColumnThresholdBC.Text = "480";
             this.txtColumnThresholdBC.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -928,14 +928,14 @@
             // 
             // txtColumnThresholdCD
             // 
-            this.txtColumnThresholdCD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdCD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdCD.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtColumnThresholdCD.Location = new System.Drawing.Point(119, 79);
             this.txtColumnThresholdCD.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdCD.MaxLength = 3;
             this.txtColumnThresholdCD.Name = "txtColumnThresholdCD";
-            this.txtColumnThresholdCD.Size = new System.Drawing.Size(39, 26);
+            this.txtColumnThresholdCD.Size = new System.Drawing.Size(40, 26);
             this.txtColumnThresholdCD.TabIndex = 5;
             this.txtColumnThresholdCD.Text = "480";
             this.txtColumnThresholdCD.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -945,14 +945,14 @@
             // 
             // txtColumnThresholdDE
             // 
-            this.txtColumnThresholdDE.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdDE.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdDE.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtColumnThresholdDE.Location = new System.Drawing.Point(119, 111);
             this.txtColumnThresholdDE.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdDE.MaxLength = 3;
             this.txtColumnThresholdDE.Name = "txtColumnThresholdDE";
-            this.txtColumnThresholdDE.Size = new System.Drawing.Size(39, 26);
+            this.txtColumnThresholdDE.Size = new System.Drawing.Size(40, 26);
             this.txtColumnThresholdDE.TabIndex = 7;
             this.txtColumnThresholdDE.Text = "480";
             this.txtColumnThresholdDE.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -962,8 +962,8 @@
             // 
             // groupBox7
             // 
-            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox7.Controls.Add(this.tableLayoutPanel7);
             this.groupBox7.Location = new System.Drawing.Point(0, 346);
@@ -983,16 +983,16 @@
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.7843F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 19.4505F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.78001F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 88F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 85F));
             this.tableLayoutPanel7.Controls.Add(this.label57, 1, 1);
             this.tableLayoutPanel7.Controls.Add(this.label30, 1, 5);
             this.tableLayoutPanel7.Controls.Add(this.label58, 1, 2);
             this.tableLayoutPanel7.Controls.Add(this.label60, 1, 4);
-            this.tableLayoutPanel7.Controls.Add(this.lblDashColumnThresholdA, 3, 1);
+            this.tableLayoutPanel7.Controls.Add(this.lblADash, 3, 1);
             this.tableLayoutPanel7.Controls.Add(this.label59, 1, 3);
-            this.tableLayoutPanel7.Controls.Add(this.lblDashColumnThresholdB, 3, 2);
-            this.tableLayoutPanel7.Controls.Add(this.lblDashColumnThresholdC, 3, 3);
-            this.tableLayoutPanel7.Controls.Add(this.lblDashColumnThresholdD, 3, 4);
+            this.tableLayoutPanel7.Controls.Add(this.lblBDash, 3, 2);
+            this.tableLayoutPanel7.Controls.Add(this.lblCDash, 3, 3);
+            this.tableLayoutPanel7.Controls.Add(this.lblDDash, 3, 4);
             this.tableLayoutPanel7.Controls.Add(this.txtColumnThresholdEFrom, 2, 5);
             this.tableLayoutPanel7.Controls.Add(this.txtColumnThresholdDFrom, 2, 4);
             this.tableLayoutPanel7.Controls.Add(this.txtColumnThresholdCFrom, 2, 3);
@@ -1003,7 +1003,7 @@
             this.tableLayoutPanel7.Controls.Add(this.txtColumnThresholdCTo, 4, 3);
             this.tableLayoutPanel7.Controls.Add(this.txtColumnThresholdDTo, 4, 4);
             this.tableLayoutPanel7.Controls.Add(this.txtColumnThresholdETo, 4, 5);
-            this.tableLayoutPanel7.Controls.Add(this.lblDashColumnThresholdE, 3, 5);
+            this.tableLayoutPanel7.Controls.Add(this.lblEDash, 3, 5);
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 23);
             this.tableLayoutPanel7.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -1025,7 +1025,7 @@
             this.label57.Location = new System.Drawing.Point(43, 19);
             this.label57.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
             this.label57.Name = "label57";
-            this.label57.Size = new System.Drawing.Size(28, 26);
+            this.label57.Size = new System.Drawing.Size(40, 19);
             this.label57.TabIndex = 0;
             this.label57.Text = "A列";
             // 
@@ -1045,7 +1045,7 @@
             this.label58.Location = new System.Drawing.Point(43, 49);
             this.label58.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
             this.label58.Name = "label58";
-            this.label58.Size = new System.Drawing.Size(28, 26);
+            this.label58.Size = new System.Drawing.Size(40, 19);
             this.label58.TabIndex = 4;
             this.label58.Text = "B列";
             // 
@@ -1055,22 +1055,22 @@
             this.label60.Location = new System.Drawing.Point(43, 109);
             this.label60.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
             this.label60.Name = "label60";
-            this.label60.Size = new System.Drawing.Size(28, 26);
+            this.label60.Size = new System.Drawing.Size(40, 19);
             this.label60.TabIndex = 12;
             this.label60.Text = "D列";
             // 
-            // lblDashColumnThresholdA
+            // lblADash
             // 
-            this.lblDashColumnThresholdA.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblADash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDashColumnThresholdA.Location = new System.Drawing.Point(121, 19);
-            this.lblDashColumnThresholdA.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
-            this.lblDashColumnThresholdA.Name = "lblDashColumnThresholdA";
-            this.lblDashColumnThresholdA.Size = new System.Drawing.Size(21, 26);
-            this.lblDashColumnThresholdA.TabIndex = 2;
-            this.lblDashColumnThresholdA.Text = "-";
-            this.lblDashColumnThresholdA.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblADash.Location = new System.Drawing.Point(122, 19);
+            this.lblADash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.lblADash.Name = "lblADash";
+            this.lblADash.Size = new System.Drawing.Size(21, 26);
+            this.lblADash.TabIndex = 2;
+            this.lblADash.Text = "-";
+            this.lblADash.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // label59
             // 
@@ -1082,51 +1082,51 @@
             this.label59.TabIndex = 8;
             this.label59.Text = "C列";
             // 
-            // lblDashColumnThresholdB
+            // lblBDash
             // 
-            this.lblDashColumnThresholdB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblBDash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDashColumnThresholdB.Location = new System.Drawing.Point(121, 49);
-            this.lblDashColumnThresholdB.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
-            this.lblDashColumnThresholdB.Name = "lblDashColumnThresholdB";
-            this.lblDashColumnThresholdB.Size = new System.Drawing.Size(21, 26);
-            this.lblDashColumnThresholdB.TabIndex = 6;
-            this.lblDashColumnThresholdB.Text = "-";
-            this.lblDashColumnThresholdB.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblBDash.Location = new System.Drawing.Point(122, 49);
+            this.lblBDash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.lblBDash.Name = "lblBDash";
+            this.lblBDash.Size = new System.Drawing.Size(21, 26);
+            this.lblBDash.TabIndex = 6;
+            this.lblBDash.Text = "-";
+            this.lblBDash.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // lblDashColumnThresholdC
+            // lblCDash
             // 
-            this.lblDashColumnThresholdC.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblCDash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDashColumnThresholdC.Location = new System.Drawing.Point(121, 79);
-            this.lblDashColumnThresholdC.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
-            this.lblDashColumnThresholdC.Name = "lblDashColumnThresholdC";
-            this.lblDashColumnThresholdC.Size = new System.Drawing.Size(21, 26);
-            this.lblDashColumnThresholdC.TabIndex = 10;
-            this.lblDashColumnThresholdC.Text = "-";
-            this.lblDashColumnThresholdC.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblCDash.Location = new System.Drawing.Point(122, 79);
+            this.lblCDash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.lblCDash.Name = "lblCDash";
+            this.lblCDash.Size = new System.Drawing.Size(21, 26);
+            this.lblCDash.TabIndex = 10;
+            this.lblCDash.Text = "-";
+            this.lblCDash.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // lblDashColumnThresholdD
+            // lblDDash
             // 
-            this.lblDashColumnThresholdD.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblDDash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDashColumnThresholdD.Location = new System.Drawing.Point(121, 109);
-            this.lblDashColumnThresholdD.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
-            this.lblDashColumnThresholdD.Name = "lblDashColumnThresholdD";
-            this.lblDashColumnThresholdD.Size = new System.Drawing.Size(21, 26);
-            this.lblDashColumnThresholdD.TabIndex = 14;
-            this.lblDashColumnThresholdD.Text = "-";
-            this.lblDashColumnThresholdD.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblDDash.Location = new System.Drawing.Point(122, 109);
+            this.lblDDash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.lblDDash.Name = "lblDDash";
+            this.lblDDash.Size = new System.Drawing.Size(21, 26);
+            this.lblDDash.TabIndex = 14;
+            this.lblDDash.Text = "-";
+            this.lblDDash.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // txtColumnThresholdEFrom
             // 
-            this.txtColumnThresholdEFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdEFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdEFrom.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdEFrom.Location = new System.Drawing.Point(85, 135);
+            this.txtColumnThresholdEFrom.Location = new System.Drawing.Point(86, 135);
             this.txtColumnThresholdEFrom.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdEFrom.MaxLength = 3;
             this.txtColumnThresholdEFrom.Name = "txtColumnThresholdEFrom";
@@ -1140,10 +1140,10 @@
             // 
             // txtColumnThresholdDFrom
             // 
-            this.txtColumnThresholdDFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdDFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdDFrom.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdDFrom.Location = new System.Drawing.Point(85, 105);
+            this.txtColumnThresholdDFrom.Location = new System.Drawing.Point(86, 105);
             this.txtColumnThresholdDFrom.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdDFrom.MaxLength = 3;
             this.txtColumnThresholdDFrom.Name = "txtColumnThresholdDFrom";
@@ -1157,10 +1157,10 @@
             // 
             // txtColumnThresholdCFrom
             // 
-            this.txtColumnThresholdCFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdCFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdCFrom.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdCFrom.Location = new System.Drawing.Point(85, 75);
+            this.txtColumnThresholdCFrom.Location = new System.Drawing.Point(86, 75);
             this.txtColumnThresholdCFrom.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdCFrom.MaxLength = 3;
             this.txtColumnThresholdCFrom.Name = "txtColumnThresholdCFrom";
@@ -1174,10 +1174,10 @@
             // 
             // txtColumnThresholdBFrom
             // 
-            this.txtColumnThresholdBFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdBFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdBFrom.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdBFrom.Location = new System.Drawing.Point(85, 45);
+            this.txtColumnThresholdBFrom.Location = new System.Drawing.Point(86, 45);
             this.txtColumnThresholdBFrom.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdBFrom.MaxLength = 3;
             this.txtColumnThresholdBFrom.Name = "txtColumnThresholdBFrom";
@@ -1191,10 +1191,10 @@
             // 
             // txtColumnThresholdAFrom
             // 
-            this.txtColumnThresholdAFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdAFrom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdAFrom.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdAFrom.Location = new System.Drawing.Point(85, 15);
+            this.txtColumnThresholdAFrom.Location = new System.Drawing.Point(86, 15);
             this.txtColumnThresholdAFrom.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdAFrom.MaxLength = 3;
             this.txtColumnThresholdAFrom.Name = "txtColumnThresholdAFrom";
@@ -1208,10 +1208,10 @@
             // 
             // txtColumnThresholdATo
             // 
-            this.txtColumnThresholdATo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdATo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdATo.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdATo.Location = new System.Drawing.Point(145, 15);
+            this.txtColumnThresholdATo.Location = new System.Drawing.Point(146, 15);
             this.txtColumnThresholdATo.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdATo.MaxLength = 3;
             this.txtColumnThresholdATo.Name = "txtColumnThresholdATo";
@@ -1225,10 +1225,10 @@
             // 
             // txtColumnThresholdBTo
             // 
-            this.txtColumnThresholdBTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdBTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdBTo.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdBTo.Location = new System.Drawing.Point(145, 45);
+            this.txtColumnThresholdBTo.Location = new System.Drawing.Point(146, 45);
             this.txtColumnThresholdBTo.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdBTo.MaxLength = 3;
             this.txtColumnThresholdBTo.Name = "txtColumnThresholdBTo";
@@ -1242,10 +1242,10 @@
             // 
             // txtColumnThresholdCTo
             // 
-            this.txtColumnThresholdCTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdCTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdCTo.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdCTo.Location = new System.Drawing.Point(145, 75);
+            this.txtColumnThresholdCTo.Location = new System.Drawing.Point(146, 75);
             this.txtColumnThresholdCTo.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdCTo.MaxLength = 3;
             this.txtColumnThresholdCTo.Name = "txtColumnThresholdCTo";
@@ -1259,10 +1259,10 @@
             // 
             // txtColumnThresholdDTo
             // 
-            this.txtColumnThresholdDTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdDTo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdDTo.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdDTo.Location = new System.Drawing.Point(145, 105);
+            this.txtColumnThresholdDTo.Location = new System.Drawing.Point(146, 105);
             this.txtColumnThresholdDTo.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdDTo.MaxLength = 3;
             this.txtColumnThresholdDTo.Name = "txtColumnThresholdDTo";
@@ -1276,10 +1276,10 @@
             // 
             // txtColumnThresholdETo
             // 
-            this.txtColumnThresholdETo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtColumnThresholdETo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtColumnThresholdETo.ImeMode = System.Windows.Forms.ImeMode.Alpha;
-            this.txtColumnThresholdETo.Location = new System.Drawing.Point(145, 135);
+            this.txtColumnThresholdETo.Location = new System.Drawing.Point(146, 135);
             this.txtColumnThresholdETo.Margin = new System.Windows.Forms.Padding(0);
             this.txtColumnThresholdETo.MaxLength = 3;
             this.txtColumnThresholdETo.Name = "txtColumnThresholdETo";
@@ -1291,23 +1291,23 @@
             this.txtColumnThresholdETo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckInputNumber_KeyPress);
             this.txtColumnThresholdETo.Leave += new System.EventHandler(this.txtThreshold_Leave);
             // 
-            // lblDashColumnThresholdE
+            // lblEDash
             // 
-            this.lblDashColumnThresholdE.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblEDash.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDashColumnThresholdE.Location = new System.Drawing.Point(121, 139);
-            this.lblDashColumnThresholdE.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
-            this.lblDashColumnThresholdE.Name = "lblDashColumnThresholdE";
-            this.lblDashColumnThresholdE.Size = new System.Drawing.Size(21, 26);
-            this.lblDashColumnThresholdE.TabIndex = 18;
-            this.lblDashColumnThresholdE.Text = "-";
-            this.lblDashColumnThresholdE.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblEDash.Location = new System.Drawing.Point(122, 139);
+            this.lblEDash.Margin = new System.Windows.Forms.Padding(3, 4, 3, 0);
+            this.lblEDash.Name = "lblEDash";
+            this.lblEDash.Size = new System.Drawing.Size(21, 26);
+            this.lblEDash.TabIndex = 18;
+            this.lblEDash.Text = "-";
+            this.lblEDash.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.tableLayoutPanel2);
             this.groupBox4.Location = new System.Drawing.Point(432, 0);
@@ -1327,7 +1327,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32.70778F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 22.7882F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 19.03485F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 46F));
             this.tableLayoutPanel2.Controls.Add(this.label73, 1, 5);
             this.tableLayoutPanel2.Controls.Add(this.label22, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.label28, 1, 4);
@@ -1393,7 +1393,7 @@
             // lblBasePointA
             // 
             this.lblBasePointA.AutoSize = true;
-            this.lblBasePointA.Location = new System.Drawing.Point(143, 19);
+            this.lblBasePointA.Location = new System.Drawing.Point(144, 19);
             this.lblBasePointA.Name = "lblBasePointA";
             this.lblBasePointA.Size = new System.Drawing.Size(105, 19);
             this.lblBasePointA.TabIndex = 1;
@@ -1411,7 +1411,7 @@
             // lblTitlePlusDirectionD
             // 
             this.lblTitlePlusDirectionD.AutoSize = true;
-            this.lblTitlePlusDirectionD.Location = new System.Drawing.Point(259, 97);
+            this.lblTitlePlusDirectionD.Location = new System.Drawing.Point(261, 97);
             this.lblTitlePlusDirectionD.Name = "lblTitlePlusDirectionD";
             this.lblTitlePlusDirectionD.Size = new System.Drawing.Size(66, 19);
             this.lblTitlePlusDirectionD.TabIndex = 14;
@@ -1420,7 +1420,7 @@
             // lblTitlePlusDirectionA
             // 
             this.lblTitlePlusDirectionA.AutoSize = true;
-            this.lblTitlePlusDirectionA.Location = new System.Drawing.Point(259, 19);
+            this.lblTitlePlusDirectionA.Location = new System.Drawing.Point(261, 19);
             this.lblTitlePlusDirectionA.Name = "lblTitlePlusDirectionA";
             this.lblTitlePlusDirectionA.Size = new System.Drawing.Size(66, 19);
             this.lblTitlePlusDirectionA.TabIndex = 2;
@@ -1429,7 +1429,7 @@
             // lblBasePointD
             // 
             this.lblBasePointD.AutoSize = true;
-            this.lblBasePointD.Location = new System.Drawing.Point(143, 97);
+            this.lblBasePointD.Location = new System.Drawing.Point(144, 97);
             this.lblBasePointD.Name = "lblBasePointD";
             this.lblBasePointD.Size = new System.Drawing.Size(105, 19);
             this.lblBasePointD.TabIndex = 13;
@@ -1447,7 +1447,7 @@
             // lblBasePointB
             // 
             this.lblBasePointB.AutoSize = true;
-            this.lblBasePointB.Location = new System.Drawing.Point(143, 45);
+            this.lblBasePointB.Location = new System.Drawing.Point(144, 45);
             this.lblBasePointB.Name = "lblBasePointB";
             this.lblBasePointB.Size = new System.Drawing.Size(105, 19);
             this.lblBasePointB.TabIndex = 5;
@@ -1456,7 +1456,7 @@
             // lblTitlePlusDirectionC
             // 
             this.lblTitlePlusDirectionC.AutoSize = true;
-            this.lblTitlePlusDirectionC.Location = new System.Drawing.Point(259, 71);
+            this.lblTitlePlusDirectionC.Location = new System.Drawing.Point(261, 71);
             this.lblTitlePlusDirectionC.Name = "lblTitlePlusDirectionC";
             this.lblTitlePlusDirectionC.Size = new System.Drawing.Size(66, 19);
             this.lblTitlePlusDirectionC.TabIndex = 10;
@@ -1465,7 +1465,7 @@
             // lblTitlePlusDirectionB
             // 
             this.lblTitlePlusDirectionB.AutoSize = true;
-            this.lblTitlePlusDirectionB.Location = new System.Drawing.Point(259, 45);
+            this.lblTitlePlusDirectionB.Location = new System.Drawing.Point(261, 45);
             this.lblTitlePlusDirectionB.Name = "lblTitlePlusDirectionB";
             this.lblTitlePlusDirectionB.Size = new System.Drawing.Size(66, 19);
             this.lblTitlePlusDirectionB.TabIndex = 6;
@@ -1474,7 +1474,7 @@
             // lblBasePointC
             // 
             this.lblBasePointC.AutoSize = true;
-            this.lblBasePointC.Location = new System.Drawing.Point(143, 71);
+            this.lblBasePointC.Location = new System.Drawing.Point(144, 71);
             this.lblBasePointC.Name = "lblBasePointC";
             this.lblBasePointC.Size = new System.Drawing.Size(105, 19);
             this.lblBasePointC.TabIndex = 9;
@@ -1483,7 +1483,7 @@
             // lblPlusDirectionA
             // 
             this.lblPlusDirectionA.AutoSize = true;
-            this.lblPlusDirectionA.Location = new System.Drawing.Point(340, 19);
+            this.lblPlusDirectionA.Location = new System.Drawing.Point(342, 19);
             this.lblPlusDirectionA.Name = "lblPlusDirectionA";
             this.lblPlusDirectionA.Size = new System.Drawing.Size(47, 19);
             this.lblPlusDirectionA.TabIndex = 3;
@@ -1492,7 +1492,7 @@
             // lblPlusDirectionB
             // 
             this.lblPlusDirectionB.AutoSize = true;
-            this.lblPlusDirectionB.Location = new System.Drawing.Point(340, 45);
+            this.lblPlusDirectionB.Location = new System.Drawing.Point(342, 45);
             this.lblPlusDirectionB.Name = "lblPlusDirectionB";
             this.lblPlusDirectionB.Size = new System.Drawing.Size(47, 19);
             this.lblPlusDirectionB.TabIndex = 7;
@@ -1501,7 +1501,7 @@
             // lblPlusDirectionC
             // 
             this.lblPlusDirectionC.AutoSize = true;
-            this.lblPlusDirectionC.Location = new System.Drawing.Point(340, 71);
+            this.lblPlusDirectionC.Location = new System.Drawing.Point(342, 71);
             this.lblPlusDirectionC.Name = "lblPlusDirectionC";
             this.lblPlusDirectionC.Size = new System.Drawing.Size(47, 19);
             this.lblPlusDirectionC.TabIndex = 11;
@@ -1510,7 +1510,7 @@
             // lblPlusDirectionD
             // 
             this.lblPlusDirectionD.AutoSize = true;
-            this.lblPlusDirectionD.Location = new System.Drawing.Point(340, 97);
+            this.lblPlusDirectionD.Location = new System.Drawing.Point(342, 97);
             this.lblPlusDirectionD.Name = "lblPlusDirectionD";
             this.lblPlusDirectionD.Size = new System.Drawing.Size(47, 19);
             this.lblPlusDirectionD.TabIndex = 15;
@@ -1519,7 +1519,7 @@
             // lblBasePointE
             // 
             this.lblBasePointE.AutoSize = true;
-            this.lblBasePointE.Location = new System.Drawing.Point(143, 123);
+            this.lblBasePointE.Location = new System.Drawing.Point(144, 123);
             this.lblBasePointE.Name = "lblBasePointE";
             this.lblBasePointE.Size = new System.Drawing.Size(105, 19);
             this.lblBasePointE.TabIndex = 17;
@@ -1528,7 +1528,7 @@
             // lblTitlePlusDirectionE
             // 
             this.lblTitlePlusDirectionE.AutoSize = true;
-            this.lblTitlePlusDirectionE.Location = new System.Drawing.Point(259, 123);
+            this.lblTitlePlusDirectionE.Location = new System.Drawing.Point(261, 123);
             this.lblTitlePlusDirectionE.Name = "lblTitlePlusDirectionE";
             this.lblTitlePlusDirectionE.Size = new System.Drawing.Size(66, 19);
             this.lblTitlePlusDirectionE.TabIndex = 18;
@@ -1537,7 +1537,7 @@
             // lblPlusDirectionE
             // 
             this.lblPlusDirectionE.AutoSize = true;
-            this.lblPlusDirectionE.Location = new System.Drawing.Point(340, 123);
+            this.lblPlusDirectionE.Location = new System.Drawing.Point(342, 123);
             this.lblPlusDirectionE.Name = "lblPlusDirectionE";
             this.lblPlusDirectionE.Size = new System.Drawing.Size(47, 19);
             this.lblPlusDirectionE.TabIndex = 19;
@@ -1545,8 +1545,8 @@
             // 
             // tableLayoutPanel3
             // 
-            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel3.ColumnCount = 2;
             this.tableLayoutPanel4.SetColumnSpan(this.tableLayoutPanel3, 2);
@@ -1564,8 +1564,8 @@
             // 
             // tableLayoutPanel4
             // 
-            this.tableLayoutPanel4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel4.ColumnCount = 3;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 29.81367F));
@@ -1586,8 +1586,8 @@
             // 
             // tableLayoutPanel14
             // 
-            this.tableLayoutPanel14.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel14.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel14.ColumnCount = 2;
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 31F));
@@ -1616,8 +1616,8 @@
             // 
             // tableLayoutPanel15
             // 
-            this.tableLayoutPanel15.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel15.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel15.ColumnCount = 1;
             this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -1639,8 +1639,8 @@
             // 
             // lblCamPosi1
             // 
-            this.lblCamPosi1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblCamPosi1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblCamPosi1.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblCamPosi1.Location = new System.Drawing.Point(0, 0);
@@ -1653,8 +1653,8 @@
             // 
             // lblCamPosi2
             // 
-            this.lblCamPosi2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblCamPosi2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblCamPosi2.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblCamPosi2.Location = new System.Drawing.Point(0, 70);
@@ -1667,8 +1667,8 @@
             // 
             // lblCamPosi3
             // 
-            this.lblCamPosi3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblCamPosi3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblCamPosi3.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblCamPosi3.Location = new System.Drawing.Point(0, 140);
@@ -1681,8 +1681,8 @@
             // 
             // lblCamPosi4
             // 
-            this.lblCamPosi4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblCamPosi4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblCamPosi4.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblCamPosi4.Location = new System.Drawing.Point(0, 210);
@@ -1695,8 +1695,8 @@
             // 
             // lblCamPosi5
             // 
-            this.lblCamPosi5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblCamPosi5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblCamPosi5.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblCamPosi5.Location = new System.Drawing.Point(0, 280);
@@ -1803,7 +1803,7 @@
         private System.Windows.Forms.Label label60;
         private System.Windows.Forms.Label label59;
         private System.Windows.Forms.Label label58;
-        private System.Windows.Forms.Label lblDashColumnThresholdA;
+        private System.Windows.Forms.Label lblADash;
         private System.Windows.Forms.Label label57;
         private System.Windows.Forms.Label lblPlusDirectionD;
         private System.Windows.Forms.Label lblPlusDirectionC;
@@ -1834,9 +1834,9 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
-        private System.Windows.Forms.Label lblDashColumnThresholdB;
-        private System.Windows.Forms.Label lblDashColumnThresholdC;
-        private System.Windows.Forms.Label lblDashColumnThresholdD;
+        private System.Windows.Forms.Label lblBDash;
+        private System.Windows.Forms.Label lblCDash;
+        private System.Windows.Forms.Label lblDDash;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.Label label56;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
@@ -1866,7 +1866,7 @@
         private System.Windows.Forms.Label lblCamPosi5;
         private System.Windows.Forms.TextBox txtColumnThresholdDE;
         private System.Windows.Forms.TextBox txtColumnThresholdETo;
-        private System.Windows.Forms.Label lblDashColumnThresholdE;
+        private System.Windows.Forms.Label lblEDash;
         private System.Windows.Forms.Panel pnlMasterImage;
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.TextBox txtAiModelName;
