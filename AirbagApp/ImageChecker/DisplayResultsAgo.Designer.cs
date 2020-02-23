@@ -76,6 +76,7 @@
             this.txtOrderImg = new System.Windows.Forms.TextBox();
             this.txtFabricName = new System.Windows.Forms.TextBox();
             this.lblSashizu = new System.Windows.Forms.Label();
+            this.cmbUnitNum = new System.Windows.Forms.ComboBox();
             this.lblHinNm = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.lblKensaNo = new System.Windows.Forms.Label();
@@ -120,7 +121,6 @@
             this.ResultUpdateDatetime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ResultUpdateWorker = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BeforeNgReason = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cmbUnitNum = new System.Windows.Forms.ComboBox();
             this.pnlTop.SuspendLayout();
             this.grbWhere.SuspendLayout();
             this.pnlWhere.SuspendLayout();
@@ -206,7 +206,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.74101F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.259F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 161F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 225F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 230F));
             this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel4, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
@@ -243,10 +243,10 @@
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.label6);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(131, 0);
+            this.panel2.Location = new System.Drawing.Point(130, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(422, 141);
+            this.panel2.Size = new System.Drawing.Size(418, 141);
             this.panel2.TabIndex = 28;
             // 
             // lblHansoStaDate
@@ -528,10 +528,10 @@
             this.panel4.Controls.Add(this.lblImageSearchCount);
             this.panel4.Controls.Add(this.cmbNgFace);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(714, 0);
+            this.panel4.Location = new System.Drawing.Point(709, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(226, 141);
+            this.panel4.Size = new System.Drawing.Size(231, 141);
             this.panel4.TabIndex = 28;
             // 
             // lblNgSide
@@ -661,7 +661,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(131, 141);
+            this.panel1.Size = new System.Drawing.Size(130, 141);
             this.panel1.TabIndex = 28;
             // 
             // lblGoki
@@ -737,6 +737,25 @@
             this.lblSashizu.TabIndex = 1;
             this.lblSashizu.Text = "指図：";
             // 
+            // cmbUnitNum
+            // 
+            this.cmbUnitNum.Font = new System.Drawing.Font("メイリオ", 8.25F);
+            this.cmbUnitNum.FormattingEnabled = true;
+            this.cmbUnitNum.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.cmbUnitNum.Items.AddRange(new object[] {
+            "",
+            "N1",
+            "N2",
+            "N3",
+            "N4"});
+            this.cmbUnitNum.Location = new System.Drawing.Point(44, 1);
+            this.cmbUnitNum.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
+            this.cmbUnitNum.MaxLength = 2;
+            this.cmbUnitNum.Name = "cmbUnitNum";
+            this.cmbUnitNum.Size = new System.Drawing.Size(39, 25);
+            this.cmbUnitNum.TabIndex = 18;
+            this.cmbUnitNum.Text = "99";
+            // 
             // lblHinNm
             // 
             this.lblHinNm.AutoSize = true;
@@ -760,7 +779,7 @@
             this.panel3.Controls.Add(this.lblTitleUserNm);
             this.panel3.Controls.Add(this.cmbColumns);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(553, 0);
+            this.panel3.Location = new System.Drawing.Point(548, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(0);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(161, 141);
@@ -1215,25 +1234,6 @@
             this.BeforeNgReason.Name = "BeforeNgReason";
             this.BeforeNgReason.ReadOnly = true;
             this.BeforeNgReason.Width = 200;
-            // 
-            // cmbUnitNum
-            // 
-            this.cmbUnitNum.Font = new System.Drawing.Font("メイリオ", 8.25F);
-            this.cmbUnitNum.FormattingEnabled = true;
-            this.cmbUnitNum.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cmbUnitNum.Items.AddRange(new object[] {
-            "",
-            "N1",
-            "N2",
-            "N3",
-            "N4"});
-            this.cmbUnitNum.Location = new System.Drawing.Point(44, 1);
-            this.cmbUnitNum.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
-            this.cmbUnitNum.MaxLength = 2;
-            this.cmbUnitNum.Name = "cmbUnitNum";
-            this.cmbUnitNum.Size = new System.Drawing.Size(39, 25);
-            this.cmbUnitNum.TabIndex = 18;
-            this.cmbUnitNum.Text = "99";
             // 
             // DisplayResultsAgo
             // 
