@@ -444,11 +444,11 @@ namespace ImageChecker
         /// <param name="intStatus">ステータス</param>
         /// <param name="strStartDatetime">判定開始日時(YYYY/MM//DD HH:MM:SS)</param>
         /// <returns></returns>
-        public static Boolean blnUpdOverDetectionExceptStatus(string strFabricName,
-                                                              string strInspectionDate,
-                                                              int intInspectionNum,
-                                                              int intStatus,
-                                                              string strStartDatetime = "")
+        private Boolean blnUpdOverDetectionExceptStatus(string strFabricName,
+                                                        string strInspectionDate,
+                                                        int intInspectionNum,
+                                                        int intStatus,
+                                                        string strStartDatetime = "")
         {
             string strSQL = string.Empty;
             try

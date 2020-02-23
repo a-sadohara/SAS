@@ -347,13 +347,22 @@ namespace ImageChecker
                 }
 
                 // 件数の表示
+                lblImageSearchCount.Visible = true;
+                lblCushionSearchCount.Visible = true;
                 lblImageSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, m_dtData.Rows.Count, m_intAllImageInspectionCount);
                 lblCushionSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, lststrLineColumns.Count, m_intAllCushionspectionCount);
 
                 // 行選択
                 if (m_intSelIdx != -1)
                 {
-                    this.dgvCheckInspectionHistory.Rows[m_intSelIdx].Selected = true;
+                    try
+                    {
+                        this.dgvCheckInspectionHistory.Rows[m_intSelIdx].Selected = true;
+                    }
+                    catch
+                    {
+                        // 無視する
+                    }
                 }
 
                 // スクロールバー調整
@@ -411,7 +420,7 @@ namespace ImageChecker
                            AND iih.inspection_num = dr.inspection_num
                            INNER JOIN mst_product_info mpi
                            ON  iih.product_name = mpi.product_name
-                           WHERE iih.end_datetime < TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS') 
+                           WHERE iih.decision_end_datetime < TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS')
                            GROUP BY iih.fabric_name, iih.inspection_date, iih.inspection_num";
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL);
@@ -491,7 +500,9 @@ namespace ImageChecker
 
             try
             {
-                // 処理なし
+                // 件数の非表示
+                lblImageSearchCount.Visible = false;
+                lblCushionSearchCount.Visible = false;
 
                 bolProcOkNg = true;
             }
@@ -724,7 +735,17 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            bolDispDataGridView();
+            // 件数取得
+            if (bolGetCushionCnt() == false)
+            {
+                return;
+            }
+
+            // 一覧表示
+            if (bolDispDataGridView() == false)
+            {
+                return;
+            }
         }
 
         #region 横スクロール対応
