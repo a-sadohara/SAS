@@ -200,7 +200,7 @@ namespace ImageChecker
                            ON  iih.product_name = mpi.product_name
                            WHERE (iih.decision_end_datetime IS NULL OR
                                   iih.decision_end_datetime >= TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS'))
-                           ORDER BY iih.end_datetime ASC, iih.inspection_num ASC";
+                           ORDER BY iih.inspection_date ASC, iih.inspection_num ASC";
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();

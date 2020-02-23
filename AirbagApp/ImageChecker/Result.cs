@@ -18,6 +18,10 @@ namespace ImageChecker
 {
     public partial class Result : Form
     {
+        // 選択行保持
+        public int intSelIdx { get; set; }
+        public int intFirstDisplayedScrollingRowIdx { get; set; }
+
         public bool bolMod { get; set; }
 
         public bool bolReg { get; set; }
@@ -91,7 +95,7 @@ namespace ImageChecker
         /// <param name="clsHeaderData">ヘッダ情報</param>
         /// <param name="clsDecisionResultBef">判定結果情報(更新前)</param>
         /// <param name="intFromApId">遷移元画面ID</param>
-        public Result(ref HeaderData clsHeaderData, int intFromApId = 0)
+        public Result(ref HeaderData clsHeaderData, int intFromApId, int intSelIndex, int intFirstDisplayedScrollingRowIndex)
         {
             m_clsHeaderData = clsHeaderData;
 
@@ -118,6 +122,8 @@ namespace ImageChecker
                                                            m_strFabricName,
                                                            m_intInspectionNum);
 
+            intSelIdx = intSelIndex;
+            intFirstDisplayedScrollingRowIdx = intFirstDisplayedScrollingRowIndex;
             bolMod = false;
             bolReg = false;
             clsDecisionResult = new DecisionResult();
@@ -485,6 +491,7 @@ namespace ImageChecker
                     return;
                 }
 
+                // 合否確認へ戻るボタン制御
                 if (dgvDecisionResult.Rows.Count == 0)
                 {
                     btnAcceptanceCheck.Enabled = false;
@@ -493,6 +500,22 @@ namespace ImageChecker
                 {
                     btnAcceptanceCheck.Enabled = true;
                 }
+
+                // 行選択
+                if (intSelIdx != -1)
+                {
+                    this.dgvDecisionResult.Rows[intSelIdx].Selected = true;
+                }
+
+                // スクロールバー調整
+                if (intFirstDisplayedScrollingRowIdx != -1)
+                {
+                    this.dgvDecisionResult.FirstDisplayedScrollingRowIndex = intFirstDisplayedScrollingRowIdx;
+                }
+
+                // 初期化
+                intSelIdx = -1;
+                intFirstDisplayedScrollingRowIdx = -1;
 
                 bolProcOkNg = true;
             }
@@ -827,10 +850,6 @@ namespace ImageChecker
                             {
                                 strWriteLine += ",Ｅ";
                             }
-                            else
-                            {
-                                strWriteLine += "," + dr["cloumns"].ToString();
-                            }
 
                             strWriteLine += "," + dr["ng_face"].ToString();
                             strWriteLine += "," + dr["ng_reason"].ToString();
@@ -901,27 +920,31 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnAcceptanceCheck_Click(object sender, EventArgs e)
         {
-            int intSelIdx = -1;
+            int intRowIdx = -1;
 
             // 選択行インデックスの取得
             foreach (DataGridViewRow dgvRow in this.dgvDecisionResult.SelectedRows)
             {
-                intSelIdx = dgvRow.Index;
+                intRowIdx = dgvRow.Index;
                 break;
             }
 
-            if (intSelIdx == -1)
+            if (intRowIdx == -1)
             {
                 return;
             }
 
             clsDecisionResult = new DecisionResult();
-            clsDecisionResult.intBranchNum = int.Parse(m_dtData.Rows[intSelIdx]["branch_num"].ToString());
-            clsDecisionResult.intLine = int.Parse(m_dtData.Rows[intSelIdx]["line"].ToString());
-            clsDecisionResult.strCloumns = m_dtData.Rows[intSelIdx]["cloumns"].ToString();
-            clsDecisionResult.strNgReason = m_dtData.Rows[intSelIdx]["ng_reason"].ToString();
-            clsDecisionResult.strMarkingImagepath = m_dtData.Rows[intSelIdx]["marking_imagepath"].ToString();
-            clsDecisionResult.strOrgImagepath = m_dtData.Rows[intSelIdx]["org_imagepath"].ToString();
+            clsDecisionResult.intBranchNum = int.Parse(m_dtData.Rows[intRowIdx]["branch_num"].ToString());
+            clsDecisionResult.intLine = int.Parse(m_dtData.Rows[intRowIdx]["line"].ToString());
+            clsDecisionResult.strCloumns = m_dtData.Rows[intRowIdx]["cloumns"].ToString();
+            clsDecisionResult.strNgReason = m_dtData.Rows[intRowIdx]["ng_reason"].ToString();
+            clsDecisionResult.strMarkingImagepath = m_dtData.Rows[intRowIdx]["marking_imagepath"].ToString();
+            clsDecisionResult.strOrgImagepath = m_dtData.Rows[intRowIdx]["org_imagepath"].ToString();
+            
+            // 選択行情報を保持
+            intSelIdx = intRowIdx;
+            intFirstDisplayedScrollingRowIdx = this.dgvDecisionResult.FirstDisplayedScrollingRowIndex;
 
             // 修正する
             bolMod = true;

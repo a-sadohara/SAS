@@ -81,6 +81,10 @@ namespace ImageChecker
         private Bitmap m_bmpMasterImageMarking1 = null;
         private Bitmap m_bmpMasterImageMarking2 = null;
 
+        // 選択行保持(結果画面用)
+        private int m_intSelIdx = -1;
+        private int m_intFirstDisplayedScrollingRowIdx = -1;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -738,12 +742,15 @@ namespace ImageChecker
             this.Visible = false;
 
             // 結果確認画面に遷移
-            Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId);
+            Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx);
             frmResult.ShowDialog(this);
 
             // パラメータ更新
             m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
             m_strDecisionEndTime = m_clsHeaderData.strDecisionEndDatetime;
+
+            m_intSelIdx = frmResult.intSelIdx;
+            m_intFirstDisplayedScrollingRowIdx = frmResult.intFirstDisplayedScrollingRowIdx;
 
             if (frmResult.bolMod == true)
             {
@@ -1236,8 +1243,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（白糸上単発）",
-                                     "□結節有（白糸上単発）");
+                                     g_CON_NG_REASON_WHITE_THREAD_ONE,
+                                     g_CON_NG_REASON_WHITE_THREAD_ONE);
         }
 
         /// <summary>
@@ -1254,8 +1261,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（白糸上連続）",
-                                     "□結節有（白糸上連続）");
+                                     g_CON_NG_REASON_WHITE_THREAD_MULTI,
+                                     g_CON_NG_REASON_WHITE_THREAD_MULTI);
         }
 
         /// <summary>
@@ -1272,8 +1279,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（黒糸上単発）",
-                                     "□結節有（黒糸上単発）");
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
         }
 
         /// <summary>
@@ -1290,8 +1297,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "□結節有（黒糸上連続）",
-                                     "□結節有（黒糸上連続）");
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
+                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
         }
 
         /// <summary>
@@ -1308,8 +1315,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     "●他画像でNG判定済み",
-                                     "●他画像でNG判定済み");
+                                     g_CON_NG_REASON_OTHER_NG_JUDGEMENT,
+                                     g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
         }
 
         /// <summary>

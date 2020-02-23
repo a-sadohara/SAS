@@ -200,7 +200,7 @@
             this.btnWhiteThreadOne.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
             this.btnWhiteThreadOne.Name = "btnWhiteThreadOne";
             this.btnWhiteThreadOne.Size = new System.Drawing.Size(137, 43);
-            this.btnWhiteThreadOne.TabIndex = 26;
+            this.btnWhiteThreadOne.TabIndex = 1;
             this.btnWhiteThreadOne.Text = "□結節有(白糸上単発)";
             this.btnWhiteThreadOne.UseVisualStyleBackColor = true;
             this.btnWhiteThreadOne.Click += new System.EventHandler(this.btnWhiteThreadOne_Click);
@@ -214,7 +214,7 @@
             this.btnOtherNg.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
             this.btnOtherNg.Name = "btnOtherNg";
             this.btnOtherNg.Size = new System.Drawing.Size(138, 43);
-            this.btnOtherNg.TabIndex = 27;
+            this.btnOtherNg.TabIndex = 1;
             this.btnOtherNg.Text = "□他画像で\r\nＮＧ判定済み";
             this.btnOtherNg.UseVisualStyleBackColor = true;
             this.btnOtherNg.Click += new System.EventHandler(this.btnOtherNg_Click);
@@ -228,7 +228,7 @@
             this.btnOther.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
             this.btnOther.Name = "btnOther";
             this.btnOther.Size = new System.Drawing.Size(138, 43);
-            this.btnOther.TabIndex = 28;
+            this.btnOther.TabIndex = 1;
             this.btnOther.Text = "□その他";
             this.btnOther.UseVisualStyleBackColor = true;
             this.btnOther.Click += new System.EventHandler(this.btnOther_Click);
@@ -242,7 +242,7 @@
             this.btnWhiteThreadMulti.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
             this.btnWhiteThreadMulti.Name = "btnWhiteThreadMulti";
             this.btnWhiteThreadMulti.Size = new System.Drawing.Size(137, 43);
-            this.btnWhiteThreadMulti.TabIndex = 27;
+            this.btnWhiteThreadMulti.TabIndex = 1;
             this.btnWhiteThreadMulti.Text = "□結節有(白糸上連続)";
             this.btnWhiteThreadMulti.UseVisualStyleBackColor = true;
             this.btnWhiteThreadMulti.Click += new System.EventHandler(this.btnWhiteThreadMulti_Click);
@@ -256,7 +256,7 @@
             this.btnBlackThreadOne.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
             this.btnBlackThreadOne.Name = "btnBlackThreadOne";
             this.btnBlackThreadOne.Size = new System.Drawing.Size(137, 43);
-            this.btnBlackThreadOne.TabIndex = 26;
+            this.btnBlackThreadOne.TabIndex = 1;
             this.btnBlackThreadOne.Text = "□結節有(黒糸上単発)";
             this.btnBlackThreadOne.UseVisualStyleBackColor = true;
             this.btnBlackThreadOne.Click += new System.EventHandler(this.btnBlackThreadOne_Click);
@@ -270,7 +270,7 @@
             this.btnBlackThreadMulti.Margin = new System.Windows.Forms.Padding(4, 0, 4, 8);
             this.btnBlackThreadMulti.Name = "btnBlackThreadMulti";
             this.btnBlackThreadMulti.Size = new System.Drawing.Size(137, 43);
-            this.btnBlackThreadMulti.TabIndex = 27;
+            this.btnBlackThreadMulti.TabIndex = 1;
             this.btnBlackThreadMulti.Text = "□結節有(黒糸上連続)";
             this.btnBlackThreadMulti.UseVisualStyleBackColor = true;
             this.btnBlackThreadMulti.Click += new System.EventHandler(this.btnBlackThreadMulti_Click);
@@ -355,7 +355,7 @@
             this.cmbBoxLine.Margin = new System.Windows.Forms.Padding(0);
             this.cmbBoxLine.Name = "cmbBoxLine";
             this.cmbBoxLine.Size = new System.Drawing.Size(84, 39);
-            this.cmbBoxLine.TabIndex = 34;
+            this.cmbBoxLine.TabIndex = 1;
             // 
             // panel12
             // 
@@ -376,7 +376,7 @@
             this.cmbBoxColumns.Margin = new System.Windows.Forms.Padding(0);
             this.cmbBoxColumns.Name = "cmbBoxColumns";
             this.cmbBoxColumns.Size = new System.Drawing.Size(62, 39);
-            this.cmbBoxColumns.TabIndex = 34;
+            this.cmbBoxColumns.TabIndex = 1;
             // 
             // panel13
             // 
@@ -395,7 +395,7 @@
             this.btnOKSelect.Margin = new System.Windows.Forms.Padding(0);
             this.btnOKSelect.Name = "btnOKSelect";
             this.btnOKSelect.Size = new System.Drawing.Size(116, 39);
-            this.btnOKSelect.TabIndex = 25;
+            this.btnOKSelect.TabIndex = 1;
             this.btnOKSelect.Text = "OK";
             this.btnOKSelect.UseVisualStyleBackColor = true;
             this.btnOKSelect.Click += new System.EventHandler(this.btnOKSelect_Click);
@@ -434,7 +434,7 @@
             this.btnClose.Location = new System.Drawing.Point(651, 12);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(134, 40);
-            this.btnClose.TabIndex = 9;
+            this.btnClose.TabIndex = 1;
             this.btnClose.Text = "閉じる";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
@@ -446,7 +446,7 @@
             this.btnNextDefect.Location = new System.Drawing.Point(511, 12);
             this.btnNextDefect.Name = "btnNextDefect";
             this.btnNextDefect.Size = new System.Drawing.Size(134, 40);
-            this.btnNextDefect.TabIndex = 9;
+            this.btnNextDefect.TabIndex = 1;
             this.btnNextDefect.Text = "次の欠点を登録する";
             this.btnNextDefect.UseVisualStyleBackColor = true;
             this.btnNextDefect.Click += new System.EventHandler(this.btnNextDefect_Click);
@@ -537,6 +537,7 @@
             this.Name = "CopyReg";
             this.Text = "複写指定画面";
             this.Load += new System.EventHandler(this.CopyReg_Load);
+            this.Shown += new System.EventHandler(this.CopyReg_Shown);
             this.panel11.ResumeLayout(false);
             this.panel11.PerformLayout();
             this.panel10.ResumeLayout(false);

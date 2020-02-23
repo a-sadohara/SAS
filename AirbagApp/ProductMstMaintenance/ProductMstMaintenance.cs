@@ -927,81 +927,64 @@ namespace ProductMstMaintenance
         /// </summary>
         private void DispPointChange()
         {
-            // 列数でコントロールを非表示にする
-            if (m_intColumn_cnt < 1)
+            // 初期化
+            bool bolVsbColumn2Flg = false;
+            bool bolVsbColumn3Flg = false;
+            bool bolVsbColumn4Flg = false;
+            bool bolVsbColumn5Flg = false;
+            
+            // 列数でコントロール表示フラグを設定する
+            if (m_intColumn_cnt > 1)
             {
-                txtColumnThresholdAB.Visible = false;
-                txtColumnThresholdAFrom.Visible = false;
-                txtColumnThresholdATo.Visible = false;
-                lblADash.Visible = false;
+                bolVsbColumn2Flg = true;
             }
-            else
+            if (m_intColumn_cnt > 2)
             {
-                txtColumnThresholdAB.Visible = true;
-                txtColumnThresholdAFrom.Visible = true;
-                txtColumnThresholdATo.Visible = true;
-                lblADash.Visible = true;
+                bolVsbColumn3Flg = true;
             }
-
-            if (m_intColumn_cnt < 2)
+            if (m_intColumn_cnt > 3)
             {
-                txtColumnThresholdAB.Visible = false;
-                txtColumnThresholdBFrom.Visible = false;
-                txtColumnThresholdBTo.Visible = false;
-                lblBDash.Visible = false;
+                bolVsbColumn4Flg = true;
             }
-            else
+            if (m_intColumn_cnt > 4)
             {
-                txtColumnThresholdAB.Visible = true;
-                txtColumnThresholdBFrom.Visible = true;
-                txtColumnThresholdBTo.Visible = true;
-                lblBDash.Visible = true;
+                bolVsbColumn5Flg = true;
             }
 
-            if (m_intColumn_cnt < 3)
-            {
-                txtColumnThresholdBC.Visible = false;
-                txtColumnThresholdCFrom.Visible = false;
-                txtColumnThresholdCTo.Visible = false;
-                lblCDash.Visible = false;
-            }
-            else
-            {
-                txtColumnThresholdBC.Visible = true;
-                txtColumnThresholdCFrom.Visible = true;
-                txtColumnThresholdCTo.Visible = true;
-                lblCDash.Visible = true;
-            }
+            // フラグからコントロールの表示非表示を設定する
+            // 基準点
+            lblBasePointB.Visible = bolVsbColumn2Flg;
+            lblTitlePlusDirectionB.Visible = bolVsbColumn2Flg;
+            lblPlusDirectionB.Visible = bolVsbColumn2Flg;
+            lblBasePointC.Visible = bolVsbColumn3Flg;
+            lblTitlePlusDirectionC.Visible = bolVsbColumn3Flg;
+            lblPlusDirectionC.Visible = bolVsbColumn3Flg;
+            lblBasePointD.Visible = bolVsbColumn4Flg;
+            lblTitlePlusDirectionD.Visible = bolVsbColumn4Flg;
+            lblPlusDirectionD.Visible = bolVsbColumn4Flg;
+            lblBasePointE.Visible = bolVsbColumn5Flg;
+            lblTitlePlusDirectionE.Visible = bolVsbColumn5Flg;
+            lblPlusDirectionE.Visible = bolVsbColumn5Flg;
 
-            if (m_intColumn_cnt < 4)
-            {
-                txtColumnThresholdCD.Visible = false;
-                txtColumnThresholdDFrom.Visible = false;
-                txtColumnThresholdDTo.Visible = false;
-                lblDDash.Visible = false;
-            }
-            else
-            {
-                txtColumnThresholdCD.Visible = true;
-                txtColumnThresholdDFrom.Visible = true;
-                txtColumnThresholdDTo.Visible = true;
-                lblDDash.Visible = true;
-            }
+            // 列判定用境界線設定
+            txtColumnThresholdAB.Visible = bolVsbColumn2Flg;
+            txtColumnThresholdBC.Visible = bolVsbColumn3Flg;
+            txtColumnThresholdCD.Visible = bolVsbColumn4Flg;
+            txtColumnThresholdDE.Visible = bolVsbColumn5Flg;
 
-            if (m_intColumn_cnt < 5)
-            {
-                txtColumnThresholdDE.Visible = false;
-                txtColumnThresholdEFrom.Visible = false;
-                txtColumnThresholdETo.Visible = false;
-                lblEDash.Visible = false;
-            }
-            else
-            {
-                txtColumnThresholdDE.Visible = true;
-                txtColumnThresholdEFrom.Visible = true;
-                txtColumnThresholdETo.Visible = true;
-                lblEDash.Visible = true;
-            }
+            // 行判定用境界線設定
+            txtColumnThresholdBFrom.Visible = bolVsbColumn2Flg;
+            txtColumnThresholdBTo.Visible = bolVsbColumn2Flg;
+            lblDashColumnThresholdB.Visible = bolVsbColumn2Flg;
+            txtColumnThresholdCFrom.Visible = bolVsbColumn3Flg;
+            txtColumnThresholdCTo.Visible = bolVsbColumn3Flg;
+            lblDashColumnThresholdC.Visible = bolVsbColumn3Flg;
+            txtColumnThresholdDFrom.Visible = bolVsbColumn4Flg;
+            txtColumnThresholdDTo.Visible = bolVsbColumn4Flg;
+            lblDashColumnThresholdD.Visible = bolVsbColumn4Flg;
+            txtColumnThresholdEFrom.Visible = bolVsbColumn5Flg;
+            txtColumnThresholdETo.Visible = bolVsbColumn5Flg;
+            lblDashColumnThresholdE.Visible = bolVsbColumn5Flg;
         }
 
         /// <summary>
