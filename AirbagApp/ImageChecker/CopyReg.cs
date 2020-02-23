@@ -34,7 +34,8 @@ namespace ImageChecker
         // 定数
         private const string m_CON_FORMAT_NG_FACE = "NG面：{0}";
         private const string m_CON_FORMAT_NG_DISTANCE = "位置(X,Y)cm：{0},{1}";
-        private const string m_CON_FORMAT_NG_REASON = "NG理由選択：{0}";
+        private const string m_CON_FORMAT_NG_REASON_SELECT = "NG理由選択：{0}";
+        private const string m_CON_FORMAT_NG_REASON = "NG理由：{0}";
 
         // 欠点画像サブディレクトリパス
         private string m_strFaultImageSubDirectory = string.Empty;
@@ -121,7 +122,7 @@ namespace ImageChecker
                 cmbBoxColumns.SelectedItem = m_strColumns;
 
                 // NG選択理由
-                lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON, m_strNgReason);
+                lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, m_strNgReason);
 
                 // 次の欠点を登録するの制御
                 btnNextDefect.Enabled = false;
@@ -147,9 +148,23 @@ namespace ImageChecker
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             string strNgFace = string.Empty;
             int intCopyRegistInfo = -1;
-            
-            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0011, strDispResult), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            string strDispResultMsg = "";
+
+            // NG理由には「NG理由：」を付与する
+            if (strDispResult == g_CON_NG_REASON_OK)
+            {
+                strDispResultMsg = strDispResult;
+            }
+            else
+            {
+                strDispResultMsg = string.Format(m_CON_FORMAT_NG_REASON, strDispResult);
+            }
+
+            // メッセージ表示
+            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0011, strDispResultMsg), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            {
                 return;
+            }
 
             try
             {
@@ -688,7 +703,7 @@ namespace ImageChecker
                                          strDecisionReason);
             }
 
-            lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON, strDecisionReason);
+            lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, strDecisionReason);
         }
 
         /// <summary>
