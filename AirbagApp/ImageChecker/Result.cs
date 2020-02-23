@@ -143,7 +143,7 @@ namespace ImageChecker
         /// <param name="intStatus">ステータス</param>
         /// <param name="strEndDatetime">判定終了日時(YYYY/MM//DD HH:MM:SS)</param>
         /// <returns></returns>
-        public static Boolean blnUpdAcceptanceCheckStatus(string strFabricName,
+        private Boolean blnUpdAcceptanceCheckStatus(string strFabricName,
                                                           string strInspectionDate,
                                                           int intInspectionNum,
                                                           int intStatus,
@@ -158,10 +158,13 @@ namespace ImageChecker
                 strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                               SET acceptance_check_status = :acceptance_check_status ";
 
-                if (!string.IsNullOrEmpty(strEndDatetime))
+                if (m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
                 {
-                    strSQL += @", decision_end_datetime = TO_TIMESTAMP(:decision_end_datetime_yyyymmdd_hhmmss, 'YYYY/MM/DD HH24:MI:SS') ";
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_end_datetime_yyyymmdd_hhmmss", DbType = DbType.String, Value = strEndDatetime });
+                    if (!string.IsNullOrEmpty(strEndDatetime))
+                    {
+                        strSQL += @", decision_end_datetime = TO_TIMESTAMP(:decision_end_datetime_yyyymmdd_hhmmss, 'YYYY/MM/DD HH24:MI:SS') ";
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_end_datetime_yyyymmdd_hhmmss", DbType = DbType.String, Value = strEndDatetime });
+                    }
                 }
 
                 strSQL += @"WHERE fabric_name = :fabric_name

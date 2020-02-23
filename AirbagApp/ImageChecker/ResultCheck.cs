@@ -56,12 +56,13 @@ namespace ImageChecker
         private const string m_CON_FORMAT_INSPECTION_DIRECTION_NO2 = "検反部No.2：{0}";
         private const string m_CON_FORMAT_NG_FACE = "NG面：{0}";
         private const string m_CON_FORMAT_NG_DISTANCE = "位置(X,Y)cm：{0},{1}";
-        private const string m_CON_FORMAT_NG_REASON = "NG理由選択：{0}";
+        private const string m_CON_FORMAT_NG_REASON_SELECT = "NG理由選択：{0}";
         private const string m_CON_CAMERA_NO_2 = "2";
         private const string m_CON_CAMERA_NO_8 = "8";
         private const string m_CON_CAMERA_NO_14 = "14";
         private const string m_CON_CAMERA_NO_20 = "20";
         private const string m_CON_CAMERA_NO_26 = "26";
+        private const string m_CON_FORMAT_NG_REASON = "NG理由：{0}";
 
         // 欠点画像サブディレクトリパス
         private string m_strFaultImageSubDirectory = string.Empty;
@@ -297,7 +298,7 @@ namespace ImageChecker
                 lblNgFace.Text = string.Format(m_CON_FORMAT_NG_FACE, m_dtData.Rows[intPageIdx]["ng_face"].ToString());
                 lblNgDistance.Text = string.Format(m_CON_FORMAT_NG_DISTANCE, m_dtData.Rows[intPageIdx]["ng_distance_x"].ToString(), m_dtData.Rows[intPageIdx]["ng_distance_y"].ToString());
                 lblMarkingImagepath.Text = m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString();
-                lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON, m_dtData.Rows[intPageIdx]["ng_reason"].ToString());
+                lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, m_dtData.Rows[intPageIdx]["ng_reason"].ToString());
                 cmbBoxLine.SelectedItem = m_dtData.Rows[intPageIdx]["line"].ToString();
                 cmbBoxColumns.SelectedItem = m_dtData.Rows[intPageIdx]["cloumns"].ToString();
 
@@ -387,7 +388,7 @@ namespace ImageChecker
                         // 他画像でＮＧ判定済みの表示
                         if (int.Parse(dtData.Rows[0]["cnt"].ToString()) > 0)
                         {
-                            lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON, g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
+                            lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
                             btnOtherNgJudgement.Focus();
                         }
                     }
@@ -541,10 +542,10 @@ namespace ImageChecker
         /// <param name="intInspectionNum">検査番号</param>
         /// <param name="intStatus">ステータス</param>
         /// <returns></returns>
-        public static Boolean blnUpdAcceptanceCheckStatus(string strFabricName,
-                                                          string strInspectionDate,
-                                                          int intInspectionNum,
-                                                          int intStatus)
+        private Boolean blnUpdAcceptanceCheckStatus(string strFabricName,
+                                                    string strInspectionDate,
+                                                    int intInspectionNum,
+                                                    int intStatus)
         {
             string strSQL = string.Empty;
             try
@@ -592,10 +593,22 @@ namespace ImageChecker
             string strNgFace = "";
             string strMarkingImagepath = string.Empty;
             string strDbConKey = string.Empty;
+            string strDispResultMsg = "";
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
-            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0011, strDispResult), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            // NG理由には「NG理由：」を付与する
+            if (strDispResult == g_CON_NG_REASON_OK)
+            {
+                strDispResultMsg = strDispResult;
+            }
+            else
+            {
+                strDispResultMsg = string.Format(m_CON_FORMAT_NG_REASON, strDispResult);
+            }
+
+            // メッセージ表示
+            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0011, strDispResultMsg), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
                 return;
             }
@@ -1054,6 +1067,10 @@ namespace ImageChecker
                     if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
                                                     g_clsSystemSettingInfo.intAcceptanceCheckStatusChk) == false)
                     {
+                        // エラー時
+                        g_clsConnectionNpgsql.DbRollback();
+                        g_clsConnectionNpgsql.DbClose();
+
                         return;
                     }
 
@@ -1188,8 +1205,19 @@ namespace ImageChecker
             if (m_intAcceptanceCheckStatus != g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
             {
                 // 合否確認ステータス更新(中断)
-                blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                            g_clsSystemSettingInfo.intAcceptanceCheckStatusStp);
+                if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
+                                                g_clsSystemSettingInfo.intAcceptanceCheckStatusStp) == false)
+                {
+                    // エラー時
+                    g_clsConnectionNpgsql.DbRollback();
+                    g_clsConnectionNpgsql.DbClose();
+
+                    if (e.CloseReason == CloseReason.UserClosing)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                }
                 g_clsConnectionNpgsql.DbCommit();
                 g_clsConnectionNpgsql.DbClose();
 
