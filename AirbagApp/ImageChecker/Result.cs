@@ -850,10 +850,6 @@ namespace ImageChecker
                             {
                                 strWriteLine += ",Ｅ";
                             }
-                            else
-                            {
-                                strWriteLine += "," + dr["cloumns"].ToString();
-                            }
 
                             strWriteLine += "," + dr["ng_face"].ToString();
                             strWriteLine += "," + dr["ng_reason"].ToString();
