@@ -589,8 +589,6 @@ namespace ImageChecker
         {
             string strSQL = string.Empty;
             int intBranchNum = 0;
-            int intLine = -1;
-            string strCloumns = string.Empty;
             string strNgFace = "";
             string strMarkingImagepath = string.Empty;
             string strDbConKey = string.Empty;
@@ -605,8 +603,6 @@ namespace ImageChecker
             try
             {
                 intBranchNum = int.Parse(m_dtData.Rows[m_intPageIdx]["branch_num"].ToString());
-                intLine = int.Parse(m_dtData.Rows[m_intPageIdx]["line"].ToString());
-                strCloumns = m_dtData.Rows[m_intPageIdx]["cloumns"].ToString();
                 strNgFace = m_dtData.Rows[m_intPageIdx]["ng_face"].ToString();
                 strMarkingImagepath = m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString();
 
@@ -617,8 +613,8 @@ namespace ImageChecker
                 // SQL文を作成する
                 strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                               SET ng_reason = :ng_reason
-                                , line = :line_upd
-                                , cloumns = :cloumns_upd
+                                , line = :line
+                                , cloumns = :cloumns
                                 , before_ng_reason = ng_reason
                                 , acceptance_check_result = :acceptance_check_result ";
                 if (m_clsDecisionResultCorrection.intBranchNum > 0)
@@ -645,8 +641,6 @@ namespace ImageChecker
                               AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
                               AND inspection_num = :inspection_num
                               AND branch_num = :branch_num
-                              AND line = :line
-                              AND cloumns = :cloumns
                               AND ng_face = :ng_face
                               AND marking_imagepath = :marking_imagepath";
 
@@ -661,15 +655,13 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_reason", DbType = DbType.String, Value = strNgReason });
                 }
 
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line_upd", DbType = DbType.Int16, Value = int.Parse(cmbBoxLine.SelectedItem.ToString()) });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns_upd", DbType = DbType.String, Value = cmbBoxColumns.SelectedItem.ToString() });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = int.Parse(cmbBoxLine.SelectedItem.ToString()) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = cmbBoxColumns.SelectedItem.ToString() });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result", DbType = DbType.Int16, Value = intResult });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = intLine });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = strCloumns });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_face", DbType = DbType.String, Value = strNgFace });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = strMarkingImagepath });
 
@@ -1297,8 +1289,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
-                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
+                                     g_CON_NG_REASON_BLACK_THREAD_MULTI,
+                                     g_CON_NG_REASON_BLACK_THREAD_MULTI);
         }
 
         /// <summary>

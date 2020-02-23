@@ -144,7 +144,7 @@ namespace ImageChecker
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "InspectionResult";
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
             }
-                       
+            
             try
             {
                 // SQL抽出

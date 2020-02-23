@@ -30,25 +30,25 @@ namespace ImageChecker
         public DecisionResult clsDecisionResult { get; set; }
 
         // パラメータ関連
-        private HeaderData m_clsHeaderData;             // ヘッダ情報
-        private string m_strUnitNum = string.Empty;               // 号機
-        private string m_strProductName = string.Empty;           // 品名
-        private string m_strOrderImg = string.Empty;              // 指図
-        private string m_strFabricName = string.Empty;            // 反番
-        private string m_strInspectionDate = string.Empty;        // 検査日付
-        private string m_strStartDatetime = string.Empty;         // 搬送開始日時
-        private string m_strEndDatetime = string.Empty;           // 搬送終了日時
-        private int m_intInspectionStartLine = -1;      // 検査開始行
-        private int m_intInspectionEndLine = -1;        // 最終行数
-        private int m_intInspectionTargetLine = -1;     // 検査対象数
-        private string m_strDecisionStartTime = string.Empty;     // 判定開始日時
-        private string m_strDecisionEndTime = string.Empty;       // 判定終了日時
-        private string m_strInspectionDirection = string.Empty;   // 検査方向
-        private int m_intInspectionNum = 0;             // 検査番号
-        private int m_intAcceptanceCheckStatus = 0;     // 合否確認ステータス
-        private int m_intColumnCnt = 0;                 // 列数
-        private int m_intNgCushionCount = 0;            // NGクッション数
-        private int m_intFromApId = 0;                  // 遷移元画面ID
+        private HeaderData m_clsHeaderData;                         // ヘッダ情報
+        private string m_strUnitNum = string.Empty;                 // 号機
+        private string m_strProductName = string.Empty;             // 品名
+        private string m_strOrderImg = string.Empty;                // 指図
+        private string m_strFabricName = string.Empty;              // 反番
+        private string m_strInspectionDate = string.Empty;          // 検査日付
+        private string m_strStartDatetime = string.Empty;           // 搬送開始日時
+        private string m_strEndDatetime = string.Empty;             // 搬送終了日時
+        private int m_intInspectionStartLine = -1;                  // 検査開始行
+        private int m_intInspectionEndLine = -1;                    // 最終行数
+        private int m_intInspectionTargetLine = -1;                 // 検査対象数
+        private string m_strDecisionStartTime = string.Empty;       // 判定開始日時
+        private string m_strDecisionEndTime = string.Empty;         // 判定終了日時
+        private string m_strInspectionDirection = string.Empty;     // 検査方向
+        private int m_intInspectionNum = 0;                         // 検査番号
+        private int m_intAcceptanceCheckStatus = 0;                 // 合否確認ステータス
+        private int m_intColumnCnt = 0;                             // 列数
+        private int m_intNgCushionCount = 0;                        // NGクッション数
+        private int m_intFromApId = 0;                              // 遷移元画面ID
 
         // 定数
         private const string m_CON_FORMAT_UNIT_NUM = "号機：{0}";

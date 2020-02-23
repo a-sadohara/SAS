@@ -17,19 +17,19 @@ namespace ImageChecker
         public bool bolRegister { get; set; }
 
         // パラメータ関連
-        private string m_strProductName = string.Empty;           // 品名
-        private string m_strFabricName = string.Empty;            // 反番
-        private string m_strInspectionDate = string.Empty;        // 検査日付
-        private int m_intInspectionNum = 0;             // 検査番号
-        private string m_strOrgImagepath = string.Empty;          // オリジナル画像ファイル名
-        private string m_strMarkingImagepath = string.Empty;      // マーキング画像ファイル名
-        private int m_intBranchNum = 0;                 // 枝番
-        private int m_intFromApId = 0;                  // 遷移元画面ID
-        private int m_intLine = -1;                     // 行
-        private string m_strColumns = string.Empty;               // 列
-        private string m_strNgReason = string.Empty;              // NG理由
-        private ComboBox m_cmbBoxLine;                  // 行コンボボックス
-        private ComboBox m_cmbBoxColumns;               // 列コンボボックス
+        private string m_strProductName = string.Empty;         // 品名
+        private string m_strFabricName = string.Empty;          // 反番
+        private string m_strInspectionDate = string.Empty;      // 検査日付
+        private int m_intInspectionNum = 0;                     // 検査番号
+        private string m_strOrgImagepath = string.Empty;        // オリジナル画像ファイル名
+        private string m_strMarkingImagepath = string.Empty;    // マーキング画像ファイル名
+        private int m_intBranchNum = 0;                         // 枝番
+        private int m_intFromApId = 0;                          // 遷移元画面ID
+        private int m_intLine = -1;                             // 行
+        private string m_strColumns = string.Empty;             // 列
+        private string m_strNgReason = string.Empty;            // NG理由
+        private ComboBox m_cmbBoxLine;                          // 行コンボボックス
+        private ComboBox m_cmbBoxColumns;                       // 列コンボボックス
 
         // 定数
         private const string m_CON_FORMAT_NG_FACE = "NG面：{0}";
@@ -71,6 +71,7 @@ namespace ImageChecker
             m_strFabricName = clsHeaderData.strFabricName;
             m_strInspectionDate = clsHeaderData.strInspectionDate;
             m_intInspectionNum = clsHeaderData.intInspectionNum;
+
             m_intLine = intLine;
             m_strColumns = strColumns;
             m_strNgReason = strNgReason;
@@ -103,6 +104,7 @@ namespace ImageChecker
             {
                 // コンボボックスの設定
                 // 行
+                cmbBoxLine.Items.Clear();
                 foreach (string value in m_cmbBoxLine.Items)
                 {
                     cmbBoxLine.Items.Add(value);
@@ -111,6 +113,7 @@ namespace ImageChecker
                 // 行逆さを調整
                 cmbBoxLine.DropDownHeight = this.Size.Height;
                 // 列
+                cmbBoxColumns.Items.Clear();
                 foreach (string value in m_cmbBoxColumns.Items)
                 {
                     cmbBoxColumns.Items.Add(value);
@@ -142,19 +145,14 @@ namespace ImageChecker
         {
             string strSQL = string.Empty;
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-            int intLine = -1;
-            string strCloumns = string.Empty;
             string strNgFace = string.Empty;
             int intCopyRegistInfo = -1;
             
             if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0011, strDispResult), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 return;
 
-
             try
             {
-                intLine = int.Parse(m_dtData.Rows[0]["line"].ToString());
-                strCloumns = m_dtData.Rows[0]["cloumns"].ToString();
                 strNgFace = m_dtData.Rows[0]["ng_face"].ToString();
 
                 intCopyRegistInfo = intGetCopyRegistInfo();
@@ -271,8 +269,8 @@ namespace ImageChecker
                     // SQL文を作成する
                     strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                   SET ng_reason = :ng_reason
-                                    , line = :line_upd
-                                    , cloumns = :cloumns_upd
+                                    , line = :line
+                                    , cloumns = :cloumns
                                     , acceptance_check_result = :acceptance_check_result
                                     , acceptance_check_datetime = current_timestamp
                                     , acceptance_check_worker = :acceptance_check_worker
@@ -280,24 +278,20 @@ namespace ImageChecker
                                   AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
                                   AND inspection_num = :inspection_num
                                   AND branch_num = :branch_num
-                                  AND line = :line
-                                  AND cloumns = :cloumns
                                   AND ng_face = :ng_face
                                   AND marking_imagepath = :marking_imagepath";
 
                     // SQLコマンドに各パラメータを設定する
                     lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_reason", DbType = DbType.String, Value = strNgReason });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line_upd", DbType = DbType.Int16, Value = int.Parse(cmbBoxLine.SelectedItem.ToString()) });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns_upd", DbType = DbType.String, Value = cmbBoxColumns.SelectedItem.ToString() });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = int.Parse(cmbBoxLine.SelectedItem.ToString()) });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = cmbBoxColumns.SelectedItem.ToString() });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result", DbType = DbType.Int16, Value = intResult });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = m_intBranchNum });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = intLine });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = strCloumns });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_face", DbType = DbType.String, Value = strNgFace });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
 
@@ -650,8 +644,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
-                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
+                                     g_CON_NG_REASON_BLACK_THREAD_MULTI,
+                                     g_CON_NG_REASON_BLACK_THREAD_MULTI);
         }
 
         /// <summary>
