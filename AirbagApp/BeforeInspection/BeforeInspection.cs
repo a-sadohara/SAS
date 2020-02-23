@@ -99,13 +99,13 @@ namespace BeforeInspection
             intStartLine = int.Parse(txtInspectionStartLine.Text);
             intInspectionTargetLine = int.Parse(txtInspectionTargetLine.Text);
 
-            if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS || 
+            if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS ||
                 m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
             {
                 intEndLine = intStartLine + intInspectionTargetLine - 1;
             }
-                
-            if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY || 
+
+            if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY ||
                 m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
             {
                 intEndLine = intStartLine + intInspectionTargetLine + 1;
@@ -175,7 +175,7 @@ namespace BeforeInspection
                 btnSet.Enabled = true;
                 btnNextFabric.Enabled = false;
             }
-            
+
             if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
             {
                 // 背景色変更(協調)
@@ -200,7 +200,7 @@ namespace BeforeInspection
                 btnSet.Enabled = true;
                 btnNextFabric.Enabled = false;
             }
-            
+
             if (m_intStatus == g_clsSystemSettingInfo.intStatusStp)
             {
                 // 背景色変更(協調)
@@ -225,7 +225,7 @@ namespace BeforeInspection
                 btnSet.Enabled = true;
                 btnNextFabric.Enabled = false;
             }
-            
+
             if (m_intStatus == g_clsSystemSettingInfo.intStatusEnd)
             {
                 // 背景色変更(協調)
@@ -284,7 +284,7 @@ namespace BeforeInspection
                 btnInspectionDirectionS.BackColor = m_clrInspectionDirectionActFore;
                 m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionS;
             }
-            
+
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
             {
                 picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_X_PATH);
@@ -292,7 +292,7 @@ namespace BeforeInspection
                 btnInspectionDirectionX.BackColor = m_clrInspectionDirectionActFore;
                 m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionX;
             }
-            
+
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
             {
                 picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_Y_PATH);
@@ -300,7 +300,7 @@ namespace BeforeInspection
                 btnInspectionDirectionY.BackColor = m_clrInspectionDirectionActFore;
                 m_strInspectionDirection = g_clsSystemSettingInfo.strInspectionDirectionY;
             }
-            
+
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
             {
                 picInspectionDirectionNo1.Image = System.Drawing.Image.FromFile(m_CON_INSPECTION_IMAGE_R_PATH);
@@ -475,7 +475,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0033 , Environment.NewLine ,ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0033, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0034)).ShowDialog(this);
 
@@ -539,7 +539,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0033 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0033, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0035)).ShowDialog(this);
 
@@ -600,7 +600,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -670,7 +670,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -729,7 +729,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0021)).ShowDialog(this);
 
@@ -813,7 +813,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0036 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0036, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0037)).ShowDialog(this);
 
@@ -822,7 +822,9 @@ namespace BeforeInspection
             finally
             {
                 if (sw != null)
+                {
                     sw.Close();
+                }
             }
         }
         #endregion
@@ -875,7 +877,7 @@ namespace BeforeInspection
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -982,7 +984,7 @@ namespace BeforeInspection
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                         // メッセージ出力
                         new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -1014,7 +1016,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
 
@@ -1087,25 +1089,29 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtHinNo_Click(object sender, EventArgs e)
+        private void txtProductName_Click(object sender, EventArgs e)
         {
             // 品番選択画面
             ProductNameSelection frmHinNoSelection = new ProductNameSelection();
             frmHinNoSelection.ShowDialog(this);
-            if (!string.IsNullOrEmpty(frmHinNoSelection.strProductName))
+            if (string.IsNullOrEmpty(frmHinNoSelection.strProductName))
             {
-                // 品番登録情報の取得(照度情報,開始レジマークカメラ番号,終了レジマークカメラ番号)
-                if (bolGetMstProductInfo(out m_intIlluminationInformation,
-                                         out m_intStartRegimarkCameraNum,
-                                         out m_intEndRegimarkCameraNum,
-                                         frmHinNoSelection.strProductName) == false)
-                {
-                    return;
-                }
-
-                // 品名の表示
-                txtProductName.Text = frmHinNoSelection.strProductName;
+                return;
             }
+
+
+            // 品番登録情報の取得(照度情報,開始レジマークカメラ番号,終了レジマークカメラ番号)
+            if (bolGetMstProductInfo(out m_intIlluminationInformation,
+                                        out m_intStartRegimarkCameraNum,
+                                        out m_intEndRegimarkCameraNum,
+                                        frmHinNoSelection.strProductName) == false)
+            {
+                return;
+            }
+
+            // 品名の表示
+            txtProductName.Text = frmHinNoSelection.strProductName;
+            txtOrderImg.Focus();
         }
 
         /// <summary>
@@ -1122,14 +1128,14 @@ namespace BeforeInspection
             frmWorkerSelection.ShowDialog(this);
             this.Visible = true;
 
-            if ( !string.IsNullOrEmpty(frmWorkerSelection.strEmployeeNum) || !string.IsNullOrEmpty(frmWorkerSelection.strWorkerName))
+            if (!string.IsNullOrEmpty(frmWorkerSelection.strEmployeeNum) || !string.IsNullOrEmpty(frmWorkerSelection.strWorkerName))
             {
                 // 社員番号を変数に保持
                 if (txtWorker == txtWorker1)
                 {
                     m_strWorker1 = frmWorkerSelection.strEmployeeNum;
                 }
-                
+
                 if (txtWorker == txtWorker2)
                 {
 
@@ -1174,17 +1180,17 @@ namespace BeforeInspection
             {
                 SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionS);
             }
-            
+
             if (btn == btnInspectionDirectionX)
             {
                 SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionX);
             }
-            
+
             if (btn == btnInspectionDirectionY)
             {
                 SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionY);
             }
-            
+
             if (btn == btnInspectionDirectionR)
             {
                 SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionR);
@@ -1215,6 +1221,9 @@ namespace BeforeInspection
 
             // ステータスの表示設定(検査中断)
             SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusStp);
+
+            // フォーカスを検査対象に設定
+            txtInspectionTargetLine.Focus();
         }
 
         /// <summary>
@@ -1272,7 +1281,7 @@ namespace BeforeInspection
                 SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
 
                 // 検査対象数(行数)にフォーカスを設定
-                btnSet.Focus();
+                txtInspectionTargetLine.Focus();
                 return;
             }
 
@@ -1416,45 +1425,109 @@ namespace BeforeInspection
             base.WndProc(ref m);
         }
         #endregion
-    }
 
-    /// <summary>
-    /// 半透明フォーム
-    /// </summary>
-    public partial class OpacityForm : Form
-    {
-        // 子フォーム
-        public Form m_form;
+        private char chrKeyDown = '\0';
+        private List<char> lstBarcode = new List<char>(1);
+        private int intLastInputKey = DateTime.Now.Millisecond;
 
-        #region メソッド
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        /// <param name="form"></param>
-        public OpacityForm(Form form)
+        private void BeforeInspection_KeyUp(object sender, KeyEventArgs e)
         {
-            m_form = form;
+            if (chrKeyDown != (char)e.KeyCode || chrKeyDown == '\0')
+            {
+                chrKeyDown = '\0';
+                lstBarcode.Clear();
+                return;
+            }
 
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.Load += new System.EventHandler(this.OpacityForm_Load);
-            this.WindowState = FormWindowState.Maximized;
-            this.ShowInTaskbar = false;
+            int intBetweenInputKey = (DateTime.Now.Millisecond - intLastInputKey);
+
+            if (intBetweenInputKey > 17)
+            {
+                // キーボード入力のため、クリア
+                lstBarcode.Clear();
+            }
+            else
+            {
+                if (!txtOrderImg.Enabled)
+                {
+                    e.Handled = true;
+                }
+            }
+
+            if (e.KeyCode != Keys.Return)
+            {
+                // バーコード入力値として登録
+                lstBarcode.Add((char)e.KeyData);
+            }
+
+
+            if (e.KeyCode == Keys.Return && lstBarcode.Count > 0)
+            {
+                if (txtOrderImg.Enabled)
+                {
+                    txtOrderImg.Focus();
+                    // 入力が確定されたため、データをセット
+                    txtOrderImg.Text = new string(lstBarcode.ToArray());
+                }
+
+                lstBarcode.Clear();
+            }
+
+            intLastInputKey = DateTime.Now.Millisecond;
+
         }
-        #endregion
 
-        #region イベント
         /// <summary>
-        /// フォームロード
+        /// 半透明フォーム
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OpacityForm_Load(object sender, EventArgs e)
+        public partial class OpacityForm : Form
         {
-            this.Opacity = 0.8;
+            // 子フォーム
+            public Form m_form;
 
-            m_form.ShowDialog(this);
-            this.Close();
+            #region メソッド
+            /// <summary>
+            /// コンストラクタ
+            /// </summary>
+            /// <param name="form"></param>
+            public OpacityForm(Form form)
+            {
+                m_form = form;
+
+                this.FormBorderStyle = FormBorderStyle.None;
+                this.Load += new System.EventHandler(this.OpacityForm_Load);
+                this.WindowState = FormWindowState.Maximized;
+                this.ShowInTaskbar = false;
+            }
+            #endregion
+
+            #region イベント
+            /// <summary>
+            /// フォームロード
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private void OpacityForm_Load(object sender, EventArgs e)
+            {
+                this.Opacity = 0.8;
+
+                m_form.ShowDialog(this);
+                this.Close();
+            }
+            #endregion
         }
-        #endregion
+
+        private void BeforeInspection_KeyDown(object sender, KeyEventArgs e)
+        {
+            chrKeyDown = (char)e.KeyCode;
+        }
+
+        private void BeforeInspection_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (this.ActiveControl.Equals(typeof(Button))){
+                e.Handled = true;
+            }
+        }
+
     }
 }
