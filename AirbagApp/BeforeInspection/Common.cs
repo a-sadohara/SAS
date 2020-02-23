@@ -115,6 +115,17 @@ namespace BeforeInspection
                 {
                     return;
                 }
+
+                // タッチキーボードのプロセスをキル
+                System.Diagnostics.Process[] myProcesses = System.Diagnostics.Process.GetProcesses();
+                foreach (System.Diagnostics.Process myProcess in myProcesses)
+                {
+                    if ("TabTip" == myProcess.ProcessName)
+                    {
+                        myProcess.Kill();
+                    }
+                }
+
             }
             catch (Exception ex)
             {
