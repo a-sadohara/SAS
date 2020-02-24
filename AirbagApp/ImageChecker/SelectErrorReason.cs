@@ -39,6 +39,8 @@ namespace ImageChecker
         {
             this.SuspendLayout();
 
+            bool bolProcOkNg = false;
+
             string strSQL = string.Empty;
             DataTable dtData = new DataTable();
 
@@ -88,6 +90,8 @@ namespace ImageChecker
 
                     this.dgvMstDecisionReason.Rows.Add(dr.ItemArray);
                 }
+
+                bolProcOkNg = true;
             }
             catch (Exception ex)
             {
@@ -100,6 +104,9 @@ namespace ImageChecker
             }
             finally
             {
+                if (bolProcOkNg == false)
+                    this.Close();
+
                 this.ResumeLayout();
             }
         }
