@@ -460,18 +460,15 @@ namespace BeforeInspection
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSql, lstNpgsqlCommand);
 
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
 
                 // 撮像装置部へ連携用ファイル出力
                 if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
                 {
-                    // DBロールバック
-                    g_clsConnectionNpgsql.DbRollback();
                     btnSet.Focus();
                     return false;
                 }
-
-                // DBコミット
-                g_clsConnectionNpgsql.DbCommit();
 
                 return true;
 
@@ -532,6 +529,8 @@ namespace BeforeInspection
                 // 撮像装置部へ連携用ファイル出力
                 if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
                 {
+                    // ロールバック
+                    //g_clsConnectionNpgsql.DbRollback();
                     btnEndDatetime.Focus();
                     return false;
                 }
@@ -820,6 +819,9 @@ namespace BeforeInspection
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0036, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0037)).ShowDialog(this);
+
+                // DBロールバック
+                g_clsConnectionNpgsql.DbRollback();
 
                 return false;
             }
