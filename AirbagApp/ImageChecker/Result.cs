@@ -158,6 +158,14 @@ namespace ImageChecker
                 strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                               SET acceptance_check_status = :acceptance_check_status ";
 
+                if (intStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
+                {
+                    strSQL += @", result_datetime = CASE WHEN result_datetime IS NULL
+                                                      THEN current_timestamp
+                                                      ELSE result_datetime
+                                                    END ";
+                }
+
                 if (!string.IsNullOrEmpty(strEndDatetime))
                 {
                     strSQL += @", decision_end_datetime = TO_TIMESTAMP(:decision_end_datetime_yyyymmdd_hhmmss, 'YYYY/MM/DD HH24:MI:SS') ";

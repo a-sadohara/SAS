@@ -165,13 +165,16 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_face", DbType = DbType.String, Value = cmbNgFace.Text });
                 }
                 // NG理由
-                if (txtNgReason.Text == g_CON_NG_REASON_OK)
+                if (!string.IsNullOrEmpty(txtNgReason.Text))
                 {
-                    strSQL += @"AND ng_reason IS NULL ";
-                }
-                else 
-                {
-                    strSQL += string.Format("AND ng_reason LIKE '%{0}%' ", txtNgReason.Text );
+                    if (txtNgReason.Text == g_CON_NG_REASON_OK)
+                    {
+                        strSQL += @"AND ng_reason IS NULL ";
+                    }
+                    else
+                    {
+                        strSQL += string.Format("AND ng_reason LIKE '%{0}%' ", txtNgReason.Text);
+                    }
                 }
 
                 strSQL += @"ORDER BY ";
@@ -318,6 +321,138 @@ namespace ImageChecker
                 return false;
             }
         }
+
+        /// <summary>
+        /// クッション数取得
+        /// </summary>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        private bool bolGetCushionCnt()
+        {
+            string strSQL = string.Empty;
+            DataTable dtData;
+            ArrayList arrRow = new ArrayList();
+            int intImageInspectionCount = -1;
+            int intImageInspectionCountOk = -1;
+            int intImageInspectionCountNg = -1;
+            int intCushionInspectionCount = -1;
+            int intCushionInspectionCountOk = -1;
+            int intCushionInspectionCountNg = -1;
+
+            // カウント系のヘッダ表示
+            // 列数取得
+            dtData = new DataTable();
+            try
+            {
+                strSQL = @"SELECT
+                                   image_inspection_count
+                                 , image_inspection_count_ng
+                                 , image_inspection_count_ok
+                               FROM
+                                   (        
+                                       SELECT
+                                           COUNT(*) AS image_inspection_count
+                                         , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                            WHERE fabric_name = :fabric_name
+                                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                            AND   inspection_num = :inspection_num
+                                            AND   acceptance_check_result IN (:acceptance_check_result_ngdetect,
+                                                                              :acceptance_check_result_ngnondetect)) AS image_inspection_count_ng
+                                         , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                            WHERE fabric_name = :fabric_name
+                                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                            AND   inspection_num = :inspection_num
+                                            AND   acceptance_check_result = :acceptance_check_result_ok) AS image_inspection_count_ok
+                                       FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                       WHERE fabric_name = :fabric_name
+                                       AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                       AND   inspection_num = :inspection_num
+                                       AND   over_detection_except_result <> :over_detection_except_result_ok 
+                                   ) imgcnt";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ngdetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ngnondetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultOk });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                intImageInspectionCount = int.Parse(dtData.Rows[0]["image_inspection_count"].ToString());
+                intImageInspectionCountNg = int.Parse(dtData.Rows[0]["image_inspection_count_ng"].ToString());
+                intImageInspectionCountOk = int.Parse(dtData.Rows[0]["image_inspection_count_ok"].ToString());
+
+                // ヘッダ表示
+                // 画像検査枚数
+                lblImageCount.Text = string.Format(m_CON_FORMAT_IMAGE_INSPECTION_COUNT,
+                                                   intImageInspectionCount.ToString(),
+                                                   intImageInspectionCountNg.ToString(),
+                                                   intImageInspectionCountOk.ToString());
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+
+            dtData = new DataTable();
+            try
+            {
+                // 行列単位のNG件数を抽出
+                strSQL = @"SELECT COUNT(*) AS cnt
+                               FROM (
+                                   SELECT
+                                         line
+                                       , cloumns
+                                     FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                    WHERE fabric_name = :fabric_name
+                                      AND inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                      AND inspection_num = :inspection_num
+                                      AND ng_reason IS NOT NULL
+                                 GROUP BY line, cloumns
+                                     ) imgcnt";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultOk });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                // クッション数を算出
+                intCushionInspectionCount = m_intColumnCnt * m_intInspectionTargetLine;
+                intCushionInspectionCountNg = int.Parse(dtData.Rows[0]["cnt"].ToString());
+                intCushionInspectionCountOk = intCushionInspectionCount - intCushionInspectionCountNg;
+
+                // ヘッダ表示
+                // クッション数
+                lblCushionCount.Text = string.Format(m_CON_FORMAT_CUSHION_COUNT,
+                                                     intCushionInspectionCount.ToString(),
+                                                     intCushionInspectionCountNg.ToString(),
+                                                     intCushionInspectionCountOk.ToString());
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+        }
         #endregion
 
         #region イベント
@@ -336,16 +471,6 @@ namespace ImageChecker
             this.MinimumSize = this.Size;
 
             bool bolProcOkNg = false;
-
-            string strSQL = string.Empty;
-            DataTable dtData;
-            ArrayList arrRow = new ArrayList();
-            int intImageInspectionCount = -1;
-            int intImageInspectionCountOk = -1;
-            int intImageInspectionCountNg = -1;
-            int intCushionInspectionCount = -1;
-            int intCushionInspectionCountOk = -1;
-            int intCushionInspectionCountNg = -1;
 
             // 列のスタイル変更
             this.dgvDecisionResult.Columns[0].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //№
@@ -374,116 +499,9 @@ namespace ImageChecker
 
             try
             {
-                // カウント系のヘッダ表示
-                // 列数取得
-                dtData = new DataTable();
-                try
+                // 件数取得
+                if (bolGetCushionCnt() == false)
                 {
-                    strSQL = @"SELECT
-                                   image_inspection_count
-                                 , image_inspection_count_ng
-                                 , image_inspection_count_ok
-                               FROM
-                                   (        
-                                       SELECT
-                                           COUNT(*) AS image_inspection_count
-                                         , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
-                                            WHERE fabric_name = :fabric_name
-                                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
-                                            AND   inspection_num = :inspection_num
-                                            AND   acceptance_check_result IN (:acceptance_check_result_ngdetect,
-                                                                              :acceptance_check_result_ngnondetect)) AS image_inspection_count_ng
-                                         , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
-                                            WHERE fabric_name = :fabric_name
-                                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
-                                            AND   inspection_num = :inspection_num
-                                            AND   acceptance_check_result = :acceptance_check_result_ok) AS image_inspection_count_ok
-                                       FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
-                                       WHERE fabric_name = :fabric_name
-                                       AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
-                                       AND   inspection_num = :inspection_num
-                                       AND   over_detection_except_result <> :over_detection_except_result_ok 
-                                   ) imgcnt";
-
-                    // SQLコマンドに各パラメータを設定する
-                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ngdetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ngnondetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultOk });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
-
-                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
-
-                    intImageInspectionCount = int.Parse(dtData.Rows[0]["image_inspection_count"].ToString());
-                    intImageInspectionCountNg = int.Parse(dtData.Rows[0]["image_inspection_count_ng"].ToString());
-                    intImageInspectionCountOk = int.Parse(dtData.Rows[0]["image_inspection_count_ok"].ToString());
-
-                    // ヘッダ表示
-                    // 画像検査枚数
-                    lblImageCount.Text = string.Format(m_CON_FORMAT_IMAGE_INSPECTION_COUNT,
-                                                       intImageInspectionCount.ToString(),
-                                                       intImageInspectionCountNg.ToString(),
-                                                       intImageInspectionCountOk.ToString());
-                }
-                catch (Exception ex)
-                {
-                    // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
-                    // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return;
-                }
-
-                dtData = new DataTable();
-                try
-                {
-                    // 行列単位のNG件数を抽出
-                    strSQL = @"SELECT COUNT(*) AS cnt
-                               FROM (
-                                   SELECT
-                                         line
-                                       , cloumns
-                                     FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
-                                    WHERE fabric_name = :fabric_name
-                                      AND inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
-                                      AND inspection_num = :inspection_num
-                                      AND ng_reason IS NOT NULL
-                                 GROUP BY line, cloumns
-                                     ) imgcnt";
-
-                    // SQLコマンドに各パラメータを設定する
-                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultOk });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
-
-                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
-
-                    // クッション数を算出
-                    intCushionInspectionCount = m_intColumnCnt * m_intInspectionTargetLine;
-                    intCushionInspectionCountNg = int.Parse(dtData.Rows[0]["cnt"].ToString());
-                    intCushionInspectionCountOk = intCushionInspectionCount - intCushionInspectionCountNg;
-
-                    // ヘッダ表示
-                    // クッション数
-                    lblCushionCount.Text = string.Format(m_CON_FORMAT_CUSHION_COUNT,
-                                                         intCushionInspectionCount.ToString(),
-                                                         intCushionInspectionCountNg.ToString(),
-                                                         intCushionInspectionCountOk.ToString());
-                }
-                catch (Exception ex)
-                {
-                    // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
-                    // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
                     return;
                 }
 
@@ -585,6 +603,8 @@ namespace ImageChecker
         private void btnInspectionUpdate_Click(object sender, EventArgs e)
         {
             int intSelIdx = -1;
+            string strSQL = string.Empty;
+            DataTable dtData;
 
             // 選択行インデックスの取得
             foreach (DataGridViewRow dgvRow in this.dgvDecisionResult.SelectedRows)
@@ -628,9 +648,53 @@ namespace ImageChecker
 
             this.Visible = true;
 
+            // 初期件数の取得
+            try
+            {
+                dtData = new DataTable();
+                strSQL = @"SELECT COUNT(*) AS cnt
+                           FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                           WHERE fabric_name = :fabric_name
+                           AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                           AND   inspection_num = :inspection_num
+                           AND   over_detection_except_result <> :over_detection_except_result_ok ";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                foreach (DataRow row in dtData.Rows)
+                {
+                    m_intCountInit = int.Parse(row["cnt"].ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            // 件数の取得
+            if (bolGetCushionCnt() == false)
+            {
+                return;
+            }
+
             // 一覧表示
-            bolDispDataGridView();
-            
+            if (bolDispDataGridView() == false)
+            {
+                return;
+            }
+
         }
 
         /// <summary>

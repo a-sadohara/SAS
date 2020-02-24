@@ -100,7 +100,7 @@ namespace ImageChecker
                            AND iih.inspection_num = dr.inspection_num
                            INNER JOIN mst_product_info mpi
                            ON  iih.product_name = mpi.product_name
-                           WHERE iih.decision_end_datetime < TO_TIMESTAMP('" + stBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS') ";
+                           WHERE iih.result_datetime < TO_TIMESTAMP('" + stBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS') ";
 
                 // 検索部
                 // 号機
@@ -236,13 +236,16 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_face", DbType = DbType.String, Value = cmbNgFace.Text });
                 }
                 // NG理由
-                if (txtNgReason.Text == g_CON_NG_REASON_OK)
+                if (!string.IsNullOrEmpty(txtNgReason.Text))
                 {
-                    strSQL += @"AND dr.ng_reason IS NULL ";
-                }
-                else if (string.IsNullOrEmpty(txtNgReason.Text) == false)
-                {
-                    strSQL += string.Format("AND dr.ng_reason LIKE '%{0}%'" , txtNgReason.Text );
+                    if (txtNgReason.Text == g_CON_NG_REASON_OK)
+                    {
+                        strSQL += @"AND dr.ng_reason IS NULL ";
+                    }
+                    else if (string.IsNullOrEmpty(txtNgReason.Text) == false)
+                    {
+                        strSQL += string.Format("AND dr.ng_reason LIKE '%{0}%'", txtNgReason.Text);
+                    }
                 }
 
                 strSQL += @"ORDER BY iih.end_datetime ASC, iih.inspection_num ASC, dr.over_detection_except_datetime, dr.org_imagepath ASC, dr.branch_num";
@@ -427,7 +430,7 @@ namespace ImageChecker
                            AND iih.inspection_num = dr.inspection_num
                            INNER JOIN mst_product_info mpi
                            ON  iih.product_name = mpi.product_name
-                           WHERE iih.decision_end_datetime < TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS')
+                           WHERE iih.result_datetime < TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS')
                            GROUP BY iih.fabric_name, iih.inspection_date, iih.inspection_num";
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL);
