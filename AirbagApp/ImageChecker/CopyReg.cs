@@ -235,18 +235,18 @@ namespace ImageChecker
                                  , over_detection_except_result
                                  , over_detection_except_datetime
                                  , over_detection_except_worker
-                                 , before_over_detection_except_result
-                                 , before_over_detection_except_datetime
-                                 , before_over_detection_except_worker
-                                 , acceptance_check_result
-                                 , acceptance_check_datetime
-                                 , acceptance_check_worker
-                                 , before_acceptance_check_result
-                                 , before_acceptance_check_upd_datetime
-                                 , before_acceptance_check_worker
-                                 , result_update_datetime
-                                 , result_update_worker
-                                 , before_ng_reason
+                                 , :over_detection_except_result_non
+                                 , NULL
+                                 , NULL
+                                 , :acceptance_check_result_non
+                                 , NULL
+                                 , NULL
+                                 , :acceptance_check_result_non
+                                 , NULL
+                                 , NULL
+                                 , NULL
+                                 , NULL
+                                 , NULL
                                FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                WHERE fabric_name = :fabric_name
                                  AND inspection_num = :inspection_num
@@ -261,6 +261,8 @@ namespace ImageChecker
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
 
                         // sqlを実行する
                         g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
@@ -284,20 +286,11 @@ namespace ImageChecker
                                   SET ng_reason = :ng_reason
                                     , line = :line
                                     , cloumns = :cloumns
-                                    , before_ng_reason = ng_reason
                                     , acceptance_check_result = :acceptance_check_result ";
 
-                    if (m_intFromApId != 0)
+                    if (m_intFromApId == 0 || m_intBranchNumUpCnt > 0)
                     {
-                        // 結果更新
-                        strSQL += @", result_update_datetime = current_timestamp
-                                    , result_update_worker = :result_update_worker ";
-
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "result_update_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
-                    }
-                    else
-                    {
-                        // 新規登録
+                        // 新規で欠点を追加する場合
                         strSQL += @", acceptance_check_datetime = current_timestamp
                                     , acceptance_check_worker = :acceptance_check_worker
                                     , before_acceptance_check_result = acceptance_check_result
@@ -305,6 +298,15 @@ namespace ImageChecker
                                     , before_acceptance_check_worker = acceptance_check_worker ";
 
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
+                    }
+                    else
+                    {
+                        // 結果更新
+                        strSQL += @", before_ng_reason = ng_reason
+                                    , result_update_datetime = current_timestamp
+                                    , result_update_worker = :result_update_worker ";
+
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "result_update_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
                     }
 
                     strSQL += @"WHERE fabric_name = :fabric_name

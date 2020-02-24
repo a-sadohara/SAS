@@ -361,14 +361,21 @@ namespace ImageChecker
                     }
                     catch
                     {
-                        // 無視する
+                        // 一覧がリセットされる瞬間においては例外が発生するが、無視する
                     }
                 }
 
                 // スクロールバー調整
                 if (m_intFirstDisplayedScrollingRowIdx != -1)
                 {
-                    this.dgvCheckInspectionHistory.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIdx;
+                    try
+                    {
+                        this.dgvCheckInspectionHistory.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIdx;
+                    }
+                    catch
+                    {
+                        // 一覧がリセットされる瞬間においては例外が発生するが、無視する
+                    }
                 }
 
                 // 初期化
@@ -382,7 +389,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0047, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
@@ -442,7 +449,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}",g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0047, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }

@@ -51,7 +51,7 @@ namespace ImageChecker
 
         // 選択行保持
         private int m_intSelRowIdx = -1;
-        private int m_intFirstDisplayedScrollingRowIndex = -1;
+        private int m_intFirstDisplayedScrollingRowIdx = -1;
 
         #region メソッド
         /// <summary>
@@ -450,9 +450,16 @@ namespace ImageChecker
                 }
 
                 // スクロールバー調整
-                if (m_intFirstDisplayedScrollingRowIndex != -1)
+                if (m_intFirstDisplayedScrollingRowIdx != -1)
                 {
-                    this.dgvTargetSelection.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIndex;
+                    try
+                    {
+                        this.dgvTargetSelection.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIdx;
+                    }
+                    catch
+                    {
+                        // 一覧がリセットされる瞬間においては例外が発生するが、無視する
+                    }
                 }
 
                 if (dgvTargetSelection.Rows.Count == 0)
@@ -675,6 +682,7 @@ namespace ImageChecker
             int intInspectionStartLine = -1;
             int intInspectionEndLine = -1;
             int intInspectionNum = 0;
+            bool bolInspection = true;
 
             int intRow = -1;
 
@@ -685,6 +693,12 @@ namespace ImageChecker
                 {
                     intRow = dgvRow.Index;
                     break;
+                }
+
+                // 既に検査対象外の場合
+                if (int.Parse(m_dtData.Rows[intRow]["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
+                {
+                    bolInspection = false;
                 }
 
                 // パラメータの取得
@@ -699,7 +713,6 @@ namespace ImageChecker
                 intInspectionEndLine = int.Parse(m_dtData.Rows[intRow]["inspection_end_line"].ToString());
                 intInspectionNum = int.Parse(m_dtData.Rows[intRow]["inspection_num"].ToString());
 
-
                 // 検査対象外画面表示
                 CheckExcept frmCheckExcept = new CheckExcept(strUnitNum,
                                                              strOrderImg,
@@ -710,7 +723,8 @@ namespace ImageChecker
                                                              strStartDatetime,
                                                              strEndDatetime,
                                                              intInspectionStartLine,
-                                                             intInspectionEndLine);
+                                                             intInspectionEndLine,
+                                                             bolInspection);
                 frmCheckExcept.ShowDialog(this);
 
                 // 連携処理をして画面表示
@@ -1143,7 +1157,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void dgvTargetSelection_Scroll(object sender, ScrollEventArgs e)
         {
-            m_intFirstDisplayedScrollingRowIndex = dgvTargetSelection.FirstDisplayedScrollingRowIndex;
+            m_intFirstDisplayedScrollingRowIdx = dgvTargetSelection.FirstDisplayedScrollingRowIndex;
         }
 
         /// <summary>

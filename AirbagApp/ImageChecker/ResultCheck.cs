@@ -628,17 +628,9 @@ namespace ImageChecker
                               SET ng_reason = :ng_reason
                                 , line = :line
                                 , cloumns = :cloumns
-                                , before_ng_reason = ng_reason
                                 , acceptance_check_result = :acceptance_check_result ";
-                if (m_clsDecisionResultCorrection.intBranchNum > 0)
-                {
-                    // 結果更新
-                    strSQL += @", result_update_datetime = current_timestamp
-                                , result_update_worker = :result_update_worker ";
 
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "result_update_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
-                }
-                else
+                if (m_intFromApId == 0)
                 {
                     // 登録
                     strSQL += @", acceptance_check_datetime = current_timestamp
@@ -648,6 +640,15 @@ namespace ImageChecker
                                 , before_acceptance_check_worker = acceptance_check_worker ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
+                }
+                else
+                {
+                    // 結果更新
+                    strSQL += @", before_ng_reason = ng_reason
+                                , result_update_datetime = current_timestamp
+                                , result_update_worker = :result_update_worker ";
+
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "result_update_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
                 }
 
                 strSQL += @"WHERE fabric_name = :fabric_name
