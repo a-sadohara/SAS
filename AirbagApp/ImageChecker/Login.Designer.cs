@@ -205,8 +205,11 @@
             this.Controls.Add(this.txtUserId);
             this.Controls.Add(this.lblTitleDispNum);
             this.Controls.Add(this.lblTtleUserId);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Login";
             this.Text = "ログイン";
             this.Load += new System.EventHandler(this.Login_Load);

@@ -327,6 +327,9 @@ namespace ImageChecker
                     return;
                 }
 
+                // NG選択理由
+                lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, strNgReason);
+
                 // 次の欠点を登録するの制御
                 btnNextDefect.Enabled = true;
                 btnNextDefect.Focus();
@@ -450,11 +453,6 @@ namespace ImageChecker
         private void CopyReg_Load(object sender, EventArgs e)
         {
             this.SuspendLayout();
-
-            this.MinimizeBox = false;
-            this.MaximizeBox = false;
-            this.MaximumSize = this.Size;
-            this.MinimumSize = this.Size;
 
             bool bolProcOkNg = false;
 
@@ -718,8 +716,6 @@ namespace ImageChecker
                                          strDecisionReason,
                                          strDecisionReason);
             }
-
-            lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, strDecisionReason);
         }
 
         /// <summary>

@@ -37,8 +37,7 @@
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlRight = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            //this.dgvMstDecisionReason = new System.Windows.Forms.DataGridView();
-            this.dgvMstDecisionReason = new MyDataGridView();
+            this.dgvMstDecisionReason = new ImageChecker.MyDataGridView();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlBottom.SuspendLayout();
@@ -171,6 +170,7 @@
             this.Controls.Add(this.pnlLeft);
             this.Controls.Add(this.pnlBottom);
             this.Controls.Add(this.pnlTop);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
@@ -192,9 +192,9 @@
         private System.Windows.Forms.Panel pnlLeft;
         private System.Windows.Forms.Panel pnlRight;
         private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.DataGridView dgvMstDecisionReason;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
         private System.Windows.Forms.DataGridViewTextBoxColumn Reason;
+        private MyDataGridView dgvMstDecisionReason;
     }
 }
