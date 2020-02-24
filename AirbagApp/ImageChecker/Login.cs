@@ -104,7 +104,7 @@ namespace ImageChecker
             if (!tskCopyMstImg.Result)
             {
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -196,7 +196,7 @@ namespace ImageChecker
             // 入力チェック
             if (String.IsNullOrEmpty(m_strEmployeeNum))
             {
-                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0038, "作業者"), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0038, "作業者"), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtUserId_Click(null, null);
                 return;
             }

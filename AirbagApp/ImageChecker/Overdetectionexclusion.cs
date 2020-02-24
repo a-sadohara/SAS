@@ -197,7 +197,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog( g_CON_LEVEL_ERROR,string.Format("{0},{1},{2}" ,g_clsMessageInfo.strMsgE0001,Environment.NewLine , ex.Message));
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
@@ -278,7 +278,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR,string.Format( "{0}{1}{2}",g_clsMessageInfo.strMsgE0001, Environment.NewLine , ex.Message));
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
@@ -484,7 +484,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "{0}{1}{2}",g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
@@ -825,7 +825,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0043, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0043, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }

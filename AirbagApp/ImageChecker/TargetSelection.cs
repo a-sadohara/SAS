@@ -480,7 +480,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0042, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0042, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
@@ -576,7 +576,7 @@ namespace ImageChecker
                 // ディレクトリ存在チェック
                 if (Directory.Exists(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" + strFaultImageSubDirectory) == false)
                 {
-                    MessageBox.Show(g_clsMessageInfo.strMsgW0006, "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(g_clsMessageInfo.strMsgW0006, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -915,7 +915,7 @@ namespace ImageChecker
                         // ログ出力
                         WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 , Environment.NewLine , ex.Message));
                         // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0031, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         frmProgress.Close();
                         return;
@@ -1000,7 +1000,7 @@ namespace ImageChecker
                         // ログ出力
                         WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
                         // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         frmProgress.Close();
                         return; 
@@ -1106,7 +1106,7 @@ namespace ImageChecker
                         // ログ出力
                         WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
                         // メッセージ出力
-                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0039, strFabricName, intInspectionNum), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0039, strFabricName, intInspectionNum), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         frmProgress.Close();
                         return;
@@ -1120,7 +1120,7 @@ namespace ImageChecker
                     if (!tsk.Result)
                     {
                         // メッセージ出力
-                        MessageBox.Show( g_clsMessageInfo.strMsgE0041, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show( g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         frmProgress.Close();
                         return;
                     }
@@ -1136,7 +1136,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0058 , Environment.NewLine, ex.Message));
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0059, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0059, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {

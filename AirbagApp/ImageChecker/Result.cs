@@ -183,7 +183,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0035, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
@@ -301,7 +301,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1},{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -353,7 +353,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine,ex.Message));
                     // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -486,7 +486,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 , Environment.NewLine, ex.Message));
                     // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -559,7 +559,7 @@ namespace ImageChecker
 
             // メッセージ表示
             if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0013, strApName),
-                                "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                                g_CON_MESSAGE_TITLE_QUESTION, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             {
                 return false;
             }                
@@ -628,7 +628,7 @@ namespace ImageChecker
             string strWriteLine = string.Empty;
             List<Control> lstctlEnable = null;
 
-            if (MessageBox.Show(g_clsMessageInfo.strMsgQ0012, "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            if (MessageBox.Show(g_clsMessageInfo.strMsgQ0012, g_CON_MESSAGE_TITLE_QUESTION, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             {
                 return;
             }
@@ -754,7 +754,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
-                    System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0054, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0054, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -876,7 +876,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0048 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
-                    System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0049, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0049, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
