@@ -98,7 +98,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0030, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -149,7 +149,6 @@ namespace ImageChecker
         {
             // 選択行にチェックを入れる
             dgvMstDecisionReason.Rows[e.RowIndex].Cells[0].Value = true;
-            dgvMstDecisionReason.Rows[e.RowIndex].Cells[0].ReadOnly = true;
 
             // 選択行以外のチェックを外す
             for (int rowIndex = 0; rowIndex < dgvMstDecisionReason.Rows.Count; rowIndex++)
@@ -157,7 +156,6 @@ namespace ImageChecker
                 if (rowIndex != e.RowIndex)
                 {
                     dgvMstDecisionReason.Rows[rowIndex].Cells[0].Value = false;
-                    dgvMstDecisionReason.Rows[rowIndex].Cells[0].ReadOnly = false;
                 }
             }
         }
