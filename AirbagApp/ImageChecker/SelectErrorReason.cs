@@ -105,6 +105,17 @@ namespace ImageChecker
         }
 
         /// <summary>
+        /// フォーム表示
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectErrorReason_Shown(object sender, EventArgs e)
+        {
+            // 初期表示時、一覧にフォーカスセット
+            dgvMstDecisionReason.Focus();
+        }
+
+        /// <summary>
         /// OKボタンクリック
         /// </summary>
         /// <param name="sender"></param>

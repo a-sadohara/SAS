@@ -70,7 +70,7 @@
             this.btnOK.Margin = new System.Windows.Forms.Padding(2);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(154, 31);
-            this.btnOK.TabIndex = 0;
+            this.btnOK.TabIndex = 2;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -141,7 +141,7 @@
             this.dgvMstDecisionReason.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvMstDecisionReason.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvMstDecisionReason.Size = new System.Drawing.Size(527, 450);
-            this.dgvMstDecisionReason.TabIndex = 0;
+            this.dgvMstDecisionReason.TabIndex = 1;
             this.dgvMstDecisionReason.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMstDecisionReason_RowEnter);
             // 
             // Check
@@ -178,6 +178,7 @@
             this.Name = "SelectErrorReason";
             this.Text = "理由選択";
             this.Load += new System.EventHandler(this.SelectErrorReason_Load);
+            this.Shown += new System.EventHandler(this.SelectErrorReason_Shown);
             this.pnlBottom.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvMstDecisionReason)).EndInit();
