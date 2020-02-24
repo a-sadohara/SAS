@@ -71,6 +71,7 @@ namespace BeforeInspection
             if (!string.IsNullOrEmpty(frmTenKeyInput.strInput))
             {
                 txtBox.Text = frmTenKeyInput.strInput;
+                txtBox.SelectAll();
             }
         }
 
@@ -1106,6 +1107,7 @@ namespace BeforeInspection
 
                 // 作業者名の表示
                 txtWorker.Text = frmWorkerSelection.strWorkerName;
+                txtWorker.SelectAll();
             }
         }
 
