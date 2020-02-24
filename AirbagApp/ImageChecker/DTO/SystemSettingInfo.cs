@@ -183,7 +183,7 @@ namespace ImageChecker.DTO
                     }
 
                     // メッセージ出力
-                    MessageBox.Show("システム設定取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("システム設定取得時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -195,7 +195,7 @@ namespace ImageChecker.DTO
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR,string.Format( "システム設定取得時にエラーが発生しました。{0}{1}" ,Environment.NewLine , ex.Message));
                 // メッセージ出力
-                MessageBox.Show("システム設定取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("システム設定取得時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

@@ -53,6 +53,11 @@ namespace ImageChecker
         public const int g_CON_LEVEL_INFO = 4;
         public const int g_CON_LEVEL_DEBUG = 5;
 
+        // メッセージ関連
+        public const string g_CON_MESSAGE_TITLE_ERROR = "エラー";
+        public const string g_CON_MESSAGE_TITLE_WARN = "警告";
+        public const string g_CON_MESSAGE_TITLE_QUESTION = "確認";
+
         // NG理由（主要）
         public const string g_CON_NG_REASON_OK = "過検知";
         public const string g_CON_NG_REASON_WHITE_THREAD_ONE = "□結節有（白糸上単発）";
@@ -97,7 +102,7 @@ namespace ImageChecker
 
                 if (!hasHandle)
                 {
-                    MessageBox.Show("多重起動はできません。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("多重起動はできません。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -113,7 +118,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}",Environment.NewLine , m_sbErrMessage.ToString()));
                     // メッセージ出力
-                    System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -150,7 +155,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "初期起動時にエラーが発生しました。{0}{1}" ,Environment.NewLine , ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -197,54 +202,6 @@ namespace ImageChecker
                     break;
             }
         }
-
-        ///// <summary>
-        ///// 過検知除外ステータス更新
-        ///// </summary>
-        ///// <param name="strFabricName">反番</param>
-        ///// <param name="strInspectionDate">検査日付</param>
-        ///// <param name="intInspectionNum">検査番号</param>
-        ///// <param name="intStatus">ステータス</param>
-        ///// <returns></returns>
-        //public static Boolean blnGetOverDetectionExceptStatus(string strFabricName,
-        //                                                      string strInspectionDate,
-        //                                                      int intInspectionNum,
-        //                                                      ref int intStatus)
-        //{
-        //    string strSQL = "";
-        //    try
-        //    {
-        //        // SQL文を作成する
-        //        strSQL = @"SELECT over_detection_except_status 
-        //                     FROM " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
-        //                    WHERE fabric_name = :fabric_name
-        //                      AND TO_CHAR(inspection_date,'YYYYMMDD') = :inspection_date_yyyymmdd
-        //                      AND inspection_num = :inspection_num";
-
-        //        // SQLコマンドに各パラメータを設定する
-        //        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-        //        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
-        //        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate.Replace("/", "") });
-        //        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
-        //        // sqlを実行する
-        //        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
-
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        if (bolMessageInfoContent("E9901", ref m_strMessageInfoContent_Eve) == false ||
-        //            bolMessageInfoContent("E0044", ref m_strMessageInfoContent_Msb) == false)
-        //            return false;
-
-        //        // ログ出力
-        //        WriteEventLog(g_CON_LEVEL_ERROR, m_strMessageInfoContent_Eve + "\r\n" + ex.Message);
-        //        // メッセージ出力
-        //        System.Windows.Forms.MessageBox.Show(m_strMessageInfoContent_Msb, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-        //        return false;
-        //    }
-        //}
 
         /// <summary>
         /// App.configファイルから設定値を取得
