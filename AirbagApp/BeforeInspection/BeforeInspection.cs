@@ -108,7 +108,7 @@ namespace BeforeInspection
             if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY ||
                 m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
             {
-                intEndLine = intStartLine + intInspectionTargetLine + 1;
+                intEndLine = intStartLine - intInspectionTargetLine + 1;
             }
 
             lblInspectionEndLine.Text = intEndLine.ToString();
@@ -846,7 +846,7 @@ namespace BeforeInspection
             DataTable dtData;
 
             this.StartPosition = FormStartPosition.CenterScreen;
-            //this.TopMost = true;
+            this.TopMost = true;
             this.WindowState = FormWindowState.Maximized;
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
@@ -857,6 +857,13 @@ namespace BeforeInspection
 
                 m_datInspectionDate = DateTime.Now.Date;
 
+
+                // 検査対象数/検査開始行を読み取り専用
+                txtInspectionTargetLine.ReadOnly = true;
+                txtInspectionTargetLine.BackColor = System.Drawing.Color.White;
+                txtInspectionStartLine.ReadOnly = true;
+                txtInspectionStartLine.BackColor = System.Drawing.Color.White;
+                
                 try
                 {
                     dtData = new DataTable();
@@ -1040,54 +1047,6 @@ namespace BeforeInspection
         }
 
         /// <summary>
-        /// 開始時刻(現在時刻選択)ボタンクリック
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnStartDatetime_Click(object sender, EventArgs e)
-        {
-            lblStartDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-        }
-
-        /// <summary>
-        /// 終了時刻(現在時刻選択)ボタンクリック
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnEndDatetime_Click(object sender, EventArgs e)
-        {
-            // 終了時刻の表示
-            lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-
-            // 枝番の取得
-            if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
-            {
-                return;
-            }
-
-            // 検査情報ヘッダーの更新
-            if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
-            {
-                return;
-            }
-
-            // 検査番号の取得
-            if (bolGetInspectionNum(out m_intInspectionNum) == false)
-            {
-                return;
-            }
-
-            // 検査番号の表示
-            lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
-
-            // ステータスの表示設定(検査終了)
-            SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusEnd);
-
-            // 次の反番情報を設定
-            btnNextFabric.Focus();
-        }
-
-        /// <summary>
         /// 品名テキストボックスクリック
         /// </summary>
         /// <param name="sender"></param>
@@ -1170,63 +1129,129 @@ namespace BeforeInspection
             CalcMaxLine();
         }
 
-        /// <summary>
-        /// 検査方向ボタンクリックイベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnInspectionDirection_Click(object sender, EventArgs e)
+        #endregion
+
+        #region 最大化画面制御
+        protected override void WndProc(ref Message m)
         {
-            Button btn = (Button)sender;
+            const int WM_NCLBUTTONDBLCLK = 0x00A3;
+            const int WM_SYSCOMMAND = 0x0112;
+            const long SC_MOVE = 0xF010L;
 
-            if (btn == btnInspectionDirectionS)
+            // ダブルクリック禁止
+            if (m.Msg == WM_NCLBUTTONDBLCLK)
             {
-                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionS);
+                return;
             }
 
-            if (btn == btnInspectionDirectionX)
+            // フォーム移動禁止
+            if (m.Msg == WM_SYSCOMMAND &&
+                (m.WParam.ToInt64() & 0xFFF0L) == SC_MOVE)
             {
-                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionX);
+                m.Result = IntPtr.Zero;
+                return;
             }
 
-            if (btn == btnInspectionDirectionY)
-            {
-                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionY);
-            }
+            base.WndProc(ref m);
+        }
+        #endregion
 
-            if (btn == btnInspectionDirectionR)
+
+        /// <summary>
+        /// 半透明フォーム
+        /// </summary>
+        public partial class OpacityForm : Form
+        {
+            // 子フォーム
+            public Form m_form;
+
+            #region メソッド
+            /// <summary>
+            /// コンストラクタ
+            /// </summary>
+            /// <param name="form"></param>
+            public OpacityForm(Form form)
             {
-                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionR);
+                m_form = form;
+
+                this.FormBorderStyle = FormBorderStyle.None;
+                this.Load += new System.EventHandler(this.OpacityForm_Load);
+                this.WindowState = FormWindowState.Maximized;
+                this.ShowInTaskbar = false;
+            }
+            #endregion
+
+            #region イベント
+            /// <summary>
+            /// フォームロード
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private void OpacityForm_Load(object sender, EventArgs e)
+            {
+                this.Opacity = 0.8;
+
+                m_form.ShowDialog(this);
+                this.Close();
+            }
+            #endregion
+        }
+
+        private void BeforeInspection_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.ControlKey)
+            {
+
+                if (this.ActiveControl == this.txtOrderImg ||
+                    this.ActiveControl == this.txtFabricName)
+                { 
+                    // 指図または反番のため、スキップ
+                    return;
+                }
+
+                if (!txtOrderImg.Enabled)
+                {
+                    // 指図が無効化されているため、処理しない
+                    return;
+                }
+
+
+                // バーコード入力のため、フォーカスを設定
+                txtOrderImg.Text = string.Empty;
+                txtFabricName.Text = string.Empty;
+                txtOrderImg.Focus();
+                txtOrderImg.SelectAll();
             }
         }
 
-        /// <summary>
-        /// 検査中断ボタンクリック
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnInspectionStop_Click(object sender, EventArgs e)
+        private void txtOrderImg_Enter(object sender, EventArgs e)
         {
-            // 終了日付の表示
-            lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            this.txtOrderImg.SelectAll();
+        }
 
-            // 枝番の取得
-            if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
-            {
-                return;
-            }
+        private void txtFabricName_Enter(object sender, EventArgs e)
+        {
+            this.txtFabricName.SelectAll();
+        }
 
-            // 検査情報ヘッダーの更新
-            if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
-            {
-                return;
-            }
+        private void txtInspectionTargetLine_Enter(object sender, EventArgs e)
+        {
+            this.txtInspectionTargetLine.SelectAll();
+        }
 
-            // ステータスの表示設定(検査中断)
-            SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusStp);
+        private void txtInspectionStartLine_Enter(object sender, EventArgs e)
+        {
+            this.txtInspectionStartLine.SelectAll();
+        }
 
-            // フォーカスを検査対象に設定
-            txtInspectionTargetLine.Focus();
+        private void txtWorker1_Enter(object sender, EventArgs e)
+        {
+            this.txtWorker1.SelectAll();
+        }
+
+        private void txtWorker2_Enter(object sender, EventArgs e)
+        {
+            this.txtWorker2.SelectAll();
         }
 
         /// <summary>
@@ -1234,7 +1259,7 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnSet_Click(object sender, EventArgs e)
+        private void btnSet_MouseClick(object sender, MouseEventArgs e)
         {
             if (InputDataCheck() == false)
             {
@@ -1366,6 +1391,37 @@ namespace BeforeInspection
                 txtInspectionTargetLine.Focus();
                 return;
             }
+
+        }
+
+        /// <summary>
+        /// 検査中断ボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnInspectionStop_MouseClick(object sender, MouseEventArgs e)
+        {
+            // 終了日付の表示
+            lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+
+            // 枝番の取得
+            if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
+            {
+                return;
+            }
+
+            // 検査情報ヘッダーの更新
+            if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
+            {
+                return;
+            }
+
+            // ステータスの表示設定(検査中断)
+            SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusStp);
+
+            // フォーカスを検査対象に設定
+            txtInspectionTargetLine.Focus();
+
         }
 
         /// <summary>
@@ -1373,7 +1429,7 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnNextFabric_Click(object sender, EventArgs e)
+        private void btnNextFabric_MouseClick(object sender, MouseEventArgs e)
         {
             // 検査番号の取得
             bolGetInspectionNum(out m_intInspectionNum);
@@ -1402,135 +1458,87 @@ namespace BeforeInspection
 
             // ステータスの表示設定(検査開始前)
             SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusBef);
-        }
-        #endregion
-
-        #region 最大化画面制御
-        protected override void WndProc(ref Message m)
-        {
-            const int WM_NCLBUTTONDBLCLK = 0x00A3;
-            const int WM_SYSCOMMAND = 0x0112;
-            const long SC_MOVE = 0xF010L;
-
-            // ダブルクリック禁止
-            if (m.Msg == WM_NCLBUTTONDBLCLK)
-            {
-                return;
-            }
-
-            // フォーム移動禁止
-            if (m.Msg == WM_SYSCOMMAND &&
-                (m.WParam.ToInt64() & 0xFFF0L) == SC_MOVE)
-            {
-                m.Result = IntPtr.Zero;
-                return;
-            }
-
-            base.WndProc(ref m);
-        }
-        #endregion
-
-        private char chrKeyDown = '\0';
-        private List<char> lstBarcode = new List<char>(1);
-        private int intLastInputKey = DateTime.Now.Millisecond;
-
-        private void BeforeInspection_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (chrKeyDown != (char)e.KeyCode || chrKeyDown == '\0')
-            {
-                chrKeyDown = '\0';
-                lstBarcode.Clear();
-                return;
-            }
-
-            int intBetweenInputKey = (DateTime.Now.Millisecond - intLastInputKey);
-
-            if (intBetweenInputKey > 17)
-            {
-                // キーボード入力のため、クリア
-                lstBarcode.Clear();
-            }
-            else
-            {
-                if (!txtOrderImg.Enabled)
-                {
-                    e.Handled = true;
-                }
-            }
-
-            if (e.KeyCode != Keys.Return)
-            {
-                // バーコード入力値として登録
-                lstBarcode.Add((char)e.KeyData);
-            }
-
-
-            if (e.KeyCode == Keys.Return && lstBarcode.Count > 0)
-            {
-                if (txtOrderImg.Enabled)
-                {
-                    txtOrderImg.Focus();
-                    // 入力が確定されたため、データをセット
-                    txtOrderImg.Text = new string(lstBarcode.ToArray());
-                }
-
-                lstBarcode.Clear();
-            }
-
-            intLastInputKey = DateTime.Now.Millisecond;
 
         }
 
         /// <summary>
-        /// 半透明フォーム
+        /// 開始時刻(現在時刻選択)ボタンクリック
         /// </summary>
-        public partial class OpacityForm : Form
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnStartDatetime_MouseClick(object sender, MouseEventArgs e)
         {
-            // 子フォーム
-            public Form m_form;
-
-            #region メソッド
-            /// <summary>
-            /// コンストラクタ
-            /// </summary>
-            /// <param name="form"></param>
-            public OpacityForm(Form form)
-            {
-                m_form = form;
-
-                this.FormBorderStyle = FormBorderStyle.None;
-                this.Load += new System.EventHandler(this.OpacityForm_Load);
-                this.WindowState = FormWindowState.Maximized;
-                this.ShowInTaskbar = false;
-            }
-            #endregion
-
-            #region イベント
-            /// <summary>
-            /// フォームロード
-            /// </summary>
-            /// <param name="sender"></param>
-            /// <param name="e"></param>
-            private void OpacityForm_Load(object sender, EventArgs e)
-            {
-                this.Opacity = 0.8;
-
-                m_form.ShowDialog(this);
-                this.Close();
-            }
-            #endregion
+            lblStartDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         }
 
-        private void BeforeInspection_KeyDown(object sender, KeyEventArgs e)
+        /// <summary>
+        /// 終了時刻(現在時刻選択)ボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnEndDatetime_MouseClick(object sender, MouseEventArgs e)
         {
-            chrKeyDown = (char)e.KeyCode;
+            // 終了時刻の表示
+            lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+
+            // 枝番の取得
+            if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
+            {
+                return;
+            }
+
+            // 検査情報ヘッダーの更新
+            if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
+            {
+                return;
+            }
+
+            // 検査番号の取得
+            if (bolGetInspectionNum(out m_intInspectionNum) == false)
+            {
+                return;
+            }
+
+            // 検査番号の表示
+            lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
+
+            // ステータスの表示設定(検査終了)
+            SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusEnd);
+
+            // 次の反番情報を設定
+            btnNextFabric.Focus();
+
         }
 
-        private void BeforeInspection_KeyPress(object sender, KeyPressEventArgs e)
+        /// <summary>
+        /// 検査方向ボタンクリックイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnInspectionDirection_MouseClick(object sender, MouseEventArgs e)
         {
-            if (this.ActiveControl.Equals(typeof(Button))){
-                e.Handled = true;
+            Button btn = (Button)sender;
+
+            if (btn == btnInspectionDirectionS)
+            {
+                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionS);
             }
+
+            if (btn == btnInspectionDirectionX)
+            {
+                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionX);
+            }
+
+            if (btn == btnInspectionDirectionY)
+            {
+                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionY);
+            }
+
+            if (btn == btnInspectionDirectionR)
+            {
+                SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionR);
+            }
+
         }
 
     }
