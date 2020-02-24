@@ -51,7 +51,7 @@ namespace ImageChecker
 
         // 選択行保持
         private int m_intSelRowIdx = -1;
-        private int m_intFirstDisplayedScrollingRowIndex = -1;
+        private int m_intFirstDisplayedScrollingRowIdx = -1;
 
         #region メソッド
         /// <summary>
@@ -450,9 +450,16 @@ namespace ImageChecker
                 }
 
                 // スクロールバー調整
-                if (m_intFirstDisplayedScrollingRowIndex != -1)
+                if (m_intFirstDisplayedScrollingRowIdx != -1)
                 {
-                    this.dgvTargetSelection.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIndex;
+                    try
+                    {
+                        this.dgvTargetSelection.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIdx;
+                    }
+                    catch
+                    {
+                        // 一覧がリセットされる瞬間においては例外が発生するが、無視する
+                    }
                 }
 
                 if (dgvTargetSelection.Rows.Count == 0)
@@ -1150,7 +1157,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void dgvTargetSelection_Scroll(object sender, ScrollEventArgs e)
         {
-            m_intFirstDisplayedScrollingRowIndex = dgvTargetSelection.FirstDisplayedScrollingRowIndex;
+            m_intFirstDisplayedScrollingRowIdx = dgvTargetSelection.FirstDisplayedScrollingRowIndex;
         }
 
         /// <summary>
