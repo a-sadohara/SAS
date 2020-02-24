@@ -459,15 +459,18 @@ namespace BeforeInspection
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSql, lstNpgsqlCommand);
 
-                // DBコミット
-                g_clsConnectionNpgsql.DbCommit();
 
                 // 撮像装置部へ連携用ファイル出力
                 if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
                 {
+                    // DBロールバック
+                    g_clsConnectionNpgsql.DbRollback();
                     btnSet.Focus();
                     return false;
                 }
+
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
 
                 return true;
 
@@ -843,7 +846,7 @@ namespace BeforeInspection
             DataTable dtData;
 
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.TopMost = true;
+            //this.TopMost = true;
             this.WindowState = FormWindowState.Maximized;
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
@@ -1268,14 +1271,15 @@ namespace BeforeInspection
                     return;
                 }
 
-                // 検査番号の表示
-                lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
                 // 検査情報ヘッダーの登録
                 if (RegStartInspectionInfoHeader(m_intInspectionNum, 1) == false)
                 {
                     return;
                 }
+
+                // 検査番号の表示
+                lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
                 // ステータスの表示設定(検査準備完了)
                 SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
@@ -1346,14 +1350,14 @@ namespace BeforeInspection
                     return;
                 }
 
-                // 検査番号の表示
-                lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
-
                 // 検査情報ヘッダーの登録
                 if (RegStartInspectionInfoHeader(m_intInspectionNum, m_intBranchNum) == false)
                 {
                     return;
                 }
+
+                // 検査番号の表示
+                lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
                 // ステータスの表示設定(検査準備完了)
                 SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusChk);
