@@ -279,14 +279,35 @@ namespace ImageChecker
                 try
                 {
                     // SQL文を作成する
+                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                     strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                   SET ng_reason = :ng_reason
                                     , line = :line
                                     , cloumns = :cloumns
-                                    , acceptance_check_result = :acceptance_check_result
-                                    , acceptance_check_datetime = current_timestamp
+                                    , before_ng_reason = ng_reason
+                                    , acceptance_check_result = :acceptance_check_result ";
+
+                    if (m_intFromApId != 0)
+                    {
+                        // 結果更新
+                        strSQL += @", result_update_datetime = current_timestamp
+                                    , result_update_worker = :result_update_worker ";
+
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "result_update_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
+                    }
+                    else
+                    {
+                        // 新規登録
+                        strSQL += @", acceptance_check_datetime = current_timestamp
                                     , acceptance_check_worker = :acceptance_check_worker
-                                WHERE fabric_name = :fabric_name
+                                    , before_acceptance_check_result = acceptance_check_result
+                                    , before_acceptance_check_upd_datetime = acceptance_check_datetime
+                                    , before_acceptance_check_worker = acceptance_check_worker ";
+
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
+                    }
+
+                    strSQL += @"WHERE fabric_name = :fabric_name
                                   AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
                                   AND inspection_num = :inspection_num
                                   AND branch_num = :branch_num
@@ -294,7 +315,6 @@ namespace ImageChecker
                                   AND marking_imagepath = :marking_imagepath";
 
                     // SQLコマンドに各パラメータを設定する
-                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_reason", DbType = DbType.String, Value = strNgReason });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = int.Parse(cmbBoxLine.SelectedItem.ToString()) });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = cmbBoxColumns.SelectedItem.ToString() });
