@@ -1197,14 +1197,17 @@ namespace BeforeInspection
             #endregion
         }
 
+        private List<char> lstBarcode = new List<char>(1);
+        private int intLastInputKey = DateTime.Now.Millisecond;
+
         private void BeforeInspection_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.ControlKey)
             {
-
                 if (this.ActiveControl == this.txtOrderImg ||
                     this.ActiveControl == this.txtFabricName)
                 { 
+
                     // 指図または反番のため、スキップ
                     return;
                 }
@@ -1221,7 +1224,27 @@ namespace BeforeInspection
                 txtFabricName.Text = string.Empty;
                 txtOrderImg.Focus();
                 txtOrderImg.SelectAll();
+
+                lstBarcode.Clear();
             }
+
+            if (e.KeyCode != Keys.Return)
+            {
+                // バーコード入力値として登録
+                lstBarcode.Add((char)e.KeyData);
+            }
+
+
+            if (e.KeyCode == Keys.Return && lstBarcode.Count > 0)
+            {
+                // 入力が確定されたため、データをセット
+                TextBox txtActive = (TextBox)this.ActiveControl;
+                txtActive.SelectAll();
+
+                lstBarcode.Clear();
+            }
+
+            intLastInputKey = DateTime.Now.Millisecond;
         }
 
         private void txtOrderImg_Enter(object sender, EventArgs e)
