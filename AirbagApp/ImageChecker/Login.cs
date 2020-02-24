@@ -30,10 +30,6 @@ namespace ImageChecker
                 Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + g_CON_DIR_MASTER_IMAGE);
 
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.MaximumSize = this.Size;
-            this.MinimumSize = this.Size;
         }
 
         /// <summary>

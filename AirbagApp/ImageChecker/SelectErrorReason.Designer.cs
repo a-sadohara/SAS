@@ -37,8 +37,7 @@
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlRight = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            //this.dgvMstDecisionReason = new System.Windows.Forms.DataGridView();
-            this.dgvMstDecisionReason = new MyDataGridView();
+            this.dgvMstDecisionReason = new ImageChecker.MyDataGridView();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlBottom.SuspendLayout();
@@ -71,7 +70,7 @@
             this.btnOK.Margin = new System.Windows.Forms.Padding(2);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(154, 31);
-            this.btnOK.TabIndex = 0;
+            this.btnOK.TabIndex = 2;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -142,7 +141,7 @@
             this.dgvMstDecisionReason.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvMstDecisionReason.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvMstDecisionReason.Size = new System.Drawing.Size(527, 450);
-            this.dgvMstDecisionReason.TabIndex = 0;
+            this.dgvMstDecisionReason.TabIndex = 1;
             this.dgvMstDecisionReason.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMstDecisionReason_RowEnter);
             // 
             // Check
@@ -171,6 +170,7 @@
             this.Controls.Add(this.pnlLeft);
             this.Controls.Add(this.pnlBottom);
             this.Controls.Add(this.pnlTop);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
@@ -178,6 +178,7 @@
             this.Name = "SelectErrorReason";
             this.Text = "理由選択";
             this.Load += new System.EventHandler(this.SelectErrorReason_Load);
+            this.Shown += new System.EventHandler(this.SelectErrorReason_Shown);
             this.pnlBottom.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvMstDecisionReason)).EndInit();
@@ -192,9 +193,9 @@
         private System.Windows.Forms.Panel pnlLeft;
         private System.Windows.Forms.Panel pnlRight;
         private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.DataGridView dgvMstDecisionReason;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
         private System.Windows.Forms.DataGridViewTextBoxColumn Reason;
+        private MyDataGridView dgvMstDecisionReason;
     }
 }

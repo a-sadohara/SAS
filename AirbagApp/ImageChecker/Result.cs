@@ -158,13 +158,10 @@ namespace ImageChecker
                 strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                               SET acceptance_check_status = :acceptance_check_status ";
 
-                if (m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
+                if (!string.IsNullOrEmpty(strEndDatetime))
                 {
-                    if (!string.IsNullOrEmpty(strEndDatetime))
-                    {
-                        strSQL += @", decision_end_datetime = TO_TIMESTAMP(:decision_end_datetime_yyyymmdd_hhmmss, 'YYYY/MM/DD HH24:MI:SS') ";
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_end_datetime_yyyymmdd_hhmmss", DbType = DbType.String, Value = strEndDatetime });
-                    }
+                    strSQL += @", decision_end_datetime = TO_TIMESTAMP(:decision_end_datetime_yyyymmdd_hhmmss, 'YYYY/MM/DD HH24:MI:SS') ";
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_end_datetime_yyyymmdd_hhmmss", DbType = DbType.String, Value = strEndDatetime });
                 }
 
                 strSQL += @"WHERE fabric_name = :fabric_name
@@ -587,15 +584,18 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnTargetSelection_Click(object sender, EventArgs e)
         {
-            // 合否確認ステータス更新(中断)
-            if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                            g_clsSystemSettingInfo.intAcceptanceCheckStatusStp) == false)
+            if (m_intAcceptanceCheckStatus != g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
             {
-                // エラー時
-                g_clsConnectionNpgsql.DbRollback();
-                g_clsConnectionNpgsql.DbClose();
+                // 合否確認ステータス更新(中断)
+                if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
+                                                g_clsSystemSettingInfo.intAcceptanceCheckStatusStp) == false)
+                {
+                    // エラー時
+                    g_clsConnectionNpgsql.DbRollback();
+                    g_clsConnectionNpgsql.DbClose();
 
-                return;
+                    return;
+                }
             }
 
             if (m_intFromApId != 0)
@@ -874,9 +874,9 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0048 ,Environment.NewLine, ex.Message));
                     // メッセージ出力
-                    System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0054, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0049, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -985,15 +985,18 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            // 合否確認ステータス更新(中断)
-            if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                            g_clsSystemSettingInfo.intAcceptanceCheckStatusStp) == false)
+            if (m_intAcceptanceCheckStatus != g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
             {
-                // エラー時
-                g_clsConnectionNpgsql.DbRollback();
-                g_clsConnectionNpgsql.DbClose();
+                // 合否確認ステータス更新(中断)
+                if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
+                                            g_clsSystemSettingInfo.intAcceptanceCheckStatusStp) == false)
+                {
+                    // エラー時
+                    g_clsConnectionNpgsql.DbRollback();
+                    g_clsConnectionNpgsql.DbClose();
 
-                return;
+                    return;
+                }
             }
 
             if (m_intFromApId != 0)
