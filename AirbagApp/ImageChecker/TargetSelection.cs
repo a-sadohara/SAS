@@ -675,6 +675,7 @@ namespace ImageChecker
             int intInspectionStartLine = -1;
             int intInspectionEndLine = -1;
             int intInspectionNum = 0;
+            bool bolInspection = true;
 
             int intRow = -1;
 
@@ -685,6 +686,12 @@ namespace ImageChecker
                 {
                     intRow = dgvRow.Index;
                     break;
+                }
+
+                // 既に検査対象外の場合
+                if (int.Parse(m_dtData.Rows[intRow]["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
+                {
+                    bolInspection = false;
                 }
 
                 // パラメータの取得
@@ -699,7 +706,6 @@ namespace ImageChecker
                 intInspectionEndLine = int.Parse(m_dtData.Rows[intRow]["inspection_end_line"].ToString());
                 intInspectionNum = int.Parse(m_dtData.Rows[intRow]["inspection_num"].ToString());
 
-
                 // 検査対象外画面表示
                 CheckExcept frmCheckExcept = new CheckExcept(strUnitNum,
                                                              strOrderImg,
@@ -710,7 +716,8 @@ namespace ImageChecker
                                                              strStartDatetime,
                                                              strEndDatetime,
                                                              intInspectionStartLine,
-                                                             intInspectionEndLine);
+                                                             intInspectionEndLine,
+                                                             bolInspection);
                 frmCheckExcept.ShowDialog(this);
 
                 // 連携処理をして画面表示
