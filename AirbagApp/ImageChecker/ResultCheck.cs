@@ -1069,16 +1069,28 @@ namespace ImageChecker
                     }
                 }
 
-                // 合否確認ステータス更新(検査中)
-                if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                                g_clsSystemSettingInfo.intAcceptanceCheckStatusChk) == false)
+                if (m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusBef ||
+                    m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
                 {
-                    // エラー時
-                    g_clsConnectionNpgsql.DbRollback();
+                    // 合否確認ステータス更新(検査中)
+                    if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
+                                                    g_clsSystemSettingInfo.intAcceptanceCheckStatusChk) == false)
+                    {
+                        // エラー時
+                        g_clsConnectionNpgsql.DbRollback();
+                        g_clsConnectionNpgsql.DbClose();
+
+                        return;
+                    }
+
+                    g_clsConnectionNpgsql.DbCommit();
                     g_clsConnectionNpgsql.DbClose();
 
-                    return;
+                    // パラメータ更新
+                    m_clsHeaderData.intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusChk;
+                    m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
                 }
+
 
                 g_clsConnectionNpgsql.DbCommit();
                 g_clsConnectionNpgsql.DbClose();
@@ -1207,46 +1219,13 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void ResultCheck_FormClosing(object sender, FormClosingEventArgs e)
         {
-            bool bolProcOkNg = true;
-
             if (m_intAcceptanceCheckStatus != g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
             {
-                // 今までの変更を戻してから、ステータスの更新に移る
-                g_clsConnectionNpgsql.DbRollback();
-                g_clsConnectionNpgsql.DbClose();
-
-                if (m_intFromApId == 0)
+                // 合否確認ステータス更新(中断)
+                if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
+                                                g_clsSystemSettingInfo.intAcceptanceCheckStatusStp) == false)
                 {
-                    // 新規
-
-                    // 合否確認ステータス更新(中断)
-                    if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                                    g_clsSystemSettingInfo.intAcceptanceCheckStatusStp) == false)
-                    {
-                        bolProcOkNg = false;
-                    }
-                }
-                else
-                {
-                    // 修正
-
-                    // 合否確認ステータス更新(検査完了)
-                    if (blnUpdAcceptanceCheckStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                                    g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd) == false)
-                    {
-                        bolProcOkNg = false;
-                    }
-                }
-
-                if (bolProcOkNg == true)
-                {
-                    // 正常終了
-                    g_clsConnectionNpgsql.DbCommit();
-                    g_clsConnectionNpgsql.DbClose();
-                }
-                else
-                {
-                    // 異常終了
+                    // エラー時
                     g_clsConnectionNpgsql.DbRollback();
                     g_clsConnectionNpgsql.DbClose();
 
@@ -1256,12 +1235,13 @@ namespace ImageChecker
                         return;
                     }
                 }
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
 
                 // パラメータ更新
                 m_clsHeaderData.intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusStp;
                 m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
             }
-
 
             // 一時ディレクトリ削除
             if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory , g_CON_DIR_MASTER_IMAGE_MARKING)) == true)
@@ -1513,6 +1493,7 @@ namespace ImageChecker
             List<string> lststrZipExtractToDirectory = new List<string>();
             DataTable dtData = new DataTable();
             int intParse = -1;
+            bool boldoubleErr = false;
 
             try
             {
@@ -1702,10 +1683,33 @@ namespace ImageChecker
                 {
                     g_clsConnectionNpgsql.DbRollback();
 
-                    // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}",　g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
-                    // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0057, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    try
+                    {
+                        if (((Npgsql.PostgresException)ex).SqlState == "23505")
+                        {
+                            // 重複エラー
+                            boldoubleErr = true;
+                        }
+                    }
+                    finally
+                    {
+                        if (boldoubleErr == true)
+                        {
+                            // 重複の例外
+
+                            // メッセージ出力
+                            MessageBox.Show(g_clsMessageInfo.strMsgE0057, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            //  重複以外の例外
+
+                            // ログ出力
+                            WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                            // メッセージ出力
+                            MessageBox.Show(g_clsMessageInfo.strMsgE0057, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
 
                     return;
                 }
