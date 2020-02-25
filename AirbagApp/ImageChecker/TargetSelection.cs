@@ -198,8 +198,8 @@ namespace ImageChecker
                            AND iih.inspection_num = dr.inspection_num
                            INNER JOIN mst_product_info mpi
                            ON  iih.product_name = mpi.product_name
-                           WHERE (iih.decision_end_datetime IS NULL OR
-                                  iih.decision_end_datetime >= TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS'))
+                           WHERE (iih.result_datetime IS NULL OR
+                                  iih.result_datetime >= TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS'))
                            ORDER BY iih.inspection_date DESC, iih.inspection_num DESC";
 
                 // SQLコマンドに各パラメータを設定する
