@@ -1794,6 +1794,7 @@ namespace ImageChecker
 
                     // データに挿入する
                     DataRow drNew = m_dtData.NewRow();
+                    drNew["branch_num"] = 1;
                     drNew["line"] = dtData.Rows[0]["line"];
                     drNew["cloumns"] = dtData.Rows[0]["cloumns"];
                     drNew["ng_face"] = dtData.Rows[0]["ng_face"];
