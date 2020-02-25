@@ -426,9 +426,6 @@ namespace ImageChecker
             Bitmap bmpImageNo1 = new Bitmap(m_bmpMasterImageMarking);
             Bitmap bmpImageNo2 = new Bitmap(m_bmpMasterImageMarking);
 
-            bmpImageNo1.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            bmpImageNo2.RotateFlip(RotateFlipType.Rotate270FlipNone);
-
             // 非アクティブ化
             foreach (Button btnInspectionDirection in new Button[] { btnInspectionDirectionS, btnInspectionDirectionX, btnInspectionDirectionY, btnInspectionDirectionR })
             {
@@ -442,15 +439,22 @@ namespace ImageChecker
             // アクティブ化
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS)
             {
+                // 背景色(アクティブ)
                 btnInspectionDirectionS.BackColor = m_clrInspectionDirectionActFore;
 
+                // 検反部ラベル
                 lblInspectionDirectionNo1.Text = string.Format(m_CON_FORMAT_INSPECTION_DIRECTION_NO1, g_clsSystemSettingInfo.strInspectionDirectionS);
                 lblInspectionDirectionNo2.Text = string.Format(m_CON_FORMAT_INSPECTION_DIRECTION_NO2, g_clsSystemSettingInfo.strInspectionDirectionX);
 
+                // 回転
+                bmpImageNo1.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                bmpImageNo2.RotateFlip(RotateFlipType.Rotate270FlipX);
+
+                // 画像表示
                 picMasterImageNo1.Image = bmpImageNo1;
-                bmpImageNo2.RotateFlip(RotateFlipType.RotateNoneFlipX);
                 picMasterImageNo2.Image = bmpImageNo2;
 
+                // カメラ位置
                 lblCameraNo11.Text = m_CON_CAMERA_NO_2;
                 lblCameraNo12.Text = m_CON_CAMERA_NO_8;
                 lblCameraNo13.Text = m_CON_CAMERA_NO_14;
@@ -465,15 +469,22 @@ namespace ImageChecker
 
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
             {
+                // 背景色(アクティブ)
                 btnInspectionDirectionX.BackColor = m_clrInspectionDirectionActFore;
 
+                // 検反部ラベル
                 lblInspectionDirectionNo1.Text = string.Format(m_CON_FORMAT_INSPECTION_DIRECTION_NO1, g_clsSystemSettingInfo.strInspectionDirectionX);
                 lblInspectionDirectionNo2.Text = string.Format(m_CON_FORMAT_INSPECTION_DIRECTION_NO2, g_clsSystemSettingInfo.strInspectionDirectionS);
 
-                bmpImageNo1.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                // 回転
+                bmpImageNo1.RotateFlip(RotateFlipType.Rotate270FlipX);
+                bmpImageNo2.RotateFlip(RotateFlipType.Rotate270FlipNone);
+
+                // 画像表示
                 picMasterImageNo1.Image = bmpImageNo1;
                 picMasterImageNo2.Image = bmpImageNo2;
 
+                // カメラ位置
                 lblCameraNo11.Text = m_CON_CAMERA_NO_26;
                 lblCameraNo12.Text = m_CON_CAMERA_NO_20;
                 lblCameraNo13.Text = m_CON_CAMERA_NO_14;
@@ -488,16 +499,22 @@ namespace ImageChecker
 
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
             {
+                // 背景色(アクティブ)
                 btnInspectionDirectionY.BackColor = m_clrInspectionDirectionActFore;
 
+                // 検反部ラベル
                 lblInspectionDirectionNo1.Text = string.Format(m_CON_FORMAT_INSPECTION_DIRECTION_NO1, g_clsSystemSettingInfo.strInspectionDirectionY);
                 lblInspectionDirectionNo2.Text = string.Format(m_CON_FORMAT_INSPECTION_DIRECTION_NO2, g_clsSystemSettingInfo.strInspectionDirectionR);
 
-                bmpImageNo1.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                // 回転
+                bmpImageNo1.RotateFlip(RotateFlipType.Rotate270FlipY);
+                bmpImageNo2.RotateFlip(RotateFlipType.Rotate270FlipXY);
+
+                // 画像表示
                 picMasterImageNo1.Image = bmpImageNo1;
-                bmpImageNo2.RotateFlip(RotateFlipType.RotateNoneFlipXY);
                 picMasterImageNo2.Image = bmpImageNo2;
 
+                // カメラ位置
                 lblCameraNo11.Text = m_CON_CAMERA_NO_2;
                 lblCameraNo12.Text = m_CON_CAMERA_NO_8;
                 lblCameraNo13.Text = m_CON_CAMERA_NO_14;
@@ -512,16 +529,22 @@ namespace ImageChecker
 
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
             {
+                // 背景色(アクティブ)
                 btnInspectionDirectionR.BackColor = m_clrInspectionDirectionActFore;
 
+                // 検反部ラベル
                 lblInspectionDirectionNo1.Text = string.Format(m_CON_FORMAT_INSPECTION_DIRECTION_NO1, g_clsSystemSettingInfo.strInspectionDirectionR);
                 lblInspectionDirectionNo2.Text = string.Format(m_CON_FORMAT_INSPECTION_DIRECTION_NO2, g_clsSystemSettingInfo.strInspectionDirectionY);
 
-                bmpImageNo1.RotateFlip(RotateFlipType.RotateNoneFlipXY);
+                // 回転
+                bmpImageNo1.RotateFlip(RotateFlipType.Rotate270FlipXY);
+                bmpImageNo2.RotateFlip(RotateFlipType.Rotate270FlipY);
+
+                // 画像表示
                 picMasterImageNo1.Image = bmpImageNo1;
-                bmpImageNo2.RotateFlip(RotateFlipType.RotateNoneFlipY);
                 picMasterImageNo2.Image = bmpImageNo2;
 
+                // カメラ位置
                 lblCameraNo11.Text = m_CON_CAMERA_NO_26;
                 lblCameraNo12.Text = m_CON_CAMERA_NO_20;
                 lblCameraNo13.Text = m_CON_CAMERA_NO_14;
