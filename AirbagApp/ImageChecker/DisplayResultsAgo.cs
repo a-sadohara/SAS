@@ -17,6 +17,7 @@ namespace ImageChecker
         private const string m_CON_FORMAT_WORKER_NAME = "作業者：{0}";
         private const string m_CON_FORMAT_NG_DISTANCE = "{0},{1}";
         private const string m_CON_FORMAT_SEARCH_COUNT = "{0} / {1}";
+        private const string m_CON_FORMAT_INSPECTION_LINE = "{0}～{1}";
 
         // 件数
         private int m_intAllImageInspectionCount = 0;       // 全画像検査枚数
@@ -267,8 +268,8 @@ namespace ImageChecker
                     arrRow.Add(row["fabric_name"]);
                     arrRow.Add(row["start_datetime"]);
                     arrRow.Add(row["end_datetime"]);
-                    arrRow.Add(row["inspection_start_line"]);
-                    arrRow.Add(row["inspection_end_line"]);
+                    arrRow.Add(row["inspection_target_line"]);
+                    arrRow.Add(string.Format(m_CON_FORMAT_INSPECTION_LINE, row["inspection_start_line"], row["inspection_end_line"]));
                     arrRow.Add(row["decision_start_datetime"]);
                     arrRow.Add(row["decision_end_datetime"]);
                     arrRow.Add(row["inspection_num"]);

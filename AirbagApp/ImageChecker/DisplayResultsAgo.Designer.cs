@@ -102,8 +102,8 @@
             this.FabricName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StartDatetime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndDatetime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.InspectionStartLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.InspectionEndLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.InspectionTargetLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.InspectionLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DecisionStartDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DecisionEndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.InspectionNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -206,7 +206,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.74101F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.259F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 161F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 251F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 252F));
             this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel4, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
@@ -246,7 +246,7 @@
             this.panel2.Location = new System.Drawing.Point(125, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(402, 141);
+            this.panel2.Size = new System.Drawing.Size(401, 141);
             this.panel2.TabIndex = 28;
             // 
             // lblHansoStaDate
@@ -528,10 +528,10 @@
             this.panel4.Controls.Add(this.lblImageSearchCount);
             this.panel4.Controls.Add(this.cmbNgFace);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(688, 0);
+            this.panel4.Location = new System.Drawing.Point(687, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(252, 141);
+            this.panel4.Size = new System.Drawing.Size(253, 141);
             this.panel4.TabIndex = 28;
             // 
             // lblNgSide
@@ -779,7 +779,7 @@
             this.panel3.Controls.Add(this.lblTitleUserNm);
             this.panel3.Controls.Add(this.cmbColumns);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(527, 0);
+            this.panel3.Location = new System.Drawing.Point(526, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(0);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(161, 141);
@@ -998,8 +998,8 @@
             this.FabricName,
             this.StartDatetime,
             this.EndDatetime,
-            this.InspectionStartLine,
-            this.InspectionEndLine,
+            this.InspectionTargetLine,
+            this.InspectionLine,
             this.DecisionStartDate,
             this.DecisionEndDate,
             this.InspectionNum,
@@ -1103,18 +1103,18 @@
             this.EndDatetime.ReadOnly = true;
             this.EndDatetime.Width = 210;
             // 
-            // InspectionStartLine
+            // InspectionTargetLine
             // 
-            this.InspectionStartLine.HeaderText = "検査範囲行";
-            this.InspectionStartLine.Name = "InspectionStartLine";
-            this.InspectionStartLine.ReadOnly = true;
-            this.InspectionStartLine.Width = 120;
+            this.InspectionTargetLine.HeaderText = "検査対象数";
+            this.InspectionTargetLine.Name = "InspectionTargetLine";
+            this.InspectionTargetLine.ReadOnly = true;
+            this.InspectionTargetLine.Width = 120;
             // 
-            // InspectionEndLine
+            // InspectionLine
             // 
-            this.InspectionEndLine.HeaderText = "検査開始行";
-            this.InspectionEndLine.Name = "InspectionEndLine";
-            this.InspectionEndLine.ReadOnly = true;
+            this.InspectionLine.HeaderText = "検査範囲行";
+            this.InspectionLine.Name = "InspectionLine";
+            this.InspectionLine.ReadOnly = true;
             // 
             // DecisionStartDate
             // 
@@ -1319,32 +1319,6 @@
         private System.Windows.Forms.Label lblTitleSearchImageCnt;
         private System.Windows.Forms.Label lblTitleSearchCushionCnt;
         private System.Windows.Forms.Label lblCushionSearchCount;
-        private System.Windows.Forms.DataGridViewTextBoxColumn No;
-        private System.Windows.Forms.DataGridViewTextBoxColumn UnitNum;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ProductName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn OrderImg;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FabricName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn StartDatetime;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EndDatetime;
-        private System.Windows.Forms.DataGridViewTextBoxColumn InspectionStartLine;
-        private System.Windows.Forms.DataGridViewTextBoxColumn InspectionEndLine;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DecisionStartDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DecisionEndDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn InspectionNum;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Line;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Columns;
-        private System.Windows.Forms.DataGridViewTextBoxColumn NgFace;
-        private System.Windows.Forms.DataGridViewTextBoxColumn NgDistanceXY;
-        private System.Windows.Forms.DataGridViewTextBoxColumn SearchExcludeResult;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CheckResult;
-        private System.Windows.Forms.DataGridViewTextBoxColumn NGReason;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DecisonTime;
-        private System.Windows.Forms.DataGridViewTextBoxColumn OverDetectionExceptWorker;
-        private System.Windows.Forms.DataGridViewTextBoxColumn AcceptanceCheckDatetime;
-        private System.Windows.Forms.DataGridViewTextBoxColumn AcceptanceCheckWorker;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ResultUpdateDatetime;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ResultUpdateWorker;
-        private System.Windows.Forms.DataGridViewTextBoxColumn BeforeNgReason;
         private System.Windows.Forms.DateTimePicker dtpStartDatetimeFrom;
         private System.Windows.Forms.DateTimePicker dtpStartDatetimeTo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
@@ -1362,5 +1336,31 @@
         private System.Windows.Forms.ComboBox cmbColumns;
         private MyDataGridView dgvCheckInspectionHistory;
         private System.Windows.Forms.ComboBox cmbUnitNum;
+        private System.Windows.Forms.DataGridViewTextBoxColumn No;
+        private System.Windows.Forms.DataGridViewTextBoxColumn UnitNum;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ProductName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn OrderImg;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FabricName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn StartDatetime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EndDatetime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn InspectionTargetLine;
+        private System.Windows.Forms.DataGridViewTextBoxColumn InspectionLine;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DecisionStartDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DecisionEndDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn InspectionNum;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Line;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Columns;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NgFace;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NgDistanceXY;
+        private System.Windows.Forms.DataGridViewTextBoxColumn SearchExcludeResult;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CheckResult;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NGReason;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DecisonTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn OverDetectionExceptWorker;
+        private System.Windows.Forms.DataGridViewTextBoxColumn AcceptanceCheckDatetime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn AcceptanceCheckWorker;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ResultUpdateDatetime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ResultUpdateWorker;
+        private System.Windows.Forms.DataGridViewTextBoxColumn BeforeNgReason;
     }
 }

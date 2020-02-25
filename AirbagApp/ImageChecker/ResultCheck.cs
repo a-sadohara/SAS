@@ -1091,13 +1091,8 @@ namespace ImageChecker
                     m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
                 }
 
-
                 g_clsConnectionNpgsql.DbCommit();
                 g_clsConnectionNpgsql.DbClose();
-
-                // パラメータ更新
-                m_clsHeaderData.intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusChk;
-                m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
 
                 // 全ての合否確認が済んでいれば判定登録画面に遷移
                 if (m_intPageIdx > m_dtData.Rows.Count - 1)
