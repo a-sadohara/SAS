@@ -26,21 +26,23 @@ namespace ImageChecker
         // データ保持関連
         private DataTable m_dtData;
 
-        public DisplayResultsAgo()
-        {
-            InitializeComponent();
-        }
-
         // 選択行保持
         private int m_intSelIdx = -1;
         private int m_intFirstDisplayedScrollingRowIdx = -1;
 
         #region メソッド
         /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public DisplayResultsAgo()
+        {
+            InitializeComponent();
+        }
+
+        /// <summary>
         /// データグリッドビュー表示
         /// </summary>
-        /// <param name="strKanaSta">カナ（開始）</param>
-        /// <param name="strKanaEnd">カナ（終了）</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
         private bool bolDispDataGridView()
         {
             string strSQL = string.Empty;
@@ -476,9 +478,6 @@ namespace ImageChecker
             this.MinimumSize = this.Size;
 
             bool bolProcOkNg = false;
-
-            // ※最大化すると何故かタスクバーに隠れてしまうため
-            this.MaximizeBox = false;
 
             // 作業者の表示
             lblWorkerName.Text = string.Format(m_CON_FORMAT_WORKER_NAME, g_clsLoginInfo.strWorkerName);

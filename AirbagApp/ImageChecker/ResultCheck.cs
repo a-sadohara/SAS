@@ -79,8 +79,7 @@ namespace ImageChecker
 
         // 画像関連
         private Bitmap m_bmpMasterImageInit = null;
-        private Bitmap m_bmpMasterImageMarking1 = null;
-        private Bitmap m_bmpMasterImageMarking2 = null;
+        private Bitmap m_bmpMasterImageMarking = null;
 
         // 選択行保持(結果画面用)
         private int m_intSelIdx = -1;
@@ -209,16 +208,41 @@ namespace ImageChecker
         /// <param name="intPageIdx"></param>
         private bool bolDispImageInfo(int intPageIdx)
         {
+            string strImagePath = string.Empty;
+            string[] strMasterPoint;
             int intMasterPointX = -1;
             int intMasterPointY = -1;
+            string strNgFace = string.Empty;
+            int intNgFace = 0;
             Graphics gra;
             Pen pen;
             string strMarkingFilePath;
             string strSQL = string.Empty;
-            DataTable dtData = new DataTable();
+            DataTable dtData;
 
             try
             {
+                // 画像パス
+                strImagePath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
+                                            m_strFaultImageSubDirectory,
+                                            m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString());
+
+                // マスタ位置
+                strMasterPoint = m_dtData.Rows[intPageIdx]["master_point"].ToString().Split(',');
+                intMasterPointX = int.Parse(strMasterPoint[0]);
+                intMasterPointY = int.Parse(strMasterPoint[1]);
+
+                // NG面
+                strNgFace = m_dtData.Rows[intPageIdx]["ng_face"].ToString();
+                if (strNgFace.IndexOf("1") > 0)
+                {
+                    intNgFace = 1;  // 表
+                }
+                if (strNgFace.IndexOf("2") > 0)
+                {
+                    intNgFace = 2;  // 裏
+                }
+
                 // 欠点画像にフォーカスセット
                 picMarkingImage.Focus();
 
@@ -227,68 +251,45 @@ namespace ImageChecker
 
                 // 画像イメージ表示
                 FileStream fs;
-                if (File.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
-                                m_strFaultImageSubDirectory,
-                                m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString())) == false)
+                if (File.Exists(strImagePath) == false)
                 {
                     fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
                 }
                 else
-                { fs = new FileStream(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
-                                  m_strFaultImageSubDirectory,
-                                  m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString()), FileMode.Open, FileAccess.Read);
+                {
+                    fs = new FileStream(strImagePath, FileMode.Open, FileAccess.Read);
                 }
                 picMarkingImage.Image = System.Drawing.Image.FromStream(fs);
                 fs.Close();
 
                 // マスタ画像にNG位置をマーキングした画像を一時ファイル保存する
-                intMasterPointX = int.Parse(m_dtData.Rows[intPageIdx]["master_point"].ToString().Split(',')[0]);
-                intMasterPointY = int.Parse(m_dtData.Rows[intPageIdx]["master_point"].ToString().Split(',')[1]);
+                strMarkingFilePath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING, intPageIdx.ToString() + ".bmp");
+                m_bmpMasterImageMarking = new Bitmap(m_bmpMasterImageInit);
+                gra = Graphics.FromImage(m_bmpMasterImageMarking);
 
-                // 検反部No1分(青)
-                strMarkingFilePath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING, intPageIdx.ToString() + "_1" + ".bmp");
-                m_bmpMasterImageMarking1 = new Bitmap(m_bmpMasterImageInit);
-                gra = Graphics.FromImage(m_bmpMasterImageMarking1);
-
+                // NG面 表:青 裏:赤
                 pen = new Pen(Color.Black, 2);
-                pen.Color = Color.Red;
-                if (m_dtData.Rows[intPageIdx]["ng_face"].ToString().IndexOf("1") >= 0)
+                if (intNgFace == 1)
                 {
                     pen.Color = Color.Blue;
                 }
+                if (intNgFace == 2)
+                {
+                    pen.Color = Color.Red;
+                }
 
+                // 「Ｘ」を描画
                 gra.DrawLine(pen, intMasterPointX - 8, intMasterPointY - 8, intMasterPointX + 8, intMasterPointY + 8);
                 gra.DrawLine(pen, intMasterPointX + 8, intMasterPointY - 8, intMasterPointX - 8, intMasterPointY + 8);
 
+                // 既に画像ファイルがある場合は削除
                 if (File.Exists(strMarkingFilePath))
                 {
                     File.Delete(strMarkingFilePath);
                 }
 
-                m_bmpMasterImageMarking1.Save(strMarkingFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
-                gra.Dispose();
-
-                // 検反部No2分(赤)
-                strMarkingFilePath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING, intPageIdx.ToString() + "_1" + ".bmp");
-                m_bmpMasterImageMarking2 = new Bitmap(m_bmpMasterImageInit);
-                gra = Graphics.FromImage(m_bmpMasterImageMarking2);
-
-                pen = new Pen(Color.Black, 2);
-                pen.Color = Color.Red;
-                if (m_dtData.Rows[intPageIdx]["ng_face"].ToString().IndexOf("1") >= 0)
-                {
-                    pen.Color = Color.Blue;
-                }
-
-                gra.DrawLine(pen, intMasterPointX - 8, intMasterPointY - 8, intMasterPointX + 8, intMasterPointY + 8);
-                gra.DrawLine(pen, intMasterPointX + 8, intMasterPointY - 8, intMasterPointX - 8, intMasterPointY + 8);
-
-                if (File.Exists(strMarkingFilePath))
-                {
-                    File.Delete(strMarkingFilePath);
-                }
-
-                m_bmpMasterImageMarking2.Save(strMarkingFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
+                // 保存
+                m_bmpMasterImageMarking.Save(strMarkingFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
                 gra.Dispose();
 
                 // 検査方向によって画像を回転させて表示する。
@@ -422,8 +423,8 @@ namespace ImageChecker
         /// <param name="strInspectionDirection">検査方向（S/X/Y/R）</param>
         private void SetInspectionDirectionSetting(string strInspectionDirection)
         {
-            Bitmap bmpImageNo1 = new Bitmap(m_bmpMasterImageMarking1);
-            Bitmap bmpImageNo2 = new Bitmap(m_bmpMasterImageMarking2);
+            Bitmap bmpImageNo1 = new Bitmap(m_bmpMasterImageMarking);
+            Bitmap bmpImageNo2 = new Bitmap(m_bmpMasterImageMarking);
 
             bmpImageNo1.RotateFlip(RotateFlipType.Rotate270FlipNone);
             bmpImageNo2.RotateFlip(RotateFlipType.Rotate270FlipNone);
