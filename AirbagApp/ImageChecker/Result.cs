@@ -786,6 +786,8 @@ namespace ImageChecker
                                FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result dr
                                INNER JOIN " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header iih
                                ON  dr.fabric_name = iih.fabric_name
+                               AND dr.inspection_date = iih.inspection_date
+                               AND dr.inspection_num = iih.inspection_num
                                WHERE dr.fabric_name = :fabric_name
                                AND   dr.ng_reason IS NOT NULL 
                                AND   iih.acceptance_check_status = :acceptance_check_status_end
