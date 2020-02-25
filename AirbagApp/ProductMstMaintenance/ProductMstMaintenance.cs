@@ -716,7 +716,7 @@ namespace ProductMstMaintenance
             }
 
             // AIモデル名
-            txtAiModelName.Text = NulltoString(dtCurentRow[m_CON_COLNAME_AI_MODEL_NAME]);
+            txtAiModelName.Text = Path.GetFileNameWithoutExtension(NulltoString(dtCurentRow[m_CON_COLNAME_AI_MODEL_NAME]));
 
             // レジマーク間の長さ（pixel）
             decimal dc = (640 * (NulltoDcm(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH]) /
