@@ -900,7 +900,6 @@ namespace ProductMstMaintenance
             strPoint = "(";
             if (NulltoInt(dtCurentRow[strPointXPlus]) == 1)
             {
-                strPoint = strPoint + "-";
                 strArrow = strArrow + "←";
             }
             else
@@ -911,7 +910,6 @@ namespace ProductMstMaintenance
             strPoint = strPoint + NulltoString(dtCurentRow[strPointXBase]) + ",";
             if (NulltoInt(dtCurentRow[strPointYPlus]) == 0)
             {
-                strPoint = strPoint + "-";
                 strArrow = strArrow + "↑";
             }
             else
