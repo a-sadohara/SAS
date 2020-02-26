@@ -759,7 +759,7 @@ namespace ImageChecker
         /// <summary>
         /// 次ページ
         /// </summary>
-        /// <returns>true:以降も表示する false::</returns>
+        /// <returns>true:以降も表示する false:以降は表示しない</returns>
         private bool bolNextPage()
         {
 
@@ -773,9 +773,8 @@ namespace ImageChecker
                 return true;
             }
 
-            this.Visible = false;
-
             // 結果確認画面に遷移
+            this.Visible = false;
             Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx);
             frmResult.ShowDialog(this);
 
@@ -788,7 +787,11 @@ namespace ImageChecker
 
             if (frmResult.bolMod == true)
             {
+                // 修正ありの場合
+
                 m_clsDecisionResultCorrection = frmResult.clsDecisionResult;
+
+                // ページIdxを検索
                 for (int idx = 0; idx < m_dtData.Rows.Count; idx++)
                 {
                     if (m_dtData.Rows[idx]["marking_imagepath"].ToString() == m_clsDecisionResultCorrection.strMarkingImagepath)
@@ -800,13 +803,15 @@ namespace ImageChecker
             }
             else
             {
-                // 遷移先の設定
+                // 修正なしの場合
+
+                // 遷移先：検査対象選択画面
                 if (frmResult.bolReg == false)
                 {
                     intDestination = g_CON_APID_TARGET_SELECTION;
                 }
 
-                // 修正でなければ画面を閉じる
+                // 画面を閉じる
                 this.Close();
                 return false;
             }
@@ -1067,14 +1072,12 @@ namespace ImageChecker
                 {
                     // 新規登録の場合
 
+                    m_intPageIdx = 0;
+
                     if (m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
                     {
                         // 合否確認ステータス：中断であれば、途中からのページIdxを探す
                         GetStartPageIdx(ref m_intPageIdx);
-                    }
-                    else
-                    {
-                        m_intPageIdx = 0;
                     }
                 }
 
@@ -1208,7 +1211,7 @@ namespace ImageChecker
             strMarkingImagepath = Path.Combine(m_strFaultImageSubDirPath,
                                                m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString());
 
-            // 画像拡大フォームに遷移
+            // 画像拡大フォームを開く
             ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath);
             frmViewImage.ShowDialog(this);
             this.Visible = true;
@@ -1392,20 +1395,22 @@ namespace ImageChecker
 
             string strDecisionReason = string.Empty;
 
+            // 理由選択画面を開く
             SelectErrorReason frmErrorReason = new SelectErrorReason(false);
             frmErrorReason.ShowDialog(this);
             strDecisionReason = frmErrorReason.strDecisionReason;
 
             this.Visible = true;
 
+            // 未選択の場合は終了
             if (string.IsNullOrEmpty(strDecisionReason))
             {
                 return;
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                         strDecisionReason,
-                         strDecisionReason);
+                                     strDecisionReason,
+                                     strDecisionReason);
         }
 
         /// <summary>
@@ -1455,6 +1460,7 @@ namespace ImageChecker
                 strOrgImagepath = m_dtData.Rows[m_intPageIdx]["org_imagepath"].ToString();
             }
 
+            // 複写指定画面を開く
             CopyReg frmCopyReg = new CopyReg(m_clsHeaderData,
                                              cmbBoxLine,
                                              cmbBoxColumns,
@@ -1466,7 +1472,6 @@ namespace ImageChecker
                                              intBranch,
                                              m_intFromApId,
                                              bolUpdMode);
-
             frmCopyReg.ShowDialog(this);
             bolRegister = frmCopyReg.bolRegister;
 
@@ -1509,7 +1514,7 @@ namespace ImageChecker
             AddImageProgressForm frmProgressForm = null;
             string strFaultImageSubDirectory = string.Empty;
             string strZipExtractToDirPath = string.Empty;
-            DataTable dtData = new DataTable();
+            DataTable dtData = null;
             int intParse = -1;
 
             string strZipFilePath = string.Empty;
@@ -1561,7 +1566,7 @@ namespace ImageChecker
 
                     //書き込むファイルが既に存在している場合は、上書きする
                     using (StreamWriter sw = new StreamWriter(strOutPutFilePath
-                                                            , true
+                                                            , false
                                                             , Encoding.GetEncoding("shift_jis")))
                     {
                         // 空ファイルの生成
@@ -1573,6 +1578,48 @@ namespace ImageChecker
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0051 ,Environment.NewLine , ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0052, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
+                // 連携済みチェック
+                try
+                {
+                    dtData = new DataTable();
+                    strSQL = @"SELECT COUNT(*) AS cnt
+                               FROM  " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                               WHERE fabric_name = :fabric_name
+                               AND   inspection_num = :inspection_num
+                               AND   TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
+                               AND   org_imagepath = :org_imagepath ";
+
+                    // SQLコマンドに各パラメータを設定する
+                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "org_imagepath", DbType = DbType.String, Value = strFileNameWithExtension });
+
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                    // 件数
+                    if (dtData.Rows.Count > 0)
+                    {
+                        if (int.Parse(dtData.Rows[0]["cnt"].ToString()) > 0)
+                        {
+                            // メッセージ出力
+                            MessageBox.Show(g_clsMessageInfo.strMsgE0061, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            return;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -1776,6 +1823,7 @@ namespace ImageChecker
                 // 追加分を画面に表示できるようにする
                 try
                 {
+                    dtData = new DataTable();
                     strSQL = @"SELECT
                                    line
                                  , cloumns
