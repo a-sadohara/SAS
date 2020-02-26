@@ -206,7 +206,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.18105F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.81895F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 136F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 212F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 216F));
             this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel4, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
@@ -243,10 +243,10 @@
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.label6);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(137, 0);
+            this.panel2.Location = new System.Drawing.Point(136, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(454, 141);
+            this.panel2.Size = new System.Drawing.Size(451, 141);
             this.panel2.TabIndex = 28;
             // 
             // lblHansoStaDate
@@ -311,9 +311,9 @@
             this.lblTitleKenhan1.Location = new System.Drawing.Point(2, 56);
             this.lblTitleKenhan1.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblTitleKenhan1.Name = "lblTitleKenhan1";
-            this.lblTitleKenhan1.Size = new System.Drawing.Size(63, 17);
+            this.lblTitleKenhan1.Size = new System.Drawing.Size(85, 17);
             this.lblTitleKenhan1.TabIndex = 21;
-            this.lblTitleKenhan1.Text = "検査範囲行";
+            this.lblTitleKenhan1.Text = "検査範囲行　：";
             // 
             // dtpDecisionStartTimeTo
             // 
@@ -528,10 +528,10 @@
             this.panel4.Controls.Add(this.lblImageSearchCount);
             this.panel4.Controls.Add(this.cmbNgFace);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(727, 0);
+            this.panel4.Location = new System.Drawing.Point(723, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(213, 141);
+            this.panel4.Size = new System.Drawing.Size(217, 141);
             this.panel4.TabIndex = 28;
             // 
             // lblNgSide
@@ -542,9 +542,9 @@
             this.lblNgSide.Location = new System.Drawing.Point(2, 8);
             this.lblNgSide.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.lblNgSide.Name = "lblNgSide";
-            this.lblNgSide.Size = new System.Drawing.Size(46, 17);
+            this.lblNgSide.Size = new System.Drawing.Size(57, 17);
             this.lblNgSide.TabIndex = 1;
-            this.lblNgSide.Text = "NG面：";
+            this.lblNgSide.Text = "NG面　：";
             // 
             // lblTitleSearchCushionCnt
             // 
@@ -661,7 +661,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(137, 141);
+            this.panel1.Size = new System.Drawing.Size(136, 141);
             this.panel1.TabIndex = 28;
             // 
             // lblGoki
@@ -779,7 +779,7 @@
             this.panel3.Controls.Add(this.lblTitleUserNm);
             this.panel3.Controls.Add(this.cmbColumns);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(591, 0);
+            this.panel3.Location = new System.Drawing.Point(587, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(0);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(136, 141);

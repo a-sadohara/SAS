@@ -57,7 +57,7 @@ namespace ImageChecker
         private const string m_CON_FORMAT_FABRIC_NAME = "反番：{0}";
         private const string m_CON_FORMAT_START_DATETIME = "搬送開始日時：{0}";
         private const string m_CON_FORMAT_END_DATETIME = "搬送終了日時：{0}";
-        private const string m_CON_FORMAT_INSPECTION_LINE = "検査範囲行：{0}～{1}";
+        private const string m_CON_FORMAT_INSPECTION_LINE = "検査範囲行　：{0}～{1}";
         private const string m_CON_FORMAT_DECISION_START_DATETIME = "判定開始日時：{0}";
         private const string m_CON_FORMAT_DECISION_END_DATETIME = "判定終了日時：{0}";
         private const string m_CON_FORMAT_INSPECTION_NUM = "検査番号：{0}";

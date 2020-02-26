@@ -46,7 +46,7 @@ namespace ImageChecker
         private const string m_CON_FORMAT_FABRIC_NAME = "反番：{0}";
         private const string m_CON_FORMAT_START_DATETIME = "搬送開始日時：{0}";
         private const string m_CON_FORMAT_END_DATETIME = "搬送終了日時：{0}";
-        private const string m_CON_FORMAT_INSPECTION_LINE = "検査範囲行：{0}～{1}";
+        private const string m_CON_FORMAT_INSPECTION_LINE = "検査範囲行　：{0}～{1}";
         private const string m_CON_FORMAT_DECISION_START_DATETIME = "判定開始日時：{0}";
         private const string m_CON_FORMAT_DECISION_END_DATETIME = "判定終了日時：{0}";
         private const string m_CON_FORMAT_INSPECTION_NUM = "検査番号：{0}";
@@ -364,14 +364,14 @@ namespace ImageChecker
                 try
                 {
                     strSQL = @"SELECT COUNT(*) AS cnt
-                                   FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
-                                   WHERE fabric_name = :fabric_name
-                                   AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
-                                   AND   inspection_num = :inspection_num
-                                   AND   line = :line
-                                   AND   cloumns = :cloumns
-                                   AND   acceptance_check_result IN(:acceptance_check_result_ng_detect, 
-                                                                    :acceptance_check_result_ng_nondetect)";
+                               FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                               WHERE fabric_name = :fabric_name
+                               AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                               AND   inspection_num = :inspection_num
+                               AND   line = :line
+                               AND   cloumns = :cloumns
+                               AND   acceptance_check_result IN(:acceptance_check_result_ng_detect, 
+                                                                :acceptance_check_result_ng_nondetect)";
 
                     // SQLコマンドに各パラメータを設定する
                     List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -657,9 +657,11 @@ namespace ImageChecker
                                 , cloumns = :cloumns
                                 , acceptance_check_result = :acceptance_check_result ";
 
-                if (m_intFromApId == 0)
+                if (m_intFromApId == 0 ||
+                    (m_dtData.Rows[m_intPageIdx]["over_detection_except_result"].ToString() == g_clsSystemSettingInfo.intOverDetectionExceptResultNon.ToString() &&
+                     m_dtData.Rows[m_intPageIdx]["acceptance_check_result"].ToString() == g_clsSystemSettingInfo.intAcceptanceCheckResultNon.ToString()))
                 {
-                    // 登録
+                    // 新規登録　もしくは　未検知画像追加分
                     strSQL += @", acceptance_check_datetime = current_timestamp
                                 , acceptance_check_worker = :acceptance_check_worker
                                 , before_acceptance_check_result = acceptance_check_result
@@ -712,7 +714,6 @@ namespace ImageChecker
 
                 // データテーブルの更新
                 m_dtData.Rows[m_intPageIdx]["ng_reason"] = strNgReason;
-                m_dtData.Rows[m_intPageIdx]["acceptance_check_result"] = intResult;
                 m_dtData.Rows[m_intPageIdx]["line"] = int.Parse(cmbBoxLine.SelectedItem.ToString());
                 m_dtData.Rows[m_intPageIdx]["cloumns"] = cmbBoxColumns.SelectedItem.ToString();
 
@@ -1439,7 +1440,15 @@ namespace ImageChecker
             string strMarkingImagepath = string.Empty;
             bool bolUpdMode = false;
 
-            // パラメータを設定
+            // 新規
+            intBranch = 1;
+            intLine = int.Parse(cmbBoxLine.SelectedItem.ToString());
+            strColumns = cmbBoxColumns.SelectedItem.ToString();
+            strNgReason = m_dtData.Rows[m_intPageIdx]["ng_reason"].ToString();
+            strMarkingImagepath = m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString();
+            strOrgImagepath = m_dtData.Rows[m_intPageIdx]["org_imagepath"].ToString();
+
+            // 修正
             if (m_clsDecisionResultCorrection.intBranchNum > 0)
             {
                 intBranch = m_clsDecisionResultCorrection.intBranchNum;
@@ -1449,15 +1458,6 @@ namespace ImageChecker
                 strMarkingImagepath = m_clsDecisionResultCorrection.strMarkingImagepath;
                 strOrgImagepath = m_clsDecisionResultCorrection.strOrgImagepath;
                 bolUpdMode = true;
-            }
-            else
-            {
-                intBranch = 1;
-                intLine = int.Parse(cmbBoxLine.SelectedItem.ToString());
-                strColumns = cmbBoxColumns.SelectedItem.ToString();
-                strNgReason = m_dtData.Rows[m_intPageIdx]["ng_reason"].ToString();
-                strMarkingImagepath = m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString();
-                strOrgImagepath = m_dtData.Rows[m_intPageIdx]["org_imagepath"].ToString();
             }
 
             // 複写指定画面を開く
@@ -1676,43 +1676,43 @@ namespace ImageChecker
                                )
                                SELECT
                                    fabric_name
-                                   , inspection_num
-                                   , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
-                                   , 1
-                                   , ng_line
-                                   , columns
-                                   , ng_face
-                                   , ng_reason
-                                   , ng_image
-                                   , marking_image
-                                   , master_point
-                                   , TO_NUMBER(ng_distance_x,'9999')
-                                   , TO_NUMBER(ng_distance_y,'9999')
-                                   , camera_num_1
-                                   , worker_1
-                                   , worker_2
-                                   , :over_detection_except_result_non
-                                   , NULL
-                                   , NULL
-                                   , :over_detection_except_result_non
-                                   , NULL
-                                   , NULL
-                                   , :acceptance_check_result_non
-                                   , NULL
-                                   , NULL
-                                   , :acceptance_check_result_non
-                                   , NULL
-                                   , NULL
-                                   , NULL
-                                   , NULL
-                                   , NULL
+                                 , inspection_num
+                                 , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
+                                 , 1
+                                 , ng_line
+                                 , columns
+                                 , ng_face
+                                 , ng_reason
+                                 , ng_image
+                                 , marking_image
+                                 , master_point
+                                 , TO_NUMBER(ng_distance_x,'9999')
+                                 , TO_NUMBER(ng_distance_y,'9999')
+                                 , camera_num_1
+                                 , worker_1
+                                 , worker_2
+                                 , :over_detection_except_result_non
+                                 , NULL
+                                 , NULL
+                                 , :over_detection_except_result_non
+                                 , NULL
+                                 , NULL
+                                 , :acceptance_check_result_non
+                                 , NULL
+                                 , NULL
+                                 , :acceptance_check_result_non
+                                 , NULL
+                                 , NULL
+                                 , NULL
+                                 , NULL
+                                 , NULL
                                FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + m_strFabricName + "_" + m_intInspectionNum + @"""
                                WHERE fabric_name = :fabric_name
-                                   AND inspection_num = :inspection_num 
-                                   AND ng_image = :ng_image 
-                                   AND rapid_result = :rapid_result
-                                   AND edge_result = :edge_result
-                                   AND masking_result = :masking_result";
+                                 AND inspection_num = :inspection_num 
+                                 AND ng_image = :ng_image 
+                                 AND rapid_result = :rapid_result
+                                 AND edge_result = :edge_result
+                                 AND masking_result = :masking_result";
 
                     // SQLコマンドに各パラメータを設定する
                     lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -1819,8 +1819,7 @@ namespace ImageChecker
                     return;
                 }
 
-
-                // 追加分を画面に表示できるようにする
+                // 追加分を画面表示
                 try
                 {
                     dtData = new DataTable();
@@ -1867,9 +1866,11 @@ namespace ImageChecker
                     drNew["marking_imagepath"] = dtData.Rows[0]["marking_imagepath"];
                     drNew["over_detection_except_result"] = dtData.Rows[0]["over_detection_except_result"];
                     drNew["acceptance_check_result"] = dtData.Rows[0]["acceptance_check_result"];
-
+                     
+                    // データを差し込み
                     m_dtData.Rows.InsertAt(drNew, m_intPageIdx);
 
+                    // 画面表示
                     if (bolDispImageInfo(m_intPageIdx) == false)
                     {
                         return;
