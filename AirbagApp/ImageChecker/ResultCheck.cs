@@ -19,25 +19,25 @@ namespace ImageChecker
         public int intDestination { get; set; }
 
         // パラメータ関連
-        private HeaderData m_clsHeaderData;                     // ヘッダ情報
-        private DecisionResult m_clsDecisionResultCorrection;   // 検査結果情報(修正)
-        private string m_strUnitNum = string.Empty;                       // 号機
-        private string m_strProductName = string.Empty;                   // 品名
-        private string m_strOrderImg = string.Empty;                      // 指図
-        private string m_strFabricName = string.Empty;                    // 反番
-        private string m_strInspectionDate = string.Empty;                // 検査日付
-        private string m_strStartDatetime = string.Empty;                 // 搬送開始日時
-        private string m_strEndDatetime = string.Empty;                   // 搬送終了日時
-        private int m_intInspectionStartLine = -1;              // 検査開始行
-        private int m_intInspectionEndLine = -1;                // 最終行数
-        private string m_strDecisionStartTime = string.Empty;             // 判定開始日時
-        private string m_strDecisionEndTime = string.Empty;               // 判定終了日時
-        private string m_strInspectionDirection = string.Empty;           // 検査方向
-        private int m_intInspectionNum = 0;                     // 検査番号
-        private int m_intAcceptanceCheckStatus = 0;             // 合否確認ステータス
-        private string m_strAirbagImagepath = string.Empty;               // エアバック画像ファイルパス
-        private int m_intColumnCnt = 0;                         // 列数
-        private int m_intFromApId = 0;                          // 遷移元画面ID
+        private HeaderData m_clsHeaderData;                         // ヘッダ情報
+        private DecisionResult m_clsDecisionResultCorrection;       // 検査結果情報(修正)
+        private string m_strUnitNum = string.Empty;                 // 号機
+        private string m_strProductName = string.Empty;             // 品名
+        private string m_strOrderImg = string.Empty;                // 指図
+        private string m_strFabricName = string.Empty;              // 反番
+        private string m_strInspectionDate = string.Empty;          // 検査日付
+        private string m_strStartDatetime = string.Empty;           // 搬送開始日時
+        private string m_strEndDatetime = string.Empty;             // 搬送終了日時
+        private int m_intInspectionStartLine = -1;                  // 検査開始行
+        private int m_intInspectionEndLine = -1;                    // 最終行数
+        private string m_strDecisionStartTime = string.Empty;       // 判定開始日時
+        private string m_strDecisionEndTime = string.Empty;         // 判定終了日時
+        private string m_strInspectionDirection = string.Empty;     // 検査方向
+        private int m_intInspectionNum = 0;                         // 検査番号
+        private int m_intAcceptanceCheckStatus = 0;                 // 合否確認ステータス
+        private string m_strAirbagImagepath = string.Empty;         // エアバック画像ファイルパス
+        private int m_intColumnCnt = 0;                             // 列数
+        private int m_intFromApId = 0;                              // 遷移元画面ID
 
         // 定数
         private const string m_CON_FORMAT_UNIT_NUM = "号機：{0}";
@@ -57,15 +57,18 @@ namespace ImageChecker
         private const string m_CON_FORMAT_NG_FACE = "NG面：{0}";
         private const string m_CON_FORMAT_NG_DISTANCE = "位置(X,Y)cm：{0},{1}";
         private const string m_CON_FORMAT_NG_REASON_SELECT = "NG理由選択：{0}";
+        private const string m_CON_FORMAT_NG_REASON = "NG理由：{0}";
         private const string m_CON_CAMERA_NO_2 = "2";
         private const string m_CON_CAMERA_NO_8 = "8";
         private const string m_CON_CAMERA_NO_14 = "14";
         private const string m_CON_CAMERA_NO_20 = "20";
         private const string m_CON_CAMERA_NO_26 = "26";
-        private const string m_CON_FORMAT_NG_REASON = "NG理由：{0}";
 
         // 欠点画像サブディレクトリパス
         private string m_strFaultImageSubDirectory = string.Empty;
+
+        // マスタ画像格納先一時ディレクトリパス
+        private string m_strMasterTempDirPath = string.Empty;
 
         // ページIdx
         private int m_intPageIdx = -1;
@@ -121,6 +124,7 @@ namespace ImageChecker
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
+            m_strMasterTempDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING);
 
             InitializeComponent();
         }
@@ -263,7 +267,7 @@ namespace ImageChecker
                 fs.Close();
 
                 // マスタ画像にNG位置をマーキングした画像を一時ファイル保存する
-                strMarkingFilePath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING, intPageIdx.ToString() + ".bmp");
+                strMarkingFilePath = Path.Combine(m_strMasterTempDirPath, intPageIdx.ToString() + ".bmp");
                 m_bmpMasterImageMarking = new Bitmap(m_bmpMasterImageInit);
                 gra = Graphics.FromImage(m_bmpMasterImageMarking);
 
@@ -644,8 +648,8 @@ namespace ImageChecker
                 strMarkingImagepath = m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString();
 
                 strDbConKey = string.Join("|", m_dtData.Rows[m_intPageIdx]["branch_num"].ToString(),
-                               m_dtData.Rows[m_intPageIdx]["ng_face"].ToString(),
-                               m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString());
+                                               strNgFace,
+                                               strMarkingImagepath);
 
                 // SQL文を作成する
                 strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
@@ -684,6 +688,7 @@ namespace ImageChecker
 
                 // SQLコマンドに各パラメータを設定する
 
+                // NG理由
                 if (string.IsNullOrEmpty(strNgReason))
                 {
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_reason", DbType = DbType.String, Value = DBNull.Value });
@@ -1026,9 +1031,9 @@ namespace ImageChecker
                     }
 
                     // マスタ画像マーキング格納先作成
-                    if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING)) == false)
+                    if (Directory.Exists(m_strMasterTempDirPath) == false)
                     {
-                        Directory.CreateDirectory(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory , g_CON_DIR_MASTER_IMAGE_MARKING));
+                        Directory.CreateDirectory(m_strMasterTempDirPath);
                     }
 
                     // 初期状態を描画
@@ -1238,6 +1243,9 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void ResultCheck_FormClosing(object sender, FormClosingEventArgs e)
         {
+
+            string strMasterDirPath = string.Empty;
+
             if (m_intAcceptanceCheckStatus != g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
             {
                 // 合否確認ステータス更新(中断)
@@ -1263,9 +1271,9 @@ namespace ImageChecker
             }
 
             // 一時ディレクトリ削除
-            if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory , g_CON_DIR_MASTER_IMAGE_MARKING)) == true)
+            if (Directory.Exists(m_strMasterTempDirPath) == true)
             {
-                foreach(string strFilePath in Directory.GetFiles(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING)))
+                foreach(string strFilePath in Directory.GetFiles(m_strMasterTempDirPath))
                 {
                     File.Delete(strFilePath);
                 }
@@ -1424,6 +1432,9 @@ namespace ImageChecker
             this.Close();
         }
 
+        /// <summary>
+        /// 複写指定画面表示
+        /// </summary>
         private void dispCopyRegist()
         {
             bool bolRegister = false;
@@ -1512,22 +1523,9 @@ namespace ImageChecker
             List<string> lststrZipExtractToDirectory = new List<string>();
             DataTable dtData = new DataTable();
             int intParse = -1;
-            bool boldoubleErr = false;
 
             try
             {
-                frmProgressForm = null;
-
-                // 初期化
-                if (ofDialog != null)
-                {
-                    ofDialog.Dispose();
-                }
-                if (frmProgressForm != null)
-                {
-                    frmProgressForm.Dispose();
-                }
-
                 // 画像ファイルZIPを選択する
                 try
                 {
@@ -1590,9 +1588,7 @@ namespace ImageChecker
 
                 strChkExistsFilePath = Path.Combine( g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory 
                                                                                                       , strFileName + ".txt");
-
-                // 完了通知の存在が確認できるまでループ
-                // フォーム表示
+                // プログレスフォーム表示
                 frmProgressForm = new AddImageProgressForm(strChkExistsFilePath);
                 frmProgressForm.ShowDialog(this);
 
@@ -1612,77 +1608,77 @@ namespace ImageChecker
                 {
                     // 判定結果の取り込み処理
                     strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
-                                        fabric_name
-                                        , inspection_num
-                                        , inspection_date
-                                        , branch_num
-                                        , line
-                                        , cloumns
-                                        , ng_face
-                                        , ng_reason
-                                        , org_imagepath
-                                        , marking_imagepath
-                                        , master_point
-                                        , ng_distance_x
-                                        , ng_distance_y
-                                        , camera_num
-                                        , worker_1
-                                        , worker_2
-                                        , over_detection_except_result          
-                                        , over_detection_except_datetime        
-                                        , over_detection_except_worker          
-                                        , before_over_detection_except_result   
-                                        , before_over_detection_except_datetime 
-                                        , before_over_detection_except_worker   
-                                        , acceptance_check_result
-                                        , acceptance_check_datetime
-                                        , acceptance_check_worker
-                                        , before_acceptance_check_result
-                                        , before_acceptance_check_upd_datetime
-                                        , before_acceptance_check_worker
-                                        , result_update_datetime
-                                        , result_update_worker
-                                        , before_ng_reason
-                                    )
-                                    SELECT
-                                        fabric_name
-                                        , inspection_num
-                                        , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
-                                        , 1
-                                        , ng_line
-                                        , columns
-                                        , ng_face
-                                        , ng_reason
-                                        , ng_image
-                                        , marking_image
-                                        , master_point
-                                        , TO_NUMBER(ng_distance_x,'9999')
-                                        , TO_NUMBER(ng_distance_y,'9999')
-                                        , camera_num_1
-                                        , worker_1
-                                        , worker_2
-                                        , :over_detection_except_result_non
-                                        , NULL
-                                        , NULL
-                                        , :over_detection_except_result_non
-                                        , NULL
-                                        , NULL
-                                        , :acceptance_check_result_non
-                                        , NULL
-                                        , NULL
-                                        , :acceptance_check_result_non
-                                        , NULL
-                                        , NULL
-                                        , NULL
-                                        , NULL
-                                        , NULL
-                                    FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + m_strFabricName + "_" + m_intInspectionNum + @"""
-                                    WHERE fabric_name = :fabric_name
-                                        AND inspection_num = :inspection_num 
-                                        AND ng_image = :ng_image 
-                                        AND rapid_result = :rapid_result
-                                        AND edge_result = :edge_result
-                                        AND masking_result = :masking_result";
+                                   fabric_name
+                                 , inspection_num
+                                 , inspection_date
+                                 , branch_num
+                                 , line
+                                 , cloumns
+                                 , ng_face
+                                 , ng_reason
+                                 , org_imagepath
+                                 , marking_imagepath
+                                 , master_point
+                                 , ng_distance_x
+                                 , ng_distance_y
+                                 , camera_num
+                                 , worker_1
+                                 , worker_2
+                                 , over_detection_except_result          
+                                 , over_detection_except_datetime        
+                                 , over_detection_except_worker          
+                                 , before_over_detection_except_result   
+                                 , before_over_detection_except_datetime 
+                                 , before_over_detection_except_worker   
+                                 , acceptance_check_result
+                                 , acceptance_check_datetime
+                                 , acceptance_check_worker
+                                 , before_acceptance_check_result
+                                 , before_acceptance_check_upd_datetime
+                                 , before_acceptance_check_worker
+                                 , result_update_datetime
+                                 , result_update_worker
+                                 , before_ng_reason
+                               )
+                               SELECT
+                                   fabric_name
+                                   , inspection_num
+                                   , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
+                                   , 1
+                                   , ng_line
+                                   , columns
+                                   , ng_face
+                                   , ng_reason
+                                   , ng_image
+                                   , marking_image
+                                   , master_point
+                                   , TO_NUMBER(ng_distance_x,'9999')
+                                   , TO_NUMBER(ng_distance_y,'9999')
+                                   , camera_num_1
+                                   , worker_1
+                                   , worker_2
+                                   , :over_detection_except_result_non
+                                   , NULL
+                                   , NULL
+                                   , :over_detection_except_result_non
+                                   , NULL
+                                   , NULL
+                                   , :acceptance_check_result_non
+                                   , NULL
+                                   , NULL
+                                   , :acceptance_check_result_non
+                                   , NULL
+                                   , NULL
+                                   , NULL
+                                   , NULL
+                                   , NULL
+                               FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + m_strFabricName + "_" + m_intInspectionNum + @"""
+                               WHERE fabric_name = :fabric_name
+                                   AND inspection_num = :inspection_num 
+                                   AND ng_image = :ng_image 
+                                   AND rapid_result = :rapid_result
+                                   AND edge_result = :edge_result
+                                   AND masking_result = :masking_result";
 
                     // SQLコマンドに各パラメータを設定する
                     lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -1695,6 +1691,7 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultNon });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
+
                     // sqlを実行する
                     g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
                 }
@@ -1702,33 +1699,10 @@ namespace ImageChecker
                 {
                     g_clsConnectionNpgsql.DbRollback();
 
-                    try
-                    {
-                        if (((Npgsql.PostgresException)ex).SqlState == "23505")
-                        {
-                            // 重複エラー
-                            boldoubleErr = true;
-                        }
-                    }
-                    finally
-                    {
-                        if (boldoubleErr == true)
-                        {
-                            // 重複の例外
-
-                            // メッセージ出力
-                            MessageBox.Show(g_clsMessageInfo.strMsgE0057, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        else
-                        {
-                            //  重複以外の例外
-
-                            // ログ出力
-                            WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-                            // メッセージ出力
-                            MessageBox.Show(g_clsMessageInfo.strMsgE0057, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0057, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }

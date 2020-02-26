@@ -203,10 +203,10 @@
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.74101F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.259F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 161F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 259F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.18105F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.81895F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 136F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 212F));
             this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel4, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
@@ -243,10 +243,10 @@
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.label6);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(123, 0);
+            this.panel2.Location = new System.Drawing.Point(137, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(396, 141);
+            this.panel2.Size = new System.Drawing.Size(454, 141);
             this.panel2.TabIndex = 28;
             // 
             // lblHansoStaDate
@@ -279,10 +279,10 @@
             this.dtpEndDatetimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpEndDatetimeTo.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpEndDatetimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpEndDatetimeTo.Location = new System.Drawing.Point(265, 27);
+            this.dtpEndDatetimeTo.Location = new System.Drawing.Point(282, 27);
             this.dtpEndDatetimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpEndDatetimeTo.Name = "dtpEndDatetimeTo";
-            this.dtpEndDatetimeTo.Size = new System.Drawing.Size(155, 24);
+            this.dtpEndDatetimeTo.Size = new System.Drawing.Size(172, 24);
             this.dtpEndDatetimeTo.TabIndex = 8;
             this.dtpEndDatetimeTo.Value = new System.DateTime(2999, 12, 31, 23, 59, 0, 0);
             this.dtpEndDatetimeTo.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -294,10 +294,10 @@
             this.dtpStartDatetimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpStartDatetimeTo.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpStartDatetimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpStartDatetimeTo.Location = new System.Drawing.Point(265, 1);
+            this.dtpStartDatetimeTo.Location = new System.Drawing.Point(281, 1);
             this.dtpStartDatetimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpStartDatetimeTo.Name = "dtpStartDatetimeTo";
-            this.dtpStartDatetimeTo.Size = new System.Drawing.Size(155, 24);
+            this.dtpStartDatetimeTo.Size = new System.Drawing.Size(172, 24);
             this.dtpStartDatetimeTo.TabIndex = 6;
             this.dtpStartDatetimeTo.Value = new System.DateTime(2999, 12, 31, 23, 59, 0, 0);
             this.dtpStartDatetimeTo.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -320,10 +320,10 @@
             this.dtpDecisionStartTimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpDecisionStartTimeTo.Font = new System.Drawing.Font("メイリオ", 8F);
             this.dtpDecisionStartTimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpDecisionStartTimeTo.Location = new System.Drawing.Point(265, 80);
+            this.dtpDecisionStartTimeTo.Location = new System.Drawing.Point(281, 81);
             this.dtpDecisionStartTimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionStartTimeTo.Name = "dtpDecisionStartTimeTo";
-            this.dtpDecisionStartTimeTo.Size = new System.Drawing.Size(155, 23);
+            this.dtpDecisionStartTimeTo.Size = new System.Drawing.Size(172, 23);
             this.dtpDecisionStartTimeTo.TabIndex = 12;
             this.dtpDecisionStartTimeTo.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpDecisionStartTimeTo.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -334,10 +334,10 @@
             this.dtpDecisionEndTimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
             this.dtpDecisionEndTimeTo.Font = new System.Drawing.Font("メイリオ", 8F);
             this.dtpDecisionEndTimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpDecisionEndTimeTo.Location = new System.Drawing.Point(265, 106);
+            this.dtpDecisionEndTimeTo.Location = new System.Drawing.Point(281, 106);
             this.dtpDecisionEndTimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionEndTimeTo.Name = "dtpDecisionEndTimeTo";
-            this.dtpDecisionEndTimeTo.Size = new System.Drawing.Size(155, 23);
+            this.dtpDecisionEndTimeTo.Size = new System.Drawing.Size(172, 23);
             this.dtpDecisionEndTimeTo.TabIndex = 14;
             this.dtpDecisionEndTimeTo.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpDecisionEndTimeTo.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -351,7 +351,7 @@
             this.dtpDecisionEndTimeFrom.Location = new System.Drawing.Point(87, 106);
             this.dtpDecisionEndTimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionEndTimeFrom.Name = "dtpDecisionEndTimeFrom";
-            this.dtpDecisionEndTimeFrom.Size = new System.Drawing.Size(155, 23);
+            this.dtpDecisionEndTimeFrom.Size = new System.Drawing.Size(172, 23);
             this.dtpDecisionEndTimeFrom.TabIndex = 13;
             this.dtpDecisionEndTimeFrom.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpDecisionEndTimeFrom.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -377,7 +377,7 @@
             this.dtpDecisionStartTimeFrom.Location = new System.Drawing.Point(87, 80);
             this.dtpDecisionStartTimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionStartTimeFrom.Name = "dtpDecisionStartTimeFrom";
-            this.dtpDecisionStartTimeFrom.Size = new System.Drawing.Size(155, 23);
+            this.dtpDecisionStartTimeFrom.Size = new System.Drawing.Size(172, 23);
             this.dtpDecisionStartTimeFrom.TabIndex = 11;
             this.dtpDecisionStartTimeFrom.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpDecisionStartTimeFrom.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -392,7 +392,7 @@
             this.dtpEndDatetimeFrom.Location = new System.Drawing.Point(87, 27);
             this.dtpEndDatetimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpEndDatetimeFrom.Name = "dtpEndDatetimeFrom";
-            this.dtpEndDatetimeFrom.Size = new System.Drawing.Size(155, 24);
+            this.dtpEndDatetimeFrom.Size = new System.Drawing.Size(172, 24);
             this.dtpEndDatetimeFrom.TabIndex = 7;
             this.dtpEndDatetimeFrom.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpEndDatetimeFrom.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -407,7 +407,7 @@
             this.dtpStartDatetimeFrom.Location = new System.Drawing.Point(87, 1);
             this.dtpStartDatetimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpStartDatetimeFrom.Name = "dtpStartDatetimeFrom";
-            this.dtpStartDatetimeFrom.Size = new System.Drawing.Size(155, 24);
+            this.dtpStartDatetimeFrom.Size = new System.Drawing.Size(172, 24);
             this.dtpStartDatetimeFrom.TabIndex = 5;
             this.dtpStartDatetimeFrom.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpStartDatetimeFrom.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -457,7 +457,7 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label3.Location = new System.Drawing.Point(242, 6);
+            this.label3.Location = new System.Drawing.Point(262, 6);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(20, 18);
@@ -470,7 +470,7 @@
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label4.Location = new System.Drawing.Point(242, 29);
+            this.label4.Location = new System.Drawing.Point(262, 30);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(20, 18);
@@ -496,7 +496,7 @@
             this.label5.BackColor = System.Drawing.Color.Transparent;
             this.label5.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label5.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label5.Location = new System.Drawing.Point(242, 83);
+            this.label5.Location = new System.Drawing.Point(262, 83);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(20, 18);
@@ -509,7 +509,7 @@
             this.label6.BackColor = System.Drawing.Color.Transparent;
             this.label6.Font = new System.Drawing.Font("メイリオ", 9F);
             this.label6.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label6.Location = new System.Drawing.Point(242, 108);
+            this.label6.Location = new System.Drawing.Point(262, 108);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(20, 18);
@@ -528,10 +528,10 @@
             this.panel4.Controls.Add(this.lblImageSearchCount);
             this.panel4.Controls.Add(this.cmbNgFace);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(680, 0);
+            this.panel4.Location = new System.Drawing.Point(727, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(260, 141);
+            this.panel4.Size = new System.Drawing.Size(213, 141);
             this.panel4.TabIndex = 28;
             // 
             // lblNgSide
@@ -661,7 +661,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(123, 141);
+            this.panel1.Size = new System.Drawing.Size(137, 141);
             this.panel1.TabIndex = 28;
             // 
             // lblGoki
@@ -779,10 +779,10 @@
             this.panel3.Controls.Add(this.lblTitleUserNm);
             this.panel3.Controls.Add(this.cmbColumns);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(519, 0);
+            this.panel3.Location = new System.Drawing.Point(591, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(161, 141);
+            this.panel3.Size = new System.Drawing.Size(136, 141);
             this.panel3.TabIndex = 28;
             // 
             // lblKensaNo
