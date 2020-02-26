@@ -1555,7 +1555,7 @@ namespace ImageChecker
                         MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0005,
                                                       m_strInspectionDate,
                                                       m_strFabricName,
-                                                      m_intInspectionNum), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                                      m_intInspectionNum), g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
