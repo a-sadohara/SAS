@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -69,9 +70,13 @@ namespace ImageChecker
         // ログイン関連
         public static bool g_bolStatus = false; //0:ログアウト 1:ログイン
 
-        // 一時サブディレクトリ
+        // サブ一時ディレクトリ
         public const string g_CON_DIR_MASTER_IMAGE = "MasterImage";                 // マスタ画像格納
         public const string g_CON_DIR_MASTER_IMAGE_MARKING = "MasterImageMarking";  // マーキングマスタ画像格納先
+        public const string g_CON_ZIP_EXTRACT_DIR_PATH = "ZipExtractDirPath";       // ZIP解凍用格納
+        public static string g_strMasterImageDirPath = string.Empty;
+        public static string g_strMasterImageDirMarking = string.Empty;
+        public static string g_strZipExtractDirPath = string.Empty;
 
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
@@ -149,6 +154,11 @@ namespace ImageChecker
 
                 // ログイン情報インスタンス生成
                 g_clsLoginInfo = new LoginInfo();
+
+                // パス設定
+                g_strMasterImageDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE);
+                g_strMasterImageDirMarking = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING);
+                g_strZipExtractDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_ZIP_EXTRACT_DIR_PATH);
             }
             catch (Exception ex)
             {

@@ -24,8 +24,6 @@ namespace ImageChecker
         /// <param name="strChkFilePath">確認ファイルパス</param>
         public AddImageProgressForm(string strChkFilePath)
         {
-            this.SuspendLayout();
-
             bolChgFile = false;
 
             m_strChkFilePath = strChkFilePath;
@@ -62,39 +60,60 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void ProgressForm_Load(object sender, EventArgs e)
         {
+            this.SuspendLayout();
+
+            bool bolProcOkNg = false;
+
             DispatcherTimer dtVisiblebtnCancel;
 
-            // 同期的に未検知画像連携ディレクトリの監視する
-            m_fsWatcher = new FileSystemWatcher();
-
-            m_fsWatcher.Path = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory;
-            m_fsWatcher.Filter = string.Empty;
-            m_fsWatcher.IncludeSubdirectories = false;
-            //ファイル名とディレクトリ名と最終書き込む日時の変更を監視
-            m_fsWatcher.NotifyFilter =
-                NotifyFilters.FileName
-                | NotifyFilters.DirectoryName
-                | NotifyFilters.LastWrite;
-             
-            // イベントハンドラの追加
-            m_fsWatcher.Changed += new FileSystemEventHandler(fsWatcher_Changed);
-            m_fsWatcher.Created += new FileSystemEventHandler(fsWatcher_Changed);
-            m_fsWatcher.Deleted += new FileSystemEventHandler(fsWatcher_Changed);
-            m_fsWatcher.Renamed += new RenamedEventHandler(fsWatcher_Changed);
-
-            // ボタンを有効にする
-            dtVisiblebtnCancel = new DispatcherTimer { Interval = TimeSpan.FromSeconds(60) };
-            dtVisiblebtnCancel.Start();
-            dtVisiblebtnCancel.Tick += (s, args) =>
+            try
             {
-                dtVisiblebtnCancel.Stop();
-                btnCancel.Visible = true;
-            };
+                // 同期的に未検知画像連携ディレクトリの監視する
+                m_fsWatcher = new FileSystemWatcher();
 
-            // 監視を開始する
-            m_fsWatcher.EnableRaisingEvents = true;
+                m_fsWatcher.Path = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory;
+                m_fsWatcher.Filter = string.Empty;
+                m_fsWatcher.IncludeSubdirectories = false;
+                //ファイル名とディレクトリ名と最終書き込む日時の変更を監視
+                m_fsWatcher.NotifyFilter =
+                    NotifyFilters.FileName
+                    | NotifyFilters.DirectoryName
+                    | NotifyFilters.LastWrite;
 
-            this.ResumeLayout();
+                // イベントハンドラの追加
+                m_fsWatcher.Changed += new FileSystemEventHandler(fsWatcher_Changed);
+                m_fsWatcher.Created += new FileSystemEventHandler(fsWatcher_Changed);
+                m_fsWatcher.Deleted += new FileSystemEventHandler(fsWatcher_Changed);
+                m_fsWatcher.Renamed += new RenamedEventHandler(fsWatcher_Changed);
+
+                // ボタンを有効にする
+                dtVisiblebtnCancel = new DispatcherTimer { Interval = TimeSpan.FromSeconds(60) };
+                dtVisiblebtnCancel.Start();
+                dtVisiblebtnCancel.Tick += (s, args) =>
+                {
+                    dtVisiblebtnCancel.Stop();
+                    btnCancel.Visible = true;
+                };
+
+                // 監視を開始する
+                m_fsWatcher.EnableRaisingEvents = true;
+
+                bolProcOkNg = true;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0058, Environment.NewLine, ex.Message));
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0059, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (bolProcOkNg == false)
+                    this.Close();
+
+                this.ResumeLayout();
+            }
         }
 
         /// <summary>

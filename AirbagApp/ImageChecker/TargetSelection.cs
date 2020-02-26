@@ -41,7 +41,6 @@ namespace ImageChecker
         private const string m_CON_ACCEPTANCE_CHECK_BUTTON_NAME = "合否確認・判定登録";
         private const string m_CON_INSPECTION_RESULT_BUTTON_NAME = "検査結果確認";
         private const string m_CON_FORMAT_WORKER_NAME = "作業者：{0}";
-        private const string CON_ZIP_EXTRACT_DIR_PATH = "ZipExtractDirPath";
 
         // データ保持関連
         private DataTable m_dtData;
@@ -66,9 +65,9 @@ namespace ImageChecker
                 Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
 
             // 一時ZIP解凍用フォルダ作成
-            if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH) == true)
-                Directory.Delete(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH, true);
-            Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + CON_ZIP_EXTRACT_DIR_PATH);
+            if (Directory.Exists(g_strZipExtractDirPath) == true)
+                Directory.Delete(g_strZipExtractDirPath, true);
+            Directory.CreateDirectory(g_strZipExtractDirPath);
         }
 
         /// <summary>
@@ -83,14 +82,14 @@ namespace ImageChecker
 
                 // ZIPファイルを一時ZIP解凍用フォルダにコピーする
                 File.Copy(Path.Combine( g_clsSystemSettingInfo.strNgImageCooperationDirectory , strFaultImage + ".zip"),
-                          Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory , CON_ZIP_EXTRACT_DIR_PATH ,strFaultImage + ".zip"),true);
+                          Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"),true);
 
                 // 欠点画像Zipファイルの解凍
-                ZipFile.ExtractToDirectory(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory , CON_ZIP_EXTRACT_DIR_PATH , strFaultImage + ".zip"),
+                ZipFile.ExtractToDirectory(Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"),
                            g_clsSystemSettingInfo.strFaultImageDirectory);
 
                 // 一時ファイルの削除
-                File.Delete(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, CON_ZIP_EXTRACT_DIR_PATH, strFaultImage + ".zip"));
+                File.Delete(Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"));
 
                 return true;
             }
@@ -564,8 +563,7 @@ namespace ImageChecker
                 clsHeaderData.intOverDetectionExceptStatus = int.Parse(m_dtData.Rows[e.RowIndex]["over_detection_except_status"].ToString());
                 clsHeaderData.intAcceptanceCheckStatus = int.Parse(m_dtData.Rows[e.RowIndex]["acceptance_check_status"].ToString());
                 clsHeaderData.intColumnCnt = int.Parse(m_dtData.Rows[e.RowIndex]["column_cnt"].ToString());
-                clsHeaderData.strAirbagImagepath = g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar +
-                                                   g_CON_DIR_MASTER_IMAGE + Path.DirectorySeparatorChar + 
+                clsHeaderData.strAirbagImagepath = g_strMasterImageDirPath + Path.DirectorySeparatorChar + 
                                                    Path.GetFileName(m_dtData.Rows[e.RowIndex]["airbag_imagepath"].ToString());
 
                 strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", ""),

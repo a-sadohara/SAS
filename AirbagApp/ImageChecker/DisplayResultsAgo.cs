@@ -573,8 +573,7 @@ namespace ImageChecker
             clsHeaderData.intOverDetectionExceptStatus = int.Parse(m_dtData.Rows[intSelIdx]["over_detection_except_status"].ToString());
             clsHeaderData.intAcceptanceCheckStatus = int.Parse(m_dtData.Rows[intSelIdx]["acceptance_check_status"].ToString());
             clsHeaderData.intColumnCnt = int.Parse(m_dtData.Rows[intSelIdx]["column_cnt"].ToString());
-            clsHeaderData.strAirbagImagepath = g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar +
-                                               g_CON_DIR_MASTER_IMAGE + Path.DirectorySeparatorChar +
+            clsHeaderData.strAirbagImagepath = g_strMasterImageDirPath + Path.DirectorySeparatorChar +
                                                Path.GetFileName(m_dtData.Rows[intSelIdx]["airbag_imagepath"].ToString());
 
             // 判定結果情報

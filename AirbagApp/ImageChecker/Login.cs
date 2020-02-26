@@ -26,8 +26,8 @@ namespace ImageChecker
                 Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
 
             // 一時ZIP解凍用フォルダ作成
-            if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + g_CON_DIR_MASTER_IMAGE) == false)
-                Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory + Path.DirectorySeparatorChar + g_CON_DIR_MASTER_IMAGE);
+            if (Directory.Exists(g_strMasterImageDirPath) == false)
+                Directory.CreateDirectory(g_strMasterImageDirPath);
 
             this.StartPosition = FormStartPosition.CenterScreen;
         }
@@ -46,8 +46,7 @@ namespace ImageChecker
                 // マスタ画像格納ディレクトリを列挙
                 foreach (string FilePath in Directory.GetFiles(g_clsSystemSettingInfo.strMasterImageDirectory, "*", SearchOption.AllDirectories))
                 {
-                    strTempFilePath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory,
-                                      g_CON_DIR_MASTER_IMAGE , Path.GetFileName(FilePath));
+                    strTempFilePath = Path.Combine(g_strMasterImageDirPath, Path.GetFileName(FilePath));
 
                     // 無い場合処理継続
                     if (File.Exists(strTempFilePath) == true)
@@ -61,8 +60,7 @@ namespace ImageChecker
 
                     // マスタ画像を一時フォルダにコピーする
                     File.Copy(FilePath,
-                              Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory,
-                              g_CON_DIR_MASTER_IMAGE , Path.GetFileName(FilePath)),
+                              Path.Combine(g_strMasterImageDirPath, Path.GetFileName(FilePath)),
                               true);
                 }
 

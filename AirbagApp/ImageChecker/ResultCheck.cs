@@ -65,11 +65,9 @@ namespace ImageChecker
         private const string m_CON_CAMERA_NO_26 = "26";
 
         // 欠点画像サブディレクトリパス
-        private string m_strFaultImageSubDirectory = string.Empty;
-
-        // マスタ画像格納先一時ディレクトリパス
-        private string m_strMasterTempDirPath = string.Empty;
-
+        private string m_strFaultImageSubDirName = string.Empty;
+        private string m_strFaultImageSubDirPath = string.Empty;
+        
         // ページIdx
         private int m_intPageIdx = -1;
 
@@ -120,11 +118,13 @@ namespace ImageChecker
             m_intColumnCnt = clsHeaderData.intColumnCnt;
             m_intFromApId = intFromApId;
 
-            m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
+            m_strFaultImageSubDirName = string.Join("_", m_strInspectionDate.Replace("/", ""),
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
-            m_strMasterTempDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING);
+
+            m_strFaultImageSubDirPath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
+                                                     m_strFaultImageSubDirName);
 
             InitializeComponent();
         }
@@ -227,8 +227,7 @@ namespace ImageChecker
             try
             {
                 // 画像パス
-                strImagePath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
-                                            m_strFaultImageSubDirectory,
+                strImagePath = Path.Combine(m_strFaultImageSubDirPath,
                                             m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString());
 
                 // マスタ位置
@@ -267,7 +266,7 @@ namespace ImageChecker
                 fs.Close();
 
                 // マスタ画像にNG位置をマーキングした画像を一時ファイル保存する
-                strMarkingFilePath = Path.Combine(m_strMasterTempDirPath, intPageIdx.ToString() + ".bmp");
+                strMarkingFilePath = Path.Combine(g_strMasterImageDirMarking, intPageIdx.ToString() + ".bmp");
                 m_bmpMasterImageMarking = new Bitmap(m_bmpMasterImageInit);
                 gra = Graphics.FromImage(m_bmpMasterImageMarking);
 
@@ -353,7 +352,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0060, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -401,7 +400,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0060, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -825,7 +824,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="intIdxStartPage">開始ページ</param>
         /// <returns>true:正常終了 false:異常終了</returns>
-        private bool bolGetStartPageIdx(ref int intIdxStartPage)
+        private void GetStartPageIdx(ref int intIdxStartPage)
         {
             string strSQL = string.Empty;
             DataTable dtData;
@@ -883,17 +882,11 @@ namespace ImageChecker
                 {
                     intIdxStartPage = int.Parse(dtData.Rows[0]["max_sort_num"].ToString());
                 }
-
-                return true;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
-                // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return false;
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0044 ,Environment.NewLine, ex.Message));
             }
         }
 
@@ -1031,9 +1024,9 @@ namespace ImageChecker
                     }
 
                     // マスタ画像マーキング格納先作成
-                    if (Directory.Exists(m_strMasterTempDirPath) == false)
+                    if (Directory.Exists(g_strMasterImageDirMarking) == false)
                     {
-                        Directory.CreateDirectory(m_strMasterTempDirPath);
+                        Directory.CreateDirectory(g_strMasterImageDirMarking);
                     }
 
                     // 初期状態を描画
@@ -1077,10 +1070,7 @@ namespace ImageChecker
                     if (m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
                     {
                         // 合否確認ステータス：中断であれば、途中からのページIdxを探す
-                        if (bolGetStartPageIdx(ref m_intPageIdx) == false)
-                        {
-                            return;
-                        }
+                        GetStartPageIdx(ref m_intPageIdx);
                     }
                     else
                     {
@@ -1213,12 +1203,10 @@ namespace ImageChecker
             string strMarkingImagepath = string.Empty;
 
             // マーキング画像パスとオリジナル画像パスを取得
-            strOrgImagepath = Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory ,
-                              m_strFaultImageSubDirectory ,
-                              m_dtData.Rows[m_intPageIdx]["org_imagepath"].ToString());
-            strMarkingImagepath = Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory ,
-                                  m_strFaultImageSubDirectory ,
-                                  m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString());
+            strOrgImagepath = Path.Combine(m_strFaultImageSubDirPath,
+                                           m_dtData.Rows[m_intPageIdx]["org_imagepath"].ToString());
+            strMarkingImagepath = Path.Combine(m_strFaultImageSubDirPath,
+                                               m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString());
 
             // 画像拡大フォームに遷移
             ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath);
@@ -1271,9 +1259,9 @@ namespace ImageChecker
             }
 
             // 一時ディレクトリ削除
-            if (Directory.Exists(m_strMasterTempDirPath) == true)
+            if (Directory.Exists(g_strMasterImageDirMarking) == true)
             {
-                foreach(string strFilePath in Directory.GetFiles(m_strMasterTempDirPath))
+                foreach(string strFilePath in Directory.GetFiles(g_strMasterImageDirMarking))
                 {
                     File.Delete(strFilePath);
                 }
@@ -1520,9 +1508,12 @@ namespace ImageChecker
             string[] strFileParam;
             AddImageProgressForm frmProgressForm = null;
             string strFaultImageSubDirectory = string.Empty;
-            List<string> lststrZipExtractToDirectory = new List<string>();
+            string strZipExtractToDirPath = string.Empty;
             DataTable dtData = new DataTable();
             int intParse = -1;
+
+            string strZipFilePath = string.Empty;
+            string strZipArchiveEntryFilePath = string.Empty;
 
             try
             {
@@ -1600,10 +1591,6 @@ namespace ImageChecker
                     return;
                 }
 
-                strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
-                                                                m_strProductName,
-                                                                m_strFabricName,
-                                                                m_intInspectionNum);
                 try
                 {
                     // 判定結果の取り込み処理
@@ -1711,67 +1698,66 @@ namespace ImageChecker
                 try
                 {
                     // 欠点画像格納ディレクトリに存在しない場合はフォルダを作成する
-                    if (Directory.Exists(Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory
-                                            ,strFaultImageSubDirectory)) == false)
+                    if (Directory.Exists(m_strFaultImageSubDirPath) == false)
                     {
-                        Directory.CreateDirectory(Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory 
-                                                    ,strFaultImageSubDirectory));
+                        Directory.CreateDirectory(m_strFaultImageSubDirPath);
                     }
 
-                    // 一時ディレクトリに欠点画像のフォルダが存在する場合は削除する
-                    foreach (ZipArchiveEntry zae in ZipFile.OpenRead(Path.Combine( g_clsSystemSettingInfo.strNgImageCooperationDirectory 
-                                                                       , strFileName + ".zip")).Entries)
+                    // 一時ZIP解凍用フォルダ作成
+                    if (Directory.Exists(g_strZipExtractDirPath) == true)
                     {
+                        Directory.Delete(g_strZipExtractDirPath, true);
+                    }
+                    Directory.CreateDirectory(g_strZipExtractDirPath);
 
-                        if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory,
-                                                        zae.FullName.Substring(0, zae.FullName.IndexOf("/")))) == true)
-                        {
-                            Directory.Delete(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory ,
-                                                zae.FullName.Substring(0, zae.FullName.IndexOf("/"))), true);
-                        }
+                    strZipFilePath = Path.Combine(g_strZipExtractDirPath, strFileName + ".zip");
 
-                        // 後の削除用にファイルパスを保持する
-                        if (lststrZipExtractToDirectory.Contains(Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory
-                                                                    , zae.FullName.Substring(0, zae.FullName.IndexOf("/")))) == false)
+                    // ZIPファイルを一時ZIP解凍用フォルダにコピーする
+                    File.Copy(Path.Combine(g_clsSystemSettingInfo.strNgImageCooperationDirectory, strFileName + ".zip"),
+                                           strZipFilePath, true);
+
+                    // 一時ディレクトリに欠点画像のフォルダが存在する場合は削除する
+                    using (ZipArchive za = ZipFile.Open(strZipFilePath, ZipArchiveMode.Read))
+                    {
+                        foreach (ZipArchiveEntry zae in za.Entries)
                         {
-                            lststrZipExtractToDirectory.Add(Path.Combine( g_clsSystemSettingInfo.strTemporaryDirectory 
-                                                            ,zae.FullName.Substring(0, zae.FullName.IndexOf("/"))));
+                            strZipExtractToDirPath = Path.Combine(g_strZipExtractDirPath,
+                                                                  zae.FullName.Substring(0, (zae.FullName).IndexOf(Path.AltDirectorySeparatorChar)));
+
+                            if (Directory.Exists(strZipExtractToDirPath) == true)
+                            {
+                                Directory.Delete(strZipExtractToDirPath, true);
+                            }
+
+                            break;
                         }
                     }
 
                     // 欠点画像を一時ディレクトリに解凍する
-                    ZipFile.ExtractToDirectory(Path.Combine( g_clsSystemSettingInfo.strNgImageCooperationDirectory 
-                                                ,strFileName + ".zip"),
-                                                g_clsSystemSettingInfo.strTemporaryDirectory);
+                    ZipFile.ExtractToDirectory(strZipFilePath,
+                                               g_strZipExtractDirPath);
 
                     // 一時ディレクトリから欠点画像格納ディレクトリにファイルをコピーする。
-                    foreach (string FilePath in Directory.GetFiles(Path.Combine( g_clsSystemSettingInfo.strTemporaryDirectory 
-                                                                    ,strFileName), "*", SearchOption.AllDirectories))
+                    foreach (string FilePath in Directory.GetFiles(Path.Combine(strZipExtractToDirPath), "*", SearchOption.AllDirectories))
                     {
+                        strZipArchiveEntryFilePath = Path.Combine(m_strFaultImageSubDirPath,
+                                                                  Path.GetFileName(FilePath));
+
                         // 存在する場合は削除する
-                        if (File.Exists(Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory 
-                                        ,strFaultImageSubDirectory 
-                                        ,Path.GetFileName( FilePath))))
+                        if (File.Exists(strZipArchiveEntryFilePath))
                         {
-                            File.Delete(Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory 
-                                        ,strFaultImageSubDirectory 
-                                        ,Path.GetFileName( FilePath)));
+                            File.Delete(Path.Combine(strZipArchiveEntryFilePath));
                         }
 
                         File.Copy(FilePath,
-                                    Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory 
-                                    ,strFaultImageSubDirectory 
-                                    ,Path.GetFileName(FilePath)));
+                                  Path.Combine(strZipArchiveEntryFilePath));
 
                     }
 
                     // 一時ディレクトリから削除する
-                    foreach (string DirectoryPath in lststrZipExtractToDirectory)
+                    if (Directory.Exists(g_strZipExtractDirPath) == true)
                     {
-                        if (Directory.Exists(DirectoryPath) == true)
-                        {
-                            Directory.Delete(DirectoryPath, true);
-                        }
+                        Directory.Delete(g_strZipExtractDirPath, true);
                     }
 
                     // 取り込み完了
