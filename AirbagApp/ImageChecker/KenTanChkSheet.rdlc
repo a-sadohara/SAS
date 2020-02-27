@@ -246,11 +246,7 @@
         <TablixRowHierarchy>
           <TablixMembers>
             <TablixMember>
-              <Group Name="AcceptanceCheckDatetime">
-                <GroupExpressions>
-                  <GroupExpression>=Fields!AcceptanceCheckDatetime.Value</GroupExpression>
-                </GroupExpressions>
-              </Group>
+              <Group Name="AcceptanceCheckDatetime" />
               <SortExpressions>
                 <SortExpression>
                   <Value>=Fields!AcceptanceCheckDatetime.Value</Value>
