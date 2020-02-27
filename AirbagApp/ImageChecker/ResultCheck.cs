@@ -216,7 +216,9 @@ namespace ImageChecker
         /// <param name="intPageIdx"></param>
         private bool bolDispImageInfo(int intPageIdx)
         {
+            string strMarkingImagepath = string.Empty;
             string strImagePath = string.Empty;
+            string strCloumns = string.Empty;
             string[] strMasterPoint;
             int intMasterPointX = -1;
             int intMasterPointY = -1;
@@ -231,13 +233,13 @@ namespace ImageChecker
             try
             {
                 // 画像パス
-                strImagePath = Path.Combine(m_strFaultImageSubDirPath,
-                                            m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString());
+                strMarkingImagepath = m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString();
+                strImagePath = Path.Combine(m_strFaultImageSubDirPath, strMarkingImagepath);
 
                 // マスタ位置
                 strMasterPoint = m_dtData.Rows[intPageIdx]["master_point"].ToString().Split(',');
-                intMasterPointX = int.Parse(strMasterPoint[0]);
-                intMasterPointY = int.Parse(strMasterPoint[1]);
+                intMasterPointX = Convert.ToInt32(strMasterPoint[0]);
+                intMasterPointY = Convert.ToInt32(strMasterPoint[1]);
 
                 // NG面
                 strNgFace = m_dtData.Rows[intPageIdx]["ng_face"].ToString();
@@ -250,9 +252,12 @@ namespace ImageChecker
                     intNgFace = 2;  // 裏
                 }
 
+                // 列
+                strCloumns = m_dtData.Rows[intPageIdx]["cloumns"].ToString();
+
                 // 欠点画像にフォーカスセット
                 picMarkingImage.Focus();
-
+                
                 // ページ数表示
                 lblPageCount.Text = string.Format(m_CON_FORMAT_COUNT_SCORES, (intPageIdx + 1).ToString(), m_dtData.Rows.Count.ToString());
 
@@ -303,12 +308,12 @@ namespace ImageChecker
                 SetInspectionDirectionSetting(m_strInspectionDirection);
 
                 // その他情報を表示
-                lblNgFace.Text = string.Format(m_CON_FORMAT_NG_FACE, m_dtData.Rows[intPageIdx]["ng_face"].ToString());
+                lblNgFace.Text = string.Format(m_CON_FORMAT_NG_FACE, strNgFace);
                 lblNgDistance.Text = string.Format(m_CON_FORMAT_NG_DISTANCE, m_dtData.Rows[intPageIdx]["ng_distance_x"].ToString(), m_dtData.Rows[intPageIdx]["ng_distance_y"].ToString());
-                lblMarkingImagepath.Text = m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString();
+                lblMarkingImagepath.Text = strMarkingImagepath;
                 lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, m_dtData.Rows[intPageIdx]["ng_reason"].ToString());
                 cmbBoxLine.SelectedItem = m_dtData.Rows[intPageIdx]["line"].ToString();
-                cmbBoxColumns.SelectedItem = m_dtData.Rows[intPageIdx]["cloumns"].ToString();
+                cmbBoxColumns.SelectedItem = strCloumns;
 
                 // ひとつ前へ戻るの制御
                 if (m_intPageIdx == 0)
@@ -338,7 +343,7 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString() });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = strMarkingImagepath });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_nondetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
 
@@ -346,7 +351,7 @@ namespace ImageChecker
 
                     if (dtData.Rows.Count > 0)
                     {
-                        if (int.Parse(dtData.Rows[0]["branch_num_max"].ToString()) > 1)
+                        if (Convert.ToInt32(dtData.Rows[0]["branch_num_max"]) > 1)
                         {
                             dispCopyRegist();
                         }
@@ -382,19 +387,21 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = int.Parse(m_dtData.Rows[intPageIdx]["line"].ToString()) });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = m_dtData.Rows[intPageIdx]["cloumns"].ToString() });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_detect", DbType = DbType.Int16,
-                        Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = Convert.ToInt32(m_dtData.Rows[intPageIdx]["line"]) });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = strCloumns });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_detect", 
+                                                                                DbType = DbType.Int16,
+                                                                                Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_nondetect",
-                        DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
+                                                                                DbType = DbType.Int16,
+                                                                                Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
 
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
                     if (dtData.Rows.Count > 0)
                     {
                         // 他画像でＮＧ判定済みの表示
-                        if (int.Parse(dtData.Rows[0]["cnt"].ToString()) > 0)
+                        if (Convert.ToInt32(dtData.Rows[0]["cnt"]) > 0)
                         {
                             lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
                             btnOtherNgJudgement.Focus();
@@ -646,7 +653,7 @@ namespace ImageChecker
 
             try
             {
-                intBranchNum = int.Parse(m_dtData.Rows[m_intPageIdx]["branch_num"].ToString());
+                intBranchNum = Convert.ToInt32(m_dtData.Rows[m_intPageIdx]["branch_num"]);
                 strNgFace = m_dtData.Rows[m_intPageIdx]["ng_face"].ToString();
                 strMarkingImagepath = m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString();
 
@@ -662,8 +669,8 @@ namespace ImageChecker
                                 , acceptance_check_result = :acceptance_check_result ";
 
                 if (m_intFromApId == 0 ||
-                    (m_dtData.Rows[m_intPageIdx]["over_detection_except_result"].ToString() == g_clsSystemSettingInfo.intOverDetectionExceptResultNon.ToString() &&
-                     m_dtData.Rows[m_intPageIdx]["acceptance_check_result"].ToString() == g_clsSystemSettingInfo.intAcceptanceCheckResultNon.ToString()))
+                    (Convert.ToInt32(m_dtData.Rows[m_intPageIdx]["over_detection_except_result"]) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon &&
+                     Convert.ToInt32(m_dtData.Rows[m_intPageIdx]["acceptance_check_result"]) == g_clsSystemSettingInfo.intAcceptanceCheckResultNon))
                 {
                     // 新規登録　もしくは　未検知画像追加分
                     strSQL += @", acceptance_check_datetime = current_timestamp
@@ -703,7 +710,7 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_reason", DbType = DbType.String, Value = strNgReason });
                 }
 
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = int.Parse(cmbBoxLine.SelectedItem.ToString()) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = Convert.ToInt32(cmbBoxLine.SelectedItem) });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = cmbBoxColumns.SelectedItem.ToString() });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result", DbType = DbType.Int16, Value = intResult });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
@@ -718,7 +725,7 @@ namespace ImageChecker
 
                 // データテーブルの更新
                 m_dtData.Rows[m_intPageIdx]["ng_reason"] = strNgReason;
-                m_dtData.Rows[m_intPageIdx]["line"] = int.Parse(cmbBoxLine.SelectedItem.ToString());
+                m_dtData.Rows[m_intPageIdx]["line"] = Convert.ToInt32(cmbBoxLine.SelectedItem);
                 m_dtData.Rows[m_intPageIdx]["cloumns"] = cmbBoxColumns.SelectedItem.ToString();
 
                 if (m_intFromApId == 0)
@@ -890,7 +897,7 @@ namespace ImageChecker
 
                 if (dtData.Rows.Count > 0)
                 {
-                    intIdxStartPage = int.Parse(dtData.Rows[0]["max_sort_num"].ToString());
+                    intIdxStartPage = Convert.ToInt32(dtData.Rows[0]["max_sort_num"]);
                 }
             }
             catch (Exception ex)
@@ -1425,7 +1432,7 @@ namespace ImageChecker
 
             // 新規
             intBranch = 1;
-            intLine = int.Parse(cmbBoxLine.SelectedItem.ToString());
+            intLine = Convert.ToInt32(cmbBoxLine.SelectedItem);
             strColumns = cmbBoxColumns.SelectedItem.ToString();
             strNgReason = m_dtData.Rows[m_intPageIdx]["ng_reason"].ToString();
             strMarkingImagepath = m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString();
@@ -1538,7 +1545,7 @@ namespace ImageChecker
                     strFileParam = strFileName.Split('_');
                     if ((strFileParam.Length < 2 || m_strFabricName != strFileParam[1]) ||
                         (strFileParam.Length < 3 || m_strInspectionDate.Replace("/", "") != strFileParam[2]) ||
-                        (strFileParam.Length < 4 || int.TryParse(strFileParam[3], out intParse) == false || int.Parse(m_intInspectionNum.ToString()) != intParse))
+                        (strFileParam.Length < 4 || int.TryParse(strFileParam[3], out intParse) == false || m_intInspectionNum != intParse))
                     {
                         MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0005,
                                                       m_strInspectionDate,
@@ -1588,7 +1595,7 @@ namespace ImageChecker
                     // 件数
                     if (dtData.Rows.Count > 0)
                     {
-                        if (int.Parse(dtData.Rows[0]["cnt"].ToString()) > 0)
+                        if (Convert.ToInt32(dtData.Rows[0]["cnt"]) > 0)
                         {
                             // メッセージ出力
                             MessageBox.Show(g_clsMessageInfo.strMsgE0061, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
