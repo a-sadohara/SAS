@@ -414,9 +414,9 @@ namespace ProductMstMaintenance
             }
             else
             {
-                foreach (dynamic ctr in this.Controls.Find(strPicBoxDispLineCtrName, true))
+                foreach (Control ctr in this.Controls.Find(strPicBoxDispLineCtrName, true))
                 {
-                    pctLineCtrl = ctr;
+                    pctLineCtrl = (PictureBox)ctr;
                     break;
                 }
             }

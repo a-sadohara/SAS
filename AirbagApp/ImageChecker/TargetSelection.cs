@@ -59,15 +59,6 @@ namespace ImageChecker
         public TargetSelection()
         {
             InitializeComponent();
-
-            // 一時フォルダ作成
-            if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory) == false)
-                Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
-
-            // 一時ZIP解凍用フォルダ作成
-            if (Directory.Exists(g_strZipExtractDirPath) == true)
-                Directory.Delete(g_strZipExtractDirPath, true);
-            Directory.CreateDirectory(g_strZipExtractDirPath);
         }
 
         /// <summary>
@@ -80,15 +71,15 @@ namespace ImageChecker
             try
             {
 
-                // ZIPファイルを一時ZIP解凍用フォルダにコピーする
+                // ZIPファイルを一時ZIP解凍用格納先ディレクトリにコピーする
                 File.Copy(Path.Combine( g_clsSystemSettingInfo.strNgImageCooperationDirectory , strFaultImage + ".zip"),
                           Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"),true);
 
-                // 欠点画像Zipファイルの解凍
+                // 欠点画像ZIPファイルの解凍
                 ZipFile.ExtractToDirectory(Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"),
-                           g_clsSystemSettingInfo.strFaultImageDirectory);
+                                           g_clsSystemSettingInfo.strFaultImageDirectory);
 
-                // 一時ファイルの削除
+                // ZIPファイルの削除
                 File.Delete(Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"));
 
                 return true;

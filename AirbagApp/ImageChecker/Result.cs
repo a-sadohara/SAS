@@ -1084,7 +1084,7 @@ namespace ImageChecker
 
                 // 一時フォルダにPDFを作成
                 string fileName = string.Format("Report{0}.pdf" , DateTime.Now.ToString("yyyyMMddhhmmssfff"));
-                using (FileStream fs = new FileStream(Path.Combine( g_clsSystemSettingInfo.strTemporaryDirectory ,  fileName), FileMode.Create))
+                using (FileStream fs = new FileStream(Path.Combine( g_strPdfOutKenTanCheckSheetPath ,  fileName), FileMode.Create))
                 {
                     fs.Write(bytes, 0, bytes.Length);
                 }

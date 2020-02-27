@@ -173,7 +173,7 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void llk_Click(dynamic sender, EventArgs e)
+        private void llk_Click(object sender, EventArgs e)
         {
             if (sender == lblWorkerNameKanaア) { m_strKanaSta = "ア"; m_strKanaEnd = "オ"; }
             else if (sender == lblWorkerNameKanaカ) { m_strKanaSta = "カ"; m_strKanaEnd = "コ"; }

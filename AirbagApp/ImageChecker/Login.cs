@@ -32,17 +32,99 @@ namespace ImageChecker
             this.StartPosition = FormStartPosition.CenterScreen;
         }
 
+
+        /// <summary>
+        /// 一時ディレクトリ初期化
+        /// </summary>
+        /// <returns></returns>
+        private async Task<Boolean> bolInitializeTempDir()
+        {
+            try
+            {
+                // 存在しない一時ディレクトリ作成
+                // マーキングマスタ画像格納先
+                if (Directory.Exists(g_strMasterImageDirMarking) == false)
+                {
+                    Directory.CreateDirectory(g_strMasterImageDirMarking);
+                }
+                // ZIP解凍用格納先
+                if (Directory.Exists(g_strZipExtractDirPath) == false)
+                {
+                    Directory.CreateDirectory(g_strZipExtractDirPath);
+                }
+                // 検反チェックシートPDFファイル格納先
+                if (Directory.Exists(g_strPdfOutKenTanCheckSheetPath) == false)
+                {
+                    Directory.CreateDirectory(g_strPdfOutKenTanCheckSheetPath);
+                }
+
+                // 一時ディレクトリ内のサブディレクトリとファイルを削除
+                // マーキングマスタ画像格納先
+                foreach (string DirPath in Directory.GetDirectories(g_strMasterImageDirMarking, "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    Directory.Delete(DirPath, true);
+                }
+                foreach (string FilePath in Directory.GetFiles(g_strMasterImageDirMarking, "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    File.Delete(FilePath);
+                }
+                // ZIP解凍用格納先
+                foreach (string DirPath in Directory.GetDirectories(g_strZipExtractDirPath, "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    Directory.Delete(DirPath, true);
+                }
+                foreach (string FilePath in Directory.GetFiles(g_strZipExtractDirPath, "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    File.Delete(FilePath);
+                }
+                // 検反チェックシートPDFファイル格納先
+                foreach (string DirPath in Directory.GetDirectories(g_strPdfOutKenTanCheckSheetPath, "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    Directory.Delete(DirPath, true);
+                }
+                foreach (string FilePath in Directory.GetFiles(g_strPdfOutKenTanCheckSheetPath, "*.*", SearchOption.TopDirectoryOnly))
+                {
+                    File.Delete(FilePath);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                WriteEventLog(g_CON_LEVEL_WARN, ex.Message);
+                return false;
+            }
+        }
+
         /// <summary>
         /// 欠点画像取り込み
         /// </summary>
-        /// <returns></returns>
+        /// <returns>true:正常終了 false:異常終了</returns>
         private async Task<Boolean> bolImpMasterImage()
         {
             string strTempFilePath = string.Empty;
 
-            // マスタ画像の更新
             try
             {
+                // 一時ディレクトリ作成
+                // ルート
+                if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory) == false)
+                {
+                    Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
+                }
+                // マスタ画像格納先
+                if (Directory.Exists(g_strMasterImageDirPath) == false)
+                {
+                    Directory.CreateDirectory(g_strMasterImageDirPath);
+                }
+
+                // 一時ディレクトリ初期化
+                if (!bolInitializeTempDir().Result)
+                {
+                    return false;
+                }
+
+                // マスタ画像の更新
                 // マスタ画像格納ディレクトリを列挙
                 foreach (string FilePath in Directory.GetFiles(g_clsSystemSettingInfo.strMasterImageDirectory, "*", SearchOption.AllDirectories))
                 {
@@ -80,11 +162,11 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private  async void Login_Load(object sender, EventArgs e)
+        private async void Login_Load(object sender, EventArgs e)
         {
             this.SuspendLayout();
 
-            Task<Boolean> tskCopyMstImg = Task<Boolean>.Run(() => bolImpMasterImage());
+            Task<Boolean> tskCopyMstImg = Task.Run(() => bolImpMasterImage());
 
             // ユーザIDを初期選択
             txtUserId.Select();
@@ -147,7 +229,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void picDispNum2_Click(dynamic sender, EventArgs e)
+        private void picDispNum2_Click(object sender, EventArgs e)
         {
             rdbDispNum2.Checked = true;
         }
@@ -157,7 +239,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void picDispNum4_Click(dynamic sender, EventArgs e)
+        private void picDispNum4_Click(object sender, EventArgs e)
         {
             rdbDispNum4.Checked = true;
         }
@@ -167,7 +249,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void picDispNum6_Click(dynamic sender, EventArgs e)
+        private void picDispNum6_Click(object sender, EventArgs e)
         {
             rdbDispNum6.Checked = true;
         }
@@ -177,7 +259,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void picDispNum9_Click(dynamic sender, EventArgs e)
+        private void picDispNum9_Click(object sender, EventArgs e)
         {
             rdbDispNum9.Checked = true;
         }
@@ -187,7 +269,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnLogin_Click(object sender, EventArgs e)
+        private async void btnLogin_Click(object sender, EventArgs e)
         {
             int intDispNum = 0;
 
@@ -216,6 +298,17 @@ namespace ImageChecker
             this.Refresh();
 
             this.Visible = true;
+
+            // 一時ディレクトリ初期化
+            Task<Boolean> tskCopyMstImg = Task.Run(() => bolInitializeTempDir());
+
+            await Task.WhenAll(tskCopyMstImg);
+            if (!tskCopyMstImg.Result)
+            {
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
         #endregion
     }

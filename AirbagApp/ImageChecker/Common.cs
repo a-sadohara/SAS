@@ -71,12 +71,14 @@ namespace ImageChecker
         public static bool g_bolStatus = false; //0:ログアウト 1:ログイン
 
         // サブ一時ディレクトリ
-        public const string g_CON_DIR_MASTER_IMAGE = "MasterImage";                 // マスタ画像格納
-        public const string g_CON_DIR_MASTER_IMAGE_MARKING = "MasterImageMarking";  // マーキングマスタ画像格納先
-        public const string g_CON_ZIP_EXTRACT_DIR_PATH = "ZipExtractDirPath";       // ZIP解凍用格納
+        public const string g_CON_DIR_MASTER_IMAGE = "MasterImage";                         // マスタ画像格納先
+        public const string g_CON_DIR_MASTER_IMAGE_MARKING = "MasterImageMarking";          // マーキングマスタ画像格納先
+        public const string g_CON_ZIP_EXTRACT_DIR_PATH = "ZipExtractDirPath";               // ZIP解凍用格納先
+        public const string g_CON_PDF_OUT_KEN_TAN_CHECK_SHEET_PATH = "PdfKentanCheckSheet"; // 検反チェックシートPDFファイル格納先
         public static string g_strMasterImageDirPath = string.Empty;
         public static string g_strMasterImageDirMarking = string.Empty;
         public static string g_strZipExtractDirPath = string.Empty;
+        public static string g_strPdfOutKenTanCheckSheetPath = string.Empty;
 
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
@@ -159,6 +161,7 @@ namespace ImageChecker
                 g_strMasterImageDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE);
                 g_strMasterImageDirMarking = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING);
                 g_strZipExtractDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_ZIP_EXTRACT_DIR_PATH);
+                g_strPdfOutKenTanCheckSheetPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_PDF_OUT_KEN_TAN_CHECK_SHEET_PATH);
             }
             catch (Exception ex)
             {

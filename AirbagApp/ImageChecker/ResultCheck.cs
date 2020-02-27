@@ -18,26 +18,52 @@ namespace ImageChecker
         /// </summary>
         public int intDestination { get; set; }
 
-        // パラメータ関連
-        private HeaderData m_clsHeaderData;                         // ヘッダ情報
-        private DecisionResult m_clsDecisionResultCorrection;       // 検査結果情報(修正)
-        private string m_strUnitNum = string.Empty;                 // 号機
-        private string m_strProductName = string.Empty;             // 品名
-        private string m_strOrderImg = string.Empty;                // 指図
-        private string m_strFabricName = string.Empty;              // 反番
-        private string m_strInspectionDate = string.Empty;          // 検査日付
-        private string m_strStartDatetime = string.Empty;           // 搬送開始日時
-        private string m_strEndDatetime = string.Empty;             // 搬送終了日時
-        private int m_intInspectionStartLine = -1;                  // 検査開始行
-        private int m_intInspectionEndLine = -1;                    // 最終行数
-        private string m_strDecisionStartTime = string.Empty;       // 判定開始日時
-        private string m_strDecisionEndTime = string.Empty;         // 判定終了日時
-        private string m_strInspectionDirection = string.Empty;     // 検査方向
-        private int m_intInspectionNum = 0;                         // 検査番号
-        private int m_intAcceptanceCheckStatus = 0;                 // 合否確認ステータス
-        private string m_strAirbagImagepath = string.Empty;         // エアバック画像ファイルパス
-        private int m_intColumnCnt = 0;                             // 列数
-        private int m_intFromApId = 0;                              // 遷移元画面ID
+        // パラメータ関連（可変）
+        private HeaderData m_clsHeaderData;                                 // ヘッダ情報
+        private DecisionResult m_clsDecisionResultCorrection;               // 検査結果情報(修正)
+
+        // パラメータ関連（不変）
+        private readonly string  m_strUnitNum = string.Empty;               // 号機
+        private readonly string m_strProductName = string.Empty;            // 品名
+        private readonly string m_strOrderImg = string.Empty;               // 指図
+        private readonly string m_strFabricName = string.Empty;             // 反番
+        private readonly string m_strInspectionDate = string.Empty;         // 検査日付
+        private readonly string m_strStartDatetime = string.Empty;          // 搬送開始日時
+        private readonly string m_strEndDatetime = string.Empty;            // 搬送終了日時
+        private readonly int m_intInspectionStartLine = -1;                 // 検査開始行
+        private readonly int m_intInspectionEndLine = -1;                   // 最終行数
+        private readonly string m_strDecisionStartTime = string.Empty;      // 判定開始日時
+        private readonly string m_strInspectionDirection = string.Empty;    // 検査方向
+        private readonly int m_intInspectionNum = 0;                        // 検査番号
+        private readonly string m_strAirbagImagepath = string.Empty;        // エアバック画像ファイルパス
+        private readonly int m_intColumnCnt = 0;                            // 列数
+        private readonly int m_intFromApId = 0;                             // 遷移元画面ID
+
+        // 合否判定ステータス関連
+        private string m_strDecisionEndTime = string.Empty;                 // 判定終了日時
+        private int m_intAcceptanceCheckStatus = 0;                         // 合否確認ステータス
+
+        // ディレクトリ関連
+        private readonly string m_strFaultImageSubDirName = string.Empty;   // 欠点画像サブディレクトリ名
+        private readonly string m_strFaultImageSubDirPath = string.Empty;   // 欠点画像サブディレクトリパス
+        
+        // 検査方向背景色関連
+        private readonly Color m_clrInspectionDirectionActFore = System.Drawing.SystemColors.ActiveCaption;
+        private readonly Color m_clrInspectionDirectionActBack = SystemColors.Control;
+        
+        // ページIdx
+        private int m_intPageIdx = -1;
+
+        // データ保持関連
+        private DataTable m_dtData;
+
+        // 画像関連
+        private Bitmap m_bmpMasterImageInit = null;
+        private Bitmap m_bmpMasterImageMarking = null;
+
+        // 選択行保持(結果画面用)
+        private int m_intSelIdx = -1;
+        private int m_intFirstDisplayedScrollingRowIdx = -1;
 
         // 定数
         private const string m_CON_FORMAT_UNIT_NUM = "号機：{0}";
@@ -63,28 +89,6 @@ namespace ImageChecker
         private const string m_CON_CAMERA_NO_14 = "14";
         private const string m_CON_CAMERA_NO_20 = "20";
         private const string m_CON_CAMERA_NO_26 = "26";
-
-        // 欠点画像サブディレクトリパス
-        private string m_strFaultImageSubDirName = string.Empty;
-        private string m_strFaultImageSubDirPath = string.Empty;
-        
-        // ページIdx
-        private int m_intPageIdx = -1;
-
-        // 検査方向背景色関連
-        private Color m_clrInspectionDirectionActFore = System.Drawing.SystemColors.ActiveCaption;
-        private Color m_clrInspectionDirectionActBack = SystemColors.Control;
-
-        // データ保持関連
-        private DataTable m_dtData;
-
-        // 画像関連
-        private Bitmap m_bmpMasterImageInit = null;
-        private Bitmap m_bmpMasterImageMarking = null;
-
-        // 選択行保持(結果画面用)
-        private int m_intSelIdx = -1;
-        private int m_intFirstDisplayedScrollingRowIdx = -1;
 
         #region メソッド
         /// <summary>
@@ -1023,18 +1027,6 @@ namespace ImageChecker
                 // マスタ画像取り込み
                 try
                 {
-                    // 一時フォルダ作成
-                    if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory) == false)
-                    {
-                        Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
-                    }
-
-                    // マスタ画像マーキング格納先作成
-                    if (Directory.Exists(g_strMasterImageDirMarking) == false)
-                    {
-                        Directory.CreateDirectory(g_strMasterImageDirMarking);
-                    }
-
                     // 初期状態を描画
                     FileStream fs = new FileStream(m_strAirbagImagepath, FileMode.Open, FileAccess.Read);
                     m_bmpMasterImageInit = new Bitmap(Image.FromStream(fs));
@@ -1260,15 +1252,6 @@ namespace ImageChecker
                 // パラメータ更新
                 m_clsHeaderData.intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusStp;
                 m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
-            }
-
-            // 一時ディレクトリ削除
-            if (Directory.Exists(g_strMasterImageDirMarking) == true)
-            {
-                foreach(string strFilePath in Directory.GetFiles(g_strMasterImageDirMarking))
-                {
-                    File.Delete(strFilePath);
-                }
             }
         }
 
@@ -1759,7 +1742,7 @@ namespace ImageChecker
 
                     strZipFilePath = Path.Combine(g_strZipExtractDirPath, strFileName + ".zip");
 
-                    // ZIPファイルを一時ZIP解凍用フォルダにコピーする
+                    // 欠点画像ZIPファイルを一時ZIP解凍用フォルダにコピーする
                     File.Copy(Path.Combine(g_clsSystemSettingInfo.strNgImageCooperationDirectory, strFileName + ".zip"),
                                            strZipFilePath, true);
 
@@ -1780,7 +1763,7 @@ namespace ImageChecker
                         }
                     }
 
-                    // 欠点画像を一時ディレクトリに解凍する
+                    // 欠点画像ZIPを一時ディレクトリに解凍する
                     ZipFile.ExtractToDirectory(strZipFilePath,
                                                g_strZipExtractDirPath);
 
@@ -1801,11 +1784,9 @@ namespace ImageChecker
 
                     }
 
-                    // 一時ディレクトリから削除する
-                    if (Directory.Exists(g_strZipExtractDirPath) == true)
-                    {
-                        Directory.Delete(g_strZipExtractDirPath, true);
-                    }
+                    // 一時ディレクトリから欠点画像ZIPと解凍済み欠点画像ディレクトリを削除する
+                    Directory.Delete(strZipExtractToDirPath, true);
+                    File.Delete(strZipFilePath);
 
                     // 取り込み完了
                 }
