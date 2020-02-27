@@ -796,7 +796,7 @@ namespace ImageChecker
                                  , dr.line ASC 
                                  , dr.cloumns ASC 
                                  , dr.ng_face ASC 
-                                 , dr.over_detection_except_datetime ASC ";
+                                 , dr.acceptance_check_datetime ASC ";
 
                     // SQLコマンドに各パラメータを設定する
                     List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
