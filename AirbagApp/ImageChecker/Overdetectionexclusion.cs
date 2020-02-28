@@ -373,13 +373,16 @@ namespace ImageChecker
                     fs.Close();
 
                     // ステータス設定
-                    lblImage.Text = string.Empty;
                     lblImage = (Label)pctImage.Controls[0];
                     if (m_dicState[string.Join(m_CON_DELIMIT_KEY,
-                                               m_dtData.Rows[i]["line"].ToString(),
-                                               m_dtData.Rows[i]["cloumns"].ToString(),
-                                               m_dtData.Rows[i]["ng_face"].ToString(),
-                                               m_dtData.Rows[i]["marking_imagepath"].ToString())] == g_clsSystemSettingInfo.intOverDetectionExceptResultNg.ToString())
+                                                m_dtData.Rows[i]["line"].ToString(),
+                                                m_dtData.Rows[i]["cloumns"].ToString(),
+                                                m_dtData.Rows[i]["ng_face"].ToString(),
+                                                m_dtData.Rows[i]["marking_imagepath"].ToString())] != g_clsSystemSettingInfo.intOverDetectionExceptResultNg.ToString())
+                    {
+                        lblImage.Text = string.Empty;
+                    }
+                    else
                     {
                         lblImage.Text = "NG";
                     }
