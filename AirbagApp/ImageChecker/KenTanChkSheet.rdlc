@@ -247,11 +247,6 @@
           <TablixMembers>
             <TablixMember>
               <Group Name="AcceptanceCheckDatetime" />
-              <SortExpressions>
-                <SortExpression>
-                  <Value>=Fields!AcceptanceCheckDatetime.Value</Value>
-                </SortExpression>
-              </SortExpressions>
               <TablixHeader>
                 <Size>2.21835cm</Size>
                 <CellContents>
@@ -287,6 +282,7 @@
                       <PaddingBottom>2pt</PaddingBottom>
                     </Style>
                   </Textbox>
+                  <rd:Selected>true</rd:Selected>
                 </CellContents>
               </TablixHeader>
               <TablixMembers>
