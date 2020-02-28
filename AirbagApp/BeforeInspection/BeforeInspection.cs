@@ -1241,8 +1241,21 @@ namespace BeforeInspection
 
             if (e.KeyCode == Keys.Return && lstBarcode.Count > 0)
             {
+
                 // 入力が確定されたため、データをセット
                 TextBox txtActive = (TextBox)this.ActiveControl;
+
+                if (txtActive.Text.Length > 13)
+                {
+                    // 検反情報チェックシートのバーコードが読み込まれたため、分割して登録する。
+                    String strOrderImg = txtActive.Text.Substring(0, 7);
+                    String strFabricName = string.Format("{0}-{1}",
+                        txtActive.Text.Substring(7, 6), txtActive.Text.Substring(13));
+
+                    txtOrderImg.Text = strOrderImg;
+                    txtFabricName.Text = strFabricName;
+                }
+
                 txtActive.SelectAll();
 
                 lstBarcode.Clear();

@@ -384,7 +384,7 @@
             this.txtOrderImg.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtOrderImg.Location = new System.Drawing.Point(4, 0);
             this.txtOrderImg.Margin = new System.Windows.Forms.Padding(0);
-            this.txtOrderImg.MaxLength = 7;
+            this.txtOrderImg.MaxLength = 17;
             this.txtOrderImg.Name = "txtOrderImg";
             this.txtOrderImg.Size = new System.Drawing.Size(100, 37);
             this.txtOrderImg.TabIndex = 2;
@@ -410,7 +410,7 @@
             this.txtFabricName.ImeMode = System.Windows.Forms.ImeMode.Alpha;
             this.txtFabricName.Location = new System.Drawing.Point(4, 0);
             this.txtFabricName.Margin = new System.Windows.Forms.Padding(0);
-            this.txtFabricName.MaxLength = 10;
+            this.txtFabricName.MaxLength = 17;
             this.txtFabricName.Name = "txtFabricName";
             this.txtFabricName.Size = new System.Drawing.Size(220, 37);
             this.txtFabricName.TabIndex = 3;
