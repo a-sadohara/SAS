@@ -61,9 +61,9 @@ namespace ImageChecker
         private Bitmap m_bmpMasterImageInit = null;
         private Bitmap m_bmpMasterImageMarking = null;
 
-        // 選択行保持(結果画面用)
-        private int m_intSelIdx = -1;
-        private int m_intFirstDisplayedScrollingRowIdx = -1;
+        // 選択行情報関連(結果画面用)
+        private int m_intSelBranchNum = -1;
+        private string m_strSelMarkingImagepath = string.Empty;
 
         // 定数
         private const string m_CON_FORMAT_UNIT_NUM = "号機：{0}";
@@ -124,7 +124,7 @@ namespace ImageChecker
             m_intColumnCnt = clsHeaderData.intColumnCnt;
             m_intFromApId = intFromApId;
 
-            m_strFaultImageSubDirName = string.Join("_", m_strInspectionDate.Replace("/", ""),
+            m_strFaultImageSubDirName = string.Join("_", m_strInspectionDate.Replace("/", string.Empty),
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
@@ -234,7 +234,6 @@ namespace ImageChecker
             string strSQL = string.Empty;
             DataTable dtData;
             bool bolMovecoercive = false;
-            int intSkipCnt = 0;
             string strMsg = string.Empty;
 
             try
@@ -664,10 +663,10 @@ namespace ImageChecker
         {
             string strSQL = string.Empty;
             int intBranchNum = 0;
-            string strNgFace = "";
+            string strNgFace = string.Empty;
             string strMarkingImagepath = string.Empty;
             string strDbConKey = string.Empty;
-            string strDispResultMsg = "";
+            string strDispResultMsg = string.Empty;
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
@@ -822,21 +821,21 @@ namespace ImageChecker
 
             // 結果確認画面に遷移
             this.Visible = false;
-            Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx);
+            Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId, m_intSelBranchNum, m_strSelMarkingImagepath);
             frmResult.ShowDialog(this);
 
             // パラメータ更新
             m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
             m_strDecisionEndTime = m_clsHeaderData.strDecisionEndDatetime;
 
-            m_intSelIdx = frmResult.intSelIdx;
-            m_intFirstDisplayedScrollingRowIdx = frmResult.intFirstDisplayedScrollingRowIdx;
-
             if (frmResult.bolMod == true)
             {
                 // 修正ありの場合
 
                 m_clsDecisionResultCorrection = frmResult.clsDecisionResult;
+
+                m_intSelBranchNum = m_clsDecisionResultCorrection.intBranchNum;
+                m_strSelMarkingImagepath = m_clsDecisionResultCorrection.strMarkingImagepath;
 
                 // ページIdxを検索
                 for (int idx = 0; idx < m_dtData.Rows.Count; idx++)
@@ -1598,7 +1597,7 @@ namespace ImageChecker
                     // ファイル名妥当性チェック
                     strFileParam = strFileName.Split('_');
                     if ((strFileParam.Length < 2 || m_strFabricName != strFileParam[1]) ||
-                        (strFileParam.Length < 3 || m_strInspectionDate.Replace("/", "") != strFileParam[2]) ||
+                        (strFileParam.Length < 3 || m_strInspectionDate.Replace("/", string.Empty) != strFileParam[2]) ||
                         (strFileParam.Length < 4 || int.TryParse(strFileParam[3], out intParse) == false || m_intInspectionNum != intParse))
                     {
                         MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0005,

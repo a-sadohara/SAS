@@ -26,9 +26,15 @@ namespace ImageChecker
         // データ保持関連
         private DataTable m_dtData;
 
-        // 選択行保持
-        private int m_intSelIdx = -1;
-        private int m_intFirstDisplayedScrollingRowIdx = -1;
+        // 選択行情報関連
+        private string m_strSelUnitNum = string.Empty;
+        private string m_strSelProductName = string.Empty;
+        private string m_strSelOrderImg = string.Empty;
+        private string m_strSelFabricName = string.Empty;
+        private string m_strSelInspectionDate = string.Empty;
+        private int m_intSelInspectionNum = -1;
+        private int m_intSelBranchNum = -1;
+        private string m_strSelMarkingImagepath = string.Empty;
 
         #region メソッド
         /// <summary>
@@ -256,7 +262,7 @@ namespace ImageChecker
                 g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL, lstNpgsqlCommand);
 
                 // データグリッドに反映
-                foreach (DataRow row in m_dtData.Rows)
+                for (int i = 0; i <= m_dtData.Rows.Count - 1; i++)
                 {
                     arrRow = new ArrayList();
 
@@ -264,35 +270,35 @@ namespace ImageChecker
                     arrRow.Add(this.dgvCheckInspectionHistory.Rows.Count + 1);
 
                     // SQL抽出項目
-                    arrRow.Add(row["unit_num"]);
-                    arrRow.Add(row["product_name"]);
-                    arrRow.Add(row["order_img"]);
-                    arrRow.Add(row["fabric_name"]);
-                    arrRow.Add(row["start_datetime"]);
-                    arrRow.Add(row["end_datetime"]);
-                    arrRow.Add(row["inspection_target_line"]);
-                    arrRow.Add(string.Format(m_CON_FORMAT_INSPECTION_LINE, row["inspection_start_line"], row["inspection_end_line"]));
-                    arrRow.Add(row["decision_start_datetime"]);
-                    arrRow.Add(row["decision_end_datetime"]);
-                    arrRow.Add(row["inspection_num"]);
-                    arrRow.Add(row["line"]);
-                    arrRow.Add(row["cloumns"]);
-                    arrRow.Add(row["ng_face"]);
-                    arrRow.Add(string.Format(m_CON_FORMAT_NG_DISTANCE, row["ng_distance_x"].ToString(), row["ng_distance_y"].ToString()));
+                    arrRow.Add(m_dtData.Rows[i]["unit_num"]);
+                    arrRow.Add(m_dtData.Rows[i]["product_name"]);
+                    arrRow.Add(m_dtData.Rows[i]["order_img"]);
+                    arrRow.Add(m_dtData.Rows[i]["fabric_name"]);
+                    arrRow.Add(m_dtData.Rows[i]["start_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["end_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["inspection_target_line"]);
+                    arrRow.Add(string.Format(m_CON_FORMAT_INSPECTION_LINE, m_dtData.Rows[i]["inspection_start_line"], m_dtData.Rows[i]["inspection_end_line"]));
+                    arrRow.Add(m_dtData.Rows[i]["decision_start_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["decision_end_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["inspection_num"]);
+                    arrRow.Add(m_dtData.Rows[i]["line"]);
+                    arrRow.Add(m_dtData.Rows[i]["cloumns"]);
+                    arrRow.Add(m_dtData.Rows[i]["ng_face"]);
+                    arrRow.Add(string.Format(m_CON_FORMAT_NG_DISTANCE, m_dtData.Rows[i]["ng_distance_x"].ToString(), m_dtData.Rows[i]["ng_distance_y"].ToString()));
 
                     // 過検知除外結果：名称を表示
-                    if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon)
+                    if (int.Parse(m_dtData.Rows[i]["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon)
                     {
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNon;
 
                     }
 
-                    if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
+                    if (int.Parse(m_dtData.Rows[i]["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
                     {
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameOk;
                     }
 
-                    if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
+                    if (int.Parse(m_dtData.Rows[i]["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
                     {
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNg;
                     }
@@ -300,47 +306,62 @@ namespace ImageChecker
                     arrRow.Add(stResultName);
 
                     // 合否確認結果：名称を表示
-                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNon)
+                    if (int.Parse(m_dtData.Rows[i]["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNon)
                     {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNon;
                     }
 
-                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultOk)
+                    if (int.Parse(m_dtData.Rows[i]["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultOk)
                     {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameOk;
                     }
 
-                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect)
+                    if (int.Parse(m_dtData.Rows[i]["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect)
                     {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNgDetect;
                     }
 
-                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect)
+                    if (int.Parse(m_dtData.Rows[i]["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect)
                     {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNgNonDetect;
                     }
 
                     arrRow.Add(stResultName);
 
-                    arrRow.Add(row["ng_reason"]);
-                    arrRow.Add(row["over_detection_except_datetime"]);
-                    arrRow.Add(row["over_detection_except_worker"]);
-                    arrRow.Add(row["acceptance_check_datetime"]);
-                    arrRow.Add(row["acceptance_check_worker"]);
-                    arrRow.Add(row["result_update_datetime"]);
-                    arrRow.Add(row["result_update_worker"]);
-                    arrRow.Add(row["before_ng_reason"]);
+                    arrRow.Add(m_dtData.Rows[i]["ng_reason"]);
+                    arrRow.Add(m_dtData.Rows[i]["over_detection_except_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["over_detection_except_worker"]);
+                    arrRow.Add(m_dtData.Rows[i]["acceptance_check_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["acceptance_check_worker"]);
+                    arrRow.Add(m_dtData.Rows[i]["result_update_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["result_update_worker"]);
+                    arrRow.Add(m_dtData.Rows[i]["before_ng_reason"]);
 
                     this.dgvCheckInspectionHistory.Rows.Add(arrRow.ToArray());
 
+                    // 行選択
+                    if (!string.IsNullOrEmpty(m_strSelUnitNum) &&
+                        m_dtData.Rows[i]["unit_num"].ToString() == m_strSelUnitNum &&
+                        m_dtData.Rows[i]["product_name"].ToString() == m_strSelProductName &&
+                        m_dtData.Rows[i]["order_Img"].ToString() == m_strSelOrderImg &&
+                        m_dtData.Rows[i]["fabric_name"].ToString() == m_strSelFabricName &&
+                        m_dtData.Rows[i]["inspection_date"].ToString() == m_strSelInspectionDate &&
+                        Convert.ToInt32(m_dtData.Rows[i]["inspection_num"]) == m_intSelInspectionNum &&
+                        Convert.ToInt32(m_dtData.Rows[i]["branch_num"]) == m_intSelBranchNum &&
+                        m_dtData.Rows[i]["marking_imagepath"].ToString() == m_strSelMarkingImagepath)
+                    {
+                        dgvCheckInspectionHistory.Rows[i].Selected = true;
+                        dgvCheckInspectionHistory.FirstDisplayedScrollingRowIndex = i;
+                    }
+
                     // 行列情報を保持
                     // 重複時はスキップ
-                    if (lststrLineColumns.Contains(string.Join("|", row["line"], row["cloumns"])))
+                    if (lststrLineColumns.Contains(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"])))
                     {
                         continue;
                     }
 
-                    lststrLineColumns.Add(string.Join("|", row["line"], row["cloumns"]));
+                    lststrLineColumns.Add(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"]));
                 }
 
                 if (dgvCheckInspectionHistory.Rows.Count == 0)
@@ -358,35 +379,15 @@ namespace ImageChecker
                 lblImageSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, m_dtData.Rows.Count, m_intAllImageInspectionCount);
                 lblCushionSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, lststrLineColumns.Count, m_intAllCushionspectionCount);
 
-                // 行選択
-                if (m_intSelIdx != -1)
-                {
-                    try
-                    {
-                        this.dgvCheckInspectionHistory.Rows[m_intSelIdx].Selected = true;
-                    }
-                    catch
-                    {
-                        // 一覧がリセットされる瞬間においては例外が発生するが、無視する
-                    }
-                }
-
-                // スクロールバー調整
-                if (m_intFirstDisplayedScrollingRowIdx != -1)
-                {
-                    try
-                    {
-                        this.dgvCheckInspectionHistory.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIdx;
-                    }
-                    catch
-                    {
-                        // 一覧がリセットされる瞬間においては例外が発生するが、無視する
-                    }
-                }
-
-                // 初期化
-                m_intSelIdx = -1;
-                m_intFirstDisplayedScrollingRowIdx = -1;
+                // 選択行情報初期化
+                m_strSelUnitNum = string.Empty;
+                m_strSelProductName = string.Empty;
+                m_strSelOrderImg = string.Empty;
+                m_strSelFabricName = string.Empty;
+                m_strSelInspectionDate = string.Empty;
+                m_intSelInspectionNum = -1;
+                m_intSelBranchNum = -1;
+                m_strSelMarkingImagepath = string.Empty;
 
                 return true;
             }
@@ -585,8 +586,15 @@ namespace ImageChecker
             clsDecisionResult.strMarkingImagepath = m_dtData.Rows[intSelIdx]["marking_imagepath"].ToString();
             clsDecisionResult.strOrgImagepath = m_dtData.Rows[intSelIdx]["org_imagepath"].ToString();
 
-            m_intSelIdx = intSelIdx;
-            m_intFirstDisplayedScrollingRowIdx = this.dgvCheckInspectionHistory.FirstDisplayedScrollingRowIndex;
+            // 行選択情報
+            m_strSelUnitNum = clsHeaderData.strUnitNum;
+            m_strSelProductName = clsHeaderData.strProductName;
+            m_strSelOrderImg = clsHeaderData.strOrderImg;
+            m_strSelFabricName = clsHeaderData.strFabricName;
+            m_strSelInspectionDate = clsHeaderData.strInspectionDate;
+            m_intSelInspectionNum = clsHeaderData.intInspectionNum;
+            m_intSelBranchNum = clsDecisionResult.intBranchNum;
+            m_strSelMarkingImagepath = clsDecisionResult.strMarkingImagepath;
 
             this.Visible = false;
 

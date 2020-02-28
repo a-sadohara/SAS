@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using static ImageChecker.Common;
@@ -21,20 +22,20 @@ namespace ImageChecker
         /// </summary>
         public int intDestination { get; set; }
 
-        // パラメータ関連
-        private string m_strUnitNum = string.Empty;               // 号機
-        private string m_strProductName = string.Empty;           // 品名
-        private string m_strOrderImg = string.Empty;              // 指図
-        private string m_strFabricName = string.Empty;            // 反番
-        private string m_strInspectionDate = string.Empty;        // 検査日付
-        private string m_strStartDatetime = string.Empty;         // 搬送開始日時
-        private string m_strEndDatetime = string.Empty;           // 搬送終了日時
-        private int m_intInspectionStartLine = -1;      // 検査開始行
-        private int m_intInspectionEndLine = -1;        // 最終行数
-        private int m_intInspectionTargetLine = -1;     // 検査対象数
-        private string m_strInspectionDirection = string.Empty;   // 検査方向
-        private int m_intInspectionNum = 0;             // 検査番号
-        private int m_intColumnCnt = 0;                 // 列数
+        // パラメータ関連（不変）
+        private readonly string m_strUnitNum = string.Empty;                    // 号機
+        private readonly string m_strProductName = string.Empty;                // 品名
+        private readonly string m_strOrderImg = string.Empty;                   // 指図
+        private readonly string m_strFabricName = string.Empty;                 // 反番
+        private readonly string m_strInspectionDate = string.Empty;             // 検査日付
+        private readonly string m_strStartDatetime = string.Empty;              // 搬送開始日時
+        private readonly string m_strEndDatetime = string.Empty;                // 搬送終了日時
+        private readonly int m_intInspectionStartLine = -1;                     // 検査開始行
+        private readonly int m_intInspectionEndLine = -1;                       // 最終行数
+        private readonly int m_intInspectionTargetLine = -1;                    // 検査対象数
+        private readonly string m_strInspectionDirection = string.Empty;        // 検査方向
+        private readonly int m_intInspectionNum = 0;                            // 検査番号
+        private readonly int m_intColumnCnt = 0;                                // 列数
 
         // 定数
         private const string m_CON_FORMAT_UNIT_NUM = "号機：{0}";
@@ -53,7 +54,8 @@ namespace ImageChecker
         private const string m_CON_FORMAT_CUSHION_COUNT = "クッション数：{0}(NG：{1}/OK：{2})";
 
         // 欠点画像サブディレクトリパス
-        private string m_strFaultImageSubDirectory = string.Empty;
+        private readonly string m_strFaultImageSubDirName = string.Empty;   // 欠点画像サブディレクトリ名
+        private readonly string m_strFaultImageSubDirPath = string.Empty;   // 欠点画像サブディレクトリパス
 
         // フラグ関連
         private bool m_bolRoadFlg = false;       // ロード済み　※true : フォームロード処理が正常完了
@@ -92,10 +94,13 @@ namespace ImageChecker
             intFirstDisplayedScrollingRowIdx = intFirstDisplayedScrollingRowIndex;
             intDestination = 0;
 
-            m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
-                                                           m_strProductName,
-                                                           m_strFabricName,
-                                                           m_intInspectionNum);
+            m_strFaultImageSubDirName = string.Join("_", m_strInspectionDate.Replace("/", ""),
+                                                         m_strProductName,
+                                                         m_strFabricName,
+                                                         m_intInspectionNum);
+
+            m_strFaultImageSubDirPath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
+                                                     m_strFaultImageSubDirName);
 
             InitializeComponent();
         }
@@ -270,9 +275,9 @@ namespace ImageChecker
 
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
-                    intImageInspectionCount = int.Parse(dtData.Rows[0]["image_inspection_count"].ToString());
-                    intImageInspectionCountNg = int.Parse(dtData.Rows[0]["image_inspection_count_ng"].ToString());
-                    intImageInspectionCountOk = int.Parse(dtData.Rows[0]["image_inspection_count_ok"].ToString());
+                    intImageInspectionCount = Convert.ToInt32(dtData.Rows[0]["image_inspection_count"]);
+                    intImageInspectionCountNg = Convert.ToInt32(dtData.Rows[0]["image_inspection_count_ng"]);
+                    intImageInspectionCountOk = Convert.ToInt32(dtData.Rows[0]["image_inspection_count_ok"]);
 
                     // ヘッダ表示
                     // 画像検査枚数
@@ -318,7 +323,7 @@ namespace ImageChecker
 
                     // クッション数を算出
                     intCushionInspectionCount = m_intColumnCnt * m_intInspectionTargetLine;
-                    intCushionInspectionCountNg = int.Parse(dtData.Rows[0]["cnt"].ToString());
+                    intCushionInspectionCountNg = Convert.ToInt32(dtData.Rows[0]["cnt"]);
                     intCushionInspectionCountOk = intCushionInspectionCount - intCushionInspectionCountNg;
 
                     // ヘッダ表示
@@ -393,12 +398,19 @@ namespace ImageChecker
                         arrRow.Add(string.Format(m_CON_FORMAT_NG_DISTANCE, row["ng_distance_x"].ToString(), row["ng_distance_y"].ToString()));
 
                         // 過検知除外結果：名称を表示
-                        if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon)
+                        if (Convert.ToInt32(row["over_detection_except_result"]) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon)
+                        {
                             stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNon;
-                        else if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
+                        }
+                        if (Convert.ToInt32(row["over_detection_except_result"]) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
+                        {
                             stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameOk;
-                        else if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
+                        }
+                        if (Convert.ToInt32(row["over_detection_except_result"]) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
+                        {
                             stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNg;
+                        }
+                            
                         arrRow.Add(stResultName);
 
                         arrRow.Add(row["ng_reason"]);
@@ -550,12 +562,10 @@ namespace ImageChecker
                 _clickSemaphore.Release();
             }
 
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                                                           m_strFaultImageSubDirectory + @"\" +
-                                                                           m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString(),
-                                                                           g_clsSystemSettingInfo.strFaultImageDirectory + @"\" +
-                                                                           m_strFaultImageSubDirectory + @"\" +
-                                                                           m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString());
+            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(m_strFaultImageSubDirName,
+                                                                                        m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
+                                                                           Path.Combine(m_strFaultImageSubDirName,
+                                                                                        m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
         }

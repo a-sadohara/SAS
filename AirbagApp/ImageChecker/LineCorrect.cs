@@ -11,16 +11,18 @@ namespace ImageChecker
         // 定義
         private const string m_CON_FORMAT_CORRECT = "補正値：{0}";
 
-        //パラメータ関連
-        private int m_intInspectionNum = 0;
-        private string m_strUnitNum = "";
-        private string m_strOrderImg = "";
-        private string m_strFabricName = "";
-        private string m_strProductName = "";
-        private string m_strInspectionDate = "";
-        private string m_strStartDatetime = "";
-        private string m_strEndDatetime = "";
+        // パラメータ関連（不変）
+        private readonly int m_intInspectionNum = 0;
+        private readonly string m_strUnitNum = "";
+        private readonly string m_strOrderImg = "";
+        private readonly string m_strFabricName = "";
+        private readonly string m_strProductName = "";
+        private readonly string m_strInspectionDate = "";
+        private readonly string m_strStartDatetime = "";
+        private readonly string m_strEndDatetime = "";
         private int m_intInspectionStartLine = -1;
+
+        // パラメータ関連（可変）
         private int m_intInspectionEndLine = -1;
         private int m_Correct = 0;
 
@@ -65,6 +67,32 @@ namespace ImageChecker
 
             this.StartPosition = FormStartPosition.CenterScreen;
         }
+
+        /// <summary>
+        /// 補正値表示
+        /// </summary>
+        private void DispCorrect(int intCorrect)
+        {
+            m_Correct += intCorrect;
+            m_intInspectionStartLine += intCorrect;
+            m_intInspectionEndLine += intCorrect;
+
+            if (m_Correct == 0)
+            {
+                lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, "±" + m_Correct.ToString());
+            }
+            if (m_Correct > 0)
+            {
+                lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, "+" + m_Correct.ToString());
+            }
+            if (m_Correct < 0)
+            {
+                lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, m_Correct.ToString());
+            }
+
+            lblInspectionLineAfter.Text = m_intInspectionStartLine.ToString() + "～" + m_intInspectionEndLine.ToString();
+        }
+
         #endregion
 
         #region イベント
@@ -93,7 +121,7 @@ namespace ImageChecker
             lblInspectionLineAfter.Text = m_intInspectionStartLine.ToString() + "～" + m_intInspectionEndLine.ToString();
 
             // マイナスにならないように無効にする
-            if (m_intInspectionStartLine + m_Correct <= 0)
+            if (m_intInspectionStartLine + m_Correct <= 1)
             {
                 btnMinus.Enabled = false;
             }
@@ -220,21 +248,10 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnMinus_Click(object sender, EventArgs e)
         {
-            m_Correct -= 1;
-            m_intInspectionStartLine -= 1;
-            m_intInspectionEndLine -= 1;
+            DispCorrect(-1);
 
-            if (m_Correct == 0)
-                lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, "±" + m_Correct.ToString());
-            else if (m_Correct > 0)
-                lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, "+" + m_Correct.ToString());
-            else
-                lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, m_Correct.ToString());
-
-            lblInspectionLineAfter.Text = m_intInspectionStartLine.ToString() + "～" + m_intInspectionEndLine.ToString();
-
-            // マイナスにならないように無効にする
-            if (m_intInspectionStartLine <= 0)
+            // 0にならないように無効にする
+            if (m_intInspectionStartLine <= 1)
             {
                 btnMinus.Enabled = false;
             }
@@ -247,21 +264,10 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnPlus_Click(object sender, EventArgs e)
         {
-            m_Correct += 1;
-            m_intInspectionStartLine += 1;
-            m_intInspectionEndLine += 1;
+            DispCorrect(1);
 
-            if (m_Correct == 0)
-                lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, "±" + m_Correct.ToString());
-            else if (m_Correct > 0)
-                lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, "+" + m_Correct.ToString());
-            else
-                lblCorrect.Text = string.Format(m_CON_FORMAT_CORRECT, m_Correct.ToString());
-
-            lblInspectionLineAfter.Text = m_intInspectionStartLine.ToString() + "～" + m_intInspectionEndLine.ToString();
-
-            // マイナスにはならないので有効にする
-            if (m_intInspectionStartLine > 0)
+            // 0にはならないので有効にする
+            if (m_intInspectionStartLine > 1)
             {
                 btnMinus.Enabled = true;
             }

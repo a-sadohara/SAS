@@ -55,9 +55,9 @@ namespace ImageChecker
         // データ保持関連
         private DataTable m_dtData;
 
-        // 選択行情報保持関連
+        // 選択行情報関連
         private int m_intSelBranchNum = -1;
-        private string m_strSelMarkingImagePath = string.Empty;
+        private string m_strSelMarkingImagepath = string.Empty;
 
         #region メソッド
         /// <summary>
@@ -273,6 +273,15 @@ namespace ImageChecker
 
                     this.dgvDecisionResult.Rows.Add(arrRow.ToArray());
 
+                    // 行選択
+                    if (m_intSelBranchNum != -1 &&
+                        Convert.ToInt32(m_dtData.Rows[i]["branch_num"]) == m_intSelBranchNum &&
+                        m_dtData.Rows[i]["marking_imagepath"].ToString() == m_strSelMarkingImagepath)
+                    {
+                        dgvDecisionResult.Rows[i].Selected = true;
+                        dgvDecisionResult.FirstDisplayedScrollingRowIndex = i;
+                    }
+
                     // 行列情報を保持
                     // 重複時はスキップ
                     if (lststrLineColumns.Contains(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"])) )
@@ -281,15 +290,6 @@ namespace ImageChecker
                     }
 
                     lststrLineColumns.Add(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"]));
-
-                    // 行選択
-                    if (m_intSelBranchNum != -1 && 
-                        Convert.ToInt32(m_dtData.Rows[i]["branch_num"]) == m_intSelBranchNum &&
-                        m_dtData.Rows[i]["marking_imagepath"].ToString() == m_strSelMarkingImagePath)
-                    {
-                        dgvDecisionResult.Rows[i].Selected = true;
-                        dgvDecisionResult.FirstDisplayedScrollingRowIndex = i;
-                    }
                 }
 
                 // 初期表示件数を保持
@@ -304,7 +304,7 @@ namespace ImageChecker
 
                 // 選択行情報初期化
                 m_intSelBranchNum = -1;
-                m_strSelMarkingImagePath = string.Empty;
+                m_strSelMarkingImagepath = string.Empty;
 
                 return true;
             }
@@ -629,7 +629,7 @@ namespace ImageChecker
             clsDecisionResult.strBeforeNgReason = m_dtData.Rows[intSelIdx]["before_ng_reason"].ToString();
 
             m_intSelBranchNum = clsDecisionResult.intBranchNum;
-            m_strSelMarkingImagePath = clsDecisionResult.strMarkingImagepath;
+            m_strSelMarkingImagepath = clsDecisionResult.strMarkingImagepath;
 
             this.Visible = false;
 

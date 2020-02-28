@@ -671,7 +671,6 @@ namespace ImageChecker
             int intInspectionStartLine = -1;
             int intInspectionEndLine = -1;
             int intInspectionNum = 0;
-            bool bolInspection = true;
 
             int intRow = -1;
 
@@ -684,10 +683,13 @@ namespace ImageChecker
                     break;
                 }
 
-                // 既に検査対象外の場合
-                if (int.Parse(m_dtData.Rows[intRow]["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
+                // 合否確認ステータス：検査終了の場合
+                if (Convert.ToInt32(m_dtData.Rows[intRow]["over_detection_except_status"]) == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
                 {
-                    bolInspection = false;
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0062, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
                 }
 
                 // パラメータの取得
@@ -712,8 +714,7 @@ namespace ImageChecker
                                                              strStartDatetime,
                                                              strEndDatetime,
                                                              intInspectionStartLine,
-                                                             intInspectionEndLine,
-                                                             bolInspection);
+                                                             intInspectionEndLine);
                 frmCheckExcept.ShowDialog(this);
 
                 // 連携処理をして画面表示
