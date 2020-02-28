@@ -280,6 +280,9 @@ namespace ImageChecker
                     {
                         dgvDecisionResult.Rows[i].Selected = true;
                         dgvDecisionResult.FirstDisplayedScrollingRowIndex = i;
+
+                        // 以降の行は探さない
+                        m_intSelBranchNum = -1;
                     }
 
                     // 行列情報を保持

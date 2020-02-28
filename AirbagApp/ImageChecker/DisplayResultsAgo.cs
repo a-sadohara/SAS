@@ -352,6 +352,9 @@ namespace ImageChecker
                     {
                         dgvCheckInspectionHistory.Rows[i].Selected = true;
                         dgvCheckInspectionHistory.FirstDisplayedScrollingRowIndex = i;
+
+                        // 以降の行は探さない
+                        m_strSelUnitNum = string.Empty;
                     }
 
                     // 行列情報を保持
