@@ -55,9 +55,9 @@ namespace ImageChecker
         // データ保持関連
         private DataTable m_dtData;
 
-        // 選択行保持
-        private int m_intSelIdx = -1;
-        private int m_intFirstDisplayedScrollingRowIdx = -1;
+        // 選択行情報保持関連
+        private int m_intSelBranchNum = -1;
+        private string m_strSelMarkingImagePath = string.Empty;
 
         #region メソッド
         /// <summary>
@@ -208,7 +208,7 @@ namespace ImageChecker
                 g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL, lstNpgsqlCommand);
 
                 // データグリッドに反映
-                foreach (DataRow row in m_dtData.Rows)
+                for (int i = 0; i <= m_dtData.Rows.Count - 1; i++)
                 {
                     arrRow = new ArrayList();
 
@@ -216,23 +216,23 @@ namespace ImageChecker
                     arrRow.Add(this.dgvDecisionResult.Rows.Count + 1);
 
                     // SQL抽出項目
-                    arrRow.Add(row["line"]);
-                    arrRow.Add(row["cloumns"]);
-                    arrRow.Add(row["ng_face"]);
-                    arrRow.Add(string.Format(m_CON_FORMAT_NG_DISTANCE, row["ng_distance_x"].ToString(), row["ng_distance_y"].ToString()));
+                    arrRow.Add(m_dtData.Rows[i]["line"]);
+                    arrRow.Add(m_dtData.Rows[i]["cloumns"]);
+                    arrRow.Add(m_dtData.Rows[i]["ng_face"]);
+                    arrRow.Add(string.Format(m_CON_FORMAT_NG_DISTANCE, m_dtData.Rows[i]["ng_distance_x"].ToString(), m_dtData.Rows[i]["ng_distance_y"].ToString()));
 
                     // 過検知除外結果：名称を表示
-                    if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon)
+                    if (int.Parse(m_dtData.Rows[i]["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon)
                     {
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNon;
                     }
 
-                    if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
+                    if (int.Parse(m_dtData.Rows[i]["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultOk)
                     {
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameOk;
                     }
 
-                    if (int.Parse(row["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
+                    if (int.Parse(m_dtData.Rows[i]["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNg)
                     {
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNg;
                     }
@@ -240,47 +240,56 @@ namespace ImageChecker
                     arrRow.Add(stResultName);
 
                     // 合否確認結果：名称を表示
-                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNon)
+                    if (int.Parse(m_dtData.Rows[i]["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNon)
                     {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNon;
                     }
 
-                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultOk)
+                    if (int.Parse(m_dtData.Rows[i]["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultOk)
                     {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameOk;
                     }
 
-                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect)
+                    if (int.Parse(m_dtData.Rows[i]["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect)
                     {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNgDetect;
                     }
 
-                    if (int.Parse(row["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect)
+                    if (int.Parse(m_dtData.Rows[i]["acceptance_check_result"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect)
                     {
                         stResultName = g_clsSystemSettingInfo.strAcceptanceCheckResultNameNgNonDetect;
                     }
 
                     arrRow.Add(stResultName);
 
-                    arrRow.Add(row["ng_reason"]);
-                    arrRow.Add(row["over_detection_except_datetime"]);
-                    arrRow.Add(row["over_detection_except_worker"]);
-                    arrRow.Add(row["acceptance_check_datetime"]);
-                    arrRow.Add(row["acceptance_check_worker"]);
-                    arrRow.Add(row["result_update_datetime"]);
-                    arrRow.Add(row["result_update_worker"]);
-                    arrRow.Add(row["before_ng_reason"]);
+                    arrRow.Add(m_dtData.Rows[i]["ng_reason"]);
+                    arrRow.Add(m_dtData.Rows[i]["over_detection_except_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["over_detection_except_worker"]);
+                    arrRow.Add(m_dtData.Rows[i]["acceptance_check_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["acceptance_check_worker"]);
+                    arrRow.Add(m_dtData.Rows[i]["result_update_datetime"]);
+                    arrRow.Add(m_dtData.Rows[i]["result_update_worker"]);
+                    arrRow.Add(m_dtData.Rows[i]["before_ng_reason"]);
 
                     this.dgvDecisionResult.Rows.Add(arrRow.ToArray());
 
                     // 行列情報を保持
                     // 重複時はスキップ
-                    if (lststrLineColumns.Contains(string.Join("|", row["line"], row["cloumns"])) )
+                    if (lststrLineColumns.Contains(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"])) )
                     {
                         continue;
                     }
 
-                    lststrLineColumns.Add(string.Join("|", row["line"], row["cloumns"]));
+                    lststrLineColumns.Add(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"]));
+
+                    // 行選択
+                    if (m_intSelBranchNum != -1 && 
+                        Convert.ToInt32(m_dtData.Rows[i]["branch_num"]) == m_intSelBranchNum &&
+                        m_dtData.Rows[i]["marking_imagepath"].ToString() == m_strSelMarkingImagePath)
+                    {
+                        dgvDecisionResult.Rows[i].Selected = true;
+                        dgvDecisionResult.FirstDisplayedScrollingRowIndex = i;
+                    }
                 }
 
                 // 初期表示件数を保持
@@ -293,21 +302,9 @@ namespace ImageChecker
                 lblImageSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, m_dtData.Rows.Count, m_intCountInit);
                 lblCushionSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, lststrLineColumns.Count, m_intColumnCnt * m_intInspectionTargetLine);
 
-                // 行選択
-                if (m_intSelIdx != -1)
-                {
-                    this.dgvDecisionResult.Rows[m_intSelIdx].Selected = true;
-                }
-
-                // スクロールバー調整
-                if (m_intFirstDisplayedScrollingRowIdx != -1)
-                {
-                    this.dgvDecisionResult.FirstDisplayedScrollingRowIndex = m_intFirstDisplayedScrollingRowIdx;
-                }
-
-                // 初期化
-                m_intSelIdx = -1;
-                m_intFirstDisplayedScrollingRowIdx = -1;
+                // 選択行情報初期化
+                m_intSelBranchNum = -1;
+                m_strSelMarkingImagePath = string.Empty;
 
                 return true;
             }
@@ -631,8 +628,8 @@ namespace ImageChecker
             clsDecisionResult.strResultUpdateWorker = m_dtData.Rows[intSelIdx]["result_update_worker"].ToString();
             clsDecisionResult.strBeforeNgReason = m_dtData.Rows[intSelIdx]["before_ng_reason"].ToString();
 
-            m_intSelIdx = intSelIdx;
-            m_intFirstDisplayedScrollingRowIdx = this.dgvDecisionResult.FirstDisplayedScrollingRowIndex;
+            m_intSelBranchNum = clsDecisionResult.intBranchNum;
+            m_strSelMarkingImagePath = clsDecisionResult.strMarkingImagepath;
 
             this.Visible = false;
 
