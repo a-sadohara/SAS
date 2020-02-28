@@ -562,9 +562,9 @@ namespace ImageChecker
                 _clickSemaphore.Release();
             }
 
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(m_strFaultImageSubDirName,
+            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(m_strFaultImageSubDirPath,
                                                                                         m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
-                                                                           Path.Combine(m_strFaultImageSubDirName,
+                                                                           Path.Combine(m_strFaultImageSubDirPath,
                                                                                         m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
