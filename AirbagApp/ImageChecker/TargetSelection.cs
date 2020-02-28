@@ -72,8 +72,8 @@ namespace ImageChecker
             {
 
                 // ZIPファイルを一時ZIP解凍用格納先ディレクトリにコピーする
-                File.Copy(Path.Combine( g_clsSystemSettingInfo.strNgImageCooperationDirectory , strFaultImage + ".zip"),
-                          Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"),true);
+                File.Copy(Path.Combine(g_clsSystemSettingInfo.strNgImageCooperationDirectory, strFaultImage + ".zip"),
+                          Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"), true);
 
                 // 欠点画像ZIPファイルの解凍
                 ZipFile.ExtractToDirectory(Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"),
@@ -87,7 +87,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040 , Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
 
                 return false;
             }
@@ -134,7 +134,7 @@ namespace ImageChecker
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "InspectionResult";
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
             }
-            
+
             try
             {
                 // SQL抽出
@@ -425,7 +425,7 @@ namespace ImageChecker
                         btnCellInspectionResult.Enabled = false;
                     }
                 }
-                
+
                 // 行選択
                 if (m_intSelRowIdx != -1)
                 {
@@ -554,7 +554,7 @@ namespace ImageChecker
                 clsHeaderData.intOverDetectionExceptStatus = int.Parse(m_dtData.Rows[e.RowIndex]["over_detection_except_status"].ToString());
                 clsHeaderData.intAcceptanceCheckStatus = int.Parse(m_dtData.Rows[e.RowIndex]["acceptance_check_status"].ToString());
                 clsHeaderData.intColumnCnt = int.Parse(m_dtData.Rows[e.RowIndex]["column_cnt"].ToString());
-                clsHeaderData.strAirbagImagepath = g_strMasterImageDirPath + Path.DirectorySeparatorChar + 
+                clsHeaderData.strAirbagImagepath = g_strMasterImageDirPath + Path.DirectorySeparatorChar +
                                                    Path.GetFileName(m_dtData.Rows[e.RowIndex]["airbag_imagepath"].ToString());
 
                 strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", ""),
@@ -671,6 +671,7 @@ namespace ImageChecker
             int intInspectionStartLine = -1;
             int intInspectionEndLine = -1;
             int intInspectionNum = 0;
+            bool bolInspection = true;
 
             int intRow = -1;
 
@@ -684,12 +685,18 @@ namespace ImageChecker
                 }
 
                 // 合否確認ステータス：検査終了の場合
-                if (Convert.ToInt32(m_dtData.Rows[intRow]["over_detection_except_status"]) == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
+                if (Convert.ToInt32(m_dtData.Rows[intRow]["acceptance_check_status"]) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
                 {
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0062, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
+                }
+
+                // 既に検査対象外の場合
+                if (int.Parse(m_dtData.Rows[intRow]["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
+                {
+                    bolInspection = false;
                 }
 
                 // パラメータの取得
@@ -714,7 +721,8 @@ namespace ImageChecker
                                                              strStartDatetime,
                                                              strEndDatetime,
                                                              intInspectionStartLine,
-                                                             intInspectionEndLine);
+                                                             intInspectionEndLine,
+                                                             bolInspection);
                 frmCheckExcept.ShowDialog(this);
 
                 // 連携処理をして画面表示
@@ -800,7 +808,7 @@ namespace ImageChecker
         private async void TargetSelection_Activated(object sender, EventArgs e)
         {
             this.SuspendLayout();
-            if(datetimePrevReplicate != DateTime.MinValue &&
+            if (datetimePrevReplicate != DateTime.MinValue &&
                 datetimePrevReplicate > DateTime.Now)
             {
                 // 連携基盤部との前回連携から5分以内の場合は、処理しない
@@ -817,7 +825,7 @@ namespace ImageChecker
             frmProgress.StartPosition = FormStartPosition.CenterScreen;
             frmProgress.Size = this.Size;
             frmProgress.Show(this);
-            
+
             // 連携基盤部連携ファイルの取込処理
             string[] strSplitFileName = new string[0];
             string strFileName = "";
@@ -903,7 +911,7 @@ namespace ImageChecker
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 , Environment.NewLine , ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                         // メッセージ出力
                         MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -913,7 +921,7 @@ namespace ImageChecker
 
                     // 欠点画像の取込み処理
                     // フォルダの存在チェック
-                    if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,strFaultImageSubDirectory)) == false)
+                    if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImageSubDirectory)) == false)
                     {
                         lstTask.Add(Task<Boolean>.Run(() => BolImpFatalImage(strFaultImageSubDirectory)));
                         System.Threading.Thread.Sleep(1000);
@@ -988,12 +996,12 @@ namespace ImageChecker
                         g_clsConnectionNpgsql.DbRollback();
 
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
                         // メッセージ出力
                         MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         frmProgress.Close();
-                        return; 
+                        return;
                     }
 
                     try
@@ -1098,7 +1106,7 @@ namespace ImageChecker
                         g_clsConnectionNpgsql.DbRollback();
 
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
                         // メッセージ出力
                         MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0039, strFabricName, intInspectionNum), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1114,7 +1122,7 @@ namespace ImageChecker
                     if (!tsk.Result)
                     {
                         // メッセージ出力
-                        MessageBox.Show( g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         frmProgress.Close();
                         return;
                     }
@@ -1128,14 +1136,14 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0058 , Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0058, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0059, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
                 frmProgress.Close();
-              
+
             }
 
             // データグリッドビュー表示
