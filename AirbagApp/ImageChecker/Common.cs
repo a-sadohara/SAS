@@ -1,9 +1,7 @@
 ﻿using ImageChecker.DTO;
 using log4net;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;

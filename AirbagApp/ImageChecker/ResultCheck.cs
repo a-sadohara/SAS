@@ -89,6 +89,8 @@ namespace ImageChecker
         private const string m_CON_CAMERA_NO_14 = "14";
         private const string m_CON_CAMERA_NO_20 = "20";
         private const string m_CON_CAMERA_NO_26 = "26";
+        private const int m_CON_PAGE_WAY_L = -1;
+        private const int m_CON_PAGE_WAY_R = 1;
 
         #region メソッド
         /// <summary>
@@ -214,7 +216,8 @@ namespace ImageChecker
         /// 画像表示
         /// </summary>
         /// <param name="intPageIdx"></param>
-        private bool bolDispImageInfo(int intPageIdx)
+        /// <param name="intPageWay">遷移方向(-1:左 1:右)</param>
+        private bool bolDispImageInfo(int intPageIdx, int intPageWay)
         {
             string strMarkingImagepath = string.Empty;
             string strImagePath = string.Empty;
@@ -227,14 +230,18 @@ namespace ImageChecker
             Graphics gra;
             Pen pen;
             string strMarkingFilePath;
+            bool bolExistsImageFile = true;
             string strSQL = string.Empty;
             DataTable dtData;
+            bool bolMovecoercive = false;
+            int intSkipCnt = 0;
+            string strMsg = string.Empty;
 
             try
             {
                 // 画像パス
                 strMarkingImagepath = m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString();
-                strImagePath = Path.Combine(m_strFaultImageSubDirPath, strMarkingImagepath);
+                strImagePath = strGetMarkingImagePathForPage(intPageIdx);
 
                 // マスタ位置
                 strMasterPoint = m_dtData.Rows[intPageIdx]["master_point"].ToString().Split(',');
@@ -266,6 +273,7 @@ namespace ImageChecker
                 if (File.Exists(strImagePath) == false)
                 {
                     fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                    bolExistsImageFile = false;
                 }
                 else
                 {
@@ -323,6 +331,26 @@ namespace ImageChecker
                 else
                 {
                     btnBackPage.Enabled = true;
+                }
+
+                // 画像イメージが存在しない場合はメッセージを表示し、スキップする
+                if (bolExistsImageFile == false)
+                {
+                    switch (intPageWay)
+                    {
+                        case m_CON_PAGE_WAY_R:
+                            strMsg = g_clsMessageInfo.strMsgW0007;
+                            break;
+                        case m_CON_PAGE_WAY_L:
+                            strMsg = g_clsMessageInfo.strMsgW0008;
+                            break;
+                    }
+
+                    // メッセージ出力
+                    MessageBox.Show(strMsg, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    bolMovecoercive = true;
+                    return true;
                 }
 
                 // 複写登録がある場合は子画面を表示する
@@ -428,6 +456,14 @@ namespace ImageChecker
                 MessageBox.Show(g_clsMessageInfo.strMsgE0021, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
+            }
+            finally
+            {
+                // 強制移動
+                if (bolMovecoercive == true)
+                {
+                    bolNextPage();
+                }
             }
         }
 
@@ -669,8 +705,7 @@ namespace ImageChecker
                                 , acceptance_check_result = :acceptance_check_result ";
 
                 if (m_intFromApId == 0 ||
-                    (Convert.ToInt32(m_dtData.Rows[m_intPageIdx]["over_detection_except_result"]) == g_clsSystemSettingInfo.intOverDetectionExceptResultNon &&
-                     Convert.ToInt32(m_dtData.Rows[m_intPageIdx]["acceptance_check_result"]) == g_clsSystemSettingInfo.intAcceptanceCheckResultNon))
+                    Convert.ToInt32(m_dtData.Rows[m_intPageIdx]["acceptance_check_result"]) == g_clsSystemSettingInfo.intAcceptanceCheckResultNon)
                 {
                     // 新規登録　もしくは　未検知画像追加分
                     strSQL += @", acceptance_check_datetime = current_timestamp
@@ -780,7 +815,7 @@ namespace ImageChecker
                 // ページカウントアップ
                 m_intPageIdx++;
                 // 画像表示
-                bolDispImageInfo(m_intPageIdx);
+                bolDispImageInfo(m_intPageIdx, m_CON_PAGE_WAY_R);
 
                 return true;
             }
@@ -831,7 +866,26 @@ namespace ImageChecker
             this.Visible = true;  
 
             // 画像表示
-            bolDispImageInfo(m_intPageIdx);
+            bolDispImageInfo(m_intPageIdx, m_CON_PAGE_WAY_R);
+
+            return true;
+        }
+
+        /// <summary>
+        /// 次ページ
+        /// </summary>
+        /// <returns>true:以降も表示する false:以降は表示しない</returns>
+        private bool bolBackPage()
+        {
+
+            // ページカウントダウン
+            m_intPageIdx--;
+
+            // 画像表示
+            if (bolDispImageInfo(m_intPageIdx, m_CON_PAGE_WAY_L) == false)
+            {
+                return false;
+            }
 
             return true;
         }
@@ -942,6 +996,16 @@ namespace ImageChecker
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// 指定ページに追加されているマーキング画像パスを取得
+        /// </summary>
+        /// <returns></returns>
+        private string strGetMarkingImagePathForPage(int intPageIdx)
+        {
+            return Path.Combine(m_strFaultImageSubDirPath,
+                                m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString());
         }
         #endregion
 
@@ -1081,16 +1145,6 @@ namespace ImageChecker
                     }
                 }
 
-                // 全ての合否確認が済んでいなければ画面を表示
-                if (m_intPageIdx <= m_dtData.Rows.Count - 1)
-                {
-                    // 画像情報表示
-                    if (bolDispImageInfo(m_intPageIdx) == false)
-                    {
-                        return;
-                    }
-                }
-
                 if (m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusBef ||
                     m_intAcceptanceCheckStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
                 {
@@ -1113,12 +1167,17 @@ namespace ImageChecker
                     m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
                 }
 
-                g_clsConnectionNpgsql.DbCommit();
-                g_clsConnectionNpgsql.DbClose();
-
-                // 全ての合否確認が済んでいれば判定登録画面に遷移
-                if (m_intPageIdx > m_dtData.Rows.Count - 1)
+                if (m_intPageIdx <= m_dtData.Rows.Count - 1)
                 {
+                	// 全ての合否確認が済んでいなければ画面を表示
+                    if (bolDispImageInfo(m_intPageIdx, m_CON_PAGE_WAY_R) == false)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    // 全ての合否確認が済んでいれば判定登録画面に遷移
                     if (bolNextPage() == false)
                     {
                         return;
@@ -1148,11 +1207,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnBackPage_Click(object sender, EventArgs e)
         {
-            // ページカウントダウン
-            m_intPageIdx--;
-
-            // 画像表示
-            bolDispImageInfo(m_intPageIdx);
+            bolBackPage();
         }
 
         /// <summary>
@@ -1208,8 +1263,7 @@ namespace ImageChecker
             // マーキング画像パスとオリジナル画像パスを取得
             strOrgImagepath = Path.Combine(m_strFaultImageSubDirPath,
                                            m_dtData.Rows[m_intPageIdx]["org_imagepath"].ToString());
-            strMarkingImagepath = Path.Combine(m_strFaultImageSubDirPath,
-                                               m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString());
+            strMarkingImagepath = strGetMarkingImagePathForPage(m_intPageIdx);
 
             // 画像拡大フォームを開く
             ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath);
@@ -1678,7 +1732,11 @@ namespace ImageChecker
                                  , master_point
                                  , TO_NUMBER(ng_distance_x,'9999')
                                  , TO_NUMBER(ng_distance_y,'9999')
-                                 , camera_num_1
+                                 , CASE
+                                     WHEN ng_face = '#1' THEN camera_num_1
+                                     WHEN ng_face = '#2' THEN camera_num_2
+                                     ELSE NULL
+                                   END 
                                  , worker_1
                                  , worker_2
                                  , :over_detection_except_result_non
@@ -1859,7 +1917,7 @@ namespace ImageChecker
                     m_dtData.Rows.InsertAt(drNew, m_intPageIdx);
 
                     // 画面表示
-                    if (bolDispImageInfo(m_intPageIdx) == false)
+                    if (bolDispImageInfo(m_intPageIdx, m_CON_PAGE_WAY_R) == false)
                     {
                         return;
                     }

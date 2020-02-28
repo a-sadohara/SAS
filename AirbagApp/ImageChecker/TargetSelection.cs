@@ -1045,7 +1045,11 @@ namespace ImageChecker
                                     , master_point
                                     , TO_NUMBER(ng_distance_x,'9999')
                                     , TO_NUMBER(ng_distance_y,'9999')
-                                    , camera_num_1
+                                    , CASE
+                                        WHEN ng_face = '#1' THEN camera_num_1
+                                        WHEN ng_face = '#2' THEN camera_num_2
+                                        ELSE NULL
+                                      END 
                                     , worker_1
                                     , worker_2
                                     , :over_detection_except_result_non
