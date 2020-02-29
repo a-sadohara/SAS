@@ -247,6 +247,20 @@
           <TablixMembers>
             <TablixMember>
               <Group Name="AcceptanceCheckDatetime" />
+              <SortExpressions>
+                <SortExpression>
+                  <Value>=Fields!Line.Value</Value>
+                </SortExpression>
+                <SortExpression>
+                  <Value>=Fields!Cloumns.Value</Value>
+                </SortExpression>
+                <SortExpression>
+                  <Value>=Fields!NgFace.Value</Value>
+                </SortExpression>
+                <SortExpression>
+                  <Value>=Fields!AcceptanceCheckDatetime.Value</Value>
+                </SortExpression>
+              </SortExpressions>
               <TablixHeader>
                 <Size>2.21835cm</Size>
                 <CellContents>
