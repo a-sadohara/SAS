@@ -9,13 +9,14 @@ namespace ImageChecker
 {
     public partial class ViewEnlargedimage : Form
     {
-        // パラメータ関連
-        string m_strOrgImagepath = "";
-        string m_strMarkingImagepath = "";
+        // パラメータ関連（不変）
+        private readonly string m_strOrgImagepath = string.Empty;
+        private readonly string m_strMarkingImagepath = string.Empty;
 
-        private int m_intDispMode = 1;      // 表示モード： 1:マーキング 2:オリジナル;
-        private const int m_CON_DISP_MODE_MRK = 1;
-        private const int m_CON_DISP_MODE_ORG = 2;
+        // 表示モード関連
+        private int m_intDispMode = 1;      
+        private const int m_CON_DISP_MODE_MRK = 1;      // 1:マーキング
+        private const int m_CON_DISP_MODE_ORG = 2;      // 2:オリジナル
 
         private readonly SemaphoreSlim _clickSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _doubleClickSemaphore = new SemaphoreSlim(0);
@@ -78,7 +79,7 @@ namespace ImageChecker
                 fs = new FileStream(m_strMarkingImagepath, FileMode.Open, FileAccess.Read);
             }
             
-            pictureBox1.Image = Image.FromStream(fs);
+            picImage.Image = Image.FromStream(fs);
             fs.Close();
 
             m_intDispMode = m_CON_DISP_MODE_MRK;
@@ -119,9 +120,11 @@ namespace ImageChecker
                 _clickSemaphore.Release();
             }
 
+            // オリジナル/マーキング切替
             FileStream fs;
             if (m_intDispMode == m_CON_DISP_MODE_ORG)
             {
+                // オリジナル
                 if (File.Exists(m_strMarkingImagepath) == false)
                 {
                     fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
@@ -129,7 +132,7 @@ namespace ImageChecker
                 else
                 {
                     fs = new FileStream(m_strMarkingImagepath, FileMode.Open, FileAccess.Read);
-                    pictureBox1.ImageLocation = m_strMarkingImagepath;
+                    this.picImage.ImageLocation = m_strMarkingImagepath;
                 }
                 
                 Image.FromStream(fs);
@@ -138,6 +141,7 @@ namespace ImageChecker
             }    
             else
             {
+                // マーキング
                 if (File.Exists(m_strOrgImagepath) == false)
                 {
                     fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
@@ -145,7 +149,7 @@ namespace ImageChecker
                 else
                 {
                     fs = new FileStream(m_strOrgImagepath, FileMode.Open, FileAccess.Read);
-                    pictureBox1.ImageLocation = m_strOrgImagepath;
+                    this.picImage.ImageLocation = m_strOrgImagepath;
                 }
                     
                 Image.FromStream(fs);
