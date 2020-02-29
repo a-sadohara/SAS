@@ -553,7 +553,7 @@ namespace ImageChecker
             // ディレクトリ存在チェック
             if (Directory.Exists(Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory ,  strFaultImageSubDirectory)) == false)
             {
-                MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
