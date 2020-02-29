@@ -238,7 +238,7 @@ namespace BeforeInspection
                 txtOrderImg.Enabled = false;
                 txtFabricName.Enabled = false;
                 txtInspectionTargetLine.Enabled = true;
-                txtInspectionStartLine.Enabled = false;
+                txtInspectionStartLine.Enabled = true;
                 txtWorker1.Enabled = true;
                 txtWorker2.Enabled = true;
                 btnStartDatetime.Enabled = false;
