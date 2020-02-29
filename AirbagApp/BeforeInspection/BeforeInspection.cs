@@ -460,16 +460,15 @@ namespace BeforeInspection
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSql, lstNpgsqlCommand);
 
-                // DBコミット
-                g_clsConnectionNpgsql.DbCommit();
-
                 // 撮像装置部へ連携用ファイル出力
-                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
+                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum, g_clsConnectionNpgsql) == false)
                 {
                     btnSet.Focus();
                     return false;
                 }
 
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
                 return true;
 
             }
@@ -523,19 +522,16 @@ namespace BeforeInspection
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSql, lstNpgsqlCommand);
 
-                // DBコミット
-                g_clsConnectionNpgsql.DbCommit();
 
                 // 撮像装置部へ連携用ファイル出力
-                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum) == false)
+                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum,g_clsConnectionNpgsql) == false)
                 {
-                    // ロールバック
-                    //g_clsConnectionNpgsql.DbRollback();
                     btnEndDatetime.Focus();
                     return false;
                 }
 
-
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
                 return true;
 
             }
@@ -747,7 +743,7 @@ namespace BeforeInspection
         /// <param name="intInspectionNum"></param>
         /// <param name="intBranchNum"></param>
         /// <returns></returns>
-        private bool bolOutFile(string strFabricName, int intInspectionNum, int intBranchNum)
+        private bool bolOutFile(string strFabricName, int intInspectionNum, int intBranchNum, ConnectionNpgsql objPgsqlConnect )
         {
             StreamWriter sw = null;
             string strSQL = string.Empty;
@@ -821,7 +817,7 @@ namespace BeforeInspection
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0037)).ShowDialog(this);
 
                 // DBロールバック
-                g_clsConnectionNpgsql.DbRollback();
+                objPgsqlConnect.DbRollback();
 
                 return false;
             }
