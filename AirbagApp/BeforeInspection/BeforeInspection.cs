@@ -1302,6 +1302,43 @@ namespace BeforeInspection
                 return;
             }
 
+            // 終了時刻が入力されている場合は検査終了処理を行う
+            if ((m_intStatus == g_clsSystemSettingInfo.intStatusEnd || m_intStatus == g_clsSystemSettingInfo.intStatusChk) &&
+                !string.IsNullOrEmpty(lblEndDatetime.Text))
+            {
+                // 枝番の取得
+                if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
+                {
+                    return;
+                }
+
+                // 検査情報ヘッダーの更新
+                if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
+                {
+                    return;
+                }
+
+                // 検査番号の取得
+                if (bolGetInspectionNum(out m_intInspectionNum) == false)
+                {
+                    return;
+                }
+
+                // 検査番号の表示
+                lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
+
+                // ステータスの表示設定(検査終了)
+                SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusEnd);
+
+                // 終了時刻の初期化
+                lblEndDatetime.Text = string.Empty;
+
+                // 次の反番情報を設定
+                btnNextFabric.Focus();
+
+                return;
+            }
+
             // 確認メッセージ出力
             DialogResult result = System.Windows.Forms.MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0008,
                                                                                      txtProductName.Text,
@@ -1331,7 +1368,6 @@ namespace BeforeInspection
                 {
                     return;
                 }
-
 
                 // 検査情報ヘッダーの登録
                 if (RegStartInspectionInfoHeader(m_intInspectionNum, 1) == false)
@@ -1427,7 +1463,6 @@ namespace BeforeInspection
                 txtInspectionTargetLine.Focus();
                 return;
             }
-
         }
 
         /// <summary>
@@ -1517,33 +1552,23 @@ namespace BeforeInspection
             // 終了時刻の表示
             lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
-            // 枝番の取得
-            if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
-            {
-                return;
-            }
-
-            // 検査情報ヘッダーの更新
-            if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text) == false)
-            {
-                return;
-            }
-
-            // 検査番号の取得
-            if (bolGetInspectionNum(out m_intInspectionNum) == false)
-            {
-                return;
-            }
-
-            // 検査番号の表示
-            lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
-
-            // ステータスの表示設定(検査終了)
-            SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusEnd);
-
-            // 次の反番情報を設定
-            btnNextFabric.Focus();
-
+            // 入力制御
+            txtProductName.Enabled = false;
+            txtOrderImg.Enabled = false;
+            txtFabricName.Enabled = false;
+            txtInspectionTargetLine.Enabled = false;
+            txtInspectionStartLine.Enabled = false;
+            txtWorker1.Enabled = false;
+            txtWorker2.Enabled = false;
+            btnStartDatetime.Enabled = false;
+            btnEndDatetime.Enabled = false;
+            btnInspectionDirectionS.Enabled = false;
+            btnInspectionDirectionX.Enabled = false;
+            btnInspectionDirectionY.Enabled = false;
+            btnInspectionDirectionR.Enabled = false;
+            btnInspectionStop.Enabled = false;
+            btnSet.Enabled = true;
+            btnNextFabric.Enabled = false;
         }
 
         /// <summary>
