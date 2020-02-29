@@ -10,8 +10,8 @@ namespace ImageChecker
     public partial class Login : Form
     {
         // 作業者情報選関連
-        public string m_strEmployeeNum;
-        public string m_strWorkerNm;
+        private string m_strEmployeeNum;
+        private string m_strWorkerNm;
 
         #region メソッド
         /// <summary>
@@ -298,6 +298,10 @@ namespace ImageChecker
             this.Refresh();
 
             this.Visible = true;
+
+            // ログイン情報初期化
+            m_strEmployeeNum = string.Empty;
+            m_strWorkerNm = string.Empty;
 
             // 一時ディレクトリ初期化
             Task<Boolean> tskCopyMstImg = Task.Run(() => bolInitializeTempDir());
