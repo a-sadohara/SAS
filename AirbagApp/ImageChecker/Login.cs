@@ -299,10 +299,6 @@ namespace ImageChecker
 
             this.Visible = true;
 
-            // ログイン情報初期化
-            m_strEmployeeNum = string.Empty;
-            m_strWorkerNm = string.Empty;
-
             // 一時ディレクトリ初期化
             Task<Boolean> tskCopyMstImg = Task.Run(() => bolInitializeTempDir());
 
