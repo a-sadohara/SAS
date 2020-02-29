@@ -21,6 +21,8 @@ namespace ImageChecker
         // パラメータ関連（可変）
         private HeaderData m_clsHeaderData;                                 // ヘッダ情報
         private DecisionResult m_clsDecisionResultCorrection;               // 検査結果情報(修正)
+        private string m_strDecisionEndTime = string.Empty;                 // 判定終了日時
+        private int m_intAcceptanceCheckStatus = 0;                         // 合否確認ステータス
 
         // パラメータ関連（不変）
         private readonly string  m_strUnitNum = string.Empty;               // 号機
@@ -38,10 +40,6 @@ namespace ImageChecker
         private readonly string m_strAirbagImagepath = string.Empty;        // エアバック画像ファイルパス
         private readonly int m_intColumnCnt = 0;                            // 列数
         private readonly int m_intFromApId = 0;                             // 遷移元画面ID
-
-        // 合否判定ステータス関連
-        private string m_strDecisionEndTime = string.Empty;                 // 判定終了日時
-        private int m_intAcceptanceCheckStatus = 0;                         // 合否確認ステータス
 
         // ディレクトリ関連
         private readonly string m_strFaultImageSubDirName = string.Empty;   // 欠点画像サブディレクトリ名

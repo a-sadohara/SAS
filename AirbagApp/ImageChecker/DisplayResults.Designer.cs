@@ -175,7 +175,7 @@
             this.lblNgReason.AutoSize = true;
             this.lblNgReason.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblNgReason.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgReason.Location = new System.Drawing.Point(220, 55);
+            this.lblNgReason.Location = new System.Drawing.Point(244, 55);
             this.lblNgReason.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgReason.Name = "lblNgReason";
             this.lblNgReason.Size = new System.Drawing.Size(57, 17);
@@ -185,10 +185,10 @@
             // txtNgReason
             // 
             this.txtNgReason.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtNgReason.Location = new System.Drawing.Point(281, 52);
+            this.txtNgReason.Location = new System.Drawing.Point(305, 52);
             this.txtNgReason.MaxLength = 16;
             this.txtNgReason.Name = "txtNgReason";
-            this.txtNgReason.Size = new System.Drawing.Size(183, 24);
+            this.txtNgReason.Size = new System.Drawing.Size(185, 24);
             this.txtNgReason.TabIndex = 26;
             this.txtNgReason.Text = "ＷＷＷＷＷＷＷＷＷＷＷＷＷＷＷＷ";
             this.txtNgReason.DoubleClick += new System.EventHandler(this.txtNgReason_DoubleClick);
@@ -198,7 +198,7 @@
             this.lblNgSide.AutoSize = true;
             this.lblNgSide.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblNgSide.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgSide.Location = new System.Drawing.Point(220, 29);
+            this.lblNgSide.Location = new System.Drawing.Point(244, 29);
             this.lblNgSide.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgSide.Name = "lblNgSide";
             this.lblNgSide.Size = new System.Drawing.Size(46, 17);
@@ -236,7 +236,7 @@
             this.txtWorkerName.Location = new System.Drawing.Point(89, 26);
             this.txtWorkerName.MaxLength = 10;
             this.txtWorkerName.Name = "txtWorkerName";
-            this.txtWorkerName.Size = new System.Drawing.Size(100, 24);
+            this.txtWorkerName.Size = new System.Drawing.Size(119, 24);
             this.txtWorkerName.TabIndex = 26;
             this.txtWorkerName.Text = "ＷＷＷＷＷＷＷＷＷＷ";
             this.txtWorkerName.DoubleClick += new System.EventHandler(this.txtWorkerName_DoubleClick);
@@ -247,7 +247,7 @@
             this.lblTitleSearchCushionCnt.AutoSize = true;
             this.lblTitleSearchCushionCnt.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleSearchCushionCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleSearchCushionCnt.Location = new System.Drawing.Point(248, 119);
+            this.lblTitleSearchCushionCnt.Location = new System.Drawing.Point(272, 119);
             this.lblTitleSearchCushionCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleSearchCushionCnt.Name = "lblTitleSearchCushionCnt";
             this.lblTitleSearchCushionCnt.Size = new System.Drawing.Size(85, 17);
@@ -271,7 +271,7 @@
             this.lblTitleSearchImageCnt.AutoSize = true;
             this.lblTitleSearchImageCnt.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleSearchImageCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleSearchImageCnt.Location = new System.Drawing.Point(248, 102);
+            this.lblTitleSearchImageCnt.Location = new System.Drawing.Point(272, 102);
             this.lblTitleSearchImageCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleSearchImageCnt.Name = "lblTitleSearchImageCnt";
             this.lblTitleSearchImageCnt.Size = new System.Drawing.Size(85, 17);
@@ -282,7 +282,7 @@
             // 
             this.lblCushionSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblCushionSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblCushionSearchCount.Location = new System.Drawing.Point(337, 119);
+            this.lblCushionSearchCount.Location = new System.Drawing.Point(361, 119);
             this.lblCushionSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCushionSearchCount.Name = "lblCushionSearchCount";
             this.lblCushionSearchCount.Size = new System.Drawing.Size(77, 17);
@@ -294,7 +294,7 @@
             // 
             this.lblImageSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblImageSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblImageSearchCount.Location = new System.Drawing.Point(337, 102);
+            this.lblImageSearchCount.Location = new System.Drawing.Point(361, 102);
             this.lblImageSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblImageSearchCount.Name = "lblImageSearchCount";
             this.lblImageSearchCount.Size = new System.Drawing.Size(77, 17);
@@ -307,7 +307,7 @@
             this.lblTitleSearchCnt.AutoSize = true;
             this.lblTitleSearchCnt.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleSearchCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleSearchCnt.Location = new System.Drawing.Point(220, 85);
+            this.lblTitleSearchCnt.Location = new System.Drawing.Point(244, 85);
             this.lblTitleSearchCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleSearchCnt.Name = "lblTitleSearchCnt";
             this.lblTitleSearchCnt.Size = new System.Drawing.Size(63, 17);
@@ -339,7 +339,7 @@
             "",
             "#1",
             "#2"});
-            this.cmbNgFace.Location = new System.Drawing.Point(281, 26);
+            this.cmbNgFace.Location = new System.Drawing.Point(305, 26);
             this.cmbNgFace.Name = "cmbNgFace";
             this.cmbNgFace.Size = new System.Drawing.Size(53, 25);
             this.cmbNgFace.TabIndex = 27;

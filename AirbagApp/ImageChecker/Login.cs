@@ -183,8 +183,6 @@ namespace ImageChecker
             await Task.WhenAll(tskCopyMstImg);
             if (!tskCopyMstImg.Result)
             {
-                // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -305,8 +303,6 @@ namespace ImageChecker
             await Task.WhenAll(tskCopyMstImg);
             if (!tskCopyMstImg.Result)
             {
-                // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }

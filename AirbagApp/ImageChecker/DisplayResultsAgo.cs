@@ -276,7 +276,6 @@ namespace ImageChecker
                     arrRow.Add(m_dtData.Rows[i]["fabric_name"]);
                     arrRow.Add(m_dtData.Rows[i]["start_datetime"]);
                     arrRow.Add(m_dtData.Rows[i]["end_datetime"]);
-                    arrRow.Add(m_dtData.Rows[i]["inspection_target_line"]);
                     arrRow.Add(string.Format(m_CON_FORMAT_INSPECTION_LINE, m_dtData.Rows[i]["inspection_start_line"], m_dtData.Rows[i]["inspection_end_line"]));
                     arrRow.Add(m_dtData.Rows[i]["decision_start_datetime"]);
                     arrRow.Add(m_dtData.Rows[i]["decision_end_datetime"]);

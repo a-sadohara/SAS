@@ -102,7 +102,6 @@
             this.FabricName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StartDatetime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EndDatetime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.InspectionTargetLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.InspectionLine = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DecisionStartDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DecisionEndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -145,13 +144,14 @@
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Margin = new System.Windows.Forms.Padding(0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(1102, 169);
+            this.pnlTop.Size = new System.Drawing.Size(1377, 169);
             this.pnlTop.TabIndex = 0;
             // 
             // btnSearch
             // 
+            this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSearch.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnSearch.Location = new System.Drawing.Point(968, 130);
+            this.btnSearch.Location = new System.Drawing.Point(1154, 131);
             this.btnSearch.Margin = new System.Windows.Forms.Padding(2);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(105, 36);
@@ -164,7 +164,7 @@
             // 
             this.btnLogout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLogout.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnLogout.Location = new System.Drawing.Point(984, 32);
+            this.btnLogout.Location = new System.Drawing.Point(1259, 32);
             this.btnLogout.Margin = new System.Windows.Forms.Padding(2);
             this.btnLogout.Name = "btnLogout";
             this.btnLogout.Size = new System.Drawing.Size(107, 36);
@@ -175,8 +175,8 @@
             // 
             // grbWhere
             // 
-            this.grbWhere.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.grbWhere.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grbWhere.Controls.Add(this.pnlWhere);
             this.grbWhere.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.grbWhere.ForeColor = System.Drawing.SystemColors.ControlLightLight;
@@ -184,7 +184,7 @@
             this.grbWhere.Margin = new System.Windows.Forms.Padding(0);
             this.grbWhere.Name = "grbWhere";
             this.grbWhere.Padding = new System.Windows.Forms.Padding(2);
-            this.grbWhere.Size = new System.Drawing.Size(944, 163);
+            this.grbWhere.Size = new System.Drawing.Size(1132, 163);
             this.grbWhere.TabIndex = 28;
             this.grbWhere.TabStop = false;
             this.grbWhere.Text = "検索条件";
@@ -197,16 +197,16 @@
             this.pnlWhere.Location = new System.Drawing.Point(2, 20);
             this.pnlWhere.Margin = new System.Windows.Forms.Padding(0);
             this.pnlWhere.Name = "pnlWhere";
-            this.pnlWhere.Size = new System.Drawing.Size(940, 141);
+            this.pnlWhere.Size = new System.Drawing.Size(1128, 141);
             this.pnlWhere.TabIndex = 0;
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.18105F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.81895F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 136F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 218F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 24.73445F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75.26556F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 211F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 282F));
             this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel4, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
@@ -217,7 +217,7 @@
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 141F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(940, 141);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1128, 141);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // panel2
@@ -243,10 +243,10 @@
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.label6);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(135, 0);
+            this.panel2.Location = new System.Drawing.Point(157, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(450, 141);
+            this.panel2.Size = new System.Drawing.Size(477, 141);
             this.panel2.TabIndex = 28;
             // 
             // lblHansoStaDate
@@ -528,10 +528,10 @@
             this.panel4.Controls.Add(this.lblImageSearchCount);
             this.panel4.Controls.Add(this.cmbNgFace);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(721, 0);
+            this.panel4.Location = new System.Drawing.Point(845, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(219, 141);
+            this.panel4.Size = new System.Drawing.Size(283, 141);
             this.panel4.TabIndex = 28;
             // 
             // lblNgSide
@@ -566,7 +566,7 @@
             this.txtNgReason.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtNgReason.MaxLength = 16;
             this.txtNgReason.Name = "txtNgReason";
-            this.txtNgReason.Size = new System.Drawing.Size(148, 24);
+            this.txtNgReason.Size = new System.Drawing.Size(185, 24);
             this.txtNgReason.TabIndex = 20;
             this.txtNgReason.Text = "WWWWWWWWWWWWWWWW";
             this.txtNgReason.DoubleClick += new System.EventHandler(this.txtNgReason_DoubleClick);
@@ -661,7 +661,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(135, 141);
+            this.panel1.Size = new System.Drawing.Size(157, 141);
             this.panel1.TabIndex = 28;
             // 
             // lblGoki
@@ -779,10 +779,10 @@
             this.panel3.Controls.Add(this.lblTitleUserNm);
             this.panel3.Controls.Add(this.cmbColumns);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(585, 0);
+            this.panel3.Location = new System.Drawing.Point(634, 0);
             this.panel3.Margin = new System.Windows.Forms.Padding(0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(136, 141);
+            this.panel3.Size = new System.Drawing.Size(211, 141);
             this.panel3.TabIndex = 28;
             // 
             // lblKensaNo
@@ -805,7 +805,7 @@
             this.txtInspectionNum.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtInspectionNum.MaxLength = 8;
             this.txtInspectionNum.Name = "txtInspectionNum";
-            this.txtInspectionNum.Size = new System.Drawing.Size(20, 24);
+            this.txtInspectionNum.Size = new System.Drawing.Size(35, 24);
             this.txtInspectionNum.TabIndex = 15;
             this.txtInspectionNum.Text = "99";
             this.txtInspectionNum.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtNumber_KeyPress);
@@ -842,9 +842,9 @@
             this.txtWorkerName.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtWorkerName.MaxLength = 20;
             this.txtWorkerName.Name = "txtWorkerName";
-            this.txtWorkerName.Size = new System.Drawing.Size(85, 24);
+            this.txtWorkerName.Size = new System.Drawing.Size(118, 24);
             this.txtWorkerName.TabIndex = 16;
-            this.txtWorkerName.Text = "ＷＷＷＷＷＷＷ";
+            this.txtWorkerName.Text = "ＷＷＷＷＷＷＷWWW";
             this.txtWorkerName.DoubleClick += new System.EventHandler(this.txtWorkerName_DoubleClick);
             this.txtWorkerName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWorkerName_KeyPress);
             // 
@@ -899,7 +899,7 @@
             this.lblWorkerName.AutoSize = true;
             this.lblWorkerName.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblWorkerName.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblWorkerName.Location = new System.Drawing.Point(791, 11);
+            this.lblWorkerName.Location = new System.Drawing.Point(1066, 11);
             this.lblWorkerName.Margin = new System.Windows.Forms.Padding(2);
             this.lblWorkerName.MaximumSize = new System.Drawing.Size(300, 0);
             this.lblWorkerName.MinimumSize = new System.Drawing.Size(300, 0);
@@ -918,14 +918,14 @@
             this.pnlBottom.Location = new System.Drawing.Point(0, 421);
             this.pnlBottom.Margin = new System.Windows.Forms.Padding(2);
             this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(1102, 78);
+            this.pnlBottom.Size = new System.Drawing.Size(1377, 78);
             this.pnlBottom.TabIndex = 3;
             // 
             // btnResultUpdate
             // 
             this.btnResultUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnResultUpdate.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnResultUpdate.Location = new System.Drawing.Point(957, 13);
+            this.btnResultUpdate.Location = new System.Drawing.Point(1232, 13);
             this.btnResultUpdate.Margin = new System.Windows.Forms.Padding(2);
             this.btnResultUpdate.Name = "btnResultUpdate";
             this.btnResultUpdate.Size = new System.Drawing.Size(127, 54);
@@ -960,7 +960,7 @@
             // 
             this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.pnlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlRight.Location = new System.Drawing.Point(1082, 169);
+            this.pnlRight.Location = new System.Drawing.Point(1357, 169);
             this.pnlRight.Margin = new System.Windows.Forms.Padding(2);
             this.pnlRight.Name = "pnlRight";
             this.pnlRight.Size = new System.Drawing.Size(20, 252);
@@ -974,7 +974,7 @@
             this.panel6.Location = new System.Drawing.Point(20, 169);
             this.panel6.Margin = new System.Windows.Forms.Padding(2);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1062, 252);
+            this.panel6.Size = new System.Drawing.Size(1337, 252);
             this.panel6.TabIndex = 6;
             // 
             // dgvCheckInspectionHistory
@@ -998,7 +998,6 @@
             this.FabricName,
             this.StartDatetime,
             this.EndDatetime,
-            this.InspectionTargetLine,
             this.InspectionLine,
             this.DecisionStartDate,
             this.DecisionEndDate,
@@ -1048,7 +1047,7 @@
             this.dgvCheckInspectionHistory.RowTemplate.ReadOnly = true;
             this.dgvCheckInspectionHistory.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvCheckInspectionHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvCheckInspectionHistory.Size = new System.Drawing.Size(1062, 252);
+            this.dgvCheckInspectionHistory.Size = new System.Drawing.Size(1337, 252);
             this.dgvCheckInspectionHistory.TabIndex = 0;
             this.dgvCheckInspectionHistory.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCheckInspectionHistory_CellClick);
             this.dgvCheckInspectionHistory.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dgvCheckInspectionHistory_MouseDown);
@@ -1103,18 +1102,12 @@
             this.EndDatetime.ReadOnly = true;
             this.EndDatetime.Width = 210;
             // 
-            // InspectionTargetLine
-            // 
-            this.InspectionTargetLine.HeaderText = "検査対象数";
-            this.InspectionTargetLine.Name = "InspectionTargetLine";
-            this.InspectionTargetLine.ReadOnly = true;
-            this.InspectionTargetLine.Width = 120;
-            // 
             // InspectionLine
             // 
             this.InspectionLine.HeaderText = "検査範囲行";
             this.InspectionLine.Name = "InspectionLine";
             this.InspectionLine.ReadOnly = true;
+            this.InspectionLine.Width = 120;
             // 
             // DecisionStartDate
             // 
@@ -1239,7 +1232,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1102, 499);
+            this.ClientSize = new System.Drawing.Size(1377, 499);
             this.Controls.Add(this.panel6);
             this.Controls.Add(this.pnlRight);
             this.Controls.Add(this.pnlLeft);
@@ -1343,7 +1336,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn FabricName;
         private System.Windows.Forms.DataGridViewTextBoxColumn StartDatetime;
         private System.Windows.Forms.DataGridViewTextBoxColumn EndDatetime;
-        private System.Windows.Forms.DataGridViewTextBoxColumn InspectionTargetLine;
         private System.Windows.Forms.DataGridViewTextBoxColumn InspectionLine;
         private System.Windows.Forms.DataGridViewTextBoxColumn DecisionStartDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn DecisionEndDate;

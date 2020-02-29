@@ -25,26 +25,28 @@ namespace ImageChecker
         // 判定結果情報
         public DecisionResult clsDecisionResult { get; set; }
 
-        // パラメータ関連
-        private HeaderData m_clsHeaderData;                         // ヘッダ情報
-        private string m_strUnitNum = string.Empty;                 // 号機
-        private string m_strProductName = string.Empty;             // 品名
-        private string m_strOrderImg = string.Empty;                // 指図
-        private string m_strFabricName = string.Empty;              // 反番
-        private string m_strInspectionDate = string.Empty;          // 検査日付
-        private string m_strStartDatetime = string.Empty;           // 搬送開始日時
-        private string m_strEndDatetime = string.Empty;             // 搬送終了日時
-        private int m_intInspectionStartLine = -1;                  // 検査開始行
-        private int m_intInspectionEndLine = -1;                    // 最終行数
-        private int m_intInspectionTargetLine = -1;                 // 検査対象数
-        private string m_strDecisionStartTime = string.Empty;       // 判定開始日時
-        private string m_strDecisionEndTime = string.Empty;         // 判定終了日時
-        private string m_strInspectionDirection = string.Empty;     // 検査方向
-        private int m_intInspectionNum = 0;                         // 検査番号
-        private int m_intAcceptanceCheckStatus = 0;                 // 合否確認ステータス
-        private int m_intColumnCnt = 0;                             // 列数
-        private int m_intNgCushionCount = 0;                        // NGクッション数
-        private int m_intFromApId = 0;                              // 遷移元画面ID
+        // パラメータ関連（可変）
+        private HeaderData m_clsHeaderData;                                 // ヘッダ情報
+        private int m_intAcceptanceCheckStatus = 0;                         // 合否確認ステータス
+        private string m_strDecisionEndTime = string.Empty;                 // 判定終了日時
+        private int m_intNgCushionCount = 0;                                // NGクッション数
+
+        // パラメータ関連（不変）
+        private readonly string m_strUnitNum = string.Empty;                // 号機
+        private readonly string m_strProductName = string.Empty;            // 品名
+        private readonly string m_strOrderImg = string.Empty;               // 指図
+        private readonly string m_strFabricName = string.Empty;             // 反番
+        private readonly string m_strInspectionDate = string.Empty;         // 検査日付
+        private readonly string m_strStartDatetime = string.Empty;          // 搬送開始日時
+        private readonly string m_strEndDatetime = string.Empty;            // 搬送終了日時
+        private readonly int m_intInspectionStartLine = -1;                 // 検査開始行
+        private readonly int m_intInspectionEndLine = -1;                   // 最終行数
+        private readonly int m_intInspectionTargetLine = -1;                // 検査対象数
+        private readonly string m_strDecisionStartTime = string.Empty;      // 判定開始日時
+        private readonly string m_strInspectionDirection = string.Empty;    // 検査方向
+        private readonly int m_intInspectionNum = 0;                        // 検査番号
+        private readonly int m_intColumnCnt = 0;                            // 列数
+        private readonly int m_intFromApId = 0;                             // 遷移元画面ID
 
         // 定数
         private const string m_CON_FORMAT_UNIT_NUM = "号機：{0}";
@@ -64,7 +66,7 @@ namespace ImageChecker
         private const string m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME = "{0}_N.csv";
 
         // 欠点画像サブディレクトリパス
-        private string m_strFaultImageSubDirectory = string.Empty;
+        private readonly string m_strFaultImageSubDirectory = string.Empty;
 
         // 判定終了日時（仮）　※判定登録でDBに登録できるまでは未確定。印刷とDB登録に使用
         private string m_strDecisionEndTimeBeta = string.Empty;
@@ -84,7 +86,6 @@ namespace ImageChecker
 
         // PDF作成関連
         private IList<Stream> m_streams;
-        private const int m_DETAIL_CNT = 7;
         private byte[] bytes;
         LocalReport lReport;
 
@@ -1262,12 +1263,25 @@ namespace ImageChecker
             {
                 PaperSize paperSize = m_pageSettings.PaperSize;
                 Margins margins = m_pageSettings.Margins;
+                string strPrintSetting = string.Empty;
+
+                strPrintSetting += "<DeviceInfo>";
+                strPrintSetting += "<OutputFormat>emf</OutputFormat>";
+                strPrintSetting += "<StartPage>0</StartPage>";
+                strPrintSetting += "<EndPage>0</EndPage>";
+                strPrintSetting += "<MarginTop>{0}</MarginTop>";
+                strPrintSetting += "<MarginLeft>{1}</MarginLeft>";
+                strPrintSetting += "<MarginRight>{2}</MarginRight>";
+                strPrintSetting += "<MarginBottom>{3}</MarginBottom>";
+                strPrintSetting += "<PageHeight>{4}</PageHeight>";
+                strPrintSetting += "<PageWidth>{5}</PageWidth>";
+                strPrintSetting += "</DeviceInfo>";
 
                 // The device info string defines the page range to print as well as the size of the page.
                 // A start and end page of 0 means generate all pages.
                 return string.Format(
                     CultureInfo.InvariantCulture,
-                    "<DeviceInfo><OutputFormat>emf</OutputFormat><StartPage>0</StartPage><EndPage>0</EndPage><MarginTop>{0}</MarginTop><MarginLeft>{1}</MarginLeft><MarginRight>{2}</MarginRight><MarginBottom>{3}</MarginBottom><PageHeight>{4}</PageHeight><PageWidth>{5}</PageWidth></DeviceInfo>",
+                    strPrintSetting,
                     ToInches(margins.Top),
                     ToInches(margins.Left),
                     ToInches(margins.Right),
