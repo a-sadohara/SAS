@@ -208,7 +208,7 @@ namespace WokerMstManagement
                             }
 
                             // 登録処理実施
-                            if (RegistrationWorker(uciWorkerData) == true)
+                            if (RegistrationWorker(uciWorkerData, intRowCount) == true)
                             {
                                 // OK件数(登録,更新,削除)
                                 if (uciWorkerData.strProcessType == g_clsSystemSettingInfo.strProcessTypeCre)
@@ -708,7 +708,7 @@ namespace WokerMstManagement
         /// </summary>
         /// <param name="lstWorkerData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private Boolean RegistrationWorker(WorkerCsvInfo uciCheckData)
+        private Boolean RegistrationWorker(WorkerCsvInfo uciCheckData, int intRowCount)
         {
             string strData = string.Join(",", uciCheckData.strProcessType,
                                               uciCheckData.strWorkerID,
@@ -747,7 +747,7 @@ namespace WokerMstManagement
                         WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0017 , Environment.NewLine , ex.Message));
 
                         // ログファイル出力
-                        OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0017 + "\r\n" + ex.Message + "\",\"" + strData + "\"");
+                        OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0019, intRowCount.ToString()) + "\r\n" + ex.Message + "\",\"" + strData + "\"");
                         if (m_bolProcEnd == true)
                         {
                             return false;
@@ -794,7 +794,7 @@ namespace WokerMstManagement
                         WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0018 , Environment.NewLine , ex.Message));
 
                         // ログファイル出力
-                        OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message + "\",\"" + strData + "\"");
+                        OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0020, intRowCount.ToString()) + "\r\n" + ex.Message + "\",\"" + strData + "\"");
                         if (m_bolProcEnd == true)
                         {
                             return false;
