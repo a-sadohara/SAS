@@ -317,12 +317,12 @@
             // dtpDecisionStartTimeTo
             // 
             this.dtpDecisionStartTimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
-            this.dtpDecisionStartTimeTo.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.dtpDecisionStartTimeTo.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpDecisionStartTimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpDecisionStartTimeTo.Location = new System.Drawing.Point(281, 81);
+            this.dtpDecisionStartTimeTo.Location = new System.Drawing.Point(281, 80);
             this.dtpDecisionStartTimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionStartTimeTo.Name = "dtpDecisionStartTimeTo";
-            this.dtpDecisionStartTimeTo.Size = new System.Drawing.Size(172, 23);
+            this.dtpDecisionStartTimeTo.Size = new System.Drawing.Size(172, 24);
             this.dtpDecisionStartTimeTo.TabIndex = 12;
             this.dtpDecisionStartTimeTo.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpDecisionStartTimeTo.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -331,12 +331,12 @@
             // dtpDecisionEndTimeTo
             // 
             this.dtpDecisionEndTimeTo.CustomFormat = "yyyy/MM/dd HH:mm:ss";
-            this.dtpDecisionEndTimeTo.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.dtpDecisionEndTimeTo.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpDecisionEndTimeTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpDecisionEndTimeTo.Location = new System.Drawing.Point(281, 106);
             this.dtpDecisionEndTimeTo.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionEndTimeTo.Name = "dtpDecisionEndTimeTo";
-            this.dtpDecisionEndTimeTo.Size = new System.Drawing.Size(172, 23);
+            this.dtpDecisionEndTimeTo.Size = new System.Drawing.Size(172, 24);
             this.dtpDecisionEndTimeTo.TabIndex = 14;
             this.dtpDecisionEndTimeTo.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpDecisionEndTimeTo.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -345,12 +345,12 @@
             // dtpDecisionEndTimeFrom
             // 
             this.dtpDecisionEndTimeFrom.CustomFormat = "yyyy/MM/dd HH:mm:ss";
-            this.dtpDecisionEndTimeFrom.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.dtpDecisionEndTimeFrom.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpDecisionEndTimeFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpDecisionEndTimeFrom.Location = new System.Drawing.Point(87, 106);
             this.dtpDecisionEndTimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionEndTimeFrom.Name = "dtpDecisionEndTimeFrom";
-            this.dtpDecisionEndTimeFrom.Size = new System.Drawing.Size(172, 23);
+            this.dtpDecisionEndTimeFrom.Size = new System.Drawing.Size(172, 24);
             this.dtpDecisionEndTimeFrom.TabIndex = 13;
             this.dtpDecisionEndTimeFrom.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpDecisionEndTimeFrom.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
@@ -371,12 +371,12 @@
             // dtpDecisionStartTimeFrom
             // 
             this.dtpDecisionStartTimeFrom.CustomFormat = "yyyy/MM/dd HH:mm:ss";
-            this.dtpDecisionStartTimeFrom.Font = new System.Drawing.Font("メイリオ", 8F);
+            this.dtpDecisionStartTimeFrom.Font = new System.Drawing.Font("メイリオ", 8.25F);
             this.dtpDecisionStartTimeFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpDecisionStartTimeFrom.Location = new System.Drawing.Point(87, 80);
             this.dtpDecisionStartTimeFrom.Margin = new System.Windows.Forms.Padding(1);
             this.dtpDecisionStartTimeFrom.Name = "dtpDecisionStartTimeFrom";
-            this.dtpDecisionStartTimeFrom.Size = new System.Drawing.Size(172, 23);
+            this.dtpDecisionStartTimeFrom.Size = new System.Drawing.Size(172, 24);
             this.dtpDecisionStartTimeFrom.TabIndex = 11;
             this.dtpDecisionStartTimeFrom.Value = new System.DateTime(2999, 12, 31, 23, 59, 59, 0);
             this.dtpDecisionStartTimeFrom.ValueChanged += new System.EventHandler(this.dtpDatetime_ValueChanged);
