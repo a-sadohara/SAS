@@ -523,6 +523,8 @@ namespace ImageChecker
                 lblImageSearchCount.Visible = false;
                 lblCushionSearchCount.Visible = false;
 
+                btnResultUpdate.Enabled = false;
+
                 bolProcOkNg = true;
             }
             finally
