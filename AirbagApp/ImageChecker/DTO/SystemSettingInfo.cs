@@ -111,6 +111,7 @@ namespace ImageChecker.DTO
 
                 // App.Configから情報を取得
                 GetAppConfigValue("InstanceName", ref strInstanceName);
+                GetAppConfigValue("TemporaryDirectory", ref strTemporaryDirectory);
 
                 // システム設定から情報を取得
                 GetSystemSettingValue("NgImageCooperationDirectory", ref strNgImageCooperationDirectory);
@@ -122,7 +123,6 @@ namespace ImageChecker.DTO
                 GetSystemSettingValue("WaitingTimeProcessed", ref intWaitingTimeProcessed);
                 GetSystemSettingValue("ProductionManagementCooperationDirectory", ref strProductionManagementCooperationDirectory);
                 GetSystemSettingValue("InspectionResltCsvDirectory", ref strInspectionResltCsvDirectory);
-                GetSystemSettingValue("TemporaryDirectory", ref strTemporaryDirectory);
                 GetSystemSettingValue("InspectionDirectionS", ref strInspectionDirectionS);
                 GetSystemSettingValue("InspectionDirectionX", ref strInspectionDirectionX);
                 GetSystemSettingValue("InspectionDirectionY", ref strInspectionDirectionY);
