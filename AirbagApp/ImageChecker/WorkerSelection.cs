@@ -134,7 +134,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format( g_clsMessageInfo.strMsgE0001,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001,Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0003, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

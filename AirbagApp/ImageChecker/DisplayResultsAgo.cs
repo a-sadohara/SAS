@@ -705,6 +705,18 @@ namespace ImageChecker
         }
 
         /// <summary>
+        /// 品名ダブルクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtProductName_DoubleClick(object sender, EventArgs e)
+        {
+            ProductNameSelection frmProductNameSelection = new ProductNameSelection();
+            frmProductNameSelection.ShowDialog(this);
+            txtProductName.Text = frmProductNameSelection.strProductName;
+        }
+
+        /// <summary>
         /// 日時ドロップダウン
         /// </summary>
         /// <param name="sender"></param>

@@ -698,6 +698,7 @@
             this.txtProductName.Size = new System.Drawing.Size(80, 24);
             this.txtProductName.TabIndex = 2;
             this.txtProductName.Text = "W123456789";
+            this.txtProductName.DoubleClick += new System.EventHandler(this.txtProductName_DoubleClick);
             // 
             // txtOrderImg
             // 

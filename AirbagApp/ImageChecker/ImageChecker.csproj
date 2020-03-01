@@ -202,6 +202,12 @@
     <Compile Include="AddImageProgressForm.Designer.cs">
       <DependentUpon>AddImageProgressForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProductNameSelection.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProductNameSelection.Designer.cs">
+      <DependentUpon>ProductNameSelection.cs</DependentUpon>
+    </Compile>
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="Summary.cs">
       <SubType>Form</SubType>
@@ -289,6 +295,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AddImageProgressForm.resx">
       <DependentUpon>AddImageProgressForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductNameSelection.resx">
+      <DependentUpon>ProductNameSelection.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
