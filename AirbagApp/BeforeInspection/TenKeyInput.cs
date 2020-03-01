@@ -57,6 +57,12 @@ namespace BeforeInspection
             }
 
             Button btnObj = (Button)sender;
+
+            if (string.IsNullOrEmpty(txtInput.Text) && btnObj == btn0)
+            {
+                return;
+            }
+
             int intSelIdx = txtInput.SelectionStart;
 
             // 値を挿入
