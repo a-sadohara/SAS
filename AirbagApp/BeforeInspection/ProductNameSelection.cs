@@ -30,6 +30,8 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void ProductNameSelection_Load(object sender, EventArgs e)
         {
+            bool bolProcOkNg = false;
+
             string strSQL = string.Empty;
             DataTable dtData = new DataTable();
 
@@ -55,6 +57,8 @@ namespace BeforeInspection
                 {
                     this.dgvProductInfo.Rows.Add(dr.ItemArray);
                 }
+
+                bolProcOkNg = true;
             }
             catch (Exception ex)
             {
@@ -64,6 +68,13 @@ namespace BeforeInspection
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 
                 return;
+            }
+            finally
+            {
+                if (bolProcOkNg == false)
+                {
+                    this.Close();
+                }
             }
         }
 
