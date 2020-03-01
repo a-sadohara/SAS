@@ -358,12 +358,18 @@ namespace ImageChecker
 
                     // 行列情報を保持
                     // 重複時はスキップ
-                    if (lststrLineColumns.Contains(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"])))
+                    if (lststrLineColumns.Contains(string.Join("|", m_dtData.Rows[i]["fabric_name"],
+                                                                    m_dtData.Rows[i]["inspection_num"],
+                                                                    m_dtData.Rows[i]["line"],
+                                                                    m_dtData.Rows[i]["cloumns"])))
                     {
                         continue;
                     }
 
-                    lststrLineColumns.Add(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"]));
+                    lststrLineColumns.Add(string.Join("|", m_dtData.Rows[i]["fabric_name"],
+                                                           m_dtData.Rows[i]["inspection_num"],
+                                                           m_dtData.Rows[i]["line"],
+                                                           m_dtData.Rows[i]["cloumns"]));
                 }
 
                 if (dgvCheckInspectionHistory.Rows.Count == 0)
