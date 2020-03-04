@@ -37,28 +37,30 @@
             // 
             // txtFolder
             // 
-            this.txtFolder.Location = new System.Drawing.Point(12, 36);
+            this.txtFolder.Location = new System.Drawing.Point(16, 45);
+            this.txtFolder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtFolder.Name = "txtFolder";
             this.txtFolder.ReadOnly = true;
-            this.txtFolder.Size = new System.Drawing.Size(446, 19);
+            this.txtFolder.Size = new System.Drawing.Size(593, 22);
             this.txtFolder.TabIndex = 1;
             this.txtFolder.Click += new System.EventHandler(this.txtFolder_Click);
             // 
             // lblTitleCsvFile
             // 
             this.lblTitleCsvFile.AutoSize = true;
-            this.lblTitleCsvFile.Location = new System.Drawing.Point(12, 21);
+            this.lblTitleCsvFile.Location = new System.Drawing.Point(16, 26);
+            this.lblTitleCsvFile.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTitleCsvFile.Name = "lblTitleCsvFile";
-            this.lblTitleCsvFile.Size = new System.Drawing.Size(64, 12);
+            this.lblTitleCsvFile.Size = new System.Drawing.Size(80, 15);
             this.lblTitleCsvFile.TabIndex = 0;
             this.lblTitleCsvFile.Text = "選択フォルダ";
             // 
             // btnSearchFolder
             // 
-            this.btnSearchFolder.Location = new System.Drawing.Point(457, 36);
+            this.btnSearchFolder.Location = new System.Drawing.Point(609, 45);
             this.btnSearchFolder.Margin = new System.Windows.Forms.Padding(0);
             this.btnSearchFolder.Name = "btnSearchFolder";
-            this.btnSearchFolder.Size = new System.Drawing.Size(29, 19);
+            this.btnSearchFolder.Size = new System.Drawing.Size(39, 24);
             this.btnSearchFolder.TabIndex = 2;
             this.btnSearchFolder.Text = "...";
             this.btnSearchFolder.UseVisualStyleBackColor = true;
@@ -66,9 +68,10 @@
             // 
             // btnImport
             // 
-            this.btnImport.Location = new System.Drawing.Point(203, 71);
+            this.btnImport.Location = new System.Drawing.Point(271, 89);
+            this.btnImport.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(75, 23);
+            this.btnImport.Size = new System.Drawing.Size(100, 29);
             this.btnImport.TabIndex = 3;
             this.btnImport.Text = "取込";
             this.btnImport.UseVisualStyleBackColor = true;
@@ -76,14 +79,16 @@
             // 
             // ProductMstImportCsv
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(495, 106);
+            this.ClientSize = new System.Drawing.Size(660, 132);
             this.Controls.Add(this.btnImport);
             this.Controls.Add(this.btnSearchFolder);
             this.Controls.Add(this.lblTitleCsvFile);
             this.Controls.Add(this.txtFolder);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "ProductMstImportCsv";
             this.Text = "品番マスタメンテナンス";
             this.ResumeLayout(false);
