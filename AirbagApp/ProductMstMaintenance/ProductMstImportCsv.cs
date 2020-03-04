@@ -20,7 +20,7 @@ namespace ProductMstMaintenance
         private const string m_CON_FILE_NAME_AIRBAG_COORD = "AirBagCoord";
         private const string m_CON_FILE_NAME_CAMERA_INFO = "カメラ情報";
         private const string m_CON_FILE_NAME_THRESHOLD_INFO = "閾値情報";
-        private const string m_CON_FILE_NAME_REASON_JUDGMENT = "判定理由マスタ";
+        private const string m_CON_FILE_NAME_REASON_JUDGMENT = "ScratchName";
 
         // INIファイルのセクション
         private const string m_CON_INI_SECTION_REGISTER = "REGISTER";
@@ -115,10 +115,10 @@ namespace ProductMstMaintenance
         private static int m_intErrorDecisionReasonReg = 0;
 
         // エラー出力用ファイル名
-        private static string m_strErrorOutFileName = "";
+        private static string m_strErrorOutFileName = string.Empty;
 
         // マスタ画像出力先フォルダ
-        private static string m_strCheckMstFile = "";
+        private static string m_strCheckMstFile = string.Empty;
 
         // ログ出力追記フラグ
         private static bool m_bolAppendFlag = false;
@@ -317,7 +317,7 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 判定理由情報CSVファイル
         /// </summary>
-        private struct DecisionReasonCsvInfo
+        private struct IniDecisionReasonInfo
         {
             public int intReasonCode;
             public string strDecisionReason;
@@ -365,7 +365,7 @@ namespace ProductMstMaintenance
         private void btnImport_Click(object sender, EventArgs e)
         {
             // 未入力チェック
-            if (txtFolder.Text == "")
+            if (string.IsNullOrEmpty(txtFolder.Text))
             {
                 MessageBox.Show(g_clsMessageInfo.strMsgE0024);
                 btnSearchFolder.Focus();
@@ -386,42 +386,63 @@ namespace ProductMstMaintenance
             // マスタ画像取り込み
             ProcessMasterPng(strInputPng);
 
-            if (m_bolProcEnd) return;
+            if (m_bolProcEnd)
+            {
+                return;
+            }
 
             // 品番マスタ情報取り込み
             ProcessRegisterIni(strInputIni);
 
-            if (m_bolProcEnd) return;
+            if (m_bolProcEnd)
+            {
+                return;
+            }
 
             // PLCマスタ情報取り込み
             ProcessPLCIni(strInputIni);
 
-            if (m_bolProcEnd) return;
+            if (m_bolProcEnd)
+            {
+                return;
+            }
 
             // エアバッグ情報取り込み
             ProcessAirBagIni(strInputIni);
 
-            if (m_bolProcEnd) return;
+            if (m_bolProcEnd)
+            {
+                return;
+            }
 
             // カメラ情報CSV取り込み
             ProcessCameraCsv(strInputCsv);
 
-            if (m_bolProcEnd) return;
+            if (m_bolProcEnd)
+            {
+                return;
+            }
 
             // 閾値情報CSV取り込み
             ProcessThresholdCsv(strInputCsv);
 
-            if (m_bolProcEnd) return;
+            if (m_bolProcEnd)
+            {
+                return;
+            }
 
             // 判定理由取り込み
-            ProcessDecisionReasonCsv(strInputCsv);
+            ProcessDecisionReasonIni(strInputIni);
 
-            if (m_bolProcEnd) return;
+            if (m_bolProcEnd)
+            {
+                return;
+            }
 
             // 出力ファイル設定
-            string strOutPutFilePath = g_clsSystemSettingInfo.strLogFileOutputDirectory + @"\"
-                                                                                        + m_CON_OUTLOGFILE_NAME
-                                                                                        + ".csv";
+            string strOutPutFilePath = Path.Combine( g_clsSystemSettingInfo.strLogFileOutputDirectory ,
+                                                                                         m_CON_OUTLOGFILE_NAME
+                                                                                        + ".csv");
 
             // エラーが一つでもある場合は警告表示する
             if (m_intErrorRegProductInfo > 0 ||
@@ -2099,30 +2120,33 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 判定理由情報取り込み
         /// </summary>
-        /// <param name="strInputCsv">読み込みcsvファイル全種類</param>
-        private static void ProcessDecisionReasonCsv(string[] strInputCsv)
+        /// <param name="strInputIni">読み込みcsvファイル全種類</param>
+        private static void ProcessDecisionReasonIni(string[] strInputIni)
         {
-            List<DecisionReasonCsvInfo> lstDecisionReasonCsvInfo = new List<DecisionReasonCsvInfo>();
+            List<IniDecisionReasonInfo> lstDecisionReasonCsvInfo = new List<IniDecisionReasonInfo>();
 
             // フォルダ内のファイルの数だけループする
-            foreach (string InputfilePath in strInputCsv)
+            foreach (string InputfilePath in strInputIni)
             {
                 m_strErrorOutFileName = strGetFileName(InputfilePath);
 
                 // 判定理由マスタを判定する。
-                if (Regex.IsMatch(strGetFileName(InputfilePath), m_CON_FILE_NAME_REASON_JUDGMENT + ".csv", RegexOptions.IgnoreCase) == true)
+                if (Regex.IsMatch(strGetFileName(InputfilePath), m_CON_FILE_NAME_REASON_JUDGMENT + ".ini", RegexOptions.IgnoreCase) == true)
                 {
                     try
                     {
-                        // CSVファイルを取り込み、判定理由マスタを登録する
-                        lstDecisionReasonCsvInfo = ImportDecisionReasonCsvData(InputfilePath);
+                        // Iniファイルを取り込み、判定理由マスタを登録する
+                        lstDecisionReasonCsvInfo = ImportDecisionReasonIniData(InputfilePath);
                     }
                     catch (Exception ex)
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
                         m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
-                        OutPutImportLog(g_clsMessageInfo.strMsgE0015 + "\r\n" + ex.Message);
-                        if (m_bolProcEnd) return;
+                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        if (m_bolProcEnd)
+                        {
+                            return;
+                        }
                         continue;
                     }
 
@@ -2149,11 +2173,11 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="strInputfilePath">読み込みファイル情報</param>
         /// <returns></returns>
-        private static List<DecisionReasonCsvInfo> ImportDecisionReasonCsvData(string strInputfilePath)
+        private static List<IniDecisionReasonInfo> ImportDecisionReasonIniData(string strInputfilePath)
         {
-            List<DecisionReasonCsvInfo> lstDecisionReasonCsvInfo = new List<DecisionReasonCsvInfo>();
+            List<IniDecisionReasonInfo> lstDecisionReasonCsvInfo = new List<IniDecisionReasonInfo>();
             // 読み込みデータ
-            DecisionReasonCsvInfo driCurrentData = new DecisionReasonCsvInfo();
+            IniDecisionReasonInfo driCurrentData = new IniDecisionReasonInfo();
 
             int intRowCount = 0;
 
@@ -2168,13 +2192,20 @@ namespace ProductMstMaintenance
                     // 閾値情報ファイルを１行読み込む
                     strFileTextLine = sr.ReadLine();
                     intRowCount = intRowCount + 1;
-                    if (strFileTextLine == "" || intRowCount == 1)
+                    if (string.IsNullOrEmpty(strFileTextLine) || intRowCount == 1)
                     {
                         // 空行（最終行）またはヘッダ行の場合読み飛ばす
                         continue;
                     }
 
-                    // CSVファイル読み込み＆入力データチェックを行う
+                    if (!strFileTextLine.StartsWith("Name"))
+                    {
+                        // 判定理由ではないため、読み飛ばす
+                        continue;
+                    }
+                    
+
+                    // ファイル読み込み＆入力データチェックを行う
                     if (ReadDecisionReasonCsvData(strFileTextLine
                                                 , intRowCount
                                                 , strGetFileName(strInputfilePath)
@@ -2203,11 +2234,11 @@ namespace ProductMstMaintenance
         private static Boolean ReadDecisionReasonCsvData(string strFileTextLine
                                                        , int intRowCount
                                                        , string strFileName
-                                                       , out DecisionReasonCsvInfo drcCurrentData)
+                                                       , out IniDecisionReasonInfo drcCurrentData)
         {
-            drcCurrentData = new DecisionReasonCsvInfo();
+            drcCurrentData = new IniDecisionReasonInfo();
 
-            // CSVを読み込む
+            // INIを読み込む
             if (SetDecisionReasonInfoCsv(strFileTextLine, out drcCurrentData, intRowCount) == false)
             {
                 return false;
@@ -2260,20 +2291,35 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
-        /// ＣＳＶ→構造体格納（閾値情報CSV）
+        /// INI→構造体格納（閾値情報CSV）
         /// </summary>
-        /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
+        /// <param name="strFileReadLine">読み込みINI情報</param>
         /// <returns></returns>
         private static Boolean SetDecisionReasonInfoCsv(string strFileReadLine
-                                                      , out DecisionReasonCsvInfo drcData
+                                                      , out IniDecisionReasonInfo drcData
                                                       , int intRowCount)
         {
             string[] stArrayData;
 
-            drcData = new DecisionReasonCsvInfo();
+            drcData = new IniDecisionReasonInfo();
 
-            // 半角スペース区切りで分割して配列に格納する
-            stArrayData = strFileReadLine.Split(',');
+            // 不要な文字を削除する。
+            string strWk = strFileReadLine.Replace("Name", "");
+            strWk = strWk.Substring(0,strWk.LastIndexOf(" "));
+
+            // =で分割して配列に格納する
+            stArrayData = strWk.Split('=');
+
+            try
+            {
+                // 理由コードを編集する
+                stArrayData[0] = int.Parse(stArrayData[0]).ToString();
+            }
+            catch
+            {
+                // 例外を無視する
+            }
+
 
             // 入力データチェックを行う
             if (InputDataCheckDecisionReason(stArrayData, intRowCount, strFileReadLine) == false)
@@ -2281,7 +2327,7 @@ namespace ProductMstMaintenance
                 return false;
             }
 
-            // CSVの各項目を構造体へ格納する
+            // INIの各項目を構造体へ格納する
             drcData.intReasonCode = NulltoInt(stArrayData[m_CON_COL_REASON_CODE]);
             drcData.strDecisionReason = stArrayData[m_CON_COL_DECISION_REASON];
 
@@ -2293,12 +2339,12 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="lstDataPTCToDB"></param>
         /// <returns></returns>
-        private static void UPDMstProductInfoInDecisionReason(List<DecisionReasonCsvInfo> lstDecisionReasonCsvToDB)
+        private static void UPDMstProductInfoInDecisionReason(List<IniDecisionReasonInfo> lstDecisionReasonIniToDB)
         {
             // テーブルの全件削除を行う
             ExecDelProductInfoDecisionReason();
 
-            foreach (DecisionReasonCsvInfo drcCurrentData in lstDecisionReasonCsvToDB)
+            foreach (IniDecisionReasonInfo drcCurrentData in lstDecisionReasonIniToDB)
             {
                 // 登録処理実施
                 if (ExecRegProductInfoDecisionReason(drcCurrentData) == true)
@@ -2353,7 +2399,7 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="lstUserData">読み込みデータ一覧</param>
         /// <returns></returns>
-        private static Boolean ExecRegProductInfoDecisionReason(DecisionReasonCsvInfo drcCurrentData)
+        private static Boolean ExecRegProductInfoDecisionReason(IniDecisionReasonInfo drcCurrentData)
         {
             try
             {
@@ -2365,7 +2411,7 @@ namespace ProductMstMaintenance
 
                 // 各項目の値を取得する
                 // FieldInfoを取得する
-                Type typeOfMyStruct = typeof(DecisionReasonCsvInfo);
+                Type typeOfMyStruct = typeof(IniDecisionReasonInfo);
                 System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
 
                 // Iniファイルから各値を読み込む

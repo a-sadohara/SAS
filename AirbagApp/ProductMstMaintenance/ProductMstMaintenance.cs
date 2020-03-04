@@ -99,6 +99,9 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void ProductMstMaintenance_Load(object sender, EventArgs e)
         {
+
+            this.SuspendLayout();
+
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MaximumSize = this.Size;
@@ -108,50 +111,48 @@ namespace ProductMstMaintenance
 
             try
             {
-                this.SuspendLayout();
-
                 // 初期化
-                txtProductName.Text = "";
-                lblLength.Text = "";
-                lblWidth.Text = "";
-                lblLineLength.Text = "";
-                lblRegimarkBetweenLength.Text = "";
-                txtStretchRateX.Text = "";
-                txtStretchRateY.Text = "";
+                txtProductName.Text = string.Empty;
+                lblLength.Text = string.Empty;
+                lblWidth.Text = string.Empty;
+                lblLineLength.Text = string.Empty;
+                lblRegimarkBetweenLength.Text = string.Empty;
+                txtStretchRateX.Text = string.Empty;
+                txtStretchRateY.Text = string.Empty;
                 chkAiModelNonInspectionFlg.Checked = true;
-                txtAiModelName.Text = "";
+                txtAiModelName.Text = string.Empty;
                 picMasterImage.Image = null;
-                lblStartRegimarkPointN.Text = "";
-                lblStartRegimarkPointNPlus1Line.Text = "";
-                lblEndRegimarkPointN.Text = "";
-                lblEndRegimarkPointNMinus1Line.Text = "";
-                lblBasePointA.Text = "";
-                lblBasePointB.Text = "";
-                lblBasePointC.Text = "";
-                lblBasePointD.Text = "";
-                lblBasePointE.Text = "";
-                lblPlusDirectionA.Text = "";
-                lblPlusDirectionB.Text = "";
-                lblPlusDirectionC.Text = "";
-                lblPlusDirectionD.Text = "";
-                lblPlusDirectionE.Text = "";
-                lblStartRegimarkCameraNum.Text = "";
-                lblEndRegimarkCameraNum.Text = "";
-                lblIlluminationInformation.Text = "";
-                txtColumnThresholdAB.Text = "";
-                txtColumnThresholdBC.Text = "";
-                txtColumnThresholdCD.Text = "";
-                txtColumnThresholdDE.Text = "";
-                txtColumnThresholdAFrom.Text = "";
-                txtColumnThresholdATo.Text = "";
-                txtColumnThresholdBFrom.Text = "";
-                txtColumnThresholdBTo.Text = "";
-                txtColumnThresholdCFrom.Text = "";
-                txtColumnThresholdCTo.Text = "";
-                txtColumnThresholdDFrom.Text = "";
-                txtColumnThresholdDTo.Text = "";
-                txtColumnThresholdEFrom.Text = "";
-                txtColumnThresholdETo.Text = "";
+                lblStartRegimarkPointN.Text = string.Empty;
+                lblStartRegimarkPointNPlus1Line.Text = string.Empty;
+                lblEndRegimarkPointN.Text = string.Empty;
+                lblEndRegimarkPointNMinus1Line.Text = string.Empty;
+                lblBasePointA.Text = string.Empty;
+                lblBasePointB.Text = string.Empty;
+                lblBasePointC.Text = string.Empty;
+                lblBasePointD.Text = string.Empty;
+                lblBasePointE.Text = string.Empty;
+                lblPlusDirectionA.Text = string.Empty;
+                lblPlusDirectionB.Text = string.Empty;
+                lblPlusDirectionC.Text = string.Empty;
+                lblPlusDirectionD.Text = string.Empty;
+                lblPlusDirectionE.Text = string.Empty;
+                lblStartRegimarkCameraNum.Text = string.Empty;
+                lblEndRegimarkCameraNum.Text = string.Empty;
+                lblIlluminationInformation.Text = string.Empty;
+                txtColumnThresholdAB.Text = string.Empty;
+                txtColumnThresholdBC.Text = string.Empty;
+                txtColumnThresholdCD.Text = string.Empty;
+                txtColumnThresholdDE.Text = string.Empty;
+                txtColumnThresholdAFrom.Text = string.Empty;
+                txtColumnThresholdATo.Text = string.Empty;
+                txtColumnThresholdBFrom.Text = string.Empty;
+                txtColumnThresholdBTo.Text = string.Empty;
+                txtColumnThresholdCFrom.Text = string.Empty;
+                txtColumnThresholdCTo.Text = string.Empty;
+                txtColumnThresholdDFrom.Text = string.Empty;
+                txtColumnThresholdDTo.Text = string.Empty;
+                txtColumnThresholdEFrom.Text = string.Empty;
+                txtColumnThresholdETo.Text = string.Empty;
 
                 // 品番マスタから値の取得を行う
                 if (GetHinMstInitial("") == false)
@@ -159,9 +160,14 @@ namespace ProductMstMaintenance
                     txtProductName.Select();
                     return;
                 }
+
                 if (m_dtData.Rows.Count == 0)
+                {
                     if (bolRunProductMstImportCsv() == false)
+                    {
                         return;
+                    }
+                }
 
                 // 取得結果反映処理
                 CreateFormInfo();
@@ -173,7 +179,9 @@ namespace ProductMstMaintenance
                 this.ResumeLayout();
 
                 if (bolProcOkNg == false)
+                {
                     this.Close();
+                }
             }
         }
 
