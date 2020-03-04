@@ -356,6 +356,18 @@ namespace BeforeInspection
                 return false;
             }
 
+            if (int.Parse(lblInspectionEndLine.Text) <= 0)
+            {
+                // 不正の場合はメッセージを表示
+                lblInspectionEndLine.ForeColor = Color.Red;
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0032, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                // フォーカスセット
+                txtInspectionTargetLine.Focus();
+                return false;
+            }
+
             // 開始時刻入力チェック
             if (string.IsNullOrEmpty(lblStartDatetime.Text))
             {
