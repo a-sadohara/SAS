@@ -72,7 +72,11 @@ namespace BeforeInspection
             {
                 txtBox.Text = frmTenKeyInput.strInput;
                 txtBox.SelectAll();
+
+                CalcMaxLine();
             }
+
+
         }
 
         /// <summary>
@@ -241,8 +245,8 @@ namespace BeforeInspection
                 txtInspectionStartLine.Enabled = true;
                 txtWorker1.Enabled = true;
                 txtWorker2.Enabled = true;
-                btnStartDatetime.Enabled = false;
-                btnEndDatetime.Enabled = true;
+                btnStartDatetime.Enabled = true;
+                btnEndDatetime.Enabled = false;
                 btnInspectionDirectionS.Enabled = false;
                 btnInspectionDirectionX.Enabled = false;
                 btnInspectionDirectionY.Enabled = false;
@@ -1109,26 +1113,6 @@ namespace BeforeInspection
             }
         }
 
-        /// <summary>
-        /// 検査対象数(行数)テキストボックスフォーカスアウト
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void txtInspectionTargetLine_Leave(object sender, EventArgs e)
-        {
-            CalcMaxLine();
-        }
-
-        /// <summary>
-        /// 検査開始行テキストボックスフォーカスアウト
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void txtKensaStartRow_Leave(object sender, EventArgs e)
-        {
-            CalcMaxLine();
-        }
-
         #endregion
 
         #region 最大化画面制御
@@ -1303,7 +1287,7 @@ namespace BeforeInspection
             }
 
             // 終了時刻が入力されている場合は検査終了処理を行う
-            if ((m_intStatus == g_clsSystemSettingInfo.intStatusEnd || m_intStatus == g_clsSystemSettingInfo.intStatusChk) &&
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusChk &&
                 !string.IsNullOrEmpty(lblEndDatetime.Text))
             {
                 // 枝番の取得
@@ -1331,7 +1315,7 @@ namespace BeforeInspection
                 SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusEnd);
 
                 // 終了時刻の初期化
-                lblEndDatetime.Text = string.Empty;
+                //lblEndDatetime.Text = string.Empty;
 
                 // 次の反番情報を設定
                 btnNextFabric.Focus();

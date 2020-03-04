@@ -471,7 +471,6 @@
             this.txtInspectionTargetLine.Text = "9999";
             this.txtInspectionTargetLine.Click += new System.EventHandler(this.DispTenKeyInputForm);
             this.txtInspectionTargetLine.Enter += new System.EventHandler(this.txtInspectionTargetLine_Enter);
-            this.txtInspectionTargetLine.Leave += new System.EventHandler(this.txtInspectionTargetLine_Leave);
             // 
             // pnlKensaStartRow
             // 
@@ -499,7 +498,6 @@
             this.txtInspectionStartLine.Text = "9999";
             this.txtInspectionStartLine.Click += new System.EventHandler(this.DispTenKeyInputForm);
             this.txtInspectionStartLine.Enter += new System.EventHandler(this.txtInspectionStartLine_Enter);
-            this.txtInspectionStartLine.Leave += new System.EventHandler(this.txtKensaStartRow_Leave);
             // 
             // pnlSagyosyaInfo_1
             // 

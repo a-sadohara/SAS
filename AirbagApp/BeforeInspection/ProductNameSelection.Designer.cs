@@ -199,7 +199,7 @@
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ProductName;
+        private new System.Windows.Forms.DataGridViewTextBoxColumn ProductName;
         private System.Windows.Forms.DataGridView dgvProductInfo;
     }
 }
