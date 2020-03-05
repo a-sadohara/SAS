@@ -336,6 +336,26 @@ namespace BeforeInspection
                 return false;
             }
 
+            // 指図入力チェック
+            if (txtOrderImg.Text.Length > 7)
+            {
+                // メッセージ出力
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0012, "指図", 1, 7), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                btnStartDatetime.Focus();
+                return false;
+            }
+
+            // 反番入力チェック
+            if (txtFabricName.Text.Length > 10)
+            {
+                // メッセージ出力
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0012, "反番", 1, 10), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                btnStartDatetime.Focus();
+                return false;
+            }
+
             // 検査対象数(行数)入力チェック
             if (int.Parse(txtInspectionTargetLine.Text) == 0)
             {
