@@ -5,9 +5,8 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using static ImageChecker.Common;
 
 namespace ImageChecker
@@ -718,8 +717,7 @@ namespace ImageChecker
             {
                 return;
             }
-
-
+            
             try
             {
                 if (await _doubleClickSemaphore.WaitAsync(SystemInformation.DoubleClickTime))
