@@ -342,7 +342,7 @@ namespace BeforeInspection
                 // メッセージ出力
                 MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0012, "指図", 1, 7), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                btnStartDatetime.Focus();
+                txtOrderImg.Focus();
                 return false;
             }
 
@@ -352,7 +352,7 @@ namespace BeforeInspection
                 // メッセージ出力
                 MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0012, "反番", 1, 10), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                btnStartDatetime.Focus();
+                txtFabricName.Focus();
                 return false;
             }
 
