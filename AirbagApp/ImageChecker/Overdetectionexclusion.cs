@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using System.Threading.Tasks;
 using static ImageChecker.Common;
 
 namespace ImageChecker
@@ -324,8 +325,6 @@ namespace ImageChecker
             PictureBox pctImage = new PictureBox();
             Label lblImage = new Label();
             Control[] ctrImage;
-            DispatcherTimer dtEnablebtnLeft;
-            DispatcherTimer dtEnablebtnRight;
             int intStartDataIdxForPage = -1;
             string strMarkingImagepath = "";
 
@@ -400,24 +399,26 @@ namespace ImageChecker
             // N秒後に左へボタンを有効にする
             if (intPageIdx > 0)
             {
-                btnLeft.Enabled = false;
-                dtEnablebtnLeft = new DispatcherTimer { Interval = TimeSpan.FromSeconds(g_clsSystemSettingInfo.intWaitingTimeProcessed) };
-                dtEnablebtnLeft.Start();
-                dtEnablebtnLeft.Tick += (s, args) =>
+                Task.Run(() =>
                 {
-                    dtEnablebtnLeft.Stop();
-                    btnLeft.Enabled = true;
-                };
+                    // N秒後に右へボタンを有効にする
+                    System.Threading.Thread.Sleep(g_clsSystemSettingInfo.intWaitingTimeProcessed * 1000);
+                    this.Invoke( new Action(() =>
+                    { 
+                        btnLeft.Enabled = true;
+                    }));
+                });
             }
 
-            // N秒後に右へボタンを有効にする
-            dtEnablebtnRight = new DispatcherTimer { Interval = TimeSpan.FromSeconds(g_clsSystemSettingInfo.intWaitingTimeProcessed) };
-            dtEnablebtnRight.Start();
-            dtEnablebtnRight.Tick += (s, args) =>
+            Task.Run(() =>
             {
-                dtEnablebtnRight.Stop();
-                btnRight.Enabled = true;
-            };
+                // N秒後に右へボタンを有効にする
+                System.Threading.Thread.Sleep(g_clsSystemSettingInfo.intWaitingTimeProcessed * 1000);
+                this.Invoke(new Action(() =>
+                {
+                    btnRight.Enabled = true;
+                }));
+            });
 
 
             // 画像の1件目にフォーカスをセットする
@@ -711,22 +712,28 @@ namespace ImageChecker
                 return;
             }
 
+            changePanelState((Label)sender);
+
             if (!_clickSemaphore.Wait(0))
             {
                 return;
             }
 
+
             try
             {
                 if (await _doubleClickSemaphore.WaitAsync(SystemInformation.DoubleClickTime))
+                {
+                    changePanelState((Label)sender);
                     return;
+                }
             }
             finally
             {
                 _clickSemaphore.Release();
             }
 
-            changePanelState((Label)sender);
+            
         }
 
         /// <summary>
