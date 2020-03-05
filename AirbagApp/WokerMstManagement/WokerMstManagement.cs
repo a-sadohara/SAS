@@ -45,7 +45,7 @@ namespace WokerMstManagement
             }
             finally
             {
-                if (bolProcOkNg == false) 
+                if (bolProcOkNg == false)
                 {
                     this.Close();
                 }
@@ -74,7 +74,7 @@ namespace WokerMstManagement
             WokerMstEdit frmUserReg = new WokerMstEdit(g_CON_EDITMODE_REG);
             frmUserReg.ShowDialog();
 
-            if(frmUserReg.g_intUpdateFlg == 1) 
+            if (frmUserReg.g_intUpdateFlg == 1)
             {
                 try
                 {
@@ -84,7 +84,7 @@ namespace WokerMstManagement
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -134,7 +134,7 @@ namespace WokerMstManagement
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                         // メッセージ出力
                         MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
@@ -161,7 +161,7 @@ namespace WokerMstManagement
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}",g_clsMessageInfo.strMsgE0001,Environment.NewLine , ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -175,18 +175,68 @@ namespace WokerMstManagement
         /// <param name="e"></param>
         private void llk_Click(object sender, EventArgs e)
         {
-            if (sender == lblWorkerNameKanaア) { m_strKanaSta = "ア"; m_strKanaEnd = "オ"; }
-            else if (sender == lblWorkerNameKanaカ) { m_strKanaSta = "カ"; m_strKanaEnd = "コ"; }
-            else if (sender == lblWorkerNameKanaサ) { m_strKanaSta = "サ"; m_strKanaEnd = "ソ"; }
-            else if (sender == lblWorkerNameKanaタ) { m_strKanaSta = "タ"; m_strKanaEnd = "ト"; }
-            else if (sender == lblWorkerNameKanaナ) { m_strKanaSta = "ナ"; m_strKanaEnd = "ノ"; }
-            else if (sender == lblWorkerNameKanaハ) { m_strKanaSta = "ハ"; m_strKanaEnd = "ホ"; }
-            else if (sender == lblWorkerNameKanaマ) { m_strKanaSta = "マ"; m_strKanaEnd = "モ"; }
-            else if (sender == lblWorkerNameKanaヤ) { m_strKanaSta = "ヤ"; m_strKanaEnd = "ヨ"; }
-            else if (sender == lblWorkerNameKanaラ) { m_strKanaSta = "ラ"; m_strKanaEnd = "ロ"; }
-            else if (sender == lblWorkerNameKanaワ) { m_strKanaSta = "ワ"; m_strKanaEnd = "ン"; }
-            else if (sender == lblWorkerNameKanaEtc) { m_strKanaSta = "！"; m_strKanaEnd = "！"; }
-            else if (sender == lblWorkerNameKanaNonCondition) { m_strKanaSta = ""; m_strKanaEnd = ""; }
+            if (sender == lblWorkerNameKanaア)
+            {
+                m_strKanaSta = "ア";
+                m_strKanaEnd = "オ";
+            }
+            else if (sender == lblWorkerNameKanaカ)
+            {
+                m_strKanaSta = "カ";
+                m_strKanaEnd = "コ";
+            }
+            else if (sender == lblWorkerNameKanaサ)
+            {
+                m_strKanaSta = "サ";
+                m_strKanaEnd = "ソ";
+            }
+            else if (sender == lblWorkerNameKanaタ)
+            {
+                m_strKanaSta = "タ";
+                m_strKanaEnd = "ト";
+            }
+            else if (sender == lblWorkerNameKanaナ)
+            {
+                m_strKanaSta = "ナ";
+                m_strKanaEnd = "ノ";
+            }
+            else if (sender == lblWorkerNameKanaハ)
+            {
+                m_strKanaSta = "ハ";
+                m_strKanaEnd = "ホ";
+            }
+            else if (sender == lblWorkerNameKanaマ)
+            {
+                m_strKanaSta = "マ";
+                m_strKanaEnd = "モ";
+            }
+            else if (sender == lblWorkerNameKanaヤ)
+            {
+                m_strKanaSta = "ヤ";
+                m_strKanaEnd = "ヨ";
+            }
+            else if (sender == lblWorkerNameKanaラ)
+            {
+                m_strKanaSta = "ラ";
+                m_strKanaEnd = "ロ";
+            }
+            else if (sender == lblWorkerNameKanaワ)
+            {
+                m_strKanaSta = "ワ";
+                m_strKanaEnd = "ン";
+            }
+            else if (sender == lblWorkerNameKanaEtc)
+            {
+                m_strKanaSta = "！";
+                m_strKanaEnd = "！";
+            }
+            else if (sender == lblWorkerNameKanaNonCondition)
+            {
+                m_strKanaSta = string.Empty;
+                m_strKanaEnd = string.Empty;
+                txtEmployeeNumFrom.Text = string.Empty;
+                txtEmployeeNumTo.Text = string.Empty;
+            }
 
             foreach (Label lbl in new Label[] { lblWorkerNameKanaア, lblWorkerNameKanaカ, lblWorkerNameKanaサ, lblWorkerNameKanaタ, lblWorkerNameKanaナ,
                                                 lblWorkerNameKanaハ, lblWorkerNameKanaマ, lblWorkerNameKanaヤ, lblWorkerNameKanaラ, lblWorkerNameKanaワ,
@@ -240,7 +290,7 @@ namespace WokerMstManagement
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -262,7 +312,7 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -387,16 +437,17 @@ namespace WokerMstManagement
                     {
                         strSQL += "AND SUBSTRING(worker_name_sei_kana,1,1) <= '" + m_strKanaEnd + "' ";
                     }
-                    if (!string.IsNullOrEmpty(txtEmployeeNumFrom.Text))
-                    {
-                        Int32.TryParse(txtEmployeeNumFrom.Text, out intUserNoSta);
-                        strSQL += "AND TO_NUMBER(employee_num, '0000') >= " + intUserNoSta + " ";
-                    }
-                    if (!string.IsNullOrEmpty(txtEmployeeNumTo.Text))
-                    {
-                        Int32.TryParse(txtEmployeeNumTo.Text, out intUserNoEnd);
-                        strSQL += "AND TO_NUMBER(employee_num, '0000') <= " + intUserNoEnd + " ";
-                    }
+                }
+
+                if (!string.IsNullOrEmpty(txtEmployeeNumFrom.Text))
+                {
+                    Int32.TryParse(txtEmployeeNumFrom.Text, out intUserNoSta);
+                    strSQL += "AND TO_NUMBER(employee_num, '0000') >= " + intUserNoSta + " ";
+                }
+                if (!string.IsNullOrEmpty(txtEmployeeNumTo.Text))
+                {
+                    Int32.TryParse(txtEmployeeNumTo.Text, out intUserNoEnd);
+                    strSQL += "AND TO_NUMBER(employee_num, '0000') <= " + intUserNoEnd + " ";
                 }
 
                 strSQL += "ORDER BY employee_num ASC ;";
@@ -424,15 +475,15 @@ namespace WokerMstManagement
                     dgvWorker.Rows[0].Selected = true;
                     dgvWorker.FirstDisplayedScrollingRowIndex = 0;
                 }
-                
-                if (intExecMode == 1) 
+
+                if (intExecMode == 1)
                 {
                     int intSelRow = 0;
 
                     // 対象の選択行を探す
                     foreach (DataGridViewRow r in dgvWorker.Rows)
                     {
-                        if (strSelWorkerNo == NulltoString(r.Cells[m_CON_COL_USERNO].Value)) 
+                        if (strSelWorkerNo == NulltoString(r.Cells[m_CON_COL_USERNO].Value))
                         {
                             intSelRow = r.Index;
                             break;
@@ -448,7 +499,7 @@ namespace WokerMstManagement
                     }
                     dgvWorker.FirstDisplayedScrollingRowIndex = intSelRow;
                 }
-                
+
                 // 表示モードが更新表示の場合
                 if (intExecMode == 2)
                 {
@@ -494,13 +545,13 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0006, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
-            finally 
+            finally
             {
                 g_clsConnectionNpgsql.DbClose();
             }
