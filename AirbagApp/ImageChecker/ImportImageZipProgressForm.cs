@@ -18,8 +18,6 @@ namespace ImageChecker
         public ImportImageZipProgressForm()
         {
             InitializeComponent();
-
-            this.TopMost = true;
         }
 
         #endregion
