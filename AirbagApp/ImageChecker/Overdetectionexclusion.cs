@@ -712,6 +712,21 @@ namespace ImageChecker
             }
 
             changePanelState((Label)sender);
+            // pictureboxの背景色を初期化
+            foreach (Control ctrChild in tlpImage.Controls)
+            {
+                if (ctrChild.GetType() == typeof(PictureBox))
+                {
+                    PictureBox picWk = (PictureBox)ctrChild;
+                    picWk.Padding = new Padding(0, 0, 0, 0);
+                    picWk.BackColor = System.Drawing.Color.FromArgb(34, 67, 106);
+                }
+
+            }
+
+            // 背景色を設定
+            bicState.Padding = new Padding(200, 200, 200, 200);
+            bicState.BackColor = Color.DodgerBlue;
 
             if (!_clickSemaphore.Wait(0))
             {
@@ -730,8 +745,6 @@ namespace ImageChecker
             {
                 _clickSemaphore.Release();
             }
-
-            
         }
 
         /// <summary>
