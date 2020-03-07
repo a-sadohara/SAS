@@ -468,9 +468,9 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnTargetSelection_Click(object sender, EventArgs e)
         {
-            // 過検知除外ステータス更新(検査終了)
+            // 過検知除外ステータス更新(中断)
             if (blnUpdOverDetectionExceptStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                                g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd) == false)
+                                                g_clsSystemSettingInfo.intOverDetectionExceptStatusStp) == false)
             {
                 // エラー時
                 g_clsConnectionNpgsql.DbRollback();
