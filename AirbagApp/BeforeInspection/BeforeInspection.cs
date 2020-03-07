@@ -228,7 +228,7 @@ namespace BeforeInspection
                 btnInspectionDirectionR.Enabled = false;
                 btnInspectionStop.Enabled = false;
                 btnSet.Enabled = true;
-                btnNextFabric.Enabled = false;
+                btnNextFabric.Enabled = true;
             }
 
             if (m_intStatus == g_clsSystemSettingInfo.intStatusEnd)
