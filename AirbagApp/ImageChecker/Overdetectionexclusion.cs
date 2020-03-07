@@ -703,10 +703,10 @@ namespace ImageChecker
         private async void lblState_Click(object sender, EventArgs e)
         {
             Label lblState = (Label)sender;
-            PictureBox bicState = (PictureBox)lblState.Parent;
+            PictureBox picState = (PictureBox)lblState.Parent;
 
             // 画像存在チェック
-            if (bicState.Image == null)
+            if (picState.Image == null)
             {
                 return;
             }
@@ -718,15 +718,15 @@ namespace ImageChecker
                 if (ctrChild.GetType() == typeof(PictureBox))
                 {
                     PictureBox picWk = (PictureBox)ctrChild;
-                    picWk.Padding = new Padding(0, 0, 0, 0);
+                    picWk.ClientSize = new Size(picWk.Size.Width, picWk.Size.Height);
                     picWk.BackColor = System.Drawing.Color.FromArgb(34, 67, 106);
                 }
 
             }
 
             // 背景色を設定
-            bicState.Padding = new Padding(200, 200, 200, 200);
-            bicState.BackColor = Color.DodgerBlue;
+            picState.ClientSize = new Size((int)(picState.ClientSize.Width * 0.99), (int) (picState.ClientSize.Height * 0.99));
+            picState.BackColor = Color.DodgerBlue;
 
             if (!_clickSemaphore.Wait(0))
             {
