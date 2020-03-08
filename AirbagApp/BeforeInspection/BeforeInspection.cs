@@ -1218,7 +1218,7 @@ namespace BeforeInspection
 
         private void BeforeInspection_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.ControlKey)
+            if (e.KeyCode == Keys.ControlKey || e.KeyCode == Keys.NumLock)
             {
                 if (this.ActiveControl == this.txtOrderImg ||
                     this.ActiveControl == this.txtFabricName)
@@ -1233,8 +1233,7 @@ namespace BeforeInspection
                     // 指図が無効化されているため、処理しない
                     return;
                 }
-
-
+                
                 // バーコード入力のため、フォーカスを設定
                 txtOrderImg.Text = string.Empty;
                 txtFabricName.Text = string.Empty;
