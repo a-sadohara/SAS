@@ -32,6 +32,9 @@ namespace DelRecord
         // システム設定情報取得時のエラーメッセージ格納用
         private static StringBuilder m_sbErrMessage = new StringBuilder();
 
+        // 削除時レコードの情報格納用
+        private static StringBuilder m_sbDelRecordInfo = new StringBuilder();
+
         // イベントログ出力関連
         private static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public const int g_CON_LEVEL_FATAL = 1;
@@ -48,6 +51,9 @@ namespace DelRecord
         private static int m_intBranchNum = 0;
         private static string m_strUnitNum = string.Empty;
         private static string m_strInspectionDate = string.Empty;
+        private static string m_strOrder_img = string.Empty;
+        private static string m_strFabric_name = string.Empty;
+        private static string m_strProduct_name = string.Empty;
 
         static void Main(string[] args)
         {
@@ -64,7 +70,7 @@ namespace DelRecord
                 if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
+                    WriteEventLog(g_CON_LEVEL_WARN, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
 
                     // メッセージ出力
                     Console.WriteLine("接続文字列取得時に例外が発生しました。");
@@ -112,15 +118,43 @@ namespace DelRecord
                     m_intBranchNum = int.Parse(row["branch_num"].ToString());
                     m_strUnitNum = row["unit_num"].ToString();
                     m_strInspectionDate = DateTime.Parse(row["inspection_date"].ToString()).ToString("yyyy/MM/dd");
+                    m_strOrder_img = row["order_img"].ToString();
+                    m_strFabric_name = row["fabric_name"].ToString();
+                    m_strProduct_name = row["product_name"].ToString();
                     DelImagecheckerHeader();
                     DelPublicHeader();
                     DelImagecheckerResult();
+
+                    m_sbDelRecordInfo.AppendLine(string.Format(
+                        "検査日付:{0}, {1}号機, 検査番号:{2}, 枝番:{3}, 品名:{4}, 指図:{5}, 反番:{6}",
+                        m_strInspectionDate,
+                        m_strUnitNum,
+                        m_intInspectionNum,
+                        m_intBranchNum,
+                        m_strProduct_name,
+                        m_strOrder_img,
+                        m_strFabric_name));
+                }
+
+                if (m_sbDelRecordInfo.Length > 0)
+                {
+                    WriteEventLog(
+                        g_CON_LEVEL_INFO,
+                        string.Format(
+                            "下記{0}レコードを削除しました。{1}{2}",
+                            m_dtData.Rows.Count,
+                            Environment.NewLine,
+                            m_sbDelRecordInfo.ToString()));
+                }
+                else
+                {
+                    WriteEventLog(g_CON_LEVEL_INFO, "削除対象のレコードはありません。");
                 }
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
 
                 // メッセージ出力
                 Console.WriteLine("初期起動時に例外が発生しました。");
@@ -194,9 +228,10 @@ namespace DelRecord
             try
             {
                 // SQL文を作成する
-                string strSelectSql = @"SELECT inspection_num, branch_num, unit_num, inspection_date FROM " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
+                string strSelectSql = @"SELECT inspection_num, branch_num, unit_num, inspection_date, order_img, fabric_name, product_name FROM " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                                         WHERE decision_end_datetime IS NOT NULL
-                                        AND TO_CHAR(decision_end_datetime,'YYYY/MM/DD') <= :decision_end_datetime_yyyymmdd";
+                                        AND TO_CHAR(decision_end_datetime,'YYYY/MM/DD') <= :decision_end_datetime_yyyymmdd
+                                        ORDER BY inspection_date, unit_num, inspection_num, branch_num";
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -208,7 +243,7 @@ namespace DelRecord
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
 
                 // メッセージ出力
                 Console.WriteLine(g_clsMessageInfo.strMsgE0034);
@@ -249,7 +284,7 @@ namespace DelRecord
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
 
                 // メッセージ出力
                 Console.WriteLine(g_clsMessageInfo.strMsgE0034);
@@ -290,7 +325,7 @@ namespace DelRecord
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
 
                 // メッセージ出力
                 Console.WriteLine(g_clsMessageInfo.strMsgE0034);
@@ -329,7 +364,7 @@ namespace DelRecord
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
 
                 // メッセージ出力
                 Console.WriteLine(g_clsMessageInfo.strMsgE0043);

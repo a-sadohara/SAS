@@ -41,6 +41,9 @@ namespace DelCSV
         public const int g_CON_LEVEL_INFO = 4;
         public const int g_CON_LEVEL_DEBUG = 5;
 
+        // 削除件数
+        private static int m_intDeleteCont = 0;
+
         static void Main(string[] args)
         {
             try
@@ -56,7 +59,7 @@ namespace DelCSV
                 if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
+                    WriteEventLog(g_CON_LEVEL_WARN, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
 
                     // メッセージ出力
                     Console.WriteLine("接続文字列取得時に例外が発生しました。");
@@ -105,12 +108,26 @@ namespace DelCSV
                     x.LastWriteTime < datRetentionPeriod))
                 {
                     fInfo.Delete();
+                    m_intDeleteCont++;
+                }
+
+                if (m_intDeleteCont > 0)
+                {
+                    WriteEventLog(
+                        g_CON_LEVEL_INFO,
+                        string.Format(
+                            "{0}個のCSVファイルを削除しました。",
+                            m_intDeleteCont));
+                }
+                else
+                {
+                    WriteEventLog(g_CON_LEVEL_INFO, "削除対象のCSVファイルはありません。");
                 }
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
 
                 // メッセージ出力
                 Console.WriteLine("初期起動時に例外が発生しました。");

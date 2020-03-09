@@ -45,6 +45,9 @@ namespace DelImage
         private static DataTable m_dtData;
         private static string m_strFolderPath = string.Empty;
 
+        // 削除件数
+        private static int m_intDeleteCont = 0;
+
         // パラメータ変数
         private static string m_strInspectionDate = string.Empty;
         private static string m_strProductName = string.Empty;
@@ -66,7 +69,7 @@ namespace DelImage
                 if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
+                    WriteEventLog(g_CON_LEVEL_WARN, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
 
                     // メッセージ出力
                     Console.WriteLine("接続文字列取得時に例外が発生しました。");
@@ -132,13 +135,27 @@ namespace DelImage
                     if (Directory.Exists(m_strFolderPath))
                     {
                         Directory.Delete(m_strFolderPath, true);
+                        m_intDeleteCont++;
                     }
+                }
+
+                if (m_intDeleteCont > 0)
+                {
+                    WriteEventLog(
+                        g_CON_LEVEL_INFO,
+                        string.Format(
+                            "{0}個の検査画像フォルダーを削除しました。",
+                            m_intDeleteCont));
+                }
+                else
+                {
+                    WriteEventLog(g_CON_LEVEL_INFO, "削除対象の検査画像フォルダーはありません。");
                 }
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
 
                 // メッセージ出力
                 Console.WriteLine("初期起動時に例外が発生しました。");
@@ -226,7 +243,7 @@ namespace DelImage
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
 
                 // メッセージ出力
                 Console.WriteLine(g_clsMessageInfo.strMsgE0034);
