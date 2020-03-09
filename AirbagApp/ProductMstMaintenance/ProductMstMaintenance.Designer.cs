@@ -225,8 +225,8 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel13.ColumnCount = 3;
-            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.51064F));
-            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15.15957F));
+            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 34.30851F));
+            this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.3617F));
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.06383F));
             this.tableLayoutPanel13.Controls.Add(this.label17, 0, 1);
             this.tableLayoutPanel13.Controls.Add(this.label56, 0, 2);
@@ -331,11 +331,11 @@
             // txtAiModelName
             // 
             this.tableLayoutPanel13.SetColumnSpan(this.txtAiModelName, 2);
-            this.txtAiModelName.Location = new System.Drawing.Point(126, 104);
+            this.txtAiModelName.Location = new System.Drawing.Point(129, 104);
             this.txtAiModelName.Margin = new System.Windows.Forms.Padding(0);
             this.txtAiModelName.MaxLength = 259;
             this.txtAiModelName.Name = "txtAiModelName";
-            this.txtAiModelName.Size = new System.Drawing.Size(250, 26);
+            this.txtAiModelName.Size = new System.Drawing.Size(247, 26);
             this.txtAiModelName.TabIndex = 7;
             this.txtAiModelName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
