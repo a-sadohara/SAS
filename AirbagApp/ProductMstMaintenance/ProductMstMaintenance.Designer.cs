@@ -337,7 +337,6 @@
             this.txtAiModelName.Name = "txtAiModelName";
             this.txtAiModelName.Size = new System.Drawing.Size(247, 26);
             this.txtAiModelName.TabIndex = 7;
-            this.txtAiModelName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // tableLayoutPanel11
             // 

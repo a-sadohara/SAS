@@ -1907,7 +1907,7 @@ namespace ProductMstMaintenance
             }
 
             // 最大範囲入力チェック
-            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 26, strFileReadLine) == false ||
+            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 27, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, 1, 480, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, 1, 480, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, 1, 480, strFileReadLine) == false ||
