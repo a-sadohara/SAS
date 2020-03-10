@@ -27,11 +27,11 @@ namespace DelCSV
         // システム設定情報クラス
         public static SystemSettingInfo g_clsSystemSettingInfo;
 
-        // メッセージ情報クラス
-        public static MessageInfo g_clsMessageInfo;
-
         // システム設定情報取得時のエラーメッセージ格納用
         private static StringBuilder m_sbErrMessage = new StringBuilder();
+
+        // 削除CSVの情報格納用
+        private static StringBuilder m_sbDelCSVInfo = new StringBuilder();
 
         // イベントログ出力関連
         private static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -61,9 +61,6 @@ namespace DelCSV
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_WARN, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
 
-                    // メッセージ出力
-                    Console.WriteLine("接続文字列取得時に例外が発生しました。");
-
                     return;
                 }
 
@@ -89,13 +86,6 @@ namespace DelCSV
                     return;
                 }
 
-                // メッセージ情報取得
-                g_clsMessageInfo = new MessageInfo();
-                if (g_clsMessageInfo.bolNormalEnd == false)
-                {
-                    return;
-                }
-
                 // 対象ディレクトリを取得
                 DirectoryInfo dyInfo = new DirectoryInfo(g_clsSystemSettingInfo.strInspectionResltCsvDirectory);
 
@@ -107,6 +97,7 @@ namespace DelCSV
                     x => string.Compare(x.Extension, ".csv", true) == 0 &&
                     x.LastWriteTime < datRetentionPeriod))
                 {
+                    m_sbDelCSVInfo.AppendLine(fInfo.Name);
                     fInfo.Delete();
                     m_intDeleteCont++;
                 }
@@ -116,8 +107,10 @@ namespace DelCSV
                     WriteEventLog(
                         g_CON_LEVEL_INFO,
                         string.Format(
-                            "{0}個のCSVファイルを削除しました。",
-                            m_intDeleteCont));
+                            "下記{0}個のCSVファイルを削除しました。{1}{2}",
+                            m_intDeleteCont,
+                            Environment.NewLine,
+                            m_sbDelCSVInfo.ToString()));
                 }
                 else
                 {
@@ -128,9 +121,6 @@ namespace DelCSV
             {
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_WARN, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
-
-                // メッセージ出力
-                Console.WriteLine("初期起動時に例外が発生しました。");
 
                 return;
             }

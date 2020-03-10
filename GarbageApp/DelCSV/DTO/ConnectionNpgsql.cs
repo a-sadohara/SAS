@@ -14,14 +14,6 @@ namespace DelCSV
         // DBトランザクションオブジェクト
         public static NpgsqlTransaction NpgsqlTran;
 
-        // パラメータ構造体
-        public struct structParameter
-        {
-            public string ParameterName;
-            public DbType DbType;
-            public object Value;
-        }
-
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -167,7 +159,7 @@ namespace DelCSV
         /// <param name="dtData">データテーブル</param>
         /// <param name="strSQL">SQL</param>
         /// <param name="lstNpgsqlCommand">コマンド配列</param>
-        public void SelectSQL(ref DataTable dtData, string strSQL, List<structParameter> lstNpgsqlCommand = null)
+        public void SelectSQL(ref DataTable dtData, string strSQL)
         {
             NpgsqlDataAdapter NpgsqlDtAd = null;
             try
@@ -175,15 +167,6 @@ namespace DelCSV
                 DbOpen();
 
                 NpgsqlDtAd = new NpgsqlDataAdapter(strSQL, NpgsqlCon);
-
-                // パラメータ引数
-                if (lstNpgsqlCommand != null)
-                {
-                    foreach (structParameter Parameter in lstNpgsqlCommand)
-                    {
-                        NpgsqlDtAd.SelectCommand.Parameters.Add(new NpgsqlParameter(Parameter.ParameterName, Parameter.DbType) { Value = Parameter.Value });
-                    }
-                }
 
                 NpgsqlDtAd.Fill(dtData);
             }
@@ -197,53 +180,6 @@ namespace DelCSV
                 {
                     DbClose();
                 }
-            }
-        }
-
-        /// <summary>
-        /// 登録・更新処理実行
-        /// </summary>
-        /// <param name="strSQL">SQL</param>
-        /// <param name="lstNpgsqlCommand">コマンド配列</param>
-        public void ExecTranSQL(string strSQL, List<structParameter> lstNpgsqlCommand = null)
-        {
-            NpgsqlCommand NpgsqlCom = null;
-
-            try
-            {
-                DbOpen();
-
-                NpgsqlCom = new NpgsqlCommand(strSQL, NpgsqlCon);
-
-                NpgsqlCommand command = new NpgsqlCommand(strSQL, NpgsqlCon, NpgsqlTran);
-
-                // パラメータ引数
-                if (lstNpgsqlCommand != null)
-                {
-                    foreach (structParameter Parameter in lstNpgsqlCommand)
-                    {
-                        command.Parameters.Add(new NpgsqlParameter(Parameter.ParameterName, Parameter.DbType) { Value = Parameter.Value });
-                    }
-                }
-
-                // トランザクション開始
-                DbBeginTran();
-
-                command.ExecuteNonQuery();
-
-                // 任意のタイミングで実施してください
-                //DbCommit();
-            }
-            catch (NpgsqlException ex)
-            {
-                DbRollback();
-                DbClose();
-                throw ex;
-            }
-            finally
-            {
-                // 任意のタイミングで実施してください
-                //DbClose();
             }
         }
     }

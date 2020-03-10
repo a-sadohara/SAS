@@ -27,11 +27,11 @@ namespace DelImage
         // システム設定情報クラス
         public static SystemSettingInfo g_clsSystemSettingInfo;
 
-        // メッセージ情報クラス
-        public static MessageInfo g_clsMessageInfo;
-
         // システム設定情報取得時のエラーメッセージ格納用
         private static StringBuilder m_sbErrMessage = new StringBuilder();
+
+        // 削除ディレクトリの情報格納用
+        private static StringBuilder m_sbDelImageInfo = new StringBuilder();
 
         // イベントログ出力関連
         private static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -44,6 +44,7 @@ namespace DelImage
         // 抽出データ
         private static DataTable m_dtData;
         private static string m_strFolderPath = string.Empty;
+        private static string m_strFolderName = string.Empty;
 
         // 削除件数
         private static int m_intDeleteCont = 0;
@@ -71,9 +72,6 @@ namespace DelImage
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_WARN, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
 
-                    // メッセージ出力
-                    Console.WriteLine("接続文字列取得時に例外が発生しました。");
-
                     return;
                 }
 
@@ -99,13 +97,6 @@ namespace DelImage
                     return;
                 }
 
-                // メッセージ情報取得
-                g_clsMessageInfo = new MessageInfo();
-                if (g_clsMessageInfo.bolNormalEnd == false)
-                {
-                    return;
-                }
-
                 // 保持期間の取得
                 DateTime datRetentionPeriod = DateTime.Now.Date.AddMonths(-1 * int.Parse(g_strImageRetentionPeriod));
 
@@ -119,21 +110,24 @@ namespace DelImage
                     m_strProductName = row["product_name"].ToString();
                     m_strFabricName = row["fabric_name"].ToString();
                     m_intInspectionNum = int.Parse(row["inspection_num"].ToString());
+                    m_strFolderName =
+                        string.Join(
+                            "_",
+                            m_strInspectionDate,
+                            m_strProductName,
+                            m_strFabricName,
+                            m_intInspectionNum);
 
                     // 検査画像が格納されているフォルダパスを設定
                     m_strFolderPath =
                         Path.Combine(
                             g_clsSystemSettingInfo.strFaultImageDirectory,
-                            string.Join(
-                                "_",
-                                m_strInspectionDate,
-                                m_strProductName,
-                                m_strFabricName,
-                                m_intInspectionNum));
+                            m_strFolderName);
 
                     // フォルダパスが存在する場合、削除
                     if (Directory.Exists(m_strFolderPath))
                     {
+                        m_sbDelImageInfo.AppendLine(m_strFolderName);
                         Directory.Delete(m_strFolderPath, true);
                         m_intDeleteCont++;
                     }
@@ -144,8 +138,10 @@ namespace DelImage
                     WriteEventLog(
                         g_CON_LEVEL_INFO,
                         string.Format(
-                            "{0}個の検査画像フォルダーを削除しました。",
-                            m_intDeleteCont));
+                            "下記{0}個の検査画像フォルダーを削除しました。{1}{2}",
+                            m_intDeleteCont,
+                            Environment.NewLine,
+                            m_sbDelImageInfo.ToString()));
                 }
                 else
                 {
@@ -156,9 +152,6 @@ namespace DelImage
             {
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_WARN, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
-
-                // メッセージ出力
-                Console.WriteLine("初期起動時に例外が発生しました。");
 
                 return;
             }
@@ -243,10 +236,7 @@ namespace DelImage
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-
-                // メッセージ出力
-                Console.WriteLine(g_clsMessageInfo.strMsgE0034);
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", "検査情報ヘッダーから削除対象情報の取得時に例外が発生しました。", Environment.NewLine, ex.Message));
             }
             finally
             {

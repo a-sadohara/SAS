@@ -205,7 +205,7 @@ namespace DelRecord
         /// </summary>
         /// <param name="strSQL">SQL</param>
         /// <param name="lstNpgsqlCommand">コマンド配列</param>
-        public void ExecTranSQL(string strSQL, List<structParameter> lstNpgsqlCommand = null)
+        public int ExecTranSQL(string strSQL, List<structParameter> lstNpgsqlCommand = null)
         {
             NpgsqlCommand NpgsqlCom = null;
 
@@ -229,7 +229,7 @@ namespace DelRecord
                 // トランザクション開始
                 DbBeginTran();
 
-                command.ExecuteNonQuery();
+                return command.ExecuteNonQuery();
 
                 // 任意のタイミングで実施してください
                 //DbCommit();

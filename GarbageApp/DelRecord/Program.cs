@@ -26,9 +26,6 @@ namespace DelRecord
         // システム設定情報クラス
         public static SystemSettingInfo g_clsSystemSettingInfo;
 
-        // メッセージ情報クラス
-        public static MessageInfo g_clsMessageInfo;
-
         // システム設定情報取得時のエラーメッセージ格納用
         private static StringBuilder m_sbErrMessage = new StringBuilder();
 
@@ -45,6 +42,11 @@ namespace DelRecord
 
         // 抽出データ
         private static DataTable m_dtData;
+
+        // 削除件数
+        private static int m_intDeleteCont_PublicHeader = 0;
+        private static int m_intDeleteCont_ImagecheckerHeader = 0;
+        private static int m_intDeleteCont_ImagecheckerResult = 0;
 
         // パラメータ変数
         private static int m_intInspectionNum = 0;
@@ -72,9 +74,6 @@ namespace DelRecord
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_WARN, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
 
-                    // メッセージ出力
-                    Console.WriteLine("接続文字列取得時に例外が発生しました。");
-
                     return;
                 }
 
@@ -96,13 +95,6 @@ namespace DelRecord
                 // システム設定情報取得
                 g_clsSystemSettingInfo = new SystemSettingInfo();
                 if (g_clsSystemSettingInfo.bolNormalEnd == false)
-                {
-                    return;
-                }
-
-                // メッセージ情報取得
-                g_clsMessageInfo = new MessageInfo();
-                if (g_clsMessageInfo.bolNormalEnd == false)
                 {
                     return;
                 }
@@ -136,13 +128,21 @@ namespace DelRecord
                         m_strFabric_name));
                 }
 
-                if (m_sbDelRecordInfo.Length > 0)
+                if (m_intDeleteCont_PublicHeader > 0 ||
+                    m_intDeleteCont_ImagecheckerHeader > 0 ||
+                    m_intDeleteCont_ImagecheckerResult > 0)
                 {
                     WriteEventLog(
                         g_CON_LEVEL_INFO,
                         string.Format(
-                            "下記{0}レコードを削除しました。{1}{2}",
-                            m_dtData.Rows.Count,
+                            "下記情報のレコードを削除しました。{0}・public.inspection_info_header:{1}件{2}・imagecheckerschema.inspection_info_header:{3}件{4}・imagecheckerschema.decision_result:{5}件{6}{7}{8}",
+                            Environment.NewLine,
+                            m_intDeleteCont_PublicHeader,
+                            Environment.NewLine,
+                            m_intDeleteCont_ImagecheckerHeader,
+                            Environment.NewLine,
+                            m_intDeleteCont_ImagecheckerResult,
+                            Environment.NewLine,
                             Environment.NewLine,
                             m_sbDelRecordInfo.ToString()));
                 }
@@ -155,9 +155,6 @@ namespace DelRecord
             {
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_WARN, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
-
-                // メッセージ出力
-                Console.WriteLine("初期起動時に例外が発生しました。");
 
                 return;
             }
@@ -243,10 +240,7 @@ namespace DelRecord
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-
-                // メッセージ出力
-                Console.WriteLine(g_clsMessageInfo.strMsgE0034);
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", "検査情報ヘッダーから削除対象情報の取得時に例外が発生しました。", Environment.NewLine, ex.Message));
             }
             finally
             {
@@ -262,6 +256,8 @@ namespace DelRecord
         {
             try
             {
+                int intDeleteCont = 0;
+
                 // SQL文を作成する
                 string strDeleteSql = @"DELETE FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".inspection_info_header 
                                         WHERE inspection_num = :inspection_num 
@@ -277,17 +273,20 @@ namespace DelRecord
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
 
                 // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strDeleteSql, lstNpgsqlCommand);
+                intDeleteCont = g_clsConnectionNpgsql.ExecTranSQL(strDeleteSql, lstNpgsqlCommand);
+
+                // 削除件数を加算する
+                if (intDeleteCont > 0)
+                {
+                    m_intDeleteCont_PublicHeader += intDeleteCont;
+                }
 
                 g_clsConnectionNpgsql.DbCommit();
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-
-                // メッセージ出力
-                Console.WriteLine(g_clsMessageInfo.strMsgE0034);
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", "検査情報ヘッダーの削除処理で例外が発生しました。", Environment.NewLine, ex.Message));
             }
             finally
             {
@@ -303,6 +302,8 @@ namespace DelRecord
         {
             try
             {
+                int intDeleteCont = 0;
+
                 // SQL文を作成する
                 string strDeleteSql = @"DELETE FROM " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header 
                                         WHERE inspection_num = :inspection_num 
@@ -318,17 +319,20 @@ namespace DelRecord
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
 
                 // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strDeleteSql, lstNpgsqlCommand);
+                intDeleteCont = g_clsConnectionNpgsql.ExecTranSQL(strDeleteSql, lstNpgsqlCommand);
+
+                // 削除件数を加算する
+                if (intDeleteCont > 0)
+                {
+                    m_intDeleteCont_ImagecheckerHeader += intDeleteCont;
+                }
 
                 g_clsConnectionNpgsql.DbCommit();
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-
-                // メッセージ出力
-                Console.WriteLine(g_clsMessageInfo.strMsgE0034);
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", "検査情報ヘッダーの削除処理で例外が発生しました。", Environment.NewLine, ex.Message));
             }
             finally
             {
@@ -344,6 +348,8 @@ namespace DelRecord
         {
             try
             {
+                int intDeleteCont = 0;
+
                 // SQL文を作成する
                 string strDeleteSql = @"DELETE FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result  
                                         WHERE inspection_num = :inspection_num 
@@ -357,17 +363,20 @@ namespace DelRecord
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
 
                 // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strDeleteSql, lstNpgsqlCommand);
+                intDeleteCont = g_clsConnectionNpgsql.ExecTranSQL(strDeleteSql, lstNpgsqlCommand);
+
+                // 削除件数を加算する
+                if (intDeleteCont > 0)
+                {
+                    m_intDeleteCont_ImagecheckerResult += intDeleteCont;
+                }
 
                 g_clsConnectionNpgsql.DbCommit();
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-
-                // メッセージ出力
-                Console.WriteLine(g_clsMessageInfo.strMsgE0043);
+                WriteEventLog(g_CON_LEVEL_WARN, string.Format("{0}{1}{2}", "合否判定結果の削除処理で例外が発生しました。", Environment.NewLine, ex.Message));
             }
             finally
             {
