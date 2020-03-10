@@ -25,7 +25,7 @@ namespace ImageChecker
         private int m_intAcceptanceCheckStatus = 0;                         // 合否確認ステータス
 
         // パラメータ関連（不変）
-        private readonly string  m_strUnitNum = string.Empty;               // 号機
+        private readonly string m_strUnitNum = string.Empty;                // 号機
         private readonly string m_strProductName = string.Empty;            // 品名
         private readonly string m_strOrderImg = string.Empty;               // 指図
         private readonly string m_strFabricName = string.Empty;             // 反番
@@ -44,11 +44,11 @@ namespace ImageChecker
         // ディレクトリ関連
         private readonly string m_strFaultImageSubDirName = string.Empty;   // 欠点画像サブディレクトリ名
         private readonly string m_strFaultImageSubDirPath = string.Empty;   // 欠点画像サブディレクトリパス
-        
+
         // 検査方向背景色関連
         private readonly Color m_clrInspectionDirectionActFore = System.Drawing.SystemColors.ActiveCaption;
         private readonly Color m_clrInspectionDirectionActBack = SystemColors.Control;
-        
+
         // ページIdx
         private int m_intPageIdx = -1;
 
@@ -261,7 +261,7 @@ namespace ImageChecker
 
                 // 欠点画像にフォーカスセット
                 picMarkingImage.Focus();
-                
+
                 // ページ数表示
                 lblPageCount.Text = string.Format(m_CON_FORMAT_COUNT_SCORES, (intPageIdx + 1).ToString(), m_dtData.Rows.Count.ToString());
 
@@ -414,12 +414,18 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = Convert.ToInt32(m_dtData.Rows[intPageIdx]["line"]) });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = strCloumns });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_detect", 
-                                                                                DbType = DbType.Int16,
-                                                                                Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_nondetect",
-                                                                                DbType = DbType.Int16,
-                                                                                Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter
+                    {
+                        ParameterName = "acceptance_check_result_ng_detect",
+                        DbType = DbType.Int16,
+                        Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect
+                    });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter
+                    {
+                        ParameterName = "acceptance_check_result_ng_nondetect",
+                        DbType = DbType.Int16,
+                        Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect
+                    });
 
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
@@ -860,7 +866,7 @@ namespace ImageChecker
                 return false;
             }
 
-            this.Visible = true;  
+            this.Visible = true;
 
             // 画像表示
             bolDispImageInfo(m_intPageIdx, m_CON_PAGE_WAY_R);
@@ -954,7 +960,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0044 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0044, Environment.NewLine, ex.Message));
             }
         }
 
@@ -982,7 +988,7 @@ namespace ImageChecker
         /// <param name="strItemName">項目名</param>
         /// <param name="strValue">値</param>
         /// <returns>true:OK false:NG</returns>
-        private bool bolChkRequiredInputByItem(Control ctlItem , string strItemName, string strValue)
+        private bool bolChkRequiredInputByItem(Control ctlItem, string strItemName, string strValue)
         {
             // 必須入力チェック
             if (string.IsNullOrEmpty(strValue) == true)
@@ -1107,7 +1113,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0021, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1166,7 +1172,7 @@ namespace ImageChecker
 
                 if (m_intPageIdx <= m_dtData.Rows.Count - 1)
                 {
-                	// 全ての合否確認が済んでいなければ画面を表示
+                    // 全ての合否確認が済んでいなければ画面を表示
                     if (bolDispImageInfo(m_intPageIdx, m_CON_PAGE_WAY_R) == false)
                     {
                         return;
@@ -1246,7 +1252,7 @@ namespace ImageChecker
         {
             SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionR);
         }
-        
+
         /// <summary>
         /// 欠点画像クリック
         /// </summary>
@@ -1561,6 +1567,10 @@ namespace ImageChecker
             string strZipFilePath = string.Empty;
             string strZipArchiveEntryFilePath = string.Empty;
 
+            string strCompletionNoticeCooperationDirectoryPath = string.Empty;
+            string strNgImageCooperationDirectoryPath = string.Empty;
+            string strNotDetectedImageCooperationDirectoryPath = string.Empty;
+
             try
             {
                 // 画像ファイルZIPを選択する
@@ -1585,9 +1595,34 @@ namespace ImageChecker
                         return;
                     }
 
+                    switch (m_strUnitNum)
+                    {
+                        case "N1":
+                            strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN1;
+                            strNgImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN1;
+                            strNotDetectedImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNotDetectedImageCooperationDirectoryN1;
+                            break;
+                        case "N2":
+                            strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN2;
+                            strNgImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN2;
+                            strNotDetectedImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNotDetectedImageCooperationDirectoryN2;
+                            break;
+                        case "N3":
+                            strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN3;
+                            strNgImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN3;
+                            strNotDetectedImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNotDetectedImageCooperationDirectoryN3;
+                            break;
+                        case "N4":
+                            strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN4;
+                            strNgImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN4;
+                            strNotDetectedImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNotDetectedImageCooperationDirectoryN4;
+                            break;
+                        default:
+                            return;
+                    }
+
                     // 出力ファイル設定
-                    strOutPutFilePath = Path.Combine( g_clsSystemSettingInfo.strNotDetectedImageCooperationDirectory 
-                                                                                                       , strFileName + ".txt");
+                    strOutPutFilePath = Path.Combine(strNotDetectedImageCooperationDirectoryPath, strFileName + ".txt");
 
                     // オブジェクトを破棄する
                     ofDialog.Dispose();
@@ -1616,7 +1651,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0051 ,Environment.NewLine , ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0051, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0052, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1665,10 +1700,10 @@ namespace ImageChecker
                     return;
                 }
 
-                strChkExistsFilePath = Path.Combine( g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory 
-                                                                                                      , strFileName + ".txt");
+                strChkExistsFilePath = Path.Combine(strCompletionNoticeCooperationDirectoryPath, strFileName + ".txt");
+
                 // プログレスフォーム表示
-                frmProgressForm = new AddImageProgressForm(strChkExistsFilePath);
+                frmProgressForm = new AddImageProgressForm(m_clsHeaderData, strChkExistsFilePath);
                 frmProgressForm.ShowDialog(this);
 
                 this.Visible = true;
@@ -1805,7 +1840,7 @@ namespace ImageChecker
                     strZipFilePath = Path.Combine(g_strZipExtractDirPath, strFileName + ".zip");
 
                     // 欠点画像ZIPファイルを一時ZIP解凍用フォルダにコピーする
-                    File.Copy(Path.Combine(g_clsSystemSettingInfo.strNgImageCooperationDirectory, strFileName + ".zip"),
+                    File.Copy(Path.Combine(strNgImageCooperationDirectoryPath, strFileName + ".zip"),
                                            strZipFilePath, true);
 
                     // 一時ディレクトリに欠点画像のフォルダが存在する場合は削除する
@@ -1855,7 +1890,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}",  g_clsMessageInfo.strMsgE0040 ,Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1909,7 +1944,7 @@ namespace ImageChecker
                     drNew["marking_imagepath"] = dtData.Rows[0]["marking_imagepath"];
                     drNew["over_detection_except_result"] = dtData.Rows[0]["over_detection_except_result"];
                     drNew["acceptance_check_result"] = dtData.Rows[0]["acceptance_check_result"];
-                     
+
                     // データを差し込み
                     m_dtData.Rows.InsertAt(drNew, m_intPageIdx);
 
@@ -1922,7 +1957,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 

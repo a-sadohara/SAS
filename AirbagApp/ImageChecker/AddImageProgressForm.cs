@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ImageChecker.DTO;
+using System;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -17,16 +18,20 @@ namespace ImageChecker
 
         private delegate void Del();
 
+        private HeaderData m_clsHeaderData;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="strChkFilePath">確認ファイルパス</param>
-        public AddImageProgressForm(string strChkFilePath)
+        public AddImageProgressForm(HeaderData clsHeaderData, string strChkFilePath)
         {
             bolChgFile = false;
 
             m_strChkFilePath = strChkFilePath;
+
+            m_clsHeaderData = clsHeaderData;
 
             InitializeComponent();
 
@@ -44,8 +49,10 @@ namespace ImageChecker
 
             //this.Close();
             // ※InvalidOperationExceptionが発生
-            new Thread(new ThreadStart(delegate {
-                Invoke((Del)delegate {
+            new Thread(new ThreadStart(delegate
+            {
+                Invoke((Del)delegate
+                {
                     this.Close();
                 });
             })).Start();
@@ -66,12 +73,32 @@ namespace ImageChecker
 
             DispatcherTimer dtVisiblebtnCancel;
 
+            string strCompletionNoticeCooperationDirectoryPath = string.Empty;
+
             try
             {
                 // 同期的に未検知画像連携ディレクトリの監視する
                 m_fsWatcher = new FileSystemWatcher();
 
-                m_fsWatcher.Path = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory;
+                switch (m_clsHeaderData.strUnitNum)
+                {
+                    case "N1":
+                        strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN1;
+                        break;
+                    case "N2":
+                        strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN2;
+                        break;
+                    case "N3":
+                        strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN3;
+                        break;
+                    case "N4":
+                        strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN4;
+                        break;
+                    default:
+                        return;
+                }
+
+                m_fsWatcher.Path = strCompletionNoticeCooperationDirectoryPath;
                 m_fsWatcher.Filter = string.Empty;
                 m_fsWatcher.IncludeSubdirectories = false;
                 //ファイル名とディレクトリ名と最終書き込む日時の変更を監視

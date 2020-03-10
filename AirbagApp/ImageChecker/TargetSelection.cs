@@ -7,9 +7,8 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using System.Windows.Forms;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
 using static ImageChecker.Common;
 
 namespace ImageChecker
@@ -66,13 +65,15 @@ namespace ImageChecker
         /// </summary>
         /// <param name="strFaultImage"></param>
         /// <returns></returns>
-        private async Task<Boolean> BolImpFatalImage(string strFaultImage)
+        private async Task<Boolean> BolImpFatalImage(
+            string strNgImageCooperationDirectory,
+            string strFaultImage)
         {
             try
             {
 
                 // ZIPファイルを一時ZIP解凍用格納先ディレクトリにコピーする
-                File.Copy(Path.Combine(g_clsSystemSettingInfo.strNgImageCooperationDirectory, strFaultImage + ".zip"),
+                File.Copy(Path.Combine(strNgImageCooperationDirectory, strFaultImage + ".zip"),
                           Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"), true);
 
                 // 欠点画像ZIPファイルの解凍
@@ -843,100 +844,117 @@ namespace ImageChecker
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
 
+            // チェック対象の完了通知連携ディレクトリ・NG画像連携ディレクトリ情報を設定する
+            List<string>[] lstdirectoryPath = new List<string>[]
+            {
+                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN1, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN1 },
+                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN2, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN2 },
+                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN3, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN3 },
+                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN4, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN4 }
+            };
+
             try
             {
-                // 完了通知ファイル(.TXT)の確認を実施
-                foreach (string strFilePath in System.IO.Directory.GetFiles(g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectory, "*.txt",
-                    System.IO.SearchOption.TopDirectoryOnly))
+                for (int rowIndex = 0; rowIndex <= lstdirectoryPath.GetUpperBound(0); rowIndex++)
                 {
-                    // 初期化
-                    strInspectionDate = "";
-                    strProductName = "";
-                    strFabricName = "";
-                    intInspectionNum = 0;
-                    strFaultImageSubDirectory = "";
-                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                    intCnt = 0;
-
-                    // ファイル名の取得
-                    strFileName = Path.GetFileNameWithoutExtension(strFilePath);
-
-                    // ファイル名からパラメータを取得
-                    strSplitFileName = strFileName.Split('_');
-
-                    // パラメータを設定
-                    if (strSplitFileName.Length == 4)
-                    {
-                        strInspectionDate = strSplitFileName[0].Insert(6, "/").Insert(4, "/");
-                        strProductName = strSplitFileName[1];
-                        strFabricName = strSplitFileName[2];
-                        intInspectionNum = int.Parse(strSplitFileName[3]);
-
-                        strFaultImageSubDirectory = string.Join("_", strInspectionDate.Replace("/", ""),
-                                                                        strProductName,
-                                                                        strFabricName,
-                                                                        intInspectionNum);
-                    }
-
-                    // 取得失敗した場合は次のループ
-                    if (string.IsNullOrEmpty(strInspectionDate) || string.IsNullOrEmpty(strProductName) || string.IsNullOrEmpty(strFabricName) || intInspectionNum == 0)
+                    // 完了通知連携ディレクトリが未設定の場合、処理をスキップする
+                    if (string.IsNullOrWhiteSpace(lstdirectoryPath[rowIndex][0]))
                     {
                         continue;
                     }
 
-                    // 連携済みチェック
-                    try
+                    // 完了通知ファイル(.TXT)の確認を実施
+                    foreach (string strFilePath in System.IO.Directory.GetFiles(lstdirectoryPath[rowIndex][0], "*.txt",
+                        System.IO.SearchOption.TopDirectoryOnly))
                     {
-                        dtData = new DataTable();
-                        strSQL = @"SELECT COUNT(inspection_num) AS cnt ";
-                        strSQL += @"FROM  " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header ";
-                        strSQL += @"WHERE fabric_name = :fabric_name ";
-                        strSQL += @"AND   inspection_num = :inspection_num ";
-                        strSQL += @"AND   TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd ";
-
-                        // SQLコマンドに各パラメータを設定する
+                        // 初期化
+                        strInspectionDate = "";
+                        strProductName = "";
+                        strFabricName = "";
+                        intInspectionNum = 0;
+                        strFaultImageSubDirectory = "";
                         lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                        intCnt = 0;
 
-                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+                        // ファイル名の取得
+                        strFileName = Path.GetFileNameWithoutExtension(strFilePath);
 
-                        // 件数
-                        if (dtData.Rows.Count > 0)
+                        // ファイル名からパラメータを取得
+                        strSplitFileName = strFileName.Split('_');
+
+                        // パラメータを設定
+                        if (strSplitFileName.Length == 4)
                         {
-                            intCnt = int.Parse(dtData.Rows[0]["cnt"].ToString());
+                            strInspectionDate = strSplitFileName[0].Insert(6, "/").Insert(4, "/");
+                            strProductName = strSplitFileName[1];
+                            strFabricName = strSplitFileName[2];
+                            intInspectionNum = int.Parse(strSplitFileName[3]);
+
+                            strFaultImageSubDirectory = string.Join("_", strInspectionDate.Replace("/", ""),
+                                                                            strProductName,
+                                                                            strFabricName,
+                                                                            intInspectionNum);
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
-                        // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        frmProgress.Close();
-                        return;
-                    }
+                        // 取得失敗した場合は次のループ
+                        if (string.IsNullOrEmpty(strInspectionDate) || string.IsNullOrEmpty(strProductName) || string.IsNullOrEmpty(strFabricName) || intInspectionNum == 0)
+                        {
+                            continue;
+                        }
 
-                    // 欠点画像の取込み処理
-                    // フォルダの存在チェック
-                    if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImageSubDirectory)) == false)
-                    {
-                        lstTask.Add(Task<Boolean>.Run(() => BolImpFatalImage(strFaultImageSubDirectory)));
-                        System.Threading.Thread.Sleep(1000);
-                    }
+                        // 連携済みチェック
+                        try
+                        {
+                            dtData = new DataTable();
+                            strSQL = @"SELECT COUNT(inspection_num) AS cnt ";
+                            strSQL += @"FROM  " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header ";
+                            strSQL += @"WHERE fabric_name = :fabric_name ";
+                            strSQL += @"AND   inspection_num = :inspection_num ";
+                            strSQL += @"AND   TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd ";
 
-                    if (intCnt >= 1)
-                    {
-                        // 連携済みのため、次を処理
-                        continue;
-                    }
+                            // SQLコマンドに各パラメータを設定する
+                            lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
 
-                    // 検査情報ヘッダの取り込み処理
-                    try
-                    {
-                        strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header(
+                            g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                            // 件数
+                            if (dtData.Rows.Count > 0)
+                            {
+                                intCnt = int.Parse(dtData.Rows[0]["cnt"].ToString());
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // ログ出力
+                            WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                            // メッセージ出力
+                            MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            frmProgress.Close();
+                            return;
+                        }
+
+                        // 欠点画像の取込み処理
+                        // フォルダの存在チェック
+                        if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImageSubDirectory)) == false)
+                        {
+                            lstTask.Add(Task<Boolean>.Run(() => BolImpFatalImage(lstdirectoryPath[rowIndex][1], strFaultImageSubDirectory)));
+                            System.Threading.Thread.Sleep(1000);
+                        }
+
+                        if (intCnt >= 1)
+                        {
+                            // 連携済みのため、次を処理
+                            continue;
+                        }
+
+                        // 検査情報ヘッダの取り込み処理
+                        try
+                        {
+                            strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header(
                                     inspection_num
                                     , branch_num
                                     , product_name
@@ -982,32 +1000,32 @@ namespace ImageChecker
                                     AND inspection_num = :inspection_num
                                     AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd";
 
-                        // SQLコマンドに各パラメータを設定する
-                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                            // SQLコマンドに各パラメータを設定する
+                            lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
 
-                        // sqlを実行する
-                        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
-                    }
-                    catch (Exception ex)
-                    {
-                        g_clsConnectionNpgsql.DbRollback();
+                            // sqlを実行する
+                            g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                        }
+                        catch (Exception ex)
+                        {
+                            g_clsConnectionNpgsql.DbRollback();
 
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-                        // メッセージ出力
-                        MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            // ログ出力
+                            WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                            // メッセージ出力
+                            MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        frmProgress.Close();
-                        return;
-                    }
+                            frmProgress.Close();
+                            return;
+                        }
 
-                    try
-                    {
-                        // 判定結果の取り込み処理
-                        strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
+                        try
+                        {
+                            // 判定結果の取り込み処理
+                            strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
                                     fabric_name
                                     , inspection_num
                                     , inspection_date
@@ -1088,30 +1106,31 @@ namespace ImageChecker
                                 ) rpd
                                 WHERE SEQ = 1";
 
-                        // SQLコマンドに各パラメータを設定する
-                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultNg });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultNg });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultNg });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
-                        // sqlを実行する
-                        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
-                    }
-                    catch (Exception ex)
-                    {
-                        g_clsConnectionNpgsql.DbRollback();
+                            // SQLコマンドに各パラメータを設定する
+                            lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultNg });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultNg });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultNg });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
+                            // sqlを実行する
+                            g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                        }
+                        catch (Exception ex)
+                        {
+                            g_clsConnectionNpgsql.DbRollback();
 
-                        // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-                        // メッセージ出力
-                        MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0039, strFabricName, intInspectionNum), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            // ログ出力
+                            WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                            // メッセージ出力
+                            MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0039, strFabricName, intInspectionNum), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        frmProgress.Close();
-                        return;
+                            frmProgress.Close();
+                            return;
+                        }
                     }
                 }
 

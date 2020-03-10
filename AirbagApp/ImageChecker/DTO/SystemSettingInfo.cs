@@ -28,11 +28,20 @@ namespace ImageChecker.DTO
         //システム情報設定テーブル
         //==============================
         // ディレクトリ
-        public readonly string strNgImageCooperationDirectory;                      // NG画像連携
-        public readonly string strCompletionNoticeCooperationDirectory;             // 完了通知連携
+        public readonly string strNgImageCooperationDirectoryN1;                    // NG画像連携N1
+        public readonly string strNgImageCooperationDirectoryN2;                    // NG画像連携N2
+        public readonly string strNgImageCooperationDirectoryN3;                    // NG画像連携N3
+        public readonly string strNgImageCooperationDirectoryN4;                    // NG画像連携N4
+        public readonly string strCompletionNoticeCooperationDirectoryN1;           // 完了通知連携N1
+        public readonly string strCompletionNoticeCooperationDirectoryN2;           // 完了通知連携N2
+        public readonly string strCompletionNoticeCooperationDirectoryN3;           // 完了通知連携N3
+        public readonly string strCompletionNoticeCooperationDirectoryN4;           // 完了通知連携N4
         public readonly string strFaultImageDirectory;                              // 欠点画像格納
         public readonly string strMasterImageDirectory;                             // マスタ画像格納
-        public readonly string strNotDetectedImageCooperationDirectory;             // 未検知画像連携
+        public readonly string strNotDetectedImageCooperationDirectoryN1;           // 未検知画像連携N1
+        public readonly string strNotDetectedImageCooperationDirectoryN2;           // 未検知画像連携N2
+        public readonly string strNotDetectedImageCooperationDirectoryN3;           // 未検知画像連携N3
+        public readonly string strNotDetectedImageCooperationDirectoryN4;           // 未検知画像連携N4
         public readonly string strProductionManagementCooperationDirectory;         // 生産管理システム連携
         public readonly string strInspectionResltCsvDirectory;                      // 検査結果CSV保存先
         public readonly string strTemporaryDirectory;                               // 一時
@@ -114,11 +123,20 @@ namespace ImageChecker.DTO
                 GetAppConfigValue("TemporaryDirectory", ref strTemporaryDirectory);
 
                 // システム設定から情報を取得
-                GetSystemSettingValue("NgImageCooperationDirectory", ref strNgImageCooperationDirectory);
-                GetSystemSettingValue("CompletionNoticeCooperationDirectory", ref strCompletionNoticeCooperationDirectory);
+                GetSystemSettingValue("NgImageCooperationDirectoryN1", ref strNgImageCooperationDirectoryN1);
+                GetSystemSettingValue("NgImageCooperationDirectoryN2", ref strNgImageCooperationDirectoryN2);
+                GetSystemSettingValue("NgImageCooperationDirectoryN3", ref strNgImageCooperationDirectoryN3);
+                GetSystemSettingValue("NgImageCooperationDirectoryN4", ref strNgImageCooperationDirectoryN4);
+                GetSystemSettingValue("CompletionNoticeCooperationDirectoryN1", ref strCompletionNoticeCooperationDirectoryN1);
+                GetSystemSettingValue("CompletionNoticeCooperationDirectoryN2", ref strCompletionNoticeCooperationDirectoryN2);
+                GetSystemSettingValue("CompletionNoticeCooperationDirectoryN3", ref strCompletionNoticeCooperationDirectoryN3);
+                GetSystemSettingValue("CompletionNoticeCooperationDirectoryN4", ref strCompletionNoticeCooperationDirectoryN4);
                 GetSystemSettingValue("FaultImageDirectory", ref strFaultImageDirectory);
                 GetSystemSettingValue("MasterImageDirectory", ref strMasterImageDirectory);
-                GetSystemSettingValue("NotDetectedImageCooperationDirectory", ref strNotDetectedImageCooperationDirectory);
+                GetSystemSettingValue("NotDetectedImageCooperationDirectoryN1", ref strNotDetectedImageCooperationDirectoryN1);
+                GetSystemSettingValue("NotDetectedImageCooperationDirectoryN2", ref strNotDetectedImageCooperationDirectoryN2);
+                GetSystemSettingValue("NotDetectedImageCooperationDirectoryN3", ref strNotDetectedImageCooperationDirectoryN3);
+                GetSystemSettingValue("NotDetectedImageCooperationDirectoryN4", ref strNotDetectedImageCooperationDirectoryN4);
                 GetSystemSettingValue("CooperationBaseInstanceName", ref strCooperationBaseInstanceName);
                 GetSystemSettingValue("WaitingTimeProcessed", ref intWaitingTimeProcessed);
                 GetSystemSettingValue("ProductionManagementCooperationDirectory", ref strProductionManagementCooperationDirectory);
@@ -179,7 +197,7 @@ namespace ImageChecker.DTO
                     foreach (string Message in lststrErrorMessage)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "システム設定取得時にエラーが発生しました。{0}{1}",Environment.NewLine, Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("システム設定取得時にエラーが発生しました。{0}{1}", Environment.NewLine, Message));
                     }
 
                     // メッセージ出力
@@ -193,7 +211,7 @@ namespace ImageChecker.DTO
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR,string.Format( "システム設定取得時にエラーが発生しました。{0}{1}" ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("システム設定取得時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show("システム設定取得時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -210,7 +228,7 @@ namespace ImageChecker.DTO
             strValue = ConfigurationManager.AppSettings[strKey];
             if (string.IsNullOrEmpty(strValue))
             {
-                lststrErrorMessage.Add(string.Format( "Key[{0}] AppConfigに存在しません。", strKey));
+                lststrErrorMessage.Add(string.Format("Key[{0}] AppConfigに存在しません。", strKey));
             }
         }
 
@@ -231,7 +249,7 @@ namespace ImageChecker.DTO
             }
             catch (Exception ex)
             {
-                lststrErrorMessage.Add(string.Format("Key[{0}]{1}" , strKey , ex.Message));
+                lststrErrorMessage.Add(string.Format("Key[{0}]{1}", strKey, ex.Message));
             }
         }
 
