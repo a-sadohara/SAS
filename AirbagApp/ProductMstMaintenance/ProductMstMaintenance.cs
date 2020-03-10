@@ -15,6 +15,7 @@ namespace ProductMstMaintenance
         // 定数
         private const int m_CON_REALITY_SIZE_W = 640;
         private const int m_CON_REALITY_SIZE_H = 480;
+        private const string m_CON_DISPLAY_POSITION_LABEL = "表示位置：{0},{1}";
 
         // マスタ列名
         private const string m_CON_COLNAME_PRODUCT_NAME = "product_name";
@@ -209,6 +210,12 @@ namespace ProductMstMaintenance
 
                 // 取得結果反映処理
                 CreateFormInfo();
+
+                displayPositionLabel.Text =
+                    string.Format(
+                        m_CON_DISPLAY_POSITION_LABEL,
+                        0,
+                        0);
             }
         }
 
@@ -350,6 +357,57 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
+        /// マスタ画像クリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void picMasterImage_MouseDown(object sender, MouseEventArgs e)
+        {
+            // マウス座標を取得
+            var x = e.Location.X;
+            var y = e.Location.Y;
+
+            // 基準のピクチャボックスより、高さ・幅を取得
+            var picHeight = picMasterImage.ClientSize.Height;
+            var picWidth = picMasterImage.ClientSize.Width;
+            var imgHeight = picMasterImage.Image.Height;
+            var imgWidth = picMasterImage.Image.Width;
+
+            int intXcoordinate = 0;
+            int intYcoordinate = 0;
+
+            // ピクチャボックス上の座標を特定する
+            if (picWidth / (float)picHeight > imgWidth / (float)imgHeight)
+            {
+                var scaledW = imgWidth * picHeight / (float)imgHeight;
+                var dx = (picWidth - scaledW) / 2;
+                intXcoordinate = (int)((x - dx) * imgHeight / picHeight);
+
+                intYcoordinate = (int)(imgHeight * y / (float)picHeight);
+            }
+            else
+            {
+                intXcoordinate = (int)(imgWidth * x / (float)picWidth);
+
+                var scaledH = imgHeight * picWidth / (float)imgWidth;
+                var dy = (picHeight - scaledH) / 2;
+                intYcoordinate = (int)((y - dy) * imgWidth / picWidth);
+            }
+
+            // 算出結果が不正な場合、処理を終了する
+            if (intXcoordinate < 0 || imgWidth < intXcoordinate || intYcoordinate < 0 || imgHeight < intYcoordinate)
+            {
+                return;
+            }
+
+            displayPositionLabel.Text =
+                string.Format(
+                    m_CON_DISPLAY_POSITION_LABEL,
+                    intXcoordinate,
+                    intYcoordinate);
+        }
+
+        /// <summary>
         /// 数値入力チェック
         /// </summary>
         /// <param name="sender"></param>
@@ -419,6 +477,7 @@ namespace ProductMstMaintenance
                 pctLineCtrl = (PictureBox)picMasterImage.Controls[picMasterImage.Controls.Count - 1];
                 pctLineCtrl.Name = strPicBoxDispLineCtrName;
                 pctLineCtrl.ClientSize = new Size(picMasterImage.ClientSize.Width, picMasterImage.ClientSize.Height);
+                pctLineCtrl.MouseDown += new MouseEventHandler(this.picMasterImage_MouseDown);
             }
             else
             {
