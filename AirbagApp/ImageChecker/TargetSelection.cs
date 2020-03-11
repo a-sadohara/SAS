@@ -995,10 +995,15 @@ namespace ImageChecker
                                     , 0
                                     , NULL
                                     , NULL
-                                FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".inspection_info_header
-                                WHERE fabric_name = :fabric_name
-                                    AND inspection_num = :inspection_num
-                                    AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd";
+                                FROM (
+                                    SELECT ROW_NUMBER() OVER(PARTITION BY inspection_date, fabric_name, inspection_num ORDER BY branch_num DESC) AS SEQ
+                                    , header.*
+                                    FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".inspection_info_header AS header
+                                    WHERE fabric_name = :fabric_name
+                                        AND inspection_num = :inspection_num
+                                        AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
+                                ) rpd
+                                WHERE SEQ = 1";
 
                             // SQLコマンドに各パラメータを設定する
                             lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
