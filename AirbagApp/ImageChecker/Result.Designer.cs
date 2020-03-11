@@ -131,7 +131,7 @@
             this.lblDecisionEndTime.AutoSize = true;
             this.lblDecisionEndTime.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblDecisionEndTime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblDecisionEndTime.Location = new System.Drawing.Point(157, 77);
+            this.lblDecisionEndTime.Location = new System.Drawing.Point(187, 77);
             this.lblDecisionEndTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblDecisionEndTime.Name = "lblDecisionEndTime";
             this.lblDecisionEndTime.Size = new System.Drawing.Size(207, 17);
@@ -143,7 +143,7 @@
             this.lblDecisionStartTime.AutoSize = true;
             this.lblDecisionStartTime.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblDecisionStartTime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblDecisionStartTime.Location = new System.Drawing.Point(157, 60);
+            this.lblDecisionStartTime.Location = new System.Drawing.Point(187, 60);
             this.lblDecisionStartTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblDecisionStartTime.Name = "lblDecisionStartTime";
             this.lblDecisionStartTime.Size = new System.Drawing.Size(207, 17);
@@ -155,7 +155,7 @@
             this.lblInspectionLine.AutoSize = true;
             this.lblInspectionLine.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblInspectionLine.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblInspectionLine.Location = new System.Drawing.Point(157, 43);
+            this.lblInspectionLine.Location = new System.Drawing.Point(187, 43);
             this.lblInspectionLine.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInspectionLine.Name = "lblInspectionLine";
             this.lblInspectionLine.Size = new System.Drawing.Size(152, 17);
@@ -167,7 +167,7 @@
             this.lblEndDatetime.AutoSize = true;
             this.lblEndDatetime.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblEndDatetime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblEndDatetime.Location = new System.Drawing.Point(157, 26);
+            this.lblEndDatetime.Location = new System.Drawing.Point(187, 26);
             this.lblEndDatetime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblEndDatetime.Name = "lblEndDatetime";
             this.lblEndDatetime.Size = new System.Drawing.Size(207, 17);
@@ -179,7 +179,7 @@
             this.lblStartDatetime.AutoSize = true;
             this.lblStartDatetime.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblStartDatetime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblStartDatetime.Location = new System.Drawing.Point(157, 9);
+            this.lblStartDatetime.Location = new System.Drawing.Point(187, 9);
             this.lblStartDatetime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStartDatetime.Name = "lblStartDatetime";
             this.lblStartDatetime.Size = new System.Drawing.Size(207, 17);
@@ -191,7 +191,7 @@
             this.lblCushionCount.AutoSize = true;
             this.lblCushionCount.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblCushionCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblCushionCount.Location = new System.Drawing.Point(157, 111);
+            this.lblCushionCount.Location = new System.Drawing.Point(187, 111);
             this.lblCushionCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCushionCount.Name = "lblCushionCount";
             this.lblCushionCount.Size = new System.Drawing.Size(257, 17);
@@ -203,7 +203,7 @@
             this.lblImageCount.AutoSize = true;
             this.lblImageCount.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblImageCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblImageCount.Location = new System.Drawing.Point(157, 94);
+            this.lblImageCount.Location = new System.Drawing.Point(187, 94);
             this.lblImageCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblImageCount.Name = "lblImageCount";
             this.lblImageCount.Size = new System.Drawing.Size(236, 17);
@@ -215,7 +215,7 @@
             this.lblInspectionNum.AutoSize = true;
             this.lblInspectionNum.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblInspectionNum.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblInspectionNum.Location = new System.Drawing.Point(392, 9);
+            this.lblInspectionNum.Location = new System.Drawing.Point(422, 9);
             this.lblInspectionNum.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInspectionNum.Name = "lblInspectionNum";
             this.lblInspectionNum.Size = new System.Drawing.Size(77, 17);

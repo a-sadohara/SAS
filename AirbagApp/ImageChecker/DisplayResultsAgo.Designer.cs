@@ -695,7 +695,7 @@
             this.txtProductName.Margin = new System.Windows.Forms.Padding(1, 1, 3, 1);
             this.txtProductName.MaxLength = 10;
             this.txtProductName.Name = "txtProductName";
-            this.txtProductName.Size = new System.Drawing.Size(80, 24);
+            this.txtProductName.Size = new System.Drawing.Size(115, 24);
             this.txtProductName.TabIndex = 2;
             this.txtProductName.Text = "W123456789";
             this.txtProductName.DoubleClick += new System.EventHandler(this.txtProductName_DoubleClick);
