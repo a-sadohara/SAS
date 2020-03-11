@@ -420,6 +420,18 @@ namespace ImageChecker
             });
 
 
+            // pictureboxの背景色を初期化
+            foreach (Control ctrChild in tlpImage.Controls)
+            {
+                if (ctrChild.GetType() == typeof(PictureBox))
+                {
+                    PictureBox picWk = (PictureBox)ctrChild;
+                    picWk.ClientSize = new Size(picWk.Size.Width, picWk.Size.Height);
+                    picWk.BackColor = System.Drawing.Color.FromArgb(34, 67, 106);
+                }
+
+            }
+
             // 画像の1件目にフォーカスをセットする
             tlpImage.Controls[0].Focus();
             tlpImage.Controls[0].Select();
