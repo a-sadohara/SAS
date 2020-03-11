@@ -31,6 +31,8 @@ namespace ImageChecker
         private int m_intInspectionNum = 0;             // 検査番号
         private int m_intColumnCnt = 0;                 // 列数
         private int m_intCountInit = -1;                // 初期表示件数
+        private int m_intNgCushionCnt = 0;              // NGクッション数
+        private int m_intNgImageCnt = 0;                // NG画像数
 
         // 定数
         private const string m_CON_FORMAT_UNIT_NUM = "号機：{0}";
@@ -58,6 +60,9 @@ namespace ImageChecker
         // 選択行情報関連
         private int m_intSelBranchNum = -1;
         private string m_strSelMarkingImagepath = string.Empty;
+
+        // [X]ボタン無効
+        private bool m_bolXButtonDisable = false;
 
         #region メソッド
         /// <summary>
@@ -139,9 +144,9 @@ namespace ImageChecker
 
                 // 検索部
                 // 作業者
-                if (!string.IsNullOrEmpty( txtWorkerName.Text))
+                if (!string.IsNullOrEmpty(txtWorkerName.Text))
                 {
-                    strSQL += string.Format("AND (acceptance_check_worker LIKE '%{0}%' OR result_update_worker LIKE '%{1}%')", txtWorkerName.Text , txtWorkerName.Text);
+                    strSQL += string.Format("AND (acceptance_check_worker LIKE '%{0}%' OR result_update_worker LIKE '%{1}%')", txtWorkerName.Text, txtWorkerName.Text);
                 }
                 // 行
                 if (!string.IsNullOrEmpty(txtLine.Text))
@@ -287,7 +292,7 @@ namespace ImageChecker
 
                     // 行列情報を保持
                     // 重複時はスキップ
-                    if (lststrLineColumns.Contains(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"])) )
+                    if (lststrLineColumns.Contains(string.Join("|", m_dtData.Rows[i]["line"], m_dtData.Rows[i]["cloumns"])))
                     {
                         continue;
                     }
@@ -314,7 +319,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}",g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -384,6 +389,7 @@ namespace ImageChecker
                 intImageInspectionCount = int.Parse(dtData.Rows[0]["image_inspection_count"].ToString());
                 intImageInspectionCountNg = int.Parse(dtData.Rows[0]["image_inspection_count_ng"].ToString());
                 intImageInspectionCountOk = int.Parse(dtData.Rows[0]["image_inspection_count_ok"].ToString());
+                m_intNgImageCnt = intImageInspectionCountNg;
 
                 // ヘッダ表示
                 // 画像検査枚数
@@ -433,6 +439,7 @@ namespace ImageChecker
                 intCushionInspectionCount = m_intColumnCnt * m_intInspectionTargetLine;
                 intCushionInspectionCountNg = int.Parse(dtData.Rows[0]["cnt"].ToString());
                 intCushionInspectionCountOk = intCushionInspectionCount - intCushionInspectionCountNg;
+                m_intNgCushionCnt = intCushionInspectionCountNg;
 
                 // ヘッダ表示
                 // クッション数
@@ -573,14 +580,14 @@ namespace ImageChecker
                 return;
             }
 
-            
 
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory 
-                                                                           ,m_strFaultImageSubDirectory 
-                                                                           ,m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
-                                                                           Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory 
-                                                                           ,m_strFaultImageSubDirectory 
-                                                                           ,m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
+
+            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
+                                                                           , m_strFaultImageSubDirectory
+                                                                           , m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
+                                                                           Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
+                                                                           , m_strFaultImageSubDirectory
+                                                                           , m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
         }
@@ -698,6 +705,57 @@ namespace ImageChecker
         }
 
         /// <summary>
+        /// 再印刷ボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnReprint_Click(object sender, EventArgs e)
+        {
+            // コントロール無効
+            m_bolXButtonDisable = true;
+            List<Control> lstctlEnable = new List<Control>();
+            lstctlEnable.Add(btnLogout);
+            lstctlEnable.Add(txtWorkerName);
+            lstctlEnable.Add(txtLine);
+            lstctlEnable.Add(cmbColumns);
+            lstctlEnable.Add(cmbNgFace);
+            lstctlEnable.Add(txtNgReason);
+            lstctlEnable.Add(btnSearch);
+            lstctlEnable.Add(dgvDecisionResult);
+            lstctlEnable.Add(btnTargetSelection);
+            lstctlEnable.Add(btnReprint);
+            lstctlEnable.Add(btnInspectionUpdate);
+
+            foreach (Control ctr in lstctlEnable)
+            {
+                ctr.Enabled = false;
+            }
+
+            try
+            {
+                // 帳票出力
+                g_clsReportInfo.OutputReport(
+                    m_strFabricName,
+                    m_strInspectionDate,
+                    m_intInspectionNum,
+                    m_intNgCushionCnt,
+                    m_intNgImageCnt);
+            }
+            finally
+            {
+                if (lstctlEnable != null)
+                {
+                    foreach (Control ctr in lstctlEnable)
+                    {
+                        ctr.Enabled = true;
+                    }
+                }
+
+                m_bolXButtonDisable = false;
+            }
+        }
+
+        /// <summary>
         /// ログアウトクリック
         /// </summary>
         /// <param name="sender"></param>
@@ -730,7 +788,7 @@ namespace ImageChecker
             frmSelectErrorReason.ShowDialog(this);
             txtNgReason.Text = frmSelectErrorReason.strDecisionReason;
         }
-        
+
         #region 横スクロール対応
         Point mouseDownPosition;
         /// <summary>
@@ -800,6 +858,26 @@ namespace ImageChecker
             }
 
             base.WndProc(ref m);
+        }
+        #endregion
+
+        #region フォームクローズ
+        /// <summary>
+        /// フォームクローズ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DisplayResults_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 再印刷中は無効にする
+            if (m_bolXButtonDisable == true)
+            {
+                if (e.CloseReason == CloseReason.UserClosing)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
         }
         #endregion
     }

@@ -89,6 +89,7 @@
             this.cmbColumns = new System.Windows.Forms.ComboBox();
             this.lblWorkerName = new System.Windows.Forms.Label();
             this.pnlBottom = new System.Windows.Forms.Panel();
+            this.btnReprint = new System.Windows.Forms.Button();
             this.btnResultUpdate = new System.Windows.Forms.Button();
             this.btnTargetSelection = new System.Windows.Forms.Button();
             this.pnlLeft = new System.Windows.Forms.Panel();
@@ -912,6 +913,7 @@
             // pnlBottom
             // 
             this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
+            this.pnlBottom.Controls.Add(this.btnReprint);
             this.pnlBottom.Controls.Add(this.btnResultUpdate);
             this.pnlBottom.Controls.Add(this.btnTargetSelection);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -920,6 +922,19 @@
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(1377, 78);
             this.pnlBottom.TabIndex = 3;
+            // 
+            // btnReprint
+            // 
+            this.btnReprint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnReprint.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnReprint.Location = new System.Drawing.Point(1089, 13);
+            this.btnReprint.Margin = new System.Windows.Forms.Padding(2);
+            this.btnReprint.Name = "btnReprint";
+            this.btnReprint.Size = new System.Drawing.Size(127, 54);
+            this.btnReprint.TabIndex = 0;
+            this.btnReprint.Text = "再印刷";
+            this.btnReprint.UseVisualStyleBackColor = true;
+            this.btnReprint.Click += new System.EventHandler(this.btnReprint_Click);
             // 
             // btnResultUpdate
             // 
@@ -1243,6 +1258,7 @@
             this.Name = "DisplayResultsAgo";
             this.Text = "検査履歴照会";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DisplayResultsAgo_FormClosing);
             this.Load += new System.EventHandler(this.Result_Load);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
@@ -1354,5 +1370,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ResultUpdateDatetime;
         private System.Windows.Forms.DataGridViewTextBoxColumn ResultUpdateWorker;
         private System.Windows.Forms.DataGridViewTextBoxColumn BeforeNgReason;
+        private System.Windows.Forms.Button btnReprint;
     }
 }

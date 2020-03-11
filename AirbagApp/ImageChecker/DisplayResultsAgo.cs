@@ -36,6 +36,9 @@ namespace ImageChecker
         private int m_intSelBranchNum = -1;
         private string m_strSelMarkingImagepath = string.Empty;
 
+        // [X]ボタン無効
+        private bool m_bolXButtonDisable = false;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -375,10 +378,12 @@ namespace ImageChecker
                 if (dgvCheckInspectionHistory.Rows.Count == 0)
                 {
                     btnResultUpdate.Enabled = false;
+                    btnReprint.Enabled = false;
                 }
                 else
                 {
                     btnResultUpdate.Enabled = true;
+                    btnReprint.Enabled = true;
                 }
 
                 // 件数の表示
@@ -402,7 +407,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0047, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -462,7 +467,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}",g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0047, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -524,6 +529,7 @@ namespace ImageChecker
                 lblCushionSearchCount.Visible = false;
 
                 btnResultUpdate.Enabled = false;
+                btnReprint.Enabled = false;
 
                 bolProcOkNg = true;
             }
@@ -559,7 +565,7 @@ namespace ImageChecker
                                                          m_dtData.Rows[intSelIdx]["inspection_num"]);
 
             // ディレクトリ存在チェック
-            if (Directory.Exists(Path.Combine( g_clsSystemSettingInfo.strFaultImageDirectory ,  strFaultImageSubDirectory)) == false)
+            if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImageSubDirectory)) == false)
             {
                 MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -634,6 +640,187 @@ namespace ImageChecker
         }
 
         /// <summary>
+        /// 再印刷ボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnReprint_Click(object sender, EventArgs e)
+        {
+            int intSelIdx = -1;
+            int intNgCushionCnt = 0;
+            int intNgImageCnt = 0;
+            int intInspectionNum = 0;
+            string strFabricName = string.Empty;
+            string strInspectionDate = string.Empty;
+            string strSQL = string.Empty;
+            DataTable dtData;
+
+            // コントロール無効
+            m_bolXButtonDisable = true;
+            List<Control> lstctlEnable = new List<Control>();
+            lstctlEnable.Add(btnLogout);
+            lstctlEnable.Add(cmbUnitNum);
+            lstctlEnable.Add(txtProductName);
+            lstctlEnable.Add(txtOrderImg);
+            lstctlEnable.Add(txtFabricName);
+            lstctlEnable.Add(dtpStartDatetimeFrom);
+            lstctlEnable.Add(dtpStartDatetimeTo);
+            lstctlEnable.Add(dtpEndDatetimeFrom);
+            lstctlEnable.Add(dtpEndDatetimeTo);
+            lstctlEnable.Add(txtSearchFrom);
+            lstctlEnable.Add(txtSearchTo);
+            lstctlEnable.Add(dtpDecisionStartTimeFrom);
+            lstctlEnable.Add(dtpDecisionStartTimeTo);
+            lstctlEnable.Add(dtpDecisionEndTimeFrom);
+            lstctlEnable.Add(dtpDecisionEndTimeTo);
+            lstctlEnable.Add(txtInspectionNum);
+            lstctlEnable.Add(txtWorkerName);
+            lstctlEnable.Add(txtLine);
+            lstctlEnable.Add(cmbColumns);
+            lstctlEnable.Add(cmbNgFace);
+            lstctlEnable.Add(txtNgReason);
+            lstctlEnable.Add(btnSearch);
+            lstctlEnable.Add(dgvCheckInspectionHistory);
+            lstctlEnable.Add(btnTargetSelection);
+            lstctlEnable.Add(btnReprint);
+            lstctlEnable.Add(btnResultUpdate);
+
+            foreach (Control ctr in lstctlEnable)
+            {
+                ctr.Enabled = false;
+            }
+
+            // 選択行インデックスの取得
+            foreach (DataGridViewRow dgvRow in this.dgvCheckInspectionHistory.SelectedRows)
+            {
+                intSelIdx = dgvRow.Index;
+                break;
+            }
+
+            if (intSelIdx != -1)
+            {
+                try
+                {
+                    strFabricName = m_dtData.Rows[intSelIdx]["fabric_name"].ToString();
+                    strInspectionDate = m_dtData.Rows[intSelIdx]["inspection_date"].ToString();
+                    intInspectionNum = int.Parse(m_dtData.Rows[intSelIdx]["inspection_num"].ToString());
+
+                    // NG画像の取得
+                    dtData = new DataTable();
+                    try
+                    {
+                        strSQL = @"SELECT
+                                   image_inspection_count_ng
+                               FROM
+                                   (        
+                                       SELECT
+                                           COUNT(*) AS image_inspection_count
+                                         , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                            WHERE fabric_name = :fabric_name
+                                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                            AND   inspection_num = :inspection_num
+                                            AND   acceptance_check_result IN (:acceptance_check_result_ngdetect,
+                                                                              :acceptance_check_result_ngnondetect)) AS image_inspection_count_ng
+                                         , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                            WHERE fabric_name = :fabric_name
+                                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                            AND   inspection_num = :inspection_num
+                                            AND   acceptance_check_result = :acceptance_check_result_ok) AS image_inspection_count_ok
+                                       FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                       WHERE fabric_name = :fabric_name
+                                       AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                       AND   inspection_num = :inspection_num
+                                       AND   over_detection_except_result <> :over_detection_except_result_ok 
+                                   ) imgcnt";
+
+                        // SQLコマンドに各パラメータを設定する
+                        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ngdetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ngnondetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultOk });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+
+                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                        intNgImageCnt = int.Parse(dtData.Rows[0]["image_inspection_count_ng"].ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return;
+                    }
+
+                    dtData = new DataTable();
+                    try
+                    {
+                        // 行列単位のNG件数を抽出
+                        strSQL = @"SELECT COUNT(*) AS cnt
+                               FROM (
+                                   SELECT
+                                         line
+                                       , cloumns
+                                     FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                    WHERE fabric_name = :fabric_name
+                                      AND inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                      AND inspection_num = :inspection_num
+                                      AND ng_reason IS NOT NULL
+                                 GROUP BY line, cloumns
+                                     ) imgcnt";
+
+                        // SQLコマンドに各パラメータを設定する
+                        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultOk });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+
+                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                        intNgCushionCnt = int.Parse(dtData.Rows[0]["cnt"].ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return;
+                    }
+
+                    g_clsReportInfo.OutputReport(
+                        strFabricName,
+                        strInspectionDate,
+                        intInspectionNum,
+                        intNgCushionCnt,
+                        intNgImageCnt);
+                }
+                finally
+                {
+                    if (lstctlEnable != null)
+                    {
+                        foreach (Control ctr in lstctlEnable)
+                        {
+                            ctr.Enabled = true;
+                        }
+                    }
+
+                    m_bolXButtonDisable = false;
+                }
+            }
+        }
+
+        /// <summary>
         /// 一覧クリック
         /// </summary>
         /// <param name="sender"></param>
@@ -650,12 +837,12 @@ namespace ImageChecker
                                                                 m_dtData.Rows[e.RowIndex]["fabric_name"],
                                                                 m_dtData.Rows[e.RowIndex]["inspection_num"]);
 
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory 
-                                                                           ,strFaultImageSubDirectory
-                                                                           ,m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
-                                                                           Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory 
-                                                                           ,strFaultImageSubDirectory 
-                                                                           ,m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
+            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
+                                                                           , strFaultImageSubDirectory
+                                                                           , m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
+                                                                           Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
+                                                                           , strFaultImageSubDirectory
+                                                                           , m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
         }
@@ -669,7 +856,7 @@ namespace ImageChecker
         {
             this.Close();
         }
-        
+
         /// <summary>
         /// ログアウトボタン
         /// </summary>
@@ -857,6 +1044,26 @@ namespace ImageChecker
             }
 
             base.WndProc(ref m);
+        }
+        #endregion
+
+        #region フォームクローズ
+        /// <summary>
+        /// フォームクローズ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DisplayResultsAgo_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 再印刷中は無効にする
+            if (m_bolXButtonDisable == true)
+            {
+                if (e.CloseReason == CloseReason.UserClosing)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
         }
         #endregion
     }

@@ -1002,7 +1002,7 @@ namespace ImageChecker
                                     WHERE fabric_name = :fabric_name
                                         AND inspection_num = :inspection_num
                                         AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
-                                ) rpd
+                                ) header
                                 WHERE SEQ = 1";
 
                             // SQLコマンドに各パラメータを設定する

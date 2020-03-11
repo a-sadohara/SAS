@@ -31,6 +31,9 @@ namespace ImageChecker
         // ログイン情報クラス
         public static LoginInfo g_clsLoginInfo;
 
+        // 帳票情報クラス
+        public static ReportInfo g_clsReportInfo;
+
         // システム設定情報取得時のエラーメッセージ格納用
         private static StringBuilder m_sbErrMessage = new StringBuilder();
 
@@ -154,6 +157,9 @@ namespace ImageChecker
 
                 // ログイン情報インスタンス生成
                 g_clsLoginInfo = new LoginInfo();
+
+                // 帳票情報インスタンス生成
+                g_clsReportInfo = new ReportInfo();
 
                 // パス設定
                 g_strMasterImageDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE);

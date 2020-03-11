@@ -148,6 +148,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\ReportInfo.cs" />
     <Compile Include="ImportImageZipProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>
