@@ -71,7 +71,6 @@ namespace ImageChecker
         {
             try
             {
-
                 // ZIPファイルを一時ZIP解凍用格納先ディレクトリにコピーする
                 File.Copy(Path.Combine(strNgImageCooperationDirectory, strFaultImage + ".zip"),
                           Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"), true);
@@ -191,7 +190,7 @@ namespace ImageChecker
                            ON  iih.product_name = mpi.product_name
                            WHERE (iih.result_datetime IS NULL OR
                                   iih.result_datetime >= TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS'))
-                           ORDER BY iih.inspection_date DESC, iih.inspection_num DESC";
+                           ORDER BY iih.end_datetime DESC";
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
