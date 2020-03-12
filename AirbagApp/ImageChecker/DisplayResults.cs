@@ -306,6 +306,15 @@ namespace ImageChecker
                     m_intCountInit = dgvDecisionResult.Rows.Count;
                 }
 
+                if (dgvDecisionResult.Rows.Count == 0)
+                {
+                    btnInspectionUpdate.Enabled = false;
+                }
+                else
+                {
+                    btnInspectionUpdate.Enabled = true;
+                }
+
                 // 件数の表示
                 lblImageSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, m_dtData.Rows.Count, m_intCountInit);
                 lblCushionSearchCount.Text = string.Format(m_CON_FORMAT_SEARCH_COUNT, lststrLineColumns.Count, m_intColumnCnt * m_intInspectionTargetLine);
