@@ -19,7 +19,8 @@ namespace ImageChecker.DTO
     {
         // パラメータ
         string strSQL = string.Empty;
-        DataTable dtData;
+        DataTable dtHeaderData;
+        DataTable dtMeisaiData;
 
         // PDF作成関連
         private IList<Stream> m_streams;
@@ -43,7 +44,8 @@ namespace ImageChecker.DTO
         {
             try
             {
-                dtData = new DataTable();
+                // 帳票のヘッダ情報取得
+                dtHeaderData = new DataTable();
                 strSQL = @"SELECT
                                    TO_CHAR(iih.start_datetime,'YYYY/MM/DD HH24:MI') AS start_datetime
                                  , TO_CHAR(iih.end_datetime,'YYYY/MM/DD HH24:MI') AS end_datetime
@@ -56,7 +58,23 @@ namespace ImageChecker.DTO
                                  , iih.inspection_start_line
                                  , iih.inspection_end_line
                                  , iih.inspection_num
-                                 , TO_CHAR(dr.acceptance_check_datetime,'HH24:MI:SS') AS acceptance_check_datetime
+                               FROM " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header iih
+                               WHERE iih.fabric_name = :fabric_name
+                               AND   iih.inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                               AND   iih.inspection_num = :inspection_num";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
+
+                g_clsConnectionNpgsql.SelectSQL(ref dtHeaderData, strSQL, lstNpgsqlCommand);
+
+                // 帳票の明細情報取得
+                dtMeisaiData = new DataTable();
+                strSQL = @"SELECT
+                                   TO_CHAR(dr.acceptance_check_datetime,'HH24:MI:SS') AS acceptance_check_datetime
                                  , dr.line
                                  , dr.cloumns
                                  , dr.ng_face
@@ -65,10 +83,6 @@ namespace ImageChecker.DTO
                                  , dr.ng_distance_y
                                  , dr.acceptance_check_worker
                                FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result dr
-                               INNER JOIN " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header iih
-                               ON  dr.fabric_name = iih.fabric_name
-                               AND dr.inspection_date = iih.inspection_date
-                               AND dr.inspection_num = iih.inspection_num
                                WHERE dr.fabric_name = :fabric_name
                                AND   dr.inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                AND   dr.inspection_num = :inspection_num
@@ -79,13 +93,7 @@ namespace ImageChecker.DTO
                                  , dr.ng_face ASC 
                                  , dr.over_detection_except_datetime ASC ";
 
-                // SQLコマンドに各パラメータを設定する
-                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
-
-                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+                g_clsConnectionNpgsql.SelectSQL(ref dtMeisaiData, strSQL, lstNpgsqlCommand);
 
                 // LocalReport作成
                 lReport = new LocalReport();
@@ -93,36 +101,50 @@ namespace ImageChecker.DTO
                 m_streams = new List<Stream>();
 
                 KenTanChkSheet KTCSDs = new KenTanChkSheet();
-                foreach (DataRow dr in dtData.Rows)
+                KenTanChkSheet.KenTanChkSheetTableRow KTCSHeaderDr = KTCSDs.KenTanChkSheetTable.NewKenTanChkSheetTableRow();
+
+                // ヘッダ情報設定
+                KTCSHeaderDr.OrderImg = dtHeaderData.Rows[0]["order_img"].ToString();
+                KTCSHeaderDr.ProductName = dtHeaderData.Rows[0]["product_name"].ToString();
+                KTCSHeaderDr.FabricName = dtHeaderData.Rows[0]["fabric_name"].ToString();
+                KTCSHeaderDr.UnitNum = dtHeaderData.Rows[0]["unit_num"].ToString();
+                KTCSHeaderDr.StartDatetime = dtHeaderData.Rows[0]["start_datetime"].ToString();
+                KTCSHeaderDr.EndDatetime = dtHeaderData.Rows[0]["end_datetime"].ToString();
+                KTCSHeaderDr.InspectionLine = dtHeaderData.Rows[0]["inspection_start_line"].ToString() + "～" + dtHeaderData.Rows[0]["inspection_end_line"].ToString();
+                KTCSHeaderDr.InspectionNum = dtHeaderData.Rows[0]["inspection_num"].ToString();
+                KTCSHeaderDr.DecisionStartDatetime = dtHeaderData.Rows[0]["decision_start_datetime"].ToString();
+                KTCSHeaderDr.DecisionEndDatetime = dtHeaderData.Rows[0]["decision_end_datetime"].ToString();
+                KTCSHeaderDr.NgCushionCnt = intNgCushionCnt.ToString();
+                KTCSHeaderDr.NgImageCnt = intNgImageCnt.ToString();
+
+                if (dtMeisaiData.Rows.Count == 0)
                 {
-                    KenTanChkSheet.KenTanChkSheetTableRow KTCSDr = KTCSDs.KenTanChkSheetTable.NewKenTanChkSheetTableRow();
-                    KTCSDr.BeginEdit();
+                    // ヘッダ情報のみを追加する
+                    KTCSDs.KenTanChkSheetTable.Rows.Add(KTCSHeaderDr);
+                }
+                else
+                {
+                    KenTanChkSheet.KenTanChkSheetTableRow KTCSMeisaiDr = null;
 
-                    // ヘッダ情報
-                    KTCSDr.OrderImg = dr["order_img"].ToString();
-                    KTCSDr.ProductName = dr["product_name"].ToString();
-                    KTCSDr.FabricName = dr["fabric_name"].ToString();
-                    KTCSDr.UnitNum = dr["unit_num"].ToString();
-                    KTCSDr.StartDatetime = dr["start_datetime"].ToString();
-                    KTCSDr.EndDatetime = dr["end_datetime"].ToString();
-                    KTCSDr.InspectionLine = dr["inspection_start_line"].ToString() + "～" + dr["inspection_end_line"].ToString();
-                    KTCSDr.InspectionNum = dr["inspection_num"].ToString();
-                    KTCSDr.DecisionStartDatetime = dr["decision_start_datetime"].ToString();
-                    KTCSDr.DecisionEndDatetime = dr["decision_end_datetime"].ToString();
-                    KTCSDr.NgCushionCnt = intNgCushionCnt.ToString();
-                    KTCSDr.NgImageCnt = intNgImageCnt.ToString();
+                    // ヘッダ情報と明細情報を合わせて追加する
+                    foreach (DataRow dr in dtMeisaiData.Rows)
+                    {
+                        KTCSMeisaiDr = KTCSDs.KenTanChkSheetTable.NewKenTanChkSheetTableRow();
 
-                    // 明細情報
-                    KTCSDr.AcceptanceCheckDatetime = dr["acceptance_check_datetime"].ToString();
-                    KTCSDr.Line = dr["line"].ToString();
-                    KTCSDr.Cloumns = dr["cloumns"].ToString();
-                    KTCSDr.NgFace = dr["ng_face"].ToString();
-                    KTCSDr.NgDistanceXY = dr["ng_distance_x"].ToString() + "," + dr["ng_distance_y"].ToString();
-                    KTCSDr.NgReason = dr["ng_reason"].ToString();
-                    KTCSDr.AcceptanceCheckWorker = dr["acceptance_check_worker"].ToString();
+                        // ヘッダ情報設定
+                        KTCSMeisaiDr.ItemArray = KTCSHeaderDr.ItemArray;
 
-                    KTCSDr.EndEdit();
-                    KTCSDs.KenTanChkSheetTable.Rows.Add(KTCSDr);
+                        // 明細情報設定
+                        KTCSMeisaiDr.AcceptanceCheckDatetime = dr["acceptance_check_datetime"].ToString();
+                        KTCSMeisaiDr.Line = dr["line"].ToString();
+                        KTCSMeisaiDr.Cloumns = dr["cloumns"].ToString();
+                        KTCSMeisaiDr.NgFace = dr["ng_face"].ToString();
+                        KTCSMeisaiDr.NgDistanceXY = dr["ng_distance_x"].ToString() + "," + dr["ng_distance_y"].ToString();
+                        KTCSMeisaiDr.NgReason = dr["ng_reason"].ToString();
+                        KTCSMeisaiDr.AcceptanceCheckWorker = dr["acceptance_check_worker"].ToString();
+
+                        KTCSDs.KenTanChkSheetTable.Rows.Add(KTCSMeisaiDr);
+                    }
                 }
 
                 // PDF作成
@@ -133,6 +155,7 @@ namespace ImageChecker.DTO
             {
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0054, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
