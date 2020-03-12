@@ -312,6 +312,7 @@
         <Style>
           <Border>
             <Style>None</Style>
+            <Width>0.25pt</Width>
           </Border>
           <FontFamily>メイリオ</FontFamily>
           <TextAlign>Center</TextAlign>
@@ -334,6 +335,7 @@
     <Style>
       <Border>
         <Style>None</Style>
+        <Width>0.25pt</Width>
       </Border>
     </Style>
   </Body>
@@ -488,6 +490,8 @@
                   <Value>=Fields!FabricName.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>12pt</FontSize>
+                    <FontWeight>Bold</FontWeight>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -522,6 +526,8 @@
                   <Value>=Fields!ProductName.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>12pt</FontSize>
+                    <FontWeight>Bold</FontWeight>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1449,6 +1455,7 @@
       <Style>
         <Border>
           <Style>None</Style>
+          <Width>0.25pt</Width>
         </Border>
       </Style>
     </PageHeader>
