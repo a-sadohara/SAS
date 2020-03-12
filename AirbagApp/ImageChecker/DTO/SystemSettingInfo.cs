@@ -96,9 +96,11 @@ namespace ImageChecker.DTO
         public readonly int intOverDetectionExceptResultNon;
         public readonly int intOverDetectionExceptResultOk;
         public readonly int intOverDetectionExceptResultNg;
+        public readonly int intOverDetectionExceptResultNgNonDetect;
         public readonly string strOverDetectionExceptResultNameNon;
         public readonly string strOverDetectionExceptResultNameOk;
         public readonly string strOverDetectionExceptResultNameNg;
+        public readonly string strOverDetectionExceptResultNameNgNonDetect;
         // 合否確認結果
         public readonly int intAcceptanceCheckResultNon;
         public readonly int intAcceptanceCheckResultOk;
@@ -180,9 +182,11 @@ namespace ImageChecker.DTO
                 GetSystemSettingValue("OverDetectionExceptResultNon", ref intOverDetectionExceptResultNon);
                 GetSystemSettingValue("OverDetectionExceptResultOk", ref intOverDetectionExceptResultOk);
                 GetSystemSettingValue("OverDetectionExceptResultNg", ref intOverDetectionExceptResultNg);
+                GetSystemSettingValue("OverDetectionExceptResultNgNonDetect", ref intOverDetectionExceptResultNgNonDetect);
                 GetSystemSettingValue("OverDetectionExceptResultNameNon", ref strOverDetectionExceptResultNameNon);
                 GetSystemSettingValue("OverDetectionExceptResultNameOk", ref strOverDetectionExceptResultNameOk);
                 GetSystemSettingValue("OverDetectionExceptResultNameNg", ref strOverDetectionExceptResultNameNg);
+                GetSystemSettingValue("OverDetectionExceptResultNameNgNonDetect", ref strOverDetectionExceptResultNameNgNonDetect);
                 GetSystemSettingValue("AcceptanceCheckResultNon", ref intAcceptanceCheckResultNon);
                 GetSystemSettingValue("AcceptanceCheckResultOk", ref intAcceptanceCheckResultOk);
                 GetSystemSettingValue("AcceptanceCheckResultNgDetect", ref intAcceptanceCheckResultNgDetect);

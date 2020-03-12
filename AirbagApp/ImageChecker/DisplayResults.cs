@@ -242,6 +242,11 @@ namespace ImageChecker
                         stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNg;
                     }
 
+                    if (int.Parse(m_dtData.Rows[i]["over_detection_except_result"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptResultNgNonDetect)
+                    {
+                        stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNgNonDetect;
+                    }
+
                     arrRow.Add(stResultName);
 
                     // 合否確認結果：名称を表示

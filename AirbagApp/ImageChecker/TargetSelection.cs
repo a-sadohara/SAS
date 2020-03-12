@@ -165,7 +165,8 @@ namespace ImageChecker
                                    AND   inspection_date = dr.inspection_date
                                    AND   inspection_num = dr.inspection_num) AS over_detection_image_count
                                 , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
-                                  WHERE over_detection_except_result = :over_detection_except_result_ng
+                                  WHERE (over_detection_except_result = :over_detection_except_result_ng
+                                  OR over_detection_except_result = :over_detection_except_result_ng_non_detect)
                                   AND   fabric_name = dr.fabric_name
                                   AND   inspection_date = dr.inspection_date
                                   AND   inspection_num = dr.inspection_num) AS acceptance_check_image_count
@@ -196,6 +197,7 @@ namespace ImageChecker
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNg });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng_non_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNgNonDetect });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
 
                 g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL, lstNpgsqlCommand);
