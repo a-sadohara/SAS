@@ -707,6 +707,11 @@ namespace ImageChecker
 
             if (intSelIdx != -1)
             {
+                ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm("検反チェックシートを出力しています。しばらくお待ちください...");
+                frmProgress.StartPosition = FormStartPosition.CenterScreen;
+                frmProgress.Size = this.Size;
+                frmProgress.Show(this);
+
                 try
                 {
                     strFabricName = m_dtData.Rows[intSelIdx]["fabric_name"].ToString();
@@ -815,6 +820,9 @@ namespace ImageChecker
                 }
                 finally
                 {
+
+                    frmProgress.Close();
+
                     if (lstctlEnable != null)
                     {
                         foreach (Control ctr in lstctlEnable)

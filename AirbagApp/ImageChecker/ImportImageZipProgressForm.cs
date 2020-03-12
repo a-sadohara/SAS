@@ -20,6 +20,13 @@ namespace ImageChecker
             InitializeComponent();
         }
 
+        public ImportImageZipProgressForm(string strMsg)
+        {
+            InitializeComponent();
+            // メッセージ登録
+            lblMessage.Text = strMsg;
+        }
+
         #endregion
 
         #region イベント

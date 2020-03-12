@@ -745,6 +745,11 @@ namespace ImageChecker
                 ctr.Enabled = false;
             }
 
+            ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm("検反チェックシートを出力しています。しばらくお待ちください...");
+            frmProgress.StartPosition = FormStartPosition.CenterScreen;
+            frmProgress.Size = this.Size;
+            frmProgress.Show(this);
+
             try
             {
                 // 帳票出力
@@ -757,6 +762,8 @@ namespace ImageChecker
             }
             finally
             {
+                frmProgress.Close();
+
                 if (lstctlEnable != null)
                 {
                     foreach (Control ctr in lstctlEnable)

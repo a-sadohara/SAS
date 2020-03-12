@@ -644,6 +644,11 @@ namespace ImageChecker
                 return;
             }
 
+            ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm("検反チェックシートを出力しています。しばらくお待ちください...");
+            frmProgress.StartPosition = FormStartPosition.CenterScreen;
+            frmProgress.Size = this.Size;
+            frmProgress.Show(this);
+
             try
             {
                 // コントロール無効
@@ -817,6 +822,8 @@ namespace ImageChecker
             }
             finally
             {
+                frmProgress.Close();
+
                 g_clsConnectionNpgsql.DbClose();
 
                 if (lstctlEnable != null)
