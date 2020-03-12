@@ -606,6 +606,9 @@ namespace ImageChecker
             clsDecisionResult.strNgReason = m_dtData.Rows[intSelIdx]["ng_reason"].ToString();
             clsDecisionResult.strMarkingImagepath = m_dtData.Rows[intSelIdx]["marking_imagepath"].ToString();
             clsDecisionResult.strOrgImagepath = m_dtData.Rows[intSelIdx]["org_imagepath"].ToString();
+            clsDecisionResult.strNgFace = m_dtData.Rows[intSelIdx]["ng_face"].ToString();
+            clsDecisionResult.intNgDistanceX = int.Parse(m_dtData.Rows[intSelIdx]["ng_distance_x"].ToString());
+            clsDecisionResult.intNgDistanceY = int.Parse(m_dtData.Rows[intSelIdx]["ng_distance_y"].ToString());
 
             // 行選択情報
             m_strSelUnitNum = clsHeaderData.strUnitNum;

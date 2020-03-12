@@ -19,5 +19,7 @@
         public string strResultUpdateDatetime { get; set; }
         public string strResultUpdateWorker { get; set; }
         public string strBeforeNgReason { get; set; }
+        public int intNgDistanceX { get; set; }
+        public int intNgDistanceY { get; set; }
     }
 }

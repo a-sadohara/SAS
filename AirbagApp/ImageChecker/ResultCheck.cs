@@ -162,9 +162,28 @@ namespace ImageChecker
                            WHERE fabric_name = :fabric_name
                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                            AND   inspection_num = :inspection_num
-                           AND   branch_num = 1
-                           AND   over_detection_except_result <> :over_detection_except_result_ok
-                           ORDER BY CASE
+                           AND   branch_num = 1 ";
+
+                if (m_clsDecisionResultCorrection.intBranchNum > 0)
+                {
+                    strSQL += @"AND (
+                                        over_detection_except_result <> :over_detection_except_result_ok
+                                    OR  (
+                                            line = :line
+                                            AND cloumns = :cloumns
+                                            AND ng_face = :ng_face
+                                            AND marking_imagepath = :marking_imagepath
+                                            AND ng_distance_x = :ng_distance_x
+                                            AND ng_distance_y = :ng_distance_y
+                                        )
+                                    ) ";
+                }
+                else
+                {
+                    strSQL += "AND   over_detection_except_result <> :over_detection_except_result_ok ";
+                }
+
+                strSQL += @"ORDER BY CASE
                                       WHEN acceptance_check_datetime IS NULL THEN 2
                                       ELSE 1
                                     END ASC, ";
@@ -194,6 +213,16 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+
+                if (m_clsDecisionResultCorrection.intBranchNum > 0)
+                {
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = m_clsDecisionResultCorrection.intLine });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = m_clsDecisionResultCorrection.strCloumns });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_face", DbType = DbType.String, Value = m_clsDecisionResultCorrection.strNgFace });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_clsDecisionResultCorrection.strMarkingImagepath });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_distance_x", DbType = DbType.Int16, Value = m_clsDecisionResultCorrection.intNgDistanceX });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_distance_y", DbType = DbType.Int16, Value = m_clsDecisionResultCorrection.intNgDistanceY });
+                }
 
                 g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL, lstNpgsqlCommand);
 
@@ -456,7 +485,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0021, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
@@ -715,9 +744,16 @@ namespace ImageChecker
                                 , acceptance_check_worker = :acceptance_check_worker
                                 , before_acceptance_check_result = acceptance_check_result
                                 , before_acceptance_check_upd_datetime = acceptance_check_datetime
-                                , before_acceptance_check_worker = acceptance_check_worker ";
+                                , before_acceptance_check_worker = acceptance_check_worker
+                                , over_detection_except_result = 
+                                    CASE WHEN over_detection_except_result = :over_detection_except_result_ok
+                                        THEN :over_detection_except_result_ng
+                                        ELSE over_detection_except_result
+                                    END ";
 
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_worker", DbType = DbType.String, Value = g_clsLoginInfo.strWorkerName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNg });
                 }
                 else
                 {
@@ -1115,7 +1151,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0021, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }

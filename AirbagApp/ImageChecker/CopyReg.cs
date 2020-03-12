@@ -232,7 +232,10 @@ namespace ImageChecker
                                  , camera_num
                                  , worker_1
                                  , worker_2
-                                 , over_detection_except_result
+                                 , CASE WHEN over_detection_except_result = :over_detection_except_result_ok
+                                    THEN :over_detection_except_result_ng
+                                    ELSE over_detection_except_result
+                                   END
                                  , over_detection_except_datetime
                                  , over_detection_except_worker
                                  , :over_detection_except_result_non
@@ -262,6 +265,8 @@ namespace ImageChecker
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNg });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
 
                         // sqlを実行する
