@@ -708,7 +708,7 @@ namespace ImageChecker
 
             if (intSelIdx != -1)
             {
-                ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm("検反チェックシートを出力しています。しばらくお待ちください...");
+                ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm(g_clsMessageInfo.strMsgI0012);
                 frmProgress.StartPosition = FormStartPosition.CenterScreen;
                 frmProgress.Size = this.Size;
                 frmProgress.Show(this);
@@ -813,14 +813,13 @@ namespace ImageChecker
                     }
 
                     // 帳票出力
-                    Task<Boolean> report =
-                        await Task.WhenAny(
-                            g_clsReportInfo.OutputReport(
-                                strFabricName,
-                                strInspectionDate,
-                                intInspectionNum,
-                                intNgCushionCnt,
-                                intNgImageCnt));
+                    await Task<Boolean>.Run(() =>
+                        g_clsReportInfo.OutputReport(
+                            strFabricName,
+                            strInspectionDate,
+                            intInspectionNum,
+                            intNgCushionCnt,
+                            intNgImageCnt));
                 }
                 finally
                 {

@@ -3,12 +3,8 @@ using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Drawing.Printing;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -645,7 +641,7 @@ namespace ImageChecker
                 return;
             }
 
-            ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm("検反チェックシートを出力しています。しばらくお待ちください...");
+            ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm(g_clsMessageInfo.strMsgI0012);
             frmProgress.StartPosition = FormStartPosition.CenterScreen;
             frmProgress.Size = this.Size;
             frmProgress.Show(this);
@@ -678,9 +674,8 @@ namespace ImageChecker
                 }
 
                 // 帳票印刷
-                Task<Boolean> report =
-                    await Task.WhenAny(
-                        g_clsReportInfo.OutputReport(
+                await Task<Boolean>.Run(() =>
+                    g_clsReportInfo.OutputReport(
                         m_strFabricName,
                         m_strInspectionDate,
                         m_intInspectionNum,
