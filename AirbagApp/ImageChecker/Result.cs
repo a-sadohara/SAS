@@ -81,11 +81,6 @@ namespace ImageChecker
         // [X]ボタン無効
         private bool m_bolXButtonDisable = false;
 
-        // PDF作成関連
-        private IList<Stream> m_streams;
-        private byte[] bytes;
-        LocalReport lReport;
-
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -382,8 +377,14 @@ namespace ImageChecker
                              , ng_reason
                              , TO_CHAR(over_detection_except_datetime,'YYYY/MM/DD HH24:MI:SS') AS over_detection_except_datetime
                              , over_detection_except_worker
-                             , TO_CHAR(acceptance_check_datetime,'YYYY/MM/DD HH24:MI:SS') AS acceptance_check_datetime
-                             , acceptance_check_worker
+                             ,CASE WHEN result_update_datetime IS NOT NULL
+                                   THEN TO_CHAR(result_update_datetime,'YYYY/MM/DD HH24:MI:SS')
+                                   ELSE TO_CHAR(acceptance_check_datetime,'YYYY/MM/DD HH24:MI:SS')
+                              END AS acceptance_check_datetime
+                             ,CASE WHEN result_update_worker IS NOT NULL
+                                   THEN result_update_worker
+                                   ELSE acceptance_check_worker
+                              END AS acceptance_check_worker
                              , org_imagepath
                              , marking_imagepath
                            FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
