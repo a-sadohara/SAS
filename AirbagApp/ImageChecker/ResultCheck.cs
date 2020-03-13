@@ -837,7 +837,7 @@ namespace ImageChecker
         private int intGetStatusNg()
         {
             return m_dtData.Rows[m_intPageIdx]["over_detection_except_result"].ToString() ==
-                   g_clsSystemSettingInfo.intOverDetectionExceptResultNon.ToString() ?
+                   g_clsSystemSettingInfo.intOverDetectionExceptResultNgNonDetect.ToString() ?
                    g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect :
                    g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect;
         }
