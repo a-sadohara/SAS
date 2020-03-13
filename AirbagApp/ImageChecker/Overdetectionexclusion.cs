@@ -736,14 +736,12 @@ namespace ImageChecker
                 if (ctrChild.GetType() == typeof(PictureBox))
                 {
                     PictureBox picWk = (PictureBox)ctrChild;
-                    picWk.ClientSize = new Size(picWk.Size.Width, picWk.Size.Height);
                     picWk.BackColor = System.Drawing.Color.FromArgb(34, 67, 106);
                 }
 
             }
 
             // 背景色を設定
-            picState.ClientSize = new Size((int)(picState.ClientSize.Width * 0.99), (int)(picState.ClientSize.Height * 0.99));
             picState.BackColor = Color.DodgerBlue;
 
             if (!_clickSemaphore.Wait(0))
