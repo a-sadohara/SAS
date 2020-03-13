@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ImageChecker.Common;
 
@@ -652,7 +653,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnReprint_Click(object sender, EventArgs e)
+        private async void btnReprint_Click(object sender, EventArgs e)
         {
             int intSelIdx = -1;
             int intNgCushionCnt = 0;
@@ -811,16 +812,18 @@ namespace ImageChecker
                         return;
                     }
 
-                    g_clsReportInfo.OutputReport(
-                        strFabricName,
-                        strInspectionDate,
-                        intInspectionNum,
-                        intNgCushionCnt,
-                        intNgImageCnt);
+                    // 帳票出力
+                    Task<Boolean> report =
+                        await Task.WhenAny(
+                            g_clsReportInfo.OutputReport(
+                                strFabricName,
+                                strInspectionDate,
+                                intInspectionNum,
+                                intNgCushionCnt,
+                                intNgImageCnt));
                 }
                 finally
                 {
-
                     frmProgress.Close();
 
                     if (lstctlEnable != null)

@@ -1,11 +1,12 @@
 ﻿using ImageChecker.DTO;
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ImageChecker.Common;
 
@@ -723,7 +724,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnReprint_Click(object sender, EventArgs e)
+        private async void btnReprint_Click(object sender, EventArgs e)
         {
             // コントロール無効
             m_bolXButtonDisable = true;
@@ -753,12 +754,14 @@ namespace ImageChecker
             try
             {
                 // 帳票出力
-                g_clsReportInfo.OutputReport(
-                    m_strFabricName,
-                    m_strInspectionDate,
-                    m_intInspectionNum,
-                    m_intNgCushionCnt,
-                    m_intNgImageCnt);
+                Task<Boolean> report =
+                    await Task.WhenAny(
+                        g_clsReportInfo.OutputReport(
+                            m_strFabricName,
+                            m_strInspectionDate,
+                            m_intInspectionNum,
+                            m_intNgCushionCnt,
+                            m_intNgImageCnt));
             }
             finally
             {

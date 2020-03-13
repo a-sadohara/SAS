@@ -11,6 +11,7 @@ using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ImageChecker.Common;
 
@@ -630,7 +631,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnRegstDecision_Click(object sender, EventArgs e)
+        private async void btnRegstDecision_Click(object sender, EventArgs e)
         {
             bool bolProcOkNg = false;
 
@@ -677,12 +678,14 @@ namespace ImageChecker
                 }
 
                 // 帳票印刷
-                g_clsReportInfo.OutputReport(
-                    m_strFabricName,
-                    m_strInspectionDate,
-                    m_intInspectionNum,
-                    m_intNgCushionCount,
-                    m_dtData.Select("ng_reason <> ''").Length);
+                Task<Boolean> report =
+                    await Task.WhenAny(
+                        g_clsReportInfo.OutputReport(
+                        m_strFabricName,
+                        m_strInspectionDate,
+                        m_intInspectionNum,
+                        m_intNgCushionCount,
+                        m_dtData.Select("ng_reason <> ''").Length));
 
                 // 検査結果CSV作成
                 try

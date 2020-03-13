@@ -9,6 +9,7 @@ using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ImageChecker.Common;
 
@@ -35,7 +36,7 @@ namespace ImageChecker.DTO
         /// <param name="intInspectionNum">検査番号</param>
         /// <param name="intNgCushionCnt">NGクッション数</param>
         /// <param name="intNgImageCnt">NG画像数</param>
-        public void OutputReport(
+        public async Task<Boolean> OutputReport(
             string strFabricName,
             string strInspectionDate,
             int intInspectionNum,
@@ -150,6 +151,8 @@ namespace ImageChecker.DTO
                 // PDF作成
                 lReport.DataSources.Add(new ReportDataSource("KenTanChkSheet", (DataTable)KTCSDs.KenTanChkSheetTable));
                 CreatePDF();
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -159,7 +162,7 @@ namespace ImageChecker.DTO
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0054, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return;
+                return false;
             }
         }
 
