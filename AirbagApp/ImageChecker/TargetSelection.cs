@@ -370,8 +370,8 @@ namespace ImageChecker
                     if (intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusChk)
                     {
                         // 過検知除外：検査中
-                        btnCellOverDetectionExcept.Style.BackColor = Color.Crimson;
-                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.Crimson;
+                        btnCellOverDetectionExcept.Style.BackColor = Color.Red;
+                        btnCellOverDetectionExcept.Style.SelectionBackColor = Color.Red;
                         btnCellAcceptanceCheck.Style.BackColor = Color.DarkGray;
                         btnCellAcceptanceCheck.Style.SelectionBackColor = Color.DarkGray;
                         btnCellInspectionResult.Style.BackColor = Color.DarkGray;
@@ -1318,7 +1318,7 @@ namespace ImageChecker
                 {
                     TextRenderer.DrawText(graphics,
                         (string)this.FormattedValue,
-                        new Font("メイリオ", 8.25F),
+                        new Font("メイリオ", 9.75F),
                         buttonArea, SystemColors.WindowText);
                     // 文字色を黒にする
                     // マウスオーバーした際の背景色を変更する
