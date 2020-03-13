@@ -75,14 +75,20 @@ namespace ImageChecker.DTO
                 // 帳票の明細情報取得
                 dtMeisaiData = new DataTable();
                 strSQL = @"SELECT
-                                   TO_CHAR(dr.acceptance_check_datetime,'HH24:MI:SS') AS acceptance_check_datetime
+                                   CASE WHEN dr.result_update_datetime IS NOT NULL
+                                        THEN TO_CHAR(dr.result_update_datetime,'HH24:MI:SS')
+                                        ELSE TO_CHAR(dr.acceptance_check_datetime,'HH24:MI:SS')
+                                   END AS acceptance_check_datetime
                                  , dr.line
                                  , dr.cloumns
                                  , dr.ng_face
                                  , dr.ng_reason
                                  , dr.ng_distance_x
                                  , dr.ng_distance_y
-                                 , dr.acceptance_check_worker
+                                 , CASE WHEN dr.result_update_worker IS NOT NULL
+                                        THEN dr.result_update_worker
+                                        ELSE dr.acceptance_check_worker
+                                   END AS acceptance_check_worker
                                FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result dr
                                WHERE dr.fabric_name = :fabric_name
                                AND   dr.inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')

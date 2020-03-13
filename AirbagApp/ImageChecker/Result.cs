@@ -688,7 +688,10 @@ namespace ImageChecker
                 {
                     dtData = new DataTable();
                     strSQL = @"SELECT
-                                   TO_CHAR(dr.acceptance_check_datetime,'YYYY/MM/DD HH24:MI:SS') AS acceptance_check_datetime
+                                   CASE WHEN dr.result_update_datetime IS NOT NULL
+                                        THEN TO_CHAR(dr.result_update_datetime,'YYYY/MM/DD HH24:MI:SS')
+                                        ELSE TO_CHAR(dr.acceptance_check_datetime,'YYYY/MM/DD HH24:MI:SS')
+                                   END AS acceptance_check_datetime
                                  , iih.order_img
                                  , iih.fabric_name
                                  , dr.line
@@ -698,7 +701,10 @@ namespace ImageChecker
                                  , TO_CHAR(dr.inspection_num, 'FM00000000') AS inspection_num
                                  , dr.ng_distance_x
                                  , dr.ng_distance_y
-                                 , dr.acceptance_check_worker
+                                 , CASE WHEN dr.result_update_worker IS NOT NULL
+                                        THEN dr.result_update_worker
+                                        ELSE dr.acceptance_check_worker
+                                   END AS acceptance_check_worker
                                FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result dr
                                INNER JOIN " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header iih
                                ON  dr.fabric_name = iih.fabric_name
