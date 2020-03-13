@@ -91,7 +91,7 @@ namespace ImageChecker
             m_intInspectionNum = clsHeaderData.intInspectionNum;
             m_intOverDetectionExceptStatus = clsHeaderData.intOverDetectionExceptStatus;
 
-            m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/",string.Empty),
+            m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", string.Empty),
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
@@ -132,7 +132,7 @@ namespace ImageChecker
                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                            AND   inspection_num = :inspection_num
                            ORDER BY ";
-                
+
                 if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS)
                 {
                     strSQL += "line ASC, cloumns ASC, ng_face ASC, camera_num ASC, org_imagepath ASC";
@@ -193,7 +193,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog( g_CON_LEVEL_ERROR,string.Format("{0},{1},{2}" ,g_clsMessageInfo.strMsgE0001,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0},{1},{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -277,7 +277,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR,string.Format( "{0}{1}{2}",g_clsMessageInfo.strMsgE0001, Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -341,7 +341,7 @@ namespace ImageChecker
 
                     pctImage = (PictureBox)ctr;
 
-                    if(i >= m_dtData.Rows.Count)
+                    if (i >= m_dtData.Rows.Count)
                     {
                         // 画像イメージ非表示
                         pctImage.Image = null;
@@ -402,8 +402,8 @@ namespace ImageChecker
                 {
                     // N秒後に右へボタンを有効にする
                     System.Threading.Thread.Sleep(g_clsSystemSettingInfo.intWaitingTimeProcessed * 1000);
-                    this.Invoke( new Action(() =>
-                    { 
+                    this.Invoke(new Action(() =>
+                    {
                         btnLeft.Enabled = true;
                     }));
                 });
@@ -479,7 +479,7 @@ namespace ImageChecker
                     strSQL += @", decision_start_datetime = TO_TIMESTAMP(:decision_start_datetime_yyyymmdd_hhmmss, 'YYYY/MM/DD HH24:MI:SS') ";
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decision_start_datetime_yyyymmdd_hhmmss", DbType = DbType.String, Value = strStartDatetime });
                 }
-                    
+
                 strSQL += @"WHERE fabric_name = :fabric_name
                               AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
                               AND inspection_num = :inspection_num";
@@ -497,7 +497,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "{0}{1}{2}",g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -618,7 +618,7 @@ namespace ImageChecker
                     lblState.Dock = DockStyle.Fill;
                     lblState.ForeColor = Color.DodgerBlue;
                     lblState.TextAlign = ContentAlignment.MiddleCenter;
-                    
+
                     switch (g_clsLoginInfo.intDispNum)
                     {
                         case 2:
@@ -674,7 +674,7 @@ namespace ImageChecker
 
                 strNowYmdhms = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             }
-            
+
             if (m_intOverDetectionExceptStatus == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
             {
                 // 過検知除外ステータス：中断
@@ -702,6 +702,12 @@ namespace ImageChecker
             if (!string.IsNullOrEmpty(strNowYmdhms))
             {
                 g_clsHeaderData.strDecisionStartDatetime = strNowYmdhms;
+            }
+
+            // 既に全レコードのチェックが済んでいる場合、過検知除外結果画面へ遷移する
+            if (m_dtData.Select("over_detection_except_result = " + g_clsSystemSettingInfo.intOverDetectionExceptResultNon).Length == 0)
+            {
+                OpenSummaryForm();
             }
 
             this.ResumeLayout();
@@ -737,14 +743,14 @@ namespace ImageChecker
             }
 
             // 背景色を設定
-            picState.ClientSize = new Size((int)(picState.ClientSize.Width * 0.99), (int) (picState.ClientSize.Height * 0.99));
+            picState.ClientSize = new Size((int)(picState.ClientSize.Width * 0.99), (int)(picState.ClientSize.Height * 0.99));
             picState.BackColor = Color.DodgerBlue;
 
             if (!_clickSemaphore.Wait(0))
             {
                 return;
             }
-            
+
             try
             {
                 if (await _doubleClickSemaphore.WaitAsync(SystemInformation.DoubleClickTime))
@@ -776,11 +782,11 @@ namespace ImageChecker
                          Convert.ToInt32(((Label)sender).Name.Replace(string.Format(m_CON_FORMAT_LABEL_NAME, string.Empty), string.Empty));
 
             // マーキング画像パスとオリジナル画像パスを取得
-            strOrgImagepath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory ,
-                                           m_strFaultImageSubDirectory ,
+            strOrgImagepath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
+                                           m_strFaultImageSubDirectory,
                                            m_dtData.Rows[intIdx]["org_imagepath"].ToString());
-            strMarkingImagepath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory ,
-                                               m_strFaultImageSubDirectory ,
+            strMarkingImagepath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
+                                               m_strFaultImageSubDirectory,
                                                m_dtData.Rows[intIdx]["marking_imagepath"].ToString());
 
             // 画像拡大フォームに遷移
@@ -796,11 +802,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnLeft_Click(object sender, EventArgs e)
         {
-             // ページカウントアップ
-             m_intPageIdx--;
+            // ページカウントアップ
+            m_intPageIdx--;
 
-             // 画像表示
-             dispImage(m_intPageIdx);
+            // 画像表示
+            dispImage(m_intPageIdx);
         }
 
         /// <summary>
@@ -830,9 +836,9 @@ namespace ImageChecker
                     {
                         continue;
                     }
-                    
+
                     strKey = m_dicKey[intDataIdxForPage];
-                    intLine = int.Parse(strKey.Split(m_CON_DELIMIT_KEY.ToCharArray(0,1))[0]);
+                    intLine = int.Parse(strKey.Split(m_CON_DELIMIT_KEY.ToCharArray(0, 1))[0]);
                     strCloumns = strKey.Split(m_CON_DELIMIT_KEY.ToCharArray(0, 1))[1];
                     strNgFace = strKey.Split(m_CON_DELIMIT_KEY.ToCharArray(0, 1))[2];
                     strMarkingImagepath = strKey.Split(m_CON_DELIMIT_KEY.ToCharArray(0, 1))[3];
@@ -873,7 +879,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 , Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0043, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -887,31 +893,7 @@ namespace ImageChecker
             // ページカウントアップ
             if (m_intPageIdx + 1 == m_intPageCnt || m_bolUpdFlg == true)
             {
-                this.Visible = false;
-
-                Summary frmSummary = new Summary(g_clsHeaderData, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx);
-                frmSummary.ShowDialog(this);
-
-                if (frmSummary.intSelIdx != -1)
-                {
-                    m_intSelIdx = frmSummary.intSelIdx;
-                    m_intFirstDisplayedScrollingRowIdx = frmSummary.intFirstDisplayedScrollingRowIdx;
-
-                    m_bolRegFlg = false;
-                    m_bolUpdFlg = true;
-
-                    m_intPageIdx = frmSummary.intSelIdx / g_clsLoginInfo.intDispNum;
-                    dispImage(m_intPageIdx);
-
-                    this.Visible = true;
-                }
-                else
-                {
-                    m_bolRegFlg = true;
-                    intDestination = frmSummary.intDestination;
-
-                    this.Close();
-                }
+                OpenSummaryForm();
             }
             else
             {
@@ -961,6 +943,38 @@ namespace ImageChecker
             m_bolRegFlg = false;
 
             g_clsLoginInfo.Logout();
+        }
+
+        /// <summary>
+        /// 過検知除外結果フォームオープン
+        /// </summary>
+        private void OpenSummaryForm()
+        {
+            this.Visible = false;
+
+            Summary frmSummary = new Summary(g_clsHeaderData, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx);
+            frmSummary.ShowDialog(this);
+
+            if (frmSummary.intSelIdx != -1)
+            {
+                m_intSelIdx = frmSummary.intSelIdx;
+                m_intFirstDisplayedScrollingRowIdx = frmSummary.intFirstDisplayedScrollingRowIdx;
+
+                m_bolRegFlg = false;
+                m_bolUpdFlg = true;
+
+                m_intPageIdx = frmSummary.intSelIdx / g_clsLoginInfo.intDispNum;
+                dispImage(m_intPageIdx);
+
+                this.Visible = true;
+            }
+            else
+            {
+                m_bolRegFlg = true;
+                intDestination = frmSummary.intDestination;
+
+                this.Close();
+            }
         }
         #endregion
 
