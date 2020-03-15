@@ -249,7 +249,7 @@
               <Group Name="AcceptanceCheckDatetime" />
               <SortExpressions>
                 <SortExpression>
-                  <Value>=Fields!Line.Value</Value>
+                  <Value>=CInt(Fields!Line.Value)</Value>
                 </SortExpression>
                 <SortExpression>
                   <Value>=Fields!Cloumns.Value</Value>
