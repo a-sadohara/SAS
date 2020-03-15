@@ -397,7 +397,7 @@ namespace ImageChecker
             this.TargetInfo.Name = "TargetInfo";
             this.TargetInfo.ReadOnly = true;
             this.TargetInfo.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.TargetInfo.Width = 200;
+            this.TargetInfo.Width = 250;
             // 
             // CheckInfo
             // 

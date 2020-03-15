@@ -117,13 +117,13 @@ namespace ImageChecker
                 // グリッドビューにボタンを追加
                 DataGridViewDisableButtonColumn btnOverDetectionExcept = new DataGridViewDisableButtonColumn();
                 btnOverDetectionExcept.FlatStyle = FlatStyle.Flat;
-                btnOverDetectionExcept.Width = 180;
+                btnOverDetectionExcept.Width = 230;
                 DataGridViewDisableButtonColumn btnAcceptanceCheck = new DataGridViewDisableButtonColumn();
                 btnAcceptanceCheck.FlatStyle = FlatStyle.Flat;
-                btnAcceptanceCheck.Width = 180;
+                btnAcceptanceCheck.Width = 230;
                 DataGridViewDisableButtonColumn btnInspectionResult = new DataGridViewDisableButtonColumn();
                 btnInspectionResult.FlatStyle = FlatStyle.Flat;
-                btnInspectionResult.Width = 180;
+                btnInspectionResult.Width = 230;
                 this.dgvTargetSelection.Columns.Add(btnOverDetectionExcept);
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "OverDetectionExcept";
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
