@@ -117,14 +117,15 @@ namespace ImageChecker
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(963, 53);
+            this.pnlTop.Size = new System.Drawing.Size(963, 67);
             this.pnlTop.TabIndex = 2;
             // 
             // label9
             // 
+            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
             this.label9.BackColor = System.Drawing.Color.DarkGray;
-            this.label9.Location = new System.Drawing.Point(235, 22);
+            this.label9.Location = new System.Drawing.Point(800, 53);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(13, 12);
             this.label9.TabIndex = 11;
@@ -132,9 +133,10 @@ namespace ImageChecker
             // 
             // label7
             // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
             this.label7.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.label7.Location = new System.Drawing.Point(186, 22);
+            this.label7.Location = new System.Drawing.Point(751, 53);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(13, 12);
             this.label7.TabIndex = 9;
@@ -142,12 +144,13 @@ namespace ImageChecker
             // 
             // label10
             // 
+            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label10.AutoEllipsis = true;
             this.label10.AutoSize = true;
             this.label10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.label10.Font = new System.Drawing.Font("メイリオ", 9.75F);
             this.label10.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label10.Location = new System.Drawing.Point(246, 19);
+            this.label10.Location = new System.Drawing.Point(811, 50);
             this.label10.Margin = new System.Windows.Forms.Padding(2);
             this.label10.MaximumSize = new System.Drawing.Size(150, 0);
             this.label10.MinimumSize = new System.Drawing.Size(150, 0);
@@ -159,12 +162,13 @@ namespace ImageChecker
             // 
             // label8
             // 
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label8.AutoEllipsis = true;
             this.label8.AutoSize = true;
             this.label8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.label8.Font = new System.Drawing.Font("メイリオ", 9.75F);
             this.label8.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label8.Location = new System.Drawing.Point(197, 19);
+            this.label8.Location = new System.Drawing.Point(762, 50);
             this.label8.Margin = new System.Windows.Forms.Padding(2);
             this.label8.MaximumSize = new System.Drawing.Size(50, 0);
             this.label8.MinimumSize = new System.Drawing.Size(50, 0);
@@ -176,9 +180,10 @@ namespace ImageChecker
             // 
             // label5
             // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
             this.label5.BackColor = System.Drawing.Color.DarkOrange;
-            this.label5.Location = new System.Drawing.Point(135, 22);
+            this.label5.Location = new System.Drawing.Point(700, 53);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(13, 12);
             this.label5.TabIndex = 7;
@@ -186,12 +191,13 @@ namespace ImageChecker
             // 
             // label6
             // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.AutoEllipsis = true;
             this.label6.AutoSize = true;
             this.label6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.label6.Font = new System.Drawing.Font("メイリオ", 9.75F);
             this.label6.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label6.Location = new System.Drawing.Point(146, 19);
+            this.label6.Location = new System.Drawing.Point(711, 50);
             this.label6.Margin = new System.Windows.Forms.Padding(2);
             this.label6.MaximumSize = new System.Drawing.Size(50, 0);
             this.label6.MinimumSize = new System.Drawing.Size(50, 0);
@@ -203,9 +209,10 @@ namespace ImageChecker
             // 
             // label3
             // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Red;
-            this.label3.Location = new System.Drawing.Point(71, 22);
+            this.label3.Location = new System.Drawing.Point(636, 53);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(13, 12);
             this.label3.TabIndex = 5;
@@ -213,12 +220,13 @@ namespace ImageChecker
             // 
             // label4
             // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoEllipsis = true;
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.label4.Font = new System.Drawing.Font("メイリオ", 9.75F);
             this.label4.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label4.Location = new System.Drawing.Point(82, 19);
+            this.label4.Location = new System.Drawing.Point(647, 50);
             this.label4.Margin = new System.Windows.Forms.Padding(2);
             this.label4.MaximumSize = new System.Drawing.Size(50, 0);
             this.label4.MinimumSize = new System.Drawing.Size(50, 0);
@@ -230,9 +238,10 @@ namespace ImageChecker
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.MediumSeaGreen;
-            this.label1.Location = new System.Drawing.Point(6, 22);
+            this.label1.Location = new System.Drawing.Point(571, 53);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(13, 12);
             this.label1.TabIndex = 3;
@@ -240,12 +249,13 @@ namespace ImageChecker
             // 
             // label2
             // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoEllipsis = true;
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.label2.Font = new System.Drawing.Font("メイリオ", 9.75F);
             this.label2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label2.Location = new System.Drawing.Point(17, 19);
+            this.label2.Location = new System.Drawing.Point(582, 50);
             this.label2.Margin = new System.Windows.Forms.Padding(2);
             this.label2.MaximumSize = new System.Drawing.Size(50, 0);
             this.label2.MinimumSize = new System.Drawing.Size(50, 0);
@@ -274,12 +284,12 @@ namespace ImageChecker
             this.tlpMain.Controls.Add(this.pnlBottom, 0, 1);
             this.tlpMain.Controls.Add(this.dgvTargetSelection, 0, 0);
             this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpMain.Location = new System.Drawing.Point(0, 53);
+            this.tlpMain.Location = new System.Drawing.Point(0, 67);
             this.tlpMain.Name = "tlpMain";
             this.tlpMain.RowCount = 2;
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 69F));
-            this.tlpMain.Size = new System.Drawing.Size(963, 470);
+            this.tlpMain.Size = new System.Drawing.Size(963, 456);
             this.tlpMain.TabIndex = 5;
             // 
             // pnlBottom
@@ -289,7 +299,7 @@ namespace ImageChecker
             this.pnlBottom.Controls.Add(this.btnExceptTarget);
             this.pnlBottom.Controls.Add(this.btnReviseLine);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 401);
+            this.pnlBottom.Location = new System.Drawing.Point(0, 387);
             this.pnlBottom.Margin = new System.Windows.Forms.Padding(0);
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(963, 69);
@@ -373,7 +383,7 @@ namespace ImageChecker
             this.dgvTargetSelection.RowTemplate.Height = 24;
             this.dgvTargetSelection.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dgvTargetSelection.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvTargetSelection.Size = new System.Drawing.Size(959, 397);
+            this.dgvTargetSelection.Size = new System.Drawing.Size(959, 383);
             this.dgvTargetSelection.TabIndex = 0;
             this.dgvTargetSelection.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellContentClick);
             this.dgvTargetSelection.Scroll += new System.Windows.Forms.ScrollEventHandler(this.dgvTargetSelection_Scroll);
