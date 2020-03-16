@@ -50,8 +50,8 @@
             this.txtFabricName = new System.Windows.Forms.TextBox();
             this.pnlKensaTaishoNum_LastNum = new System.Windows.Forms.Panel();
             this.lblInspectionEndLine = new System.Windows.Forms.Label();
-            this.lblSlash = new System.Windows.Forms.Label();
             this.txtInspectionTargetLine = new System.Windows.Forms.TextBox();
+            this.lblSlash = new System.Windows.Forms.Label();
             this.pnlKensaStartRow = new System.Windows.Forms.Panel();
             this.txtInspectionStartLine = new System.Windows.Forms.TextBox();
             this.pnlSagyosyaInfo_1 = new System.Windows.Forms.Panel();
@@ -152,7 +152,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 22.5F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 22.5F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 384F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 385F));
             this.tableLayoutPanel1.Controls.Add(this.pnlTitleHinNo, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.pnlTitleSashizu, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.pnlTitleHanNo, 0, 2);
@@ -346,7 +346,7 @@
             this.pnlHinNo.Location = new System.Drawing.Point(392, 2);
             this.pnlHinNo.Margin = new System.Windows.Forms.Padding(2);
             this.pnlHinNo.Name = "pnlHinNo";
-            this.pnlHinNo.Size = new System.Drawing.Size(473, 32);
+            this.pnlHinNo.Size = new System.Drawing.Size(472, 32);
             this.pnlHinNo.TabIndex = 0;
             // 
             // txtProductName
@@ -374,7 +374,7 @@
             this.pnlSashizu.Location = new System.Drawing.Point(392, 38);
             this.pnlSashizu.Margin = new System.Windows.Forms.Padding(2);
             this.pnlSashizu.Name = "pnlSashizu";
-            this.pnlSashizu.Size = new System.Drawing.Size(473, 32);
+            this.pnlSashizu.Size = new System.Drawing.Size(472, 32);
             this.pnlSashizu.TabIndex = 0;
             // 
             // txtOrderImg
@@ -390,6 +390,7 @@
             this.txtOrderImg.Size = new System.Drawing.Size(91, 36);
             this.txtOrderImg.TabIndex = 2;
             this.txtOrderImg.Text = "9999999";
+            this.txtOrderImg.Click += new System.EventHandler(this.DispTenKeyInputForm);
             this.txtOrderImg.Enter += new System.EventHandler(this.txtOrderImg_Enter);
             // 
             // pnlHanNo
@@ -400,7 +401,7 @@
             this.pnlHanNo.Location = new System.Drawing.Point(392, 74);
             this.pnlHanNo.Margin = new System.Windows.Forms.Padding(2);
             this.pnlHanNo.Name = "pnlHanNo";
-            this.pnlHanNo.Size = new System.Drawing.Size(473, 32);
+            this.pnlHanNo.Size = new System.Drawing.Size(472, 32);
             this.pnlHanNo.TabIndex = 0;
             // 
             // txtFabricName
@@ -416,6 +417,7 @@
             this.txtFabricName.Size = new System.Drawing.Size(166, 36);
             this.txtFabricName.TabIndex = 3;
             this.txtFabricName.Text = "999999-9WW";
+            this.txtFabricName.Click += new System.EventHandler(this.DispTenKeyInputForm);
             this.txtFabricName.Enter += new System.EventHandler(this.txtFabricName_Enter);
             // 
             // pnlKensaTaishoNum_LastNum
@@ -428,7 +430,7 @@
             this.pnlKensaTaishoNum_LastNum.Location = new System.Drawing.Point(392, 110);
             this.pnlKensaTaishoNum_LastNum.Margin = new System.Windows.Forms.Padding(2);
             this.pnlKensaTaishoNum_LastNum.Name = "pnlKensaTaishoNum_LastNum";
-            this.pnlKensaTaishoNum_LastNum.Size = new System.Drawing.Size(473, 32);
+            this.pnlKensaTaishoNum_LastNum.Size = new System.Drawing.Size(472, 32);
             this.pnlKensaTaishoNum_LastNum.TabIndex = 0;
             // 
             // lblInspectionEndLine
@@ -443,19 +445,6 @@
             this.lblInspectionEndLine.TabIndex = 1;
             this.lblInspectionEndLine.Text = "9999";
             this.lblInspectionEndLine.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // lblSlash
-            // 
-            this.lblSlash.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblSlash.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.lblSlash.Location = new System.Drawing.Point(55, 0);
-            this.lblSlash.Margin = new System.Windows.Forms.Padding(0);
-            this.lblSlash.Name = "lblSlash";
-            this.lblSlash.Size = new System.Drawing.Size(60, 38);
-            this.lblSlash.TabIndex = 1;
-            this.lblSlash.Text = "／";
-            this.lblSlash.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // txtInspectionTargetLine
             // 
@@ -473,6 +462,19 @@
             this.txtInspectionTargetLine.Click += new System.EventHandler(this.DispTenKeyInputForm);
             this.txtInspectionTargetLine.Enter += new System.EventHandler(this.txtInspectionTargetLine_Enter);
             // 
+            // lblSlash
+            // 
+            this.lblSlash.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblSlash.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblSlash.Location = new System.Drawing.Point(55, 0);
+            this.lblSlash.Margin = new System.Windows.Forms.Padding(0);
+            this.lblSlash.Name = "lblSlash";
+            this.lblSlash.Size = new System.Drawing.Size(60, 38);
+            this.lblSlash.TabIndex = 1;
+            this.lblSlash.Text = "／";
+            this.lblSlash.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // pnlKensaStartRow
             // 
             this.pnlKensaStartRow.BackColor = System.Drawing.SystemColors.Control;
@@ -481,7 +483,7 @@
             this.pnlKensaStartRow.Location = new System.Drawing.Point(392, 146);
             this.pnlKensaStartRow.Margin = new System.Windows.Forms.Padding(2);
             this.pnlKensaStartRow.Name = "pnlKensaStartRow";
-            this.pnlKensaStartRow.Size = new System.Drawing.Size(473, 32);
+            this.pnlKensaStartRow.Size = new System.Drawing.Size(472, 32);
             this.pnlKensaStartRow.TabIndex = 0;
             // 
             // txtInspectionStartLine
@@ -508,7 +510,7 @@
             this.pnlSagyosyaInfo_1.Location = new System.Drawing.Point(392, 182);
             this.pnlSagyosyaInfo_1.Margin = new System.Windows.Forms.Padding(2);
             this.pnlSagyosyaInfo_1.Name = "pnlSagyosyaInfo_1";
-            this.pnlSagyosyaInfo_1.Size = new System.Drawing.Size(473, 32);
+            this.pnlSagyosyaInfo_1.Size = new System.Drawing.Size(472, 32);
             this.pnlSagyosyaInfo_1.TabIndex = 0;
             // 
             // txtWorker1
@@ -536,7 +538,7 @@
             this.pnlSagyosyaInfo_2.Location = new System.Drawing.Point(392, 218);
             this.pnlSagyosyaInfo_2.Margin = new System.Windows.Forms.Padding(2);
             this.pnlSagyosyaInfo_2.Name = "pnlSagyosyaInfo_2";
-            this.pnlSagyosyaInfo_2.Size = new System.Drawing.Size(473, 32);
+            this.pnlSagyosyaInfo_2.Size = new System.Drawing.Size(472, 32);
             this.pnlSagyosyaInfo_2.TabIndex = 0;
             // 
             // txtWorker2
@@ -911,7 +913,7 @@
             this.pnlEndDate.Location = new System.Drawing.Point(392, 290);
             this.pnlEndDate.Margin = new System.Windows.Forms.Padding(2);
             this.pnlEndDate.Name = "pnlEndDate";
-            this.pnlEndDate.Size = new System.Drawing.Size(473, 32);
+            this.pnlEndDate.Size = new System.Drawing.Size(472, 32);
             this.pnlEndDate.TabIndex = 0;
             // 
             // lblEndDatetime
@@ -983,7 +985,7 @@
             this.pnlStartDate.Location = new System.Drawing.Point(392, 254);
             this.pnlStartDate.Margin = new System.Windows.Forms.Padding(2);
             this.pnlStartDate.Name = "pnlStartDate";
-            this.pnlStartDate.Size = new System.Drawing.Size(473, 32);
+            this.pnlStartDate.Size = new System.Drawing.Size(472, 32);
             this.pnlStartDate.TabIndex = 0;
             // 
             // lblStartDatetime
@@ -1008,7 +1010,7 @@
             this.tableLayoutPanel6.Controls.Add(this.pnlStatusStp, 0, 2);
             this.tableLayoutPanel6.Controls.Add(this.pnlStatusEnd, 0, 3);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(870, 0);
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(869, 0);
             this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(3, 0, 0, 3);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 4;
@@ -1017,7 +1019,7 @@
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(382, 321);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(383, 321);
             this.tableLayoutPanel6.TabIndex = 4;
             // 
             // pnlStatusBef
@@ -1027,7 +1029,7 @@
             this.pnlStatusBef.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlStatusBef.Location = new System.Drawing.Point(3, 3);
             this.pnlStatusBef.Name = "pnlStatusBef";
-            this.pnlStatusBef.Size = new System.Drawing.Size(376, 74);
+            this.pnlStatusBef.Size = new System.Drawing.Size(377, 74);
             this.pnlStatusBef.TabIndex = 1;
             // 
             // lblStatusBef
@@ -1038,7 +1040,7 @@
             this.lblStatusBef.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lblStatusBef.Location = new System.Drawing.Point(0, 0);
             this.lblStatusBef.Name = "lblStatusBef";
-            this.lblStatusBef.Size = new System.Drawing.Size(372, 70);
+            this.lblStatusBef.Size = new System.Drawing.Size(373, 70);
             this.lblStatusBef.TabIndex = 0;
             this.lblStatusBef.Text = "検査開始前";
             this.lblStatusBef.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1050,7 +1052,7 @@
             this.pnlStatusChk.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlStatusChk.Location = new System.Drawing.Point(3, 83);
             this.pnlStatusChk.Name = "pnlStatusChk";
-            this.pnlStatusChk.Size = new System.Drawing.Size(376, 74);
+            this.pnlStatusChk.Size = new System.Drawing.Size(377, 74);
             this.pnlStatusChk.TabIndex = 1;
             // 
             // lblStatusChk
@@ -1061,7 +1063,7 @@
             this.lblStatusChk.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblStatusChk.Location = new System.Drawing.Point(0, 0);
             this.lblStatusChk.Name = "lblStatusChk";
-            this.lblStatusChk.Size = new System.Drawing.Size(372, 70);
+            this.lblStatusChk.Size = new System.Drawing.Size(373, 70);
             this.lblStatusChk.TabIndex = 0;
             this.lblStatusChk.Text = "検査準備完了\r\n（検査中）";
             this.lblStatusChk.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1073,7 +1075,7 @@
             this.pnlStatusStp.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlStatusStp.Location = new System.Drawing.Point(3, 163);
             this.pnlStatusStp.Name = "pnlStatusStp";
-            this.pnlStatusStp.Size = new System.Drawing.Size(376, 74);
+            this.pnlStatusStp.Size = new System.Drawing.Size(377, 74);
             this.pnlStatusStp.TabIndex = 1;
             // 
             // lblStatusStp
@@ -1084,7 +1086,7 @@
             this.lblStatusStp.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblStatusStp.Location = new System.Drawing.Point(0, 0);
             this.lblStatusStp.Name = "lblStatusStp";
-            this.lblStatusStp.Size = new System.Drawing.Size(372, 70);
+            this.lblStatusStp.Size = new System.Drawing.Size(373, 70);
             this.lblStatusStp.TabIndex = 0;
             this.lblStatusStp.Text = "検査中断";
             this.lblStatusStp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1096,7 +1098,7 @@
             this.pnlStatusEnd.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlStatusEnd.Location = new System.Drawing.Point(3, 243);
             this.pnlStatusEnd.Name = "pnlStatusEnd";
-            this.pnlStatusEnd.Size = new System.Drawing.Size(376, 75);
+            this.pnlStatusEnd.Size = new System.Drawing.Size(377, 75);
             this.pnlStatusEnd.TabIndex = 1;
             // 
             // lblStatusEnd
@@ -1107,7 +1109,7 @@
             this.lblStatusEnd.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.lblStatusEnd.Location = new System.Drawing.Point(0, 0);
             this.lblStatusEnd.Name = "lblStatusEnd";
-            this.lblStatusEnd.Size = new System.Drawing.Size(372, 71);
+            this.lblStatusEnd.Size = new System.Drawing.Size(373, 71);
             this.lblStatusEnd.TabIndex = 0;
             this.lblStatusEnd.Text = "検査終了";
             this.lblStatusEnd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;

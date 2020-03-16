@@ -31,6 +31,11 @@ namespace BeforeInspection
         private const string m_CON_INSPECTION_IMAGE_R_PATH = @".\image\ABCDE_R.png";
         private const string m_CON_FORMAT_UNIT_NUM = "{0}号機";
         private const string m_CON_FORMAT_INSPECTION_NUM = "検査番号:{0}";
+        private const string m_CON_TEXTMODE_ORDERIMG = "1";
+        private const string m_CON_TEXTMODE_FABRICNAME = "2";
+        private const string m_CON_TEXTMODE_NUMBER = "3";
+        private const int m_CON_MAXLENGTH_ORDERIMG = 7;
+        private const int m_CON_MAXLENGTH_FABRICNAME = 10;
 
         // 検査方向背景色関連
         private Color m_clrInspectionDirectionActFore = System.Drawing.SystemColors.ActiveCaption;
@@ -62,9 +67,31 @@ namespace BeforeInspection
         private void DispTenKeyInputForm(object sender, EventArgs e)
         {
             TextBox txtBox = (TextBox)sender;
+            TenKeyInput frmTenKeyInput = null;
 
             // 入力用フォームの表示
-            TenKeyInput frmTenKeyInput = new TenKeyInput(txtBox.MaxLength);
+            if (txtBox.Equals(txtOrderImg))
+            {
+                frmTenKeyInput =
+                    new TenKeyInput(
+                        m_CON_MAXLENGTH_ORDERIMG,
+                        m_CON_TEXTMODE_ORDERIMG);
+            }
+            else if (txtBox.Equals(txtFabricName))
+            {
+                frmTenKeyInput =
+                    new TenKeyInput(
+                        m_CON_MAXLENGTH_FABRICNAME,
+                        m_CON_TEXTMODE_FABRICNAME);
+            }
+            else
+            {
+                frmTenKeyInput =
+                    new TenKeyInput(
+                        txtBox.MaxLength,
+                        m_CON_TEXTMODE_NUMBER);
+            }
+
             frmTenKeyInput.ShowDialog(this);
             this.Visible = true;
 
@@ -75,8 +102,6 @@ namespace BeforeInspection
 
                 CalcMaxLine();
             }
-
-
         }
 
         /// <summary>
@@ -560,7 +585,7 @@ namespace BeforeInspection
 
 
                 // 撮像装置部へ連携用ファイル出力
-                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum,g_clsConnectionNpgsql) == false)
+                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum, g_clsConnectionNpgsql) == false)
                 {
                     btnEndDatetime.Focus();
                     return false;
@@ -779,7 +804,7 @@ namespace BeforeInspection
         /// <param name="intInspectionNum"></param>
         /// <param name="intBranchNum"></param>
         /// <returns></returns>
-        private bool bolOutFile(string strFabricName, int intInspectionNum, int intBranchNum, ConnectionNpgsql objPgsqlConnect )
+        private bool bolOutFile(string strFabricName, int intInspectionNum, int intBranchNum, ConnectionNpgsql objPgsqlConnect)
         {
             StreamWriter sw = null;
             string strSQL = string.Empty;
@@ -898,7 +923,7 @@ namespace BeforeInspection
                 txtInspectionTargetLine.BackColor = System.Drawing.Color.White;
                 txtInspectionStartLine.ReadOnly = true;
                 txtInspectionStartLine.BackColor = System.Drawing.Color.White;
-                
+
                 try
                 {
                     dtData = new DataTable();
@@ -1222,7 +1247,7 @@ namespace BeforeInspection
             {
                 if (this.ActiveControl == this.txtOrderImg ||
                     this.ActiveControl == this.txtFabricName)
-                { 
+                {
 
                     // 指図または反番のため、スキップ
                     return;
@@ -1233,7 +1258,7 @@ namespace BeforeInspection
                     // 指図が無効化されているため、処理しない
                     return;
                 }
-                
+
                 // バーコード入力のため、フォーカスを設定
                 txtOrderImg.Text = string.Empty;
                 txtFabricName.Text = string.Empty;
@@ -1317,6 +1342,38 @@ namespace BeforeInspection
                 return;
             }
 
+            int intInspectionNum = 0;
+
+            // 検査番号の採番
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
+            {
+                intInspectionNum = m_intInspectionNum;
+            }
+            else
+            {
+                if (bolNumberInspectionNum(out intInspectionNum) == false)
+                {
+                    return;
+                }
+            }
+
+            // 確認メッセージ出力
+            DialogResult result = System.Windows.Forms.MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0008,
+                                                                                     intInspectionNum,
+                                                                                     txtProductName.Text,
+                                                                                     txtFabricName.Text,
+                                                                                     txtInspectionTargetLine.Text,
+                                                                                     lblInspectionEndLine.Text,
+                                                                                     txtInspectionStartLine.Text,
+                                                                                     txtWorker1.Text,
+                                                                                     txtWorker2.Text,
+                                                                                     m_strInspectionDirection),
+                                                                       "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
             // 終了時刻が入力されている場合は検査終了処理を行う
             if (m_intStatus == g_clsSystemSettingInfo.intStatusChk &&
                 !string.IsNullOrEmpty(lblEndDatetime.Text))
@@ -1351,22 +1408,6 @@ namespace BeforeInspection
                 // 次の反番情報を設定
                 btnNextFabric.Focus();
 
-                return;
-            }
-
-            // 確認メッセージ出力
-            DialogResult result = System.Windows.Forms.MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0008,
-                                                                                     txtProductName.Text,
-                                                                                     txtFabricName.Text,
-                                                                                     txtInspectionTargetLine.Text,
-                                                                                     lblInspectionEndLine.Text,
-                                                                                     txtInspectionStartLine.Text,
-                                                                                     txtWorker1.Text,
-                                                                                     txtWorker2.Text,
-                                                                                     m_strInspectionDirection),
-                                                                       "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result != DialogResult.Yes)
-            {
                 return;
             }
 
@@ -1487,6 +1528,23 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnInspectionStop_MouseClick(object sender, MouseEventArgs e)
         {
+            // 確認メッセージ出力
+            DialogResult result = MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0008,
+                                                                m_intInspectionNum,
+                                                                txtProductName.Text,
+                                                                txtFabricName.Text,
+                                                                txtInspectionTargetLine.Text,
+                                                                lblInspectionEndLine.Text,
+                                                                txtInspectionStartLine.Text,
+                                                                txtWorker1.Text,
+                                                                txtWorker2.Text,
+                                                                m_strInspectionDirection),
+                                                  "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
             // 終了日付の表示
             lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -9,19 +10,63 @@ namespace BeforeInspection
         // 入力値
         public string strInput { get; set; }
 
+        // テキストモード
+        public string m_strTextMode { get; set; }
+
+        // 定数
+        private const string m_CON_TEXTMODE_ORDERIMG = "1";
+        private const string m_CON_TEXTMODE_FABRICNAME = "2";
+        private const string m_CON_TEXTMODE_NUMBER = "3";
+        private const int m_CON_MAXLENGTH_ORDERIMG = 7;
+        private const int m_CON_MAXLENGTH_FABRICNAME = 10;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="intMaxLength">最大桁数</param>
-        public TenKeyInput(int intMaxLength = 0)
+        /// <param name="bolOnly_number">数値フラグ</param>
+        public TenKeyInput(
+            int intMaxLength = 0,
+            string strTextMode = "3")
         {
             InitializeComponent();
+
+            m_strTextMode = strTextMode;
 
             // 最大桁を設定
             if (intMaxLength > 0)
             {
                 txtInput.MaxLength = intMaxLength;
+            }
+
+            // 文字入力の可否をチェックする
+            if (m_strTextMode.Equals(m_CON_TEXTMODE_ORDERIMG) ||
+                m_strTextMode.Equals(m_CON_TEXTMODE_NUMBER))
+            {
+                List<Control> lstButtonInfo = new List<Control>();
+                lstButtonInfo.Add(btnA);
+                lstButtonInfo.Add(btnB);
+                lstButtonInfo.Add(btnC);
+                lstButtonInfo.Add(btnD);
+                lstButtonInfo.Add(btnE);
+                lstButtonInfo.Add(btnHyphen);
+
+                foreach (Control ctr in lstButtonInfo)
+                {
+                    // 文字ボタンを非表示にする
+                    ctr.Visible = false;
+                }
+
+                // 列の幅を0に設定する
+                this.tableLayoutPanel1.ColumnStyles[3].Width = 0;
+                this.tableLayoutPanel1.ColumnStyles[4].Width = 0;
+                this.tableLayoutPanel1.ColumnStyles[5].Width = 0;
+
+                // ウィンドウサイズを変更する
+                this.Width = this.MinimumSize.Width;
+                this.txtInput.Width = this.txtInput.MinimumSize.Width;
+                this.tableLayoutPanel1.Width = this.tableLayoutPanel1.MinimumSize.Width;
             }
         }
         #endregion
@@ -58,7 +103,9 @@ namespace BeforeInspection
 
             Button btnObj = (Button)sender;
 
-            if (string.IsNullOrEmpty(txtInput.Text) && btnObj == btn0)
+            if (string.IsNullOrEmpty(txtInput.Text) &&
+                !m_strTextMode.Equals(m_CON_TEXTMODE_FABRICNAME) &&
+                btnObj == btn0)
             {
                 return;
             }
