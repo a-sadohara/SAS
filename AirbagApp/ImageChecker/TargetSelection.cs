@@ -4,8 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -77,10 +79,33 @@ namespace ImageChecker
 
                 // 欠点画像ZIPファイルの解凍
                 ZipFile.ExtractToDirectory(Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"),
-                                           g_clsSystemSettingInfo.strFaultImageDirectory);
+                                           g_strZipExtractDirPath);
+
+                // 解凍先ディレクトリを取得
+                DirectoryInfo diThaw = new DirectoryInfo(Path.Combine(g_strZipExtractDirPath, strFaultImage));
+
+                // 移行先ディレクトリを作成
+                DirectoryInfo diMigrationTarget = Directory.CreateDirectory(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImage));
+
+                // ファイルの取得
+                foreach (FileInfo fInfo in diThaw.GetFiles().Where(
+                    x => string.Compare(x.Extension, ".jpg", true) == 0))
+                {
+                    using (Bitmap bmpOriginalImage = new Bitmap(fInfo.FullName))
+                    {
+                        // カメラ位置を考慮し、180度回転させる
+                        bmpOriginalImage.RotateFlip(RotateFlipType.Rotate180FlipY);
+
+                        // 画像を移行先ディレクトリに保存する
+                        bmpOriginalImage.Save(Path.Combine(diMigrationTarget.FullName, fInfo.Name), ImageFormat.Jpeg);
+                    }
+                }
 
                 // ZIPファイルの削除
                 File.Delete(Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"));
+
+                // 解凍先ディレクトリの削除
+                Directory.Delete(diThaw.FullName, true);
 
                 return true;
             }
