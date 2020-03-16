@@ -94,7 +94,7 @@ namespace ImageChecker
                     using (Bitmap bmpOriginalImage = new Bitmap(fInfo.FullName))
                     {
                         // カメラ位置を考慮し、180度回転させる
-                        bmpOriginalImage.RotateFlip(RotateFlipType.Rotate180FlipY);
+                        bmpOriginalImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
 
                         // 画像を移行先ディレクトリに保存する
                         bmpOriginalImage.Save(Path.Combine(diMigrationTarget.FullName, fInfo.Name), ImageFormat.Jpeg);
