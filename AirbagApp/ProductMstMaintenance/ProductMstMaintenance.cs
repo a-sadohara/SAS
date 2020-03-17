@@ -77,6 +77,20 @@ namespace ProductMstMaintenance
         private double m_dblSizeRateH = 100.00;
         private double m_dblSizeRate = 100.00;
         private int m_intColumn_cnt = 0;
+        private int m_intRegimark1PointX = 0;
+        private int m_intRegimark1PointY = 0;
+        private int m_intRegimark2PointX = 0;
+        private int m_intRegimark2PointY = 0;
+        private int m_intBasePoint1X = 0;
+        private int m_intBasePoint1Y = 0;
+        private int m_intBasePoint2X = 0;
+        private int m_intBasePoint2Y = 0;
+        private int m_intBasePoint3X = 0;
+        private int m_intBasePoint3Y = 0;
+        private int m_intBasePoint4X = 0;
+        private int m_intBasePoint4Y = 0;
+        private int m_intBasePoint5X = 0;
+        private int m_intBasePoint5Y = 0;
         private DataTable m_dtData = new DataTable();
         private string m_strMstFilePath = "";
 
@@ -459,6 +473,20 @@ namespace ProductMstMaintenance
             int intLineThreshold = -1;                      // 行判定用境界線
             int intColumnThresholdTop = -1;                 // 列判定用境界線の天辺
             int intColumnThresholdBottom = -1;              // 列判定用境界線の底辺
+            int intRegimark1PointX = -1;                    // 開始レジマークX座標
+            int intRegimark1PointY = -1;                    // 開始レジマークY座標
+            int intRegimark2PointX = -1;                    // 終了レジマークX座標
+            int intRegimark2PointY = -1;                    // 終了レジマークY座標
+            int intBasePoint1X = -1;                        // 基準点1X座標
+            int intBasePoint1Y = -1;                        // 基準点1Y座標
+            int intBasePoint2X = -1;                        // 基準点2X座標
+            int intBasePoint2Y = -1;                        // 基準点2Y座標
+            int intBasePoint3X = -1;                        // 基準点3X座標
+            int intBasePoint3Y = -1;                        // 基準点3Y座標
+            int intBasePoint4X = -1;                        // 基準点4X座標
+            int intBasePoint4Y = -1;                        // 基準点4Y座標
+            int intBasePoint5X = -1;                        // 基準点5X座標
+            int intBasePoint5Y = -1;                        // 基準点5Y座標
 
             // 描画の前準備
             // 描画先とするImageオブジェクトを作成する
@@ -618,6 +646,83 @@ namespace ProductMstMaintenance
                     g.DrawLine(p, intLineThreshold, intColumnThresholdTop,
                                   intLineThreshold, intColumnThresholdBottom);
                 }
+            }
+
+            intRegimark1PointX = (int)((double)m_intRegimark1PointX * m_dblSizeRate);
+            intRegimark1PointY = (int)((double)m_intRegimark1PointY * m_dblSizeRate);
+            intRegimark2PointX = (int)((double)m_intRegimark2PointX * m_dblSizeRate);
+            intRegimark2PointY = (int)((double)m_intRegimark2PointY * m_dblSizeRate);
+
+            // 開始レジマーク箇所に「Ｘ」を描画
+            p = new Pen(Color.DeepSkyBlue, 3);
+            g.DrawLine(p, intRegimark1PointX - 8, intRegimark1PointY - 8, intRegimark1PointX + 8, intRegimark1PointY + 8);
+            g.DrawLine(p, intRegimark1PointX + 8, intRegimark1PointY - 8, intRegimark1PointX - 8, intRegimark1PointY + 8);
+
+            // 終了レジマーク箇所に「Ｘ」を描画
+            p = new Pen(Color.MediumVioletRed, 3);
+            g.DrawLine(p, intRegimark2PointX - 8, intRegimark2PointY - 8, intRegimark2PointX + 8, intRegimark2PointY + 8);
+            g.DrawLine(p, intRegimark2PointX + 8, intRegimark2PointY - 8, intRegimark2PointX - 8, intRegimark2PointY + 8);
+
+            // 基準点描画用に生成
+            p = new Pen(Color.Orange, 3);
+
+            if (m_intBasePoint1X != 0 ||
+                m_intBasePoint1Y != 0)
+            {
+                intBasePoint1X = (int)((double)m_intBasePoint1X * m_dblSizeRate);
+                intBasePoint1Y = (int)((double)m_intBasePoint1Y * m_dblSizeRate);
+
+                // A列座標箇所に「Ｘ」を描画
+                g.DrawLine(p, intBasePoint1X - 8, intBasePoint1Y - 8, intBasePoint1X + 8, intBasePoint1Y + 8);
+                g.DrawLine(p, intBasePoint1X + 8, intBasePoint1Y - 8, intBasePoint1X - 8, intBasePoint1Y + 8);
+            }
+
+            if (m_intColumn_cnt > 1 &&
+                (m_intBasePoint2X != 0 ||
+                m_intBasePoint2Y != 0))
+            {
+                intBasePoint2X = (int)((double)m_intBasePoint2X * m_dblSizeRate);
+                intBasePoint2Y = (int)((double)m_intBasePoint2Y * m_dblSizeRate);
+
+                // B列座標箇所に「Ｘ」を描画
+                g.DrawLine(p, intBasePoint2X - 8, intBasePoint2Y - 8, intBasePoint2X + 8, intBasePoint2Y + 8);
+                g.DrawLine(p, intBasePoint2X + 8, intBasePoint2Y - 8, intBasePoint2X - 8, intBasePoint2Y + 8);
+            }
+
+            if (m_intColumn_cnt > 2 &&
+                (m_intBasePoint3X != 0 ||
+                m_intBasePoint3Y != 0))
+            {
+                intBasePoint3X = (int)((double)m_intBasePoint3X * m_dblSizeRate);
+                intBasePoint3Y = (int)((double)m_intBasePoint3Y * m_dblSizeRate);
+
+                // C列座標箇所に「Ｘ」を描画
+                g.DrawLine(p, intBasePoint3X - 8, intBasePoint3Y - 8, intBasePoint3X + 8, intBasePoint3Y + 8);
+                g.DrawLine(p, intBasePoint3X + 8, intBasePoint3Y - 8, intBasePoint3X - 8, intBasePoint3Y + 8);
+            }
+
+            if (m_intColumn_cnt > 3 &&
+                (m_intBasePoint4X != 0 ||
+                m_intBasePoint4Y != 0))
+            {
+                intBasePoint4X = (int)((double)m_intBasePoint4X * m_dblSizeRate);
+                intBasePoint4Y = (int)((double)m_intBasePoint4Y * m_dblSizeRate);
+
+                // D列座標箇所に「Ｘ」を描画
+                g.DrawLine(p, intBasePoint4X - 8, intBasePoint4Y - 8, intBasePoint4X + 8, intBasePoint4Y + 8);
+                g.DrawLine(p, intBasePoint4X + 8, intBasePoint4Y - 8, intBasePoint4X - 8, intBasePoint4Y + 8);
+            }
+
+            if (m_intColumn_cnt > 4 &&
+                (m_intBasePoint5X != 0 ||
+                m_intBasePoint5Y != 0))
+            {
+                intBasePoint5X = (int)((double)m_intBasePoint5X * m_dblSizeRate);
+                intBasePoint5Y = (int)((double)m_intBasePoint5Y * m_dblSizeRate);
+
+                // E列座標箇所に「Ｘ」を描画
+                g.DrawLine(p, intBasePoint5X - 8, intBasePoint5Y - 8, intBasePoint5X + 8, intBasePoint5Y + 8);
+                g.DrawLine(p, intBasePoint5X + 8, intBasePoint5Y - 8, intBasePoint5X - 8, intBasePoint5Y + 8);
             }
 
             //リソースを解放する
@@ -794,9 +899,15 @@ namespace ProductMstMaintenance
             lblStartRegimarkPointN.Text = "(" + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X]) + "," +
                                                 NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]) + ")";
 
+            m_intRegimark1PointX = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X]);
+            m_intRegimark1PointY = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]);
+
             // レジマーク表示部.終了レジマーク座標.N行
             lblEndRegimarkPointN.Text = "(" + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X]) + "," +
                                               NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]) + ")";
+
+            m_intRegimark2PointX = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X]);
+            m_intRegimark2PointY = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]);
 
             string strPoint;
             string strArrow;
@@ -812,6 +923,9 @@ namespace ProductMstMaintenance
             lblBasePointA.Text = strPoint;
             lblPlusDirectionA.Text = strArrow;
 
+            m_intBasePoint1X = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_1_X]);
+            m_intBasePoint1Y = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_1_Y]);
+
             // 座標のラベルを作成 B
             CreatePointString(dtCurentRow
                             , m_CON_COLNAME_BASE_POINT_2_X
@@ -822,6 +936,9 @@ namespace ProductMstMaintenance
                             , out strArrow);
             lblBasePointB.Text = strPoint;
             lblPlusDirectionB.Text = strArrow;
+
+            m_intBasePoint2X = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_2_X]);
+            m_intBasePoint2Y = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_2_Y]);
 
             // 座標のラベルを作成 C
             CreatePointString(dtCurentRow
@@ -834,6 +951,9 @@ namespace ProductMstMaintenance
             lblBasePointC.Text = strPoint;
             lblPlusDirectionC.Text = strArrow;
 
+            m_intBasePoint3X = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_3_X]);
+            m_intBasePoint3Y = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_3_Y]);
+
             // 座標のラベルを作成 D
             CreatePointString(dtCurentRow
                             , m_CON_COLNAME_BASE_POINT_4_X
@@ -845,6 +965,9 @@ namespace ProductMstMaintenance
             lblBasePointD.Text = strPoint;
             lblPlusDirectionD.Text = strArrow;
 
+            m_intBasePoint4X = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_4_X]);
+            m_intBasePoint4Y = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_4_Y]);
+
             // 座標のラベルを作成 E
             CreatePointString(dtCurentRow
                             , m_CON_COLNAME_BASE_POINT_5_X
@@ -855,6 +978,9 @@ namespace ProductMstMaintenance
                             , out strArrow);
             lblBasePointE.Text = strPoint;
             lblPlusDirectionE.Text = strArrow;
+
+            m_intBasePoint5X = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_5_X]);
+            m_intBasePoint5Y = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_5_Y]);
 
             // 開始レジマークカメラ番号
             lblStartRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_START_REGIMARK_CAMERA_NUM]);
@@ -997,7 +1123,7 @@ namespace ProductMstMaintenance
             bool bolVsbColumn3Flg = false;
             bool bolVsbColumn4Flg = false;
             bool bolVsbColumn5Flg = false;
-            
+
             // 列数でコントロール表示フラグを設定する
             if (m_intColumn_cnt > 1)
             {
