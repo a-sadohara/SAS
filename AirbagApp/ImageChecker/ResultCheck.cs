@@ -262,6 +262,7 @@ namespace ImageChecker
             DataTable dtData;
             bool bolMovecoercive = false;
             string strMsg = string.Empty;
+            bool bolNgReasonReWrite = false;
 
             try
             {
@@ -346,6 +347,12 @@ namespace ImageChecker
                 lblNgDistance.Text = string.Format(m_CON_FORMAT_NG_DISTANCE, m_dtData.Rows[intPageIdx]["ng_distance_x"].ToString(), m_dtData.Rows[intPageIdx]["ng_distance_y"].ToString());
                 lblMarkingImagepath.Text = strMarkingImagepath;
                 lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, m_dtData.Rows[intPageIdx]["ng_reason"].ToString());
+
+                if (string.IsNullOrWhiteSpace(m_dtData.Rows[intPageIdx]["ng_reason"].ToString()))
+                {
+                    bolNgReasonReWrite = true;
+                }
+
                 cmbBoxLine.SelectedItem = m_dtData.Rows[intPageIdx]["line"].ToString();
                 cmbBoxColumns.SelectedItem = strCloumns;
 
@@ -423,10 +430,12 @@ namespace ImageChecker
                 }
 
                 // 同一行列がNGに登録済みになっている場合、他画面でNG登録済みにする
-                dtData = new DataTable();
-                try
+                if (bolNgReasonReWrite)
                 {
-                    strSQL = @"SELECT COUNT(*) AS cnt
+                    dtData = new DataTable();
+                    try
+                    {
+                        strSQL = @"SELECT COUNT(*) AS cnt
                                FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                WHERE fabric_name = :fabric_name
                                AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
@@ -436,46 +445,47 @@ namespace ImageChecker
                                AND   acceptance_check_result IN(:acceptance_check_result_ng_detect, 
                                                                 :acceptance_check_result_ng_nondetect)";
 
-                    // SQLコマンドに各パラメータを設定する
-                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = Convert.ToInt32(m_dtData.Rows[intPageIdx]["line"]) });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = strCloumns });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter
-                    {
-                        ParameterName = "acceptance_check_result_ng_detect",
-                        DbType = DbType.Int16,
-                        Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect
-                    });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter
-                    {
-                        ParameterName = "acceptance_check_result_ng_nondetect",
-                        DbType = DbType.Int16,
-                        Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect
-                    });
-
-                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
-
-                    if (dtData.Rows.Count > 0)
-                    {
-                        // 他画像でＮＧ判定済みの表示
-                        if (Convert.ToInt32(dtData.Rows[0]["cnt"]) > 0)
+                        // SQLコマンドに各パラメータを設定する
+                        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = Convert.ToInt32(m_dtData.Rows[intPageIdx]["line"]) });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = strCloumns });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter
                         {
-                            lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
-                            btnOtherNgJudgement.Focus();
+                            ParameterName = "acceptance_check_result_ng_detect",
+                            DbType = DbType.Int16,
+                            Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect
+                        });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter
+                        {
+                            ParameterName = "acceptance_check_result_ng_nondetect",
+                            DbType = DbType.Int16,
+                            Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect
+                        });
+
+                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                        if (dtData.Rows.Count > 0)
+                        {
+                            // 他画像でＮＧ判定済みの表示
+                            if (Convert.ToInt32(dtData.Rows[0]["cnt"]) > 0)
+                            {
+                                lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, g_CON_NG_REASON_OTHER_NG_JUDGEMENT);
+                                btnOtherNgJudgement.Focus();
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0060, Environment.NewLine, ex.Message));
-                    // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    catch (Exception ex)
+                    {
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0060, Environment.NewLine, ex.Message));
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                    return false;
+                        return false;
+                    }
                 }
 
                 return true;
