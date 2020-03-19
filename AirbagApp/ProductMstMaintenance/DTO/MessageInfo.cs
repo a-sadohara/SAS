@@ -116,7 +116,7 @@ namespace ProductMstMaintenance.DTO
         /// </summary>
         public void GetMessageInfo()
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
 
             try
             {
@@ -140,14 +140,14 @@ namespace ProductMstMaintenance.DTO
         /// <returns>true:正常終了 false:異常終了</returns>
         private void GetMessageContent(string strId, ref string strValue)
         {
-            DataRow[] dr = m_dtMessageInfo.Select("id = '" + strId + "'");
+            DataRow[] dr = m_dtMessageInfo.Select(string.Format( "id = '{0}'" , strId ));
             if (dr.Length > 0)
             {
                 strValue = dr[0]["content"].ToString();
             }
             else
             {
-                m_sbErrMessage.AppendLine("Id[" + strId + "] メッセージ情報テーブルに存在しません。");
+                m_sbErrMessage.AppendLine(string.Format("Id[{0}] メッセージ情報テーブルに存在しません。" , strId ));
             }
         }
     }
