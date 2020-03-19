@@ -37,11 +37,10 @@
             // prgBar
             // 
             this.prgBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.prgBar.Location = new System.Drawing.Point(99, 45);
-            this.prgBar.Margin = new System.Windows.Forms.Padding(4);
+            this.prgBar.Location = new System.Drawing.Point(79, 36);
             this.prgBar.MarqueeAnimationSpeed = 10;
             this.prgBar.Name = "prgBar";
-            this.prgBar.Size = new System.Drawing.Size(680, 29);
+            this.prgBar.Size = new System.Drawing.Size(544, 23);
             this.prgBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.prgBar.TabIndex = 0;
             // 
@@ -50,10 +49,9 @@
             this.lblMessage.AutoSize = true;
             this.lblMessage.Font = new System.Drawing.Font("メイリオ", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.lblMessage.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblMessage.Location = new System.Drawing.Point(106, 13);
-            this.lblMessage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblMessage.Location = new System.Drawing.Point(85, 10);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(451, 28);
+            this.lblMessage.Size = new System.Drawing.Size(355, 23);
             this.lblMessage.TabIndex = 2;
             this.lblMessage.Text = "検査情報の登録中です。しばらくお待ちください...";
             // 
@@ -63,26 +61,27 @@
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(107)))));
             this.panel1.Controls.Add(this.lblMessage);
             this.panel1.Controls.Add(this.prgBar);
-            this.panel1.Location = new System.Drawing.Point(54, 145);
+            this.panel1.Location = new System.Drawing.Point(43, 116);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(873, 96);
+            this.panel1.Size = new System.Drawing.Size(698, 77);
             this.panel1.TabIndex = 3;
             // 
             // ImportImageZipProgressForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.ClientSize = new System.Drawing.Size(1023, 413);
+            this.ClientSize = new System.Drawing.Size(818, 330);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ImportImageZipProgressForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Load += new System.EventHandler(this.ProgressForm_Load);
+            this.Shown += new System.EventHandler(this.ImportImageZipProgressForm_Shown);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);

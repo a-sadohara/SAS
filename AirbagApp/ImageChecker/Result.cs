@@ -635,7 +635,6 @@ namespace ImageChecker
             string strSQL = string.Empty;
             DataTable dtData;
             string strWriteLine = string.Empty;
-            List<Control> lstctlEnable = null;
 
             if (MessageBox.Show(g_clsMessageInfo.strMsgQ0012, g_CON_MESSAGE_TITLE_QUESTION, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             {
@@ -649,20 +648,6 @@ namespace ImageChecker
 
             try
             {
-                // コントロール無効
-                m_bolXButtonDisable = true;
-                lstctlEnable = new List<Control>();
-                lstctlEnable.Add(btnLogout);
-                lstctlEnable.Add(btnTargetSelection);
-                lstctlEnable.Add(btnAcceptanceCheck);
-                lstctlEnable.Add(btnRegstDecision);
-                lstctlEnable.Add(dgvDecisionResult);
-
-                foreach (Control ctr in lstctlEnable)
-                {
-                    ctr.Enabled = false;
-                }
-
                 // 終了日時(仮)を保持
                 m_strDecisionEndTimeBeta = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
@@ -831,13 +816,6 @@ namespace ImageChecker
 
                 g_clsConnectionNpgsql.DbClose();
 
-                if (lstctlEnable != null)
-                {
-                    foreach (Control ctr in lstctlEnable)
-                    {
-                        ctr.Enabled = true;
-                    }
-                }
                 m_bolXButtonDisable = false;
 
                 if (bolProcOkNg == true)

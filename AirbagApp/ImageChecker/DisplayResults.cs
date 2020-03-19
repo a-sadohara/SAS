@@ -728,23 +728,6 @@ namespace ImageChecker
         {
             // コントロール無効
             m_bolXButtonDisable = true;
-            List<Control> lstctlEnable = new List<Control>();
-            lstctlEnable.Add(btnLogout);
-            lstctlEnable.Add(txtWorkerName);
-            lstctlEnable.Add(txtLine);
-            lstctlEnable.Add(cmbColumns);
-            lstctlEnable.Add(cmbNgFace);
-            lstctlEnable.Add(txtNgReason);
-            lstctlEnable.Add(btnSearch);
-            lstctlEnable.Add(dgvDecisionResult);
-            lstctlEnable.Add(btnTargetSelection);
-            lstctlEnable.Add(btnReprint);
-            lstctlEnable.Add(btnInspectionUpdate);
-
-            foreach (Control ctr in lstctlEnable)
-            {
-                ctr.Enabled = false;
-            }
 
             ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm(g_clsMessageInfo.strMsgI0012);
             frmProgress.StartPosition = FormStartPosition.CenterScreen;
@@ -765,14 +748,6 @@ namespace ImageChecker
             finally
             {
                 frmProgress.Close();
-
-                if (lstctlEnable != null)
-                {
-                    foreach (Control ctr in lstctlEnable)
-                    {
-                        ctr.Enabled = true;
-                    }
-                }
 
                 m_bolXButtonDisable = false;
             }

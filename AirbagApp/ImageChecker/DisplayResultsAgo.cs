@@ -666,38 +666,6 @@ namespace ImageChecker
 
             // コントロール無効
             m_bolXButtonDisable = true;
-            List<Control> lstctlEnable = new List<Control>();
-            lstctlEnable.Add(btnLogout);
-            lstctlEnable.Add(cmbUnitNum);
-            lstctlEnable.Add(txtProductName);
-            lstctlEnable.Add(txtOrderImg);
-            lstctlEnable.Add(txtFabricName);
-            lstctlEnable.Add(dtpStartDatetimeFrom);
-            lstctlEnable.Add(dtpStartDatetimeTo);
-            lstctlEnable.Add(dtpEndDatetimeFrom);
-            lstctlEnable.Add(dtpEndDatetimeTo);
-            lstctlEnable.Add(txtSearchFrom);
-            lstctlEnable.Add(txtSearchTo);
-            lstctlEnable.Add(dtpDecisionStartTimeFrom);
-            lstctlEnable.Add(dtpDecisionStartTimeTo);
-            lstctlEnable.Add(dtpDecisionEndTimeFrom);
-            lstctlEnable.Add(dtpDecisionEndTimeTo);
-            lstctlEnable.Add(txtInspectionNum);
-            lstctlEnable.Add(txtWorkerName);
-            lstctlEnable.Add(txtLine);
-            lstctlEnable.Add(cmbColumns);
-            lstctlEnable.Add(cmbNgFace);
-            lstctlEnable.Add(txtNgReason);
-            lstctlEnable.Add(btnSearch);
-            lstctlEnable.Add(dgvCheckInspectionHistory);
-            lstctlEnable.Add(btnTargetSelection);
-            lstctlEnable.Add(btnReprint);
-            lstctlEnable.Add(btnResultUpdate);
-
-            foreach (Control ctr in lstctlEnable)
-            {
-                ctr.Enabled = false;
-            }
 
             // 選択行インデックスの取得
             foreach (DataGridViewRow dgvRow in this.dgvCheckInspectionHistory.SelectedRows)
@@ -824,14 +792,6 @@ namespace ImageChecker
                 finally
                 {
                     frmProgress.Close();
-
-                    if (lstctlEnable != null)
-                    {
-                        foreach (Control ctr in lstctlEnable)
-                        {
-                            ctr.Enabled = true;
-                        }
-                    }
 
                     m_bolXButtonDisable = false;
                 }
