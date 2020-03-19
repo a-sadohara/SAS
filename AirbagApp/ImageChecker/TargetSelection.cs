@@ -71,21 +71,25 @@ namespace ImageChecker
             string strNgImageCooperationDirectory,
             string strFaultImage)
         {
+            DirectoryInfo diThaw = null;
+            DirectoryInfo diMigrationTarget = null;
+            string strZipFilePath = string.Empty;
+
             try
             {
+                strZipFilePath = Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip");
+
                 // ZIPファイルを一時ZIP解凍用格納先ディレクトリにコピーする
-                File.Copy(Path.Combine(strNgImageCooperationDirectory, strFaultImage + ".zip"),
-                          Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"), true);
+                File.Copy(Path.Combine(strNgImageCooperationDirectory, strFaultImage + ".zip"), strZipFilePath, true);
 
                 // 欠点画像ZIPファイルの解凍
-                ZipFile.ExtractToDirectory(Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"),
-                                           g_strZipExtractDirPath);
+                ZipFile.ExtractToDirectory(strZipFilePath, g_strZipExtractDirPath);
 
                 // 解凍先ディレクトリを取得
-                DirectoryInfo diThaw = new DirectoryInfo(Path.Combine(g_strZipExtractDirPath, strFaultImage));
+                diThaw = new DirectoryInfo(Path.Combine(g_strZipExtractDirPath, strFaultImage));
 
                 // 移行先ディレクトリを作成
-                DirectoryInfo diMigrationTarget = Directory.CreateDirectory(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImage));
+                diMigrationTarget = Directory.CreateDirectory(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImage));
 
                 // ファイルの取得
                 foreach (FileInfo fInfo in diThaw.GetFiles().Where(
@@ -102,7 +106,7 @@ namespace ImageChecker
                 }
 
                 // ZIPファイルの削除
-                File.Delete(Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip"));
+                File.Delete(strZipFilePath);
 
                 // 解凍先ディレクトリの削除
                 Directory.Delete(diThaw.FullName, true);
@@ -113,6 +117,22 @@ namespace ImageChecker
             {
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
+
+                // エラー発生時、中途半端に取り込まれた情報を削除する
+                if (File.Exists(strZipFilePath))
+                {
+                    File.Delete(strZipFilePath);
+                }
+
+                if (diThaw.Exists)
+                {
+                    diThaw.Delete(true);
+                }
+
+                if (diMigrationTarget.Exists)
+                {
+                    diMigrationTarget.Delete(true);
+                }
 
                 return false;
             }
