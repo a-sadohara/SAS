@@ -82,11 +82,6 @@ namespace ImageChecker
         private const string m_CON_FORMAT_NG_DISTANCE = "位置(X,Y)cm：{0},{1}";
         private const string m_CON_FORMAT_NG_REASON_SELECT = "NG理由選択：{0}";
         private const string m_CON_FORMAT_NG_REASON = "NG理由：{0}";
-        private const string m_CON_CAMERA_NO_2 = "2";
-        private const string m_CON_CAMERA_NO_8 = "8";
-        private const string m_CON_CAMERA_NO_14 = "14";
-        private const string m_CON_CAMERA_NO_20 = "20";
-        private const string m_CON_CAMERA_NO_26 = "26";
         private const int m_CON_PAGE_WAY_L = -1;
         private const int m_CON_PAGE_WAY_R = 1;
 
@@ -545,18 +540,6 @@ namespace ImageChecker
                 // 画像表示
                 picMasterImageNo1.Image = bmpImageNo1;
                 picMasterImageNo2.Image = bmpImageNo2;
-
-                // カメラ位置
-                lblCameraNo11.Text = m_CON_CAMERA_NO_2;
-                lblCameraNo12.Text = m_CON_CAMERA_NO_8;
-                lblCameraNo13.Text = m_CON_CAMERA_NO_14;
-                lblCameraNo14.Text = m_CON_CAMERA_NO_20;
-                lblCameraNo15.Text = m_CON_CAMERA_NO_26;
-                lblCameraNo21.Text = m_CON_CAMERA_NO_26;
-                lblCameraNo22.Text = m_CON_CAMERA_NO_20;
-                lblCameraNo23.Text = m_CON_CAMERA_NO_14;
-                lblCameraNo24.Text = m_CON_CAMERA_NO_8;
-                lblCameraNo25.Text = m_CON_CAMERA_NO_2;
             }
 
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
@@ -575,18 +558,6 @@ namespace ImageChecker
                 // 画像表示
                 picMasterImageNo1.Image = bmpImageNo1;
                 picMasterImageNo2.Image = bmpImageNo2;
-
-                // カメラ位置
-                lblCameraNo11.Text = m_CON_CAMERA_NO_26;
-                lblCameraNo12.Text = m_CON_CAMERA_NO_20;
-                lblCameraNo13.Text = m_CON_CAMERA_NO_14;
-                lblCameraNo14.Text = m_CON_CAMERA_NO_8;
-                lblCameraNo15.Text = m_CON_CAMERA_NO_2;
-                lblCameraNo21.Text = m_CON_CAMERA_NO_2;
-                lblCameraNo22.Text = m_CON_CAMERA_NO_8;
-                lblCameraNo23.Text = m_CON_CAMERA_NO_14;
-                lblCameraNo24.Text = m_CON_CAMERA_NO_20;
-                lblCameraNo25.Text = m_CON_CAMERA_NO_26;
             }
 
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY)
@@ -605,18 +576,6 @@ namespace ImageChecker
                 // 画像表示
                 picMasterImageNo1.Image = bmpImageNo1;
                 picMasterImageNo2.Image = bmpImageNo2;
-
-                // カメラ位置
-                lblCameraNo11.Text = m_CON_CAMERA_NO_2;
-                lblCameraNo12.Text = m_CON_CAMERA_NO_8;
-                lblCameraNo13.Text = m_CON_CAMERA_NO_14;
-                lblCameraNo14.Text = m_CON_CAMERA_NO_20;
-                lblCameraNo15.Text = m_CON_CAMERA_NO_26;
-                lblCameraNo21.Text = m_CON_CAMERA_NO_26;
-                lblCameraNo22.Text = m_CON_CAMERA_NO_20;
-                lblCameraNo23.Text = m_CON_CAMERA_NO_14;
-                lblCameraNo24.Text = m_CON_CAMERA_NO_8;
-                lblCameraNo25.Text = m_CON_CAMERA_NO_2;
             }
 
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
@@ -635,18 +594,6 @@ namespace ImageChecker
                 // 画像表示
                 picMasterImageNo1.Image = bmpImageNo1;
                 picMasterImageNo2.Image = bmpImageNo2;
-
-                // カメラ位置
-                lblCameraNo11.Text = m_CON_CAMERA_NO_26;
-                lblCameraNo12.Text = m_CON_CAMERA_NO_20;
-                lblCameraNo13.Text = m_CON_CAMERA_NO_14;
-                lblCameraNo14.Text = m_CON_CAMERA_NO_8;
-                lblCameraNo15.Text = m_CON_CAMERA_NO_2;
-                lblCameraNo21.Text = m_CON_CAMERA_NO_2;
-                lblCameraNo22.Text = m_CON_CAMERA_NO_8;
-                lblCameraNo23.Text = m_CON_CAMERA_NO_14;
-                lblCameraNo24.Text = m_CON_CAMERA_NO_20;
-                lblCameraNo25.Text = m_CON_CAMERA_NO_26;
             }
         }
 
