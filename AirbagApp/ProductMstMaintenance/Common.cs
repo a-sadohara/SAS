@@ -10,13 +10,13 @@ namespace ProductMstMaintenance
     static class Common
     {
         // DB接続文字列
-        public static string g_strConnectionString = "";
+        public static string g_strConnectionString = string.Empty;
         private const string g_CON_CONNECTION_STRING = "Server={0};Port={1};User ID={2};Database={3};Password={4};Enlist=true";
-        public static string g_strDBName = "";
-        public static string g_strDBUser = "";
-        public static string g_strDBUserPassword = "";
-        public static string g_strDBServerName = "";
-        public static string g_strDBPort = "";
+        public static string g_strDBName = string.Empty;
+        public static string g_strDBUser = string.Empty;
+        public static string g_strDBUserPassword = string.Empty;
+        public static string g_strDBServerName = string.Empty;
+        public static string g_strDBPort = string.Empty;
 
         // コネクションクラス
         public static ConnectionNpgsql g_clsConnectionNpgsql;
@@ -83,7 +83,7 @@ namespace ProductMstMaintenance
                     if (m_sbErrMessage.Length > 0)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, "接続文字列取得時にエラーが発生しました。\r\n" + m_sbErrMessage.ToString());
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}" ,Environment.NewLine, m_sbErrMessage.ToString()));
                         // メッセージ出力
                         System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -103,17 +103,21 @@ namespace ProductMstMaintenance
                     // システム設定情報取得
                     g_clsSystemSettingInfo = new SystemSettingInfo();
                     if (g_clsSystemSettingInfo.bolNormalEnd == false)
+                    {
                         return;
+                    }
 
                     // メッセージ情報取得
                     g_clsMessageInfo = new MessageInfo();
                     if (g_clsMessageInfo.bolNormalEnd == false)
+                    {
                         return;
+                    }
                 }
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, "初期起動時にエラーが発生しました。" + "\r\n" + ex.Message);
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "初期起動時にエラーが発生しました。{0}{1}" ,Environment.NewLine, ex.Message));
                     // メッセージ出力
                     System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -152,16 +156,15 @@ namespace ProductMstMaintenance
         {
             if (objNValue == null)
             {
-                return "";
+                return string.Empty;
             }
-            else if (objNValue.ToString() == "")
+            
+            if (string.IsNullOrEmpty(objNValue.ToString()))
             {
-                return "";
+                return string.Empty;
             }
-            else
-            {
-                return objNValue.ToString();
-            }
+
+            return objNValue.ToString();
         }
 
         /// <summary>
@@ -175,14 +178,13 @@ namespace ProductMstMaintenance
             {
                 return 0;
             }
-            else if (objNValue.ToString() == "")
+            
+            if (string.IsNullOrEmpty(objNValue.ToString()))
             {
                 return 0;
             }
-            else
-            {
-                return int.Parse(objNValue.ToString());
-            }
+            
+            return int.Parse(objNValue.ToString());
         }
 
         /// <summary>
@@ -196,14 +198,13 @@ namespace ProductMstMaintenance
             {
                 return 0;
             }
-            else if (objNValue.ToString() == "")
+            
+            if (string.IsNullOrEmpty(objNValue.ToString()))
             {
                 return 0;
             }
-            else
-            {
-                return double.Parse(objNValue.ToString());
-            }
+
+            return double.Parse(objNValue.ToString());
         }
 
         /// <summary>
@@ -217,14 +218,13 @@ namespace ProductMstMaintenance
             {
                 return 0;
             }
-            else if (objNValue.ToString() == "")
+            
+            if (string.IsNullOrEmpty(objNValue.ToString()))
             {
                 return 0;
             }
-            else
-            {
-                return decimal.Parse(objNValue.ToString());
-            }
+
+            return decimal.Parse(objNValue.ToString());
         }
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace ProductMstMaintenance
             strValue = ConfigurationManager.AppSettings[strKey];
             if (strValue == null)
             {
-                m_sbErrMessage.AppendLine("Key[" + strKey + "] AppConfigに存在しません。");
+                m_sbErrMessage.AppendLine(string.Format("Key[{0}] AppConfigに存在しません。" , strKey ));
             }
         }
 
