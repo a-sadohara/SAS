@@ -133,6 +133,7 @@ namespace ImageChecker
                                 , acceptance_check_status = :acceptance_check_status
                                 , decision_start_datetime = current_timestamp
                                 , decision_end_datetime = current_timestamp
+                                , result_datetime = current_timestamp
                             WHERE fabric_name = :fabric_name
                                 AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
                                 AND inspection_num = :inspection_num";
