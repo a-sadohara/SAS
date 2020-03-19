@@ -62,10 +62,10 @@ namespace ImageChecker
 
         // NG理由（主要）
         public const string g_CON_NG_REASON_OK = "過検知";
-        public const string g_CON_NG_REASON_WHITE_THREAD_ONE = "□結節有（白糸上単発）";
-        public const string g_CON_NG_REASON_WHITE_THREAD_MULTI = "□結節有（白糸上連続）";
-        public const string g_CON_NG_REASON_BLACK_THREAD_ONE = "□結節有（黒糸上単発）";
-        public const string g_CON_NG_REASON_BLACK_THREAD_MULTI = "□結節有（黒糸上連続）";
+        public const string g_CON_NG_REASON_WHITE_THREAD_ONE = "□結節有(白糸上単発)";
+        public const string g_CON_NG_REASON_WHITE_THREAD_MULTI = "□結節有(白糸上連続)";
+        public const string g_CON_NG_REASON_BLACK_THREAD_ONE = "□結節有(黒糸上単発)";
+        public const string g_CON_NG_REASON_BLACK_THREAD_MULTI = "□結節有(黒糸上連続)";
         public const string g_CON_NG_REASON_OTHER_NG_JUDGEMENT = "□他画像でNG判定済み";
 
         // ログイン関連
