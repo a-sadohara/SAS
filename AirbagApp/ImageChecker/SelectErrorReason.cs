@@ -73,19 +73,16 @@ namespace ImageChecker
                 foreach (DataRow dr in dtData.Rows)
                 {
                     // 主要が含まれていたら除く
-                    if (m_bolMainReason == true)
+                    switch (dr["decision_reason"].ToString())
                     {
-                        switch (dr["decision_reason"].ToString())
-                        {
-                            case g_CON_NG_REASON_OK:
-                            case g_CON_NG_REASON_WHITE_THREAD_ONE:
-                            case g_CON_NG_REASON_WHITE_THREAD_MULTI:
-                            case g_CON_NG_REASON_BLACK_THREAD_ONE:
-                            case g_CON_NG_REASON_BLACK_THREAD_MULTI:
-                            case g_CON_NG_REASON_OTHER_NG_JUDGEMENT:
+                        case g_CON_NG_REASON_OK:
+                        case g_CON_NG_REASON_WHITE_THREAD_ONE:
+                        case g_CON_NG_REASON_WHITE_THREAD_MULTI:
+                        case g_CON_NG_REASON_BLACK_THREAD_ONE:
+                        case g_CON_NG_REASON_BLACK_THREAD_MULTI:
+                        case g_CON_NG_REASON_OTHER_NG_JUDGEMENT:
 
-                                continue;
-                        }
+                            continue;
                     }
 
                     this.dgvMstDecisionReason.Rows.Add(dr.ItemArray);
