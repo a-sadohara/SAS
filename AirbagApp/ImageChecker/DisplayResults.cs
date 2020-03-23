@@ -52,8 +52,11 @@ namespace ImageChecker
         private const string m_CON_FORMAT_CUSHION_COUNT = "クッション数：{0}(NG：{1}/OK：{2})";
         private const string m_CON_FORMAT_SEARCH_COUNT = "{0} / {1}";
 
+        // 欠点画像サブディレクトリ名
+        private string m_strFaultImageSubDirName = string.Empty;
+
         // 欠点画像サブディレクトリパス
-        private string m_strFaultImageSubDirectory = string.Empty;
+        private string m_strFaultImageSubDirPath = string.Empty;
 
         // データ保持関連
         private DataTable m_dtData;
@@ -89,10 +92,13 @@ namespace ImageChecker
             m_intInspectionNum = clsHeaderData.intInspectionNum;
             m_intColumnCnt = clsHeaderData.intColumnCnt;
 
-            m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
+            m_strFaultImageSubDirName = string.Join("_", m_strInspectionDate.Replace("/", ""),
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
+
+            m_strFaultImageSubDirPath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
+                                         m_strFaultImageSubDirName);
 
             InitializeComponent();
         }
@@ -598,10 +604,10 @@ namespace ImageChecker
 
 
             ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
-                                                                           , m_strFaultImageSubDirectory
+                                                                           , m_strFaultImageSubDirName
                                                                            , m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
                                                                            Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
-                                                                           , m_strFaultImageSubDirectory
+                                                                           , m_strFaultImageSubDirName
                                                                            , m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
             frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
@@ -750,6 +756,145 @@ namespace ImageChecker
                 frmProgress.Close();
 
                 m_bolXButtonDisable = false;
+            }
+        }
+
+        /// <summary>
+        /// 未検知画像の追加ボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnAddImage_Click(object sender, EventArgs e)
+        {
+            string strSQL = string.Empty;
+            string strFileNameWithExtension = string.Empty;
+            DataTable dtData = null;
+            AddImageProgressForm frmProgressForm = null;
+            DecisionResult clsDecisionResult = null;
+
+            try
+            {
+                using (OpenFileDialog ofDialog = new OpenFileDialog())
+                {
+                    // デフォルトのフォルダを指定する
+                    ofDialog.InitialDirectory = @"C:";
+
+                    //ダイアログのタイトルを指定する
+                    ofDialog.Title = "ファイル選択ダイアログ";
+
+                    //ダイアログを表示する
+                    if (ofDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        strFileNameWithExtension = ofDialog.SafeFileName;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+
+                // プログレスフォーム表示
+                frmProgressForm =
+                    new AddImageProgressForm(
+                        m_clsHeaderData,
+                        strFileNameWithExtension,
+                        m_strFaultImageSubDirPath);
+
+                frmProgressForm.ShowDialog(this);
+
+                this.Visible = true;
+
+                if (!frmProgressForm.bolChgFile)
+                {
+                    // キャンセル
+                    return;
+                }
+
+                clsDecisionResult = new DecisionResult();
+
+                if (m_dtData.Rows.Count > 0)
+                {
+                    // 既存レコードにAI検知情報が存在する場合、追加モードで動作させるため枝番情報をコピーする
+                    clsDecisionResult.intBranchNum = int.Parse(m_dtData.Rows[0]["branch_num"].ToString());
+                }
+
+                // 選択行情報を初期化する
+                m_intSelBranchNum = -1;
+                m_strSelMarkingImagepath = string.Empty;
+
+                this.Visible = false;
+                ResultCheck frmResultCheck = new ResultCheck(ref m_clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS);
+                frmResultCheck.ShowDialog(this);
+
+                // 判定登録画面:検査開始選択へ戻るボタンで閉じる
+                if (frmResultCheck.intDestination == g_CON_APID_TARGET_SELECTION)
+                {
+                    this.Close();
+                    return;
+                }
+
+                this.Visible = true;
+
+                // 初期件数の取得
+                try
+                {
+                    dtData = new DataTable();
+                    strSQL = @"SELECT COUNT(*) AS cnt
+                               FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                               WHERE fabric_name = :fabric_name
+                               AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                               AND   inspection_num = :inspection_num
+                               AND   over_detection_except_result <> :over_detection_except_result_ok ";
+
+                    // SQLコマンドに各パラメータを設定する
+                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                    foreach (DataRow row in dtData.Rows)
+                    {
+                        m_intCountInit = int.Parse(row["cnt"].ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_ERROR,
+                        string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+
+                    // メッセージ出力
+                    MessageBox.Show(
+                        g_clsMessageInfo.strMsgE0050,
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    return;
+                }
+
+                // 件数の取得
+                if (bolGetCushionCnt() == false)
+                {
+                    return;
+                }
+
+                // 一覧表示
+                if (bolDispDataGridView() == false)
+                {
+                    return;
+                }
+            }
+            finally
+            {
+                if (frmProgressForm != null)
+                {
+                    frmProgressForm.Dispose();
+                }
             }
         }
 
