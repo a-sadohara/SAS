@@ -537,7 +537,7 @@
             // 
             this.btnAddImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddImage.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnAddImage.Location = new System.Drawing.Point(845, 13);
+            this.btnAddImage.Location = new System.Drawing.Point(988, 13);
             this.btnAddImage.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddImage.Name = "btnAddImage";
             this.btnAddImage.Size = new System.Drawing.Size(127, 54);
@@ -550,7 +550,7 @@
             // 
             this.btnReprint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnReprint.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnReprint.Location = new System.Drawing.Point(988, 13);
+            this.btnReprint.Location = new System.Drawing.Point(845, 13);
             this.btnReprint.Margin = new System.Windows.Forms.Padding(2);
             this.btnReprint.Name = "btnReprint";
             this.btnReprint.Size = new System.Drawing.Size(127, 54);

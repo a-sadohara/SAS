@@ -476,14 +476,14 @@ namespace ImageChecker
 
             bool bolProcOkNg = false;
 
-            // 未検知画像チェックを行う
-            if (!CheckUndetectedImage())
-            {
-                return;
-            }
-
             try
             {
+                // 未検知画像チェックを行う
+                if (!CheckUndetectedImage())
+                {
+                    return;
+                }
+
                 // 同期的に未検知画像連携ディレクトリの監視する
                 m_fsWatcher = new FileSystemWatcher();
                 m_fsWatcher.Path = m_strCompletionNoticeCooperationDirectoryPath;
@@ -526,7 +526,9 @@ namespace ImageChecker
             finally
             {
                 if (bolProcOkNg == false)
+                {
                     this.Close();
+                }
 
                 this.ResumeLayout();
             }
