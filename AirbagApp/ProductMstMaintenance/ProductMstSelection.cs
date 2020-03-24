@@ -54,7 +54,7 @@ namespace ProductMstMaintenance
 
             dgvData.Rows.Clear();
 
-            strHinNm = "";
+            strHinNm = string.Empty;
 
             // 初期表示呼び出し
             if (dispDataGridView() == false)
@@ -70,7 +70,7 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void BtnOK_Click(object sender, EventArgs e)
         {
-            strHinNm = "";
+            strHinNm = string.Empty;
             // 明細行を全行確認する
             foreach (DataGridViewRow row in dgvData.Rows)
             {
@@ -136,7 +136,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
                 MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
