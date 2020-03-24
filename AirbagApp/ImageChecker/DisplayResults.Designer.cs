@@ -65,6 +65,7 @@
             this.lblProductName = new System.Windows.Forms.Label();
             this.lblUnitNum = new System.Windows.Forms.Label();
             this.pnlBottom = new System.Windows.Forms.Panel();
+            this.btnAddImage = new System.Windows.Forms.Button();
             this.btnReprint = new System.Windows.Forms.Button();
             this.btnInspectionUpdate = new System.Windows.Forms.Button();
             this.btnTargetSelection = new System.Windows.Forms.Button();
@@ -521,6 +522,7 @@
             // pnlBottom
             // 
             this.pnlBottom.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
+            this.pnlBottom.Controls.Add(this.btnAddImage);
             this.pnlBottom.Controls.Add(this.btnReprint);
             this.pnlBottom.Controls.Add(this.btnInspectionUpdate);
             this.pnlBottom.Controls.Add(this.btnTargetSelection);
@@ -530,6 +532,19 @@
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(1276, 78);
             this.pnlBottom.TabIndex = 3;
+            // 
+            // btnAddImage
+            // 
+            this.btnAddImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddImage.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.btnAddImage.Location = new System.Drawing.Point(845, 13);
+            this.btnAddImage.Margin = new System.Windows.Forms.Padding(2);
+            this.btnAddImage.Name = "btnAddImage";
+            this.btnAddImage.Size = new System.Drawing.Size(127, 54);
+            this.btnAddImage.TabIndex = 2;
+            this.btnAddImage.Text = "未検知画像の追加";
+            this.btnAddImage.UseVisualStyleBackColor = true;
+            this.btnAddImage.Click += new System.EventHandler(this.btnAddImage_Click);
             // 
             // btnReprint
             // 
@@ -866,5 +881,6 @@
         private System.Windows.Forms.ComboBox cmbColumns;
         private System.Windows.Forms.ComboBox cmbNgFace;
         private System.Windows.Forms.Button btnReprint;
+        private System.Windows.Forms.Button btnAddImage;
     }
 }

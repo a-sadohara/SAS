@@ -82,16 +82,19 @@ namespace ImageChecker.DTO
         public readonly int intRapidResultOk;
         public readonly int intRapidResultNg;
         public readonly int intRapidResultErr;
+        public readonly int intRapidResultDis;
         // 端判定結果
         public readonly int intEdgeResultNon;
         public readonly int intEdgeResultOk;
         public readonly int intEdgeResultNg;
         public readonly int intEdgeResultErr;
+        public readonly int intEdgeResultDis;
         // マスキング判定結果
         public readonly int intMaskingResultNon;
         public readonly int intMaskingResultOk;
         public readonly int intMaskingResultNg;
         public readonly int intMaskingResultErr;
+        public readonly int intMaskingResultDis;
         // 過検知除外結果
         public readonly int intOverDetectionExceptResultNon;
         public readonly int intOverDetectionExceptResultOk;
@@ -171,14 +174,17 @@ namespace ImageChecker.DTO
                 GetSystemSettingValue("RapidResultOk", ref intRapidResultOk);
                 GetSystemSettingValue("RapidResultNg", ref intRapidResultNg);
                 GetSystemSettingValue("RapidResultErr", ref intRapidResultErr);
+                GetSystemSettingValue("RapidResultDis", ref intRapidResultDis);
                 GetSystemSettingValue("EdgeResultNon", ref intEdgeResultNon);
                 GetSystemSettingValue("EdgeResultOk", ref intEdgeResultOk);
                 GetSystemSettingValue("EdgeResultNg", ref intEdgeResultNg);
                 GetSystemSettingValue("EdgeResultErr", ref intEdgeResultErr);
+                GetSystemSettingValue("EdgeResultDis", ref intEdgeResultDis);
                 GetSystemSettingValue("MaskingResultNon", ref intMaskingResultNon);
                 GetSystemSettingValue("MaskingResultOk", ref intMaskingResultOk);
                 GetSystemSettingValue("MaskingResultNg", ref intMaskingResultNg);
                 GetSystemSettingValue("MaskingResultErr", ref intMaskingResultErr);
+                GetSystemSettingValue("MaskingResultDis", ref intMaskingResultDis);
                 GetSystemSettingValue("OverDetectionExceptResultNon", ref intOverDetectionExceptResultNon);
                 GetSystemSettingValue("OverDetectionExceptResultOk", ref intOverDetectionExceptResultOk);
                 GetSystemSettingValue("OverDetectionExceptResultNg", ref intOverDetectionExceptResultNg);

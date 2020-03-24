@@ -109,7 +109,7 @@ namespace ImageChecker
                 File.Delete(strZipFilePath);
 
                 // 解凍先ディレクトリの削除
-                Directory.Delete(diThaw.FullName, true);
+                diThaw.Delete(true);
 
                 return true;
             }
@@ -136,7 +136,6 @@ namespace ImageChecker
 
                 return false;
             }
-
         }
 
         /// <summary>
@@ -153,6 +152,7 @@ namespace ImageChecker
             int intOverDetectionExceptStatus = -1;
             int intAcceptanceCheckStatus = -1;
             string strBefore48hourYmdhms = DateTime.Now.AddHours(-48).ToString("yyyy/MM/dd HH:mm:ss");
+            bool bolDecisionResultDataExistence = true;
             ArrayList arrRow = new ArrayList();
 
             dgvTargetSelection.Rows.Clear();
@@ -200,6 +200,10 @@ namespace ImageChecker
                                 , TO_CHAR(iih.decision_end_datetime,'YYYY/MM/DD HH24:MI:SS') AS decision_end_datetime
                                 , iih.over_detection_except_status
                                 , iih.acceptance_check_status
+                                , CASE WHEN dr.fabric_name IS NOT NULL
+                                       THEN TRUE
+                                       ELSE FALSE
+                                  END AS decision_result_data_existence
                                 , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                    WHERE fabric_name = dr.fabric_name
                                    AND   inspection_date = dr.inspection_date
@@ -224,7 +228,7 @@ namespace ImageChecker
                                 , mpi.airbag_imagepath
                            FROM
                                " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header iih
-                           INNER JOIN (
+                           LEFT JOIN (
                                    SELECT fabric_name,inspection_date,inspection_num
                                    FROM   " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                    GROUP BY fabric_name,inspection_date,inspection_num
@@ -257,6 +261,7 @@ namespace ImageChecker
                     arrRow = new ArrayList();
                     intOverDetectionExceptStatus = -1;
                     intAcceptanceCheckStatus = -1;
+                    bolDecisionResultDataExistence = true;
 
                     // No
                     arrRow.Add(this.dgvTargetSelection.Rows.Count + 1);
@@ -277,64 +282,85 @@ namespace ImageChecker
                     sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_INSPECTION_NUM, row["inspection_num"]));
                     arrRow.Add(sbInspectionInfo.ToString());
 
-                    // 欠点検査状態 & ステータス
-                    if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusBef ||
-                        int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc)
+                    bolDecisionResultDataExistence = bool.Parse(row["decision_result_data_existence"].ToString());
+
+                    if (bolDecisionResultDataExistence)
                     {
-                        //  過検知除外ステータス
-                        if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusBef)
+                        // 欠点検査状態 & ステータス
+                        if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusBef ||
+                            int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc)
                         {
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameBef));
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], "0", row["detection_image_count"]));
-                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusBef;
+                            //  過検知除外ステータス
+                            if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusBef)
+                            {
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameBef));
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], "0", row["detection_image_count"]));
+                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusBef;
+                            }
+                            else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusChk)
+                            {
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameChk));
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
+                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusChk;
+                            }
+                            else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
+                            {
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameStp));
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
+                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusStp;
+                            }
+                            else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
+                            {
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameEnd));
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], "0", row["acceptance_check_image_count"]));
+                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd;
+                            }
+                            else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
+                            {
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameExc));
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT, row["detection_image_count"].ToString()));
+                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc;
+                            }
                         }
-                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusChk)
+                        else
                         {
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameChk));
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
-                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusChk;
-                        }
-                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
-                        {
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameStp));
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
-                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusStp;
-                        }
-                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
-                        {
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameEnd));
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], "0", row["acceptance_check_image_count"]));
-                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd;
-                        }
-                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
-                        {
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameExc));
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT, row["detection_image_count"].ToString()));
-                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc;
+                            // 合否確認ステータス
+                            if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusChk)
+                            {
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["over_detection_image_count"], row["determine_count"], row["over_detection_image_count"]));
+                                intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusChk;
+                            }
+                            else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
+                            {
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
+                                intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusStp;
+                            }
+                            else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
+                            {
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameEnd));
+                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
+                                intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd;
+                            }
                         }
                     }
                     else
                     {
-                        // 合否確認ステータス
-                        if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusChk)
+                        sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameExc));
+                        sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT, 0));
+
+                        if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc &&
+                            int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc)
                         {
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["over_detection_image_count"], row["determine_count"], row["over_detection_image_count"]));
-                            intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusChk;
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc;
                         }
-                        else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
+                        else
                         {
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
-                            intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusStp;
-                        }
-                        else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
-                        {
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameEnd));
-                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
                             intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd;
                         }
                     }
+
                     arrRow.Add(sbInspectionState.ToString());
 
                     // ボタン名
@@ -886,6 +912,7 @@ namespace ImageChecker
             string strFabricName = "";      // 反番
             int intInspectionNum = 0;       // 検査番号
             string strFaultImageSubDirectory = "";
+            int intExecutionCount = 0;
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
@@ -921,6 +948,7 @@ namespace ImageChecker
                         strFaultImageSubDirectory = "";
                         lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                         intCnt = 0;
+                        intExecutionCount = 0;
 
                         // ファイル名の取得
                         strFileName = Path.GetFileNameWithoutExtension(strFilePath);
@@ -1167,8 +1195,71 @@ namespace ImageChecker
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultNg });
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
-                            // sqlを実行する
-                            g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+
+                            // SQLを実行する
+                            intExecutionCount = g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+
+                            if (intExecutionCount == 0)
+                            {
+                                dtData = new DataTable();
+
+                                // NGデータが存在しない場合、検査無効データをチェックする
+                                strSQL = @"SELECT fabric_name
+                                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + @""" rpd
+                                           WHERE fabric_name = :fabric_name
+                                           AND inspection_num = :inspection_num 
+                                           AND rapid_result = :rapid_result
+                                           AND edge_result = :edge_result
+                                           AND masking_result = :masking_result";
+
+                                // SQLコマンドに各パラメータを設定する
+                                lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultDis });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultDis });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultDis });
+
+                                // SQLを実行する
+                                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                                // SQL文を作成する
+                                strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
+                                                   SET over_detection_except_status = :over_detection_except_status
+                                                   , acceptance_check_status = :acceptance_check_status
+                                                   , decision_start_datetime = current_timestamp
+                                                   , decision_end_datetime = current_timestamp
+                                                   , result_datetime = current_timestamp
+                                               WHERE fabric_name = :fabric_name
+                                                   AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
+                                                   AND inspection_num = :inspection_num";
+
+                                // SQLコマンドに各パラメータを設定する
+                                lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
+
+                                if (dtData.Rows.Count == 0)
+                                {
+                                    // 検査無効データが存在しない場合、検査情報ヘッダを「検査有効(NGなし)」の状態に更新する
+                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd });
+                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd });
+                                }
+                                else
+                                {
+                                    // 検査無効データが存在する場合、検査情報ヘッダを「検査対象外」検査対象外として更新する
+                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc });
+                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckStatusExc });
+                                }
+
+                                // SQLを実行する
+                                g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+
+                                // DBコミット
+                                g_clsConnectionNpgsql.DbCommit();
+                            }
                         }
                         catch (Exception ex)
                         {
