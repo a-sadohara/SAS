@@ -53,12 +53,21 @@ namespace ImageChecker
         private int m_intSelRowIdx = -1;
         private int m_intFirstDisplayedScrollingRowIdx = -1;
 
+        // スーパーユーザフラグ
+        private bool m_bolIsSuperUser = false;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public TargetSelection()
         {
+            // ログイン者がスーパーユーザかチェックを行う
+            if (g_clsSystemSettingInfo.strSuperUser.Split(',').Contains(g_clsLoginInfo.strEmployeeNum))
+            {
+                m_bolIsSuperUser = true;
+            }
+
             InitializeComponent();
         }
 
@@ -389,7 +398,17 @@ namespace ImageChecker
                         btnCellInspectionResult.Style.SelectionBackColor = Color.DarkGray;
 
                         btnCellOverDetectionExcept.Enabled = false;
-                        btnCellAcceptanceCheck.Enabled = false;
+
+                        // スーパーユーザの場合、押下可能にする
+                        if (m_bolIsSuperUser)
+                        {
+                            btnCellAcceptanceCheck.Enabled = true;
+                        }
+                        else
+                        {
+                            btnCellAcceptanceCheck.Enabled = false;
+                        }
+
                         btnCellInspectionResult.Enabled = false;
                     }
 
@@ -448,7 +467,16 @@ namespace ImageChecker
                         btnCellInspectionResult.Style.BackColor = Color.DarkGray;
                         btnCellInspectionResult.Style.SelectionBackColor = Color.DarkGray;
 
-                        btnCellOverDetectionExcept.Enabled = false;
+                        // スーパーユーザの場合、押下可能にする
+                        if (m_bolIsSuperUser)
+                        {
+                            btnCellOverDetectionExcept.Enabled = true;
+                        }
+                        else
+                        {
+                            btnCellOverDetectionExcept.Enabled = false;
+                        }
+
                         btnCellAcceptanceCheck.Enabled = false;
                         btnCellInspectionResult.Enabled = false;
                     }
@@ -548,6 +576,87 @@ namespace ImageChecker
                 return false;
             }
         }
+
+        /// <summary>
+        /// 検査ステータス更新
+        /// </summary>
+        /// <param name="clsHeaderData">ヘッダ情報</param>
+        /// <param name="btnTarget">選択ボタン</param>
+        private void UpdateInspectionStatus(
+            HeaderData clsHeaderData,
+            DataGridViewDisableButtonCell btnTarget)
+        {
+            string strSQL = string.Empty;
+
+            if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0010, "中断状態"), g_CON_MESSAGE_TITLE_QUESTION, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            {
+                return;
+            }
+
+            try
+            {
+                // SQL文を作成する
+                strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header ";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = clsHeaderData.strFabricName });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = clsHeaderData.strInspectionDate });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = clsHeaderData.intInspectionNum });
+
+                switch (btnTarget.Value.ToString())
+                {
+                    case m_CON_OVER_DETECTION_EXCEPT_BUTTON_NAME:
+                        // 過検知除外ステータスを更新する
+                        strSQL += @"SET over_detection_except_status = :over_detection_except_status ";
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptStatusStp });
+                        break;
+
+                    case m_CON_ACCEPTANCE_CHECK_BUTTON_NAME:
+                        // 合否確認ステータスを更新する
+                        strSQL += @"SET acceptance_check_status = :acceptance_check_status ";
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckStatusStp });
+                        break;
+
+                    default:
+                        return;
+                }
+
+                strSQL += @"WHERE fabric_name = :fabric_name
+                            AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
+                            AND inspection_num = :inspection_num";
+
+                // sqlを実行する
+                g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+
+                // DBコミット
+                g_clsConnectionNpgsql.DbCommit();
+            }
+            catch (Exception ex)
+            {
+                // ロールバック
+                g_clsConnectionNpgsql.DbRollback();
+
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(
+                    g_clsMessageInfo.strMsgE0035,
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return;
+            }
+            finally
+            {
+                // DBクローズ
+                g_clsConnectionNpgsql.DbClose();
+            }
+        }
         #endregion
 
         #region イベント
@@ -599,15 +708,16 @@ namespace ImageChecker
 
                 // ボタン行以外はイベント終了
                 if (e.ColumnIndex < m_CON_COL_IDX_OVERDETECTIONEXCEPT)
+                {
                     return;
+                }
 
                 // ボタンが無効の場合は終了
                 DataGridViewDisableButtonCell btnTarget = (DataGridViewDisableButtonCell)dgv.Rows[e.RowIndex].Cells[e.ColumnIndex];
                 if (!btnTarget.Enabled)
+                {
                     return;
-
-                Overdetectionexclusion frmOverDetectionExcept;
-                ResultCheck frmResultCheck;
+                }
 
                 // ヘッダ情報の設定
                 clsHeaderData.strUnitNum = m_dtData.Rows[e.RowIndex]["unit_num"].ToString();
@@ -630,6 +740,19 @@ namespace ImageChecker
                 clsHeaderData.strAirbagImagepath = g_strMasterImageDirPath + Path.DirectorySeparatorChar +
                                                    Path.GetFileName(m_dtData.Rows[e.RowIndex]["airbag_imagepath"].ToString());
 
+                // スーパーユーザが検査中ボタンを押下したかチェックする
+                if (m_bolIsSuperUser &&
+                    (btnTarget.Style.BackColor == Color.Red ||
+                    btnTarget.Style.SelectionBackColor == Color.Red))
+                {
+                    UpdateInspectionStatus(
+                        clsHeaderData,
+                        btnTarget);
+
+                    bolDispDataGridView();
+                    return;
+                }
+
                 strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", ""),
                                                              m_dtData.Rows[e.RowIndex]["product_name"],
                                                              m_dtData.Rows[e.RowIndex]["fabric_name"],
@@ -641,6 +764,9 @@ namespace ImageChecker
                     MessageBox.Show(g_clsMessageInfo.strMsgW0006, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+
+                Overdetectionexclusion frmOverDetectionExcept;
+                ResultCheck frmResultCheck;
 
                 switch (e.ColumnIndex)
                 {

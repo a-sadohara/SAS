@@ -113,6 +113,8 @@ namespace ImageChecker.DTO
         public readonly string strAcceptanceCheckResultNameOk;
         public readonly string strAcceptanceCheckResultNameNgDetect;
         public readonly string strAcceptanceCheckResultNameNgNonDetect;
+        // スーパーユーザ
+        public readonly string strSuperUser;
 
         /// <summary>
         /// コンストラクタ
@@ -201,6 +203,7 @@ namespace ImageChecker.DTO
                 GetSystemSettingValue("AcceptanceCheckResultNameOk", ref strAcceptanceCheckResultNameOk);
                 GetSystemSettingValue("AcceptanceCheckResultNameNgDetect", ref strAcceptanceCheckResultNameNgDetect);
                 GetSystemSettingValue("AcceptanceCheckResultNameNgNonDetect", ref strAcceptanceCheckResultNameNgNonDetect);
+                GetSystemSettingValue("SuperUser", ref strSuperUser);
 
                 if (lststrErrorMessage.Count > 0)
                 {
