@@ -114,7 +114,7 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0001 + "\r\n" + ex.Message);
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
                 MessageBox.Show(g_clsMessageInfo.strMsgE0030, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
