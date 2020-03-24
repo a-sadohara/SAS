@@ -553,7 +553,21 @@
               <RepeatOnNewPage>true</RepeatOnNewPage>
             </TablixMember>
             <TablixMember>
-              <Group Name="詳細" />
+              <Group Name="AcceptanceCheckDatetime" />
+              <SortExpressions>
+                <SortExpression>
+                  <Value>=CInt(Fields!Line.Value)</Value>
+                </SortExpression>
+                <SortExpression>
+                  <Value>=Fields!Cloumns.Value</Value>
+                </SortExpression>
+                <SortExpression>
+                  <Value>=Fields!NgFace.Value</Value>
+                </SortExpression>
+                <SortExpression>
+                  <Value>=Fields!AcceptanceCheckDatetime.Value</Value>
+                </SortExpression>
+              </SortExpressions>
             </TablixMember>
           </TablixMembers>
         </TablixRowHierarchy>
@@ -565,6 +579,22 @@
           <Border>
             <Style>None</Style>
           </Border>
+          <TopBorder>
+            <Style>None</Style>
+            <Width>1pt</Width>
+          </TopBorder>
+          <BottomBorder>
+            <Style>Solid</Style>
+            <Width>1pt</Width>
+          </BottomBorder>
+          <LeftBorder>
+            <Style>None</Style>
+            <Width>1pt</Width>
+          </LeftBorder>
+          <RightBorder>
+            <Style>None</Style>
+            <Width>1pt</Width>
+          </RightBorder>
         </Style>
       </Tablix>
       <Line Name="Line1">
@@ -576,7 +606,7 @@
         <Style>
           <Border>
             <Style>Solid</Style>
-            <Width>0.5pt</Width>
+            <Width>0.7pt</Width>
           </Border>
         </Style>
       </Line>
