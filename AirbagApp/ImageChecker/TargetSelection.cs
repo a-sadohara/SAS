@@ -161,7 +161,6 @@ namespace ImageChecker
             int intOverDetectionExceptStatus = -1;
             int intAcceptanceCheckStatus = -1;
             string strBefore48hourYmdhms = DateTime.Now.AddHours(-48).ToString("yyyy/MM/dd HH:mm:ss");
-            bool bolDecisionResultDataExistence = true;
             ArrayList arrRow = new ArrayList();
 
             dgvTargetSelection.Rows.Clear();
@@ -209,10 +208,6 @@ namespace ImageChecker
                                 , TO_CHAR(iih.decision_end_datetime,'YYYY/MM/DD HH24:MI:SS') AS decision_end_datetime
                                 , iih.over_detection_except_status
                                 , iih.acceptance_check_status
-                                , CASE WHEN dr.fabric_name IS NOT NULL
-                                       THEN TRUE
-                                       ELSE FALSE
-                                  END AS decision_result_data_existence
                                 , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                    WHERE fabric_name = dr.fabric_name
                                    AND   inspection_date = dr.inspection_date
@@ -270,7 +265,6 @@ namespace ImageChecker
                     arrRow = new ArrayList();
                     intOverDetectionExceptStatus = -1;
                     intAcceptanceCheckStatus = -1;
-                    bolDecisionResultDataExistence = true;
 
                     // No
                     arrRow.Add(this.dgvTargetSelection.Rows.Count + 1);
@@ -291,81 +285,61 @@ namespace ImageChecker
                     sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_INSPECTION_NUM, row["inspection_num"]));
                     arrRow.Add(sbInspectionInfo.ToString());
 
-                    bolDecisionResultDataExistence = bool.Parse(row["decision_result_data_existence"].ToString());
-
-                    if (bolDecisionResultDataExistence)
+                    // 欠点検査状態 & ステータス
+                    if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusBef ||
+                        int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc)
                     {
-                        // 欠点検査状態 & ステータス
-                        if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusBef ||
-                            int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc)
+                        //  過検知除外ステータス
+                        if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusBef)
                         {
-                            //  過検知除外ステータス
-                            if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusBef)
-                            {
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameBef));
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], "0", row["detection_image_count"]));
-                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusBef;
-                            }
-                            else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusChk)
-                            {
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameChk));
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
-                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusChk;
-                            }
-                            else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
-                            {
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameStp));
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
-                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusStp;
-                            }
-                            else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
-                            {
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameEnd));
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], "0", row["acceptance_check_image_count"]));
-                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd;
-                            }
-                            else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
-                            {
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameExc));
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT, row["detection_image_count"].ToString()));
-                                intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc;
-                            }
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameBef));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], "0", row["detection_image_count"]));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusBef;
                         }
-                        else
+                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusChk)
                         {
-                            // 合否確認ステータス
-                            if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusChk)
-                            {
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["over_detection_image_count"], row["determine_count"], row["over_detection_image_count"]));
-                                intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusChk;
-                            }
-                            else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
-                            {
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
-                                intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusStp;
-                            }
-                            else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
-                            {
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameEnd));
-                                sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
-                                intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd;
-                            }
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameChk));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusChk;
+                        }
+                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameStp));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT_SCORES, row["detection_image_count"], row["over_detection_image_count"], row["detection_image_count"]));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusStp;
+                        }
+                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameEnd));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], "0", row["acceptance_check_image_count"]));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd;
+                        }
+                        else if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strOverDetectionExceptStatusNameExc));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT, row["detection_image_count"].ToString()));
+                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc;
                         }
                     }
                     else
                     {
-                        sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameExc));
-                        sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_DETECTION_IMAGE_COUNT, 0));
-
-                        if (int.Parse(row["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc &&
-                            int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc)
+                        // 合否確認ステータス
+                        if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusChk)
                         {
-                            intOverDetectionExceptStatus = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc;
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["over_detection_image_count"], row["determine_count"], row["over_detection_image_count"]));
+                            intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusChk;
                         }
-                        else
+                        else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusStp)
                         {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameChk));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
+                            intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusStp;
+                        }
+                        else if (int.Parse(row["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
+                        {
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_STATUS, g_clsSystemSettingInfo.strAcceptanceCheckStatusNameEnd));
+                            sbInspectionState.AppendLine(string.Format(m_CON_FORMAT_OVER_DETECTION_IMAGE_COUNT_SCORES, row["acceptance_check_image_count"], row["determine_count"], row["acceptance_check_image_count"]));
                             intAcceptanceCheckStatus = g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd;
                         }
                     }
