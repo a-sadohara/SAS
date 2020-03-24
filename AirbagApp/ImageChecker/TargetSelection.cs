@@ -1302,7 +1302,7 @@ namespace ImageChecker
                                 FROM (
                                     SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY rapid_endtime DESC) AS SEQ
                                         , rpd.*
-                                    FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + @""" rpd
+                                    FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + "_" + strInspectionDate.Replace("/", string.Empty) + @""" rpd
                                     WHERE fabric_name = :fabric_name
                                     AND inspection_num = :inspection_num 
                                     AND rapid_result = :rapid_result
@@ -1331,7 +1331,7 @@ namespace ImageChecker
 
                                 // NGデータが存在しない場合、検査無効データをチェックする
                                 strSQL = @"SELECT fabric_name
-                                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + @""" rpd
+                                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + "_" + strInspectionDate.Replace("/", string.Empty) + @""" rpd
                                            WHERE fabric_name = :fabric_name
                                            AND inspection_num = :inspection_num 
                                            AND rapid_result = :rapid_result

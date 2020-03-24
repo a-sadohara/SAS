@@ -316,7 +316,7 @@ namespace ImageChecker
                              , NULL
                              , NULL
                              , NULL
-                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + m_clsHeaderData.strFabricName + "_" + m_clsHeaderData.intInspectionNum + @"""
+                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + m_clsHeaderData.strFabricName + "_" + m_clsHeaderData.intInspectionNum + "_" + m_clsHeaderData.strInspectionDate.Replace("/", string.Empty) + @"""
                            WHERE fabric_name = :fabric_name
                              AND inspection_num = :inspection_num 
                              AND ng_image = :ng_image 
