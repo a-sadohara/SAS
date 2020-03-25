@@ -143,6 +143,7 @@ namespace ImageChecker
                                                           string strEndDatetime = "")
         {
             string strSQL = string.Empty;
+            DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
             try
             {
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -154,7 +155,7 @@ namespace ImageChecker
                 if (intStatus == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
                 {
                     strSQL += @", result_datetime = CASE WHEN result_datetime IS NULL
-                                                      THEN current_timestamp
+                                                      THEN :current_timestamp
                                                       ELSE result_datetime
                                                     END ";
                 }
@@ -174,6 +175,7 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "current_timestamp", DbType = DbType.DateTime2, Value = date });
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
 

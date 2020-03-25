@@ -1320,6 +1320,7 @@ namespace ImageChecker
                             if (intExecutionCount == 0)
                             {
                                 dtData = new DataTable();
+                                DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
 
                                 // NGデータが存在しない場合、検査無効データをチェックする
                                 strSQL = @"SELECT fabric_name
@@ -1346,9 +1347,9 @@ namespace ImageChecker
                                 strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                                                    SET over_detection_except_status = :over_detection_except_status
                                                    , acceptance_check_status = :acceptance_check_status
-                                                   , decision_start_datetime = current_timestamp
-                                                   , decision_end_datetime = current_timestamp
-                                                   , result_datetime = current_timestamp
+                                                   , decision_start_datetime = :current_timestamp
+                                                   , decision_end_datetime = :current_timestamp
+                                                   , result_datetime = :current_timestamp
                                                WHERE fabric_name = :fabric_name
                                                    AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
                                                    AND inspection_num = :inspection_num";
@@ -1358,6 +1359,7 @@ namespace ImageChecker
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "current_timestamp", DbType = DbType.DateTime2, Value = date });
 
                                 if (dtData.Rows.Count == 0)
                                 {
