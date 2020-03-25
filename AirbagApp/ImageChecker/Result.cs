@@ -846,12 +846,12 @@ namespace ImageChecker
             {
                 frmProgress.Close();
 
-                g_clsConnectionNpgsql.DbClose();
-
                 m_bolXButtonDisable = false;
 
                 if (bolProcOkNg == true)
                 {
+                    g_clsConnectionNpgsql.DbClose();
+
                     // 登録
                     bolReg = true;
 
