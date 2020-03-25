@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using static ImageChecker.Common;
 
@@ -332,7 +332,26 @@ namespace ImageChecker
                 }
 
                 // 保存
-                SaveMasterImage(strMarkingFilePath);
+                for (int intProcessingTimes = 1; intProcessingTimes <= g_clsSystemSettingInfo.intRetryTimes; intProcessingTimes++)
+                {
+                    try
+                    {
+                        m_bmpMasterImageMarking.Save(strMarkingFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (intProcessingTimes == g_clsSystemSettingInfo.intRetryTimes)
+                        {
+                            // 試行後もエラーだった場合はリスローする
+                            throw ex;
+                        }
+
+                        // 一時停止させ、処理をリトライする
+                        Thread.Sleep(g_clsSystemSettingInfo.intRetryWaitSeconds);
+                    }
+                }
+
                 gra.Dispose();
 
                 // 検査方向によって画像を回転させて表示する。
@@ -1003,35 +1022,6 @@ namespace ImageChecker
         {
             return Path.Combine(m_strFaultImageSubDirPath,
                                 m_dtData.Rows[intPageIdx]["marking_imagepath"].ToString());
-        }
-
-        /// <summary>
-        /// マスタ画像保存
-        /// </summary>
-        /// <param name="strMarkingFilePath">マーキング画像パス</param>
-        private async Task<Boolean> SaveMasterImage(string strMarkingFilePath)
-        {
-            for (int intProcessingTimes = 1; intProcessingTimes <= g_clsSystemSettingInfo.intRetryTimes; intProcessingTimes++)
-            {
-                try
-                {
-                    m_bmpMasterImageMarking.Save(strMarkingFilePath, System.Drawing.Imaging.ImageFormat.Bmp);
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    if (intProcessingTimes == g_clsSystemSettingInfo.intRetryTimes)
-                    {
-                        // 試行後もエラーだった場合はリスローする
-                        throw ex;
-                    }
-
-                    // 一時停止させ、処理をリトライする
-                    await Task.Delay(g_clsSystemSettingInfo.intRetryWaitSeconds);
-                }
-            }
-
-            return true;
         }
         #endregion
 

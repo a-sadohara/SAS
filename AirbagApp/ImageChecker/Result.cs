@@ -818,7 +818,7 @@ namespace ImageChecker
 
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
-                    OutputInspectionResltCsv(dtData);
+                    await Task<Boolean>.Run(() => OutputInspectionResltCsv(dtData));
                 }
                 catch (Exception ex)
                 {
