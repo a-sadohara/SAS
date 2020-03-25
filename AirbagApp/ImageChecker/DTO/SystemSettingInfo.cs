@@ -115,6 +115,10 @@ namespace ImageChecker.DTO
         public readonly string strAcceptanceCheckResultNameNgNonDetect;
         // スーパーユーザ
         public readonly string strSuperUser;
+        // リトライ試行回数
+        public readonly int intRetryTimes;
+        // リトライ待機時間（秒）
+        public readonly int intRetryWaitSeconds;
 
         /// <summary>
         /// コンストラクタ
@@ -204,6 +208,22 @@ namespace ImageChecker.DTO
                 GetSystemSettingValue("AcceptanceCheckResultNameNgDetect", ref strAcceptanceCheckResultNameNgDetect);
                 GetSystemSettingValue("AcceptanceCheckResultNameNgNonDetect", ref strAcceptanceCheckResultNameNgNonDetect);
                 GetSystemSettingValue("SuperUser", ref strSuperUser);
+                GetSystemSettingValue("RetryTimes", ref intRetryTimes);
+                GetSystemSettingValue("RetryWaitSeconds", ref intRetryWaitSeconds);
+
+                // リトライ回数
+                if (intRetryTimes <= 0)
+                {
+                    intRetryTimes = 1;
+                }
+
+                // リトライ待機時間（秒）
+                intRetryWaitSeconds *= 1000;
+
+                if (intRetryWaitSeconds <= 0)
+                {
+                    intRetryWaitSeconds = 1000;
+                }
 
                 if (lststrErrorMessage.Count > 0)
                 {

@@ -1,5 +1,4 @@
 ﻿using ImageChecker.DTO;
-using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -189,6 +188,111 @@ namespace ImageChecker
 
                 return false;
             }
+        }
+
+        /// <summary>
+        /// 検査結果CSV出力
+        /// </summary>
+        /// <param name="dtData">データテーブル</param>
+        private async Task<Boolean> OutputInspectionResltCsv(DataTable dtData)
+        {
+            string strWriteLine = string.Empty;
+
+            for (int intProcessingTimes = 1; intProcessingTimes <= g_clsSystemSettingInfo.intRetryTimes; intProcessingTimes++)
+            {
+                try
+                {
+                    // 保存先ディレクトリに作成
+                    // Shift JISで書き込む
+                    // 書き込むファイルが既に存在している場合は、上書きする
+                    using (StreamWriter sw = new StreamWriter(Path.Combine(g_clsSystemSettingInfo.strInspectionResltCsvDirectory,
+                                                                           string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName)),
+                                                                           false,
+                                                                           Encoding.GetEncoding("shift_jis")))
+                    {
+                        // １行目
+                        strWriteLine = string.Empty;
+                        // カンマ区切りで1行文字列にする
+                        strWriteLine += "#反番毎結果ファイル#,";
+                        strWriteLine += ",";
+                        strWriteLine += m_strProductName + ",";
+                        strWriteLine += m_strUnitNum + "号機,";
+                        strWriteLine += ",";
+                        strWriteLine += ",";
+                        strWriteLine += ",";
+                        strWriteLine += ",";
+                        strWriteLine += "X(cm),";
+                        strWriteLine += "Y(cm),";
+                        strWriteLine += "作業者名";
+                        sw.WriteLine(strWriteLine);
+
+                        // 明細行
+                        foreach (DataRow dr in dtData.Rows)
+                        {
+                            // カンマ区切りで1行文字列にする
+                            strWriteLine = string.Empty;
+                            strWriteLine += dr["acceptance_check_datetime"].ToString();
+                            strWriteLine += "," + dr["order_img"].ToString();
+                            strWriteLine += "," + dr["fabric_name"].ToString();
+                            strWriteLine += "," + dr["line"].ToString();
+
+                            if (dr["cloumns"].ToString() == "A")
+                            {
+                                strWriteLine += ",Ａ";
+                            }
+
+                            if (dr["cloumns"].ToString() == "B")
+                            {
+                                strWriteLine += ",Ｂ";
+                            }
+
+                            if (dr["cloumns"].ToString() == "C")
+                            {
+                                strWriteLine += ",Ｃ";
+                            }
+
+                            if (dr["cloumns"].ToString() == "D")
+                            {
+                                strWriteLine += ",Ｄ";
+                            }
+
+                            if (dr["cloumns"].ToString() == "E")
+                            {
+                                strWriteLine += ",Ｅ";
+                            }
+
+                            strWriteLine += "," + dr["ng_face"].ToString();
+                            strWriteLine += "," + dr["ng_reason"].ToString();
+                            strWriteLine += "," + dr["inspection_num"].ToString();
+                            strWriteLine += "," + dr["ng_distance_x"].ToString();
+                            strWriteLine += "," + dr["ng_distance_y"].ToString();
+                            strWriteLine += "," + dr["acceptance_check_worker"].ToString();
+
+                            sw.WriteLine(strWriteLine);
+                        }
+                    }
+
+                    // 検査結果CSVを生産管理システム連携ディレクトリにコピー
+                    File.Copy(Path.Combine(g_clsSystemSettingInfo.strInspectionResltCsvDirectory
+                              , string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName)),
+                              Path.Combine(g_clsSystemSettingInfo.strProductionManagementCooperationDirectory
+                              , string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName)), true);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (intProcessingTimes == g_clsSystemSettingInfo.intRetryTimes)
+                    {
+                        // 試行後もエラーだった場合はリスローする
+                        throw ex;
+                    }
+
+                    // 一時停止させ、処理をリトライする
+                    await Task.Delay(g_clsSystemSettingInfo.intRetryWaitSeconds);
+                }
+            }
+
+            return true;
         }
         #endregion
 
@@ -712,81 +816,7 @@ namespace ImageChecker
 
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
-                    // 保存先ディレクトリに作成
-                    // Shift JISで書き込む
-                    // 書き込むファイルが既に存在している場合は、上書きする
-                    using (StreamWriter sw = new StreamWriter(Path.Combine(g_clsSystemSettingInfo.strInspectionResltCsvDirectory
-                                                              , string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName))
-                                                            , false
-                                                            , Encoding.GetEncoding("shift_jis")))
-                    {
-                        // １行目
-                        strWriteLine = string.Empty;
-                        // カンマ区切りで1行文字列にする
-                        strWriteLine += "#反番毎結果ファイル#,";
-                        strWriteLine += ",";
-                        strWriteLine += m_strProductName + ",";
-                        strWriteLine += m_strUnitNum + "号機,";
-                        strWriteLine += ",";
-                        strWriteLine += ",";
-                        strWriteLine += ",";
-                        strWriteLine += ",";
-                        strWriteLine += "X(cm),";
-                        strWriteLine += "Y(cm),";
-                        strWriteLine += "作業者名";
-                        sw.WriteLine(strWriteLine);
-
-                        // 明細行
-                        foreach (DataRow dr in dtData.Rows)
-                        {
-                            // カンマ区切りで1行文字列にする
-                            strWriteLine = string.Empty;
-                            strWriteLine += dr["acceptance_check_datetime"].ToString();
-                            strWriteLine += "," + dr["order_img"].ToString();
-                            strWriteLine += "," + dr["fabric_name"].ToString();
-                            strWriteLine += "," + dr["line"].ToString();
-
-                            if (dr["cloumns"].ToString() == "A")
-                            {
-                                strWriteLine += ",Ａ";
-                            }
-
-                            if (dr["cloumns"].ToString() == "B")
-                            {
-                                strWriteLine += ",Ｂ";
-                            }
-
-                            if (dr["cloumns"].ToString() == "C")
-                            {
-                                strWriteLine += ",Ｃ";
-                            }
-
-                            if (dr["cloumns"].ToString() == "D")
-                            {
-                                strWriteLine += ",Ｄ";
-                            }
-
-                            if (dr["cloumns"].ToString() == "E")
-                            {
-                                strWriteLine += ",Ｅ";
-                            }
-
-                            strWriteLine += "," + dr["ng_face"].ToString();
-                            strWriteLine += "," + dr["ng_reason"].ToString();
-                            strWriteLine += "," + dr["inspection_num"].ToString();
-                            strWriteLine += "," + dr["ng_distance_x"].ToString();
-                            strWriteLine += "," + dr["ng_distance_y"].ToString();
-                            strWriteLine += "," + dr["acceptance_check_worker"].ToString();
-
-                            sw.WriteLine(strWriteLine);
-                        }
-                    }
-
-                    // 検査結果CSVを生産管理システム連携ディレクトリにコピー
-                    File.Copy(Path.Combine(g_clsSystemSettingInfo.strInspectionResltCsvDirectory
-                              , string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName)),
-                              Path.Combine(g_clsSystemSettingInfo.strProductionManagementCooperationDirectory
-                              , string.Format(m_CON_FORMAT_KEN_TAN_CHECK_SHEET_CSV_NAME, m_strFabricName)), true);
+                    OutputInspectionResltCsv(dtData);
                 }
                 catch (Exception ex)
                 {

@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using static ImageChecker.Common;
@@ -149,11 +150,8 @@ namespace ImageChecker
                     return false;
                 }
 
-                // 書き込むファイルが既に存在している場合は、上書きする
-                using (StreamWriter sw = new StreamWriter(strOutPutFilePath, false, Encoding.GetEncoding("shift_jis")))
-                {
-                    // 空ファイルの生成
-                }
+                // 未検知画像連携ディレクトリにテキストを出力する
+                OutputNotDetectedImageCooperationText(strOutPutFilePath);
             }
             catch (Exception ex)
             {
@@ -417,7 +415,7 @@ namespace ImageChecker
                         bmpOriginalImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
 
                         // 画像を移行先ディレクトリに保存する
-                        bmpOriginalImage.Save(Path.Combine(diMigrationTarget.FullName, fInfo.Name), ImageFormat.Jpeg);
+                        SaveNotDetectedImage(bmpOriginalImage, diMigrationTarget, fInfo);
                     }
                 }
 
@@ -458,6 +456,74 @@ namespace ImageChecker
                     MessageBoxIcon.Error);
 
                 return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 未検知画像連携テキスト出力
+        /// </summary>
+        /// <param name="strOutPutFilePath">出力ファイルパス</param>
+        private async Task<Boolean> OutputNotDetectedImageCooperationText(string strOutPutFilePath)
+        {
+            for (int intProcessingTimes = 1; intProcessingTimes <= g_clsSystemSettingInfo.intRetryTimes; intProcessingTimes++)
+            {
+                try
+                {
+                    // 書き込むファイルが既に存在している場合は、上書きする
+                    using (StreamWriter sw = new StreamWriter(strOutPutFilePath, false, Encoding.GetEncoding("shift_jis")))
+                    {
+                        // 空ファイルの生成
+                    }
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (intProcessingTimes == g_clsSystemSettingInfo.intRetryTimes)
+                    {
+                        // 試行後もエラーだった場合はリスローする
+                        throw ex;
+                    }
+
+                    // 一時停止させ、処理をリトライする
+                    await Task.Delay(g_clsSystemSettingInfo.intRetryWaitSeconds);
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 未検知画像保存
+        /// </summary>
+        /// <param name="bmpOriginalImage">未検知画像</param>
+        /// <param name="diMigrationTarget">移行先ディレクトリ</param>
+        /// <param name="fInfo">未検知画像ファイル情報</param>
+        private async Task<Boolean> SaveNotDetectedImage(
+            Bitmap bmpOriginalImage,
+            DirectoryInfo diMigrationTarget,
+            FileInfo fInfo)
+        {
+            for (int intProcessingTimes = 1; intProcessingTimes <= g_clsSystemSettingInfo.intRetryTimes; intProcessingTimes++)
+            {
+                try
+                {
+                    // 画像を移行先ディレクトリに保存する
+                    bmpOriginalImage.Save(Path.Combine(diMigrationTarget.FullName, fInfo.Name), ImageFormat.Jpeg);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    if (intProcessingTimes == g_clsSystemSettingInfo.intRetryTimes)
+                    {
+                        // 試行後もエラーだった場合はリスローする
+                        throw ex;
+                    }
+
+                    // 一時停止させ、処理をリトライする
+                    await Task.Delay(g_clsSystemSettingInfo.intRetryWaitSeconds);
+                }
             }
 
             return true;

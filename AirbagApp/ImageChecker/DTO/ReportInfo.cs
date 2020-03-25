@@ -25,7 +25,6 @@ namespace ImageChecker.DTO
 
         // PDF作成関連
         private IList<Stream> m_streams;
-        private byte[] bytes;
         LocalReport lReport;
 
         /// <summary>
@@ -156,7 +155,27 @@ namespace ImageChecker.DTO
 
                 // PDF作成
                 lReport.DataSources.Add(new ReportDataSource("KenTanChkSheet", (DataTable)KTCSDs.KenTanChkSheetTable));
-                CreatePDF();
+                AutoPrintCls autoprintme = new AutoPrintCls(lReport);
+
+                for (int intProcessingTimes = 1; intProcessingTimes <= g_clsSystemSettingInfo.intRetryTimes; intProcessingTimes++)
+                {
+                    try
+                    {
+                        autoprintme.Print();
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (intProcessingTimes == g_clsSystemSettingInfo.intRetryTimes)
+                        {
+                            // 試行後もエラーだった場合はリスローする
+                            throw ex;
+                        }
+
+                        // 一時停止させ、処理をリトライする
+                        await Task.Delay(g_clsSystemSettingInfo.intRetryWaitSeconds);
+                    }
+                }
 
                 return true;
             }
@@ -169,31 +188,6 @@ namespace ImageChecker.DTO
                 MessageBox.Show(g_clsMessageInfo.strMsgE0054, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// PDF作成
-        /// </summary>
-        private void CreatePDF()
-        {
-            try
-            {
-                bytes = lReport.Render("PDF");
-
-                AutoPrintCls autoprintme = new AutoPrintCls(lReport);
-                autoprintme.Print();
-
-                // 一時フォルダにPDFを作成
-                string fileName = string.Format("Report{0}.pdf", DateTime.Now.ToString("yyyyMMddhhmmssfff"));
-                using (FileStream fs = new FileStream(Path.Combine(g_strPdfOutKenTanCheckSheetPath, fileName), FileMode.Create))
-                {
-                    fs.Write(bytes, 0, bytes.Length);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             finally
             {

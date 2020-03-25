@@ -109,8 +109,26 @@ namespace ImageChecker
                         // カメラ位置を考慮し、180度回転させる
                         bmpOriginalImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
 
-                        // 画像を移行先ディレクトリに保存する
-                        bmpOriginalImage.Save(Path.Combine(diMigrationTarget.FullName, fInfo.Name), ImageFormat.Jpeg);
+                        for (int intProcessingTimes = 1; intProcessingTimes <= g_clsSystemSettingInfo.intRetryTimes; intProcessingTimes++)
+                        {
+                            try
+                            {
+                                // 画像を移行先ディレクトリに保存する
+                                bmpOriginalImage.Save(Path.Combine(diMigrationTarget.FullName, fInfo.Name), ImageFormat.Jpeg);
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                if (intProcessingTimes == g_clsSystemSettingInfo.intRetryTimes)
+                                {
+                                    // 試行後もエラーだった場合はリスローする
+                                    throw ex;
+                                }
+
+                                // 一時停止させ、処理をリトライする
+                                await Task.Delay(g_clsSystemSettingInfo.intRetryWaitSeconds);
+                            }
+                        }
                     }
                 }
 
