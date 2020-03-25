@@ -127,8 +127,11 @@ namespace ImageChecker
 
             try
             {
-                // SQL文を作成する
-                strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
+                // 検査情報ヘッダの更新を行う
+                try
+                {
+                    // SQL文を作成する
+                    strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                                 SET over_detection_except_status = :over_detection_except_status
                                 , acceptance_check_status = :acceptance_check_status
                                 , decision_start_datetime = :current_timestamp
@@ -138,41 +141,97 @@ namespace ImageChecker
                                 AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
                                 AND inspection_num = :inspection_num";
 
-                // SQLコマンドに各パラメータを設定する
-                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_status", DbType = DbType.Int16, Value = intOverDetectionExceptStatus });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_status", DbType = DbType.Int16, Value = intAcceptanceCheckStatus });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                    // SQLコマンドに各パラメータを設定する
+                    List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_status", DbType = DbType.Int16, Value = intOverDetectionExceptStatus });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_status", DbType = DbType.Int16, Value = intAcceptanceCheckStatus });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
 
-                if (m_bolInspection == true)
-                {
-                    DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "current_timestamp", DbType = DbType.DateTime2, Value = date });
+                    if (m_bolInspection == true)
+                    {
+                        DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "current_timestamp", DbType = DbType.DateTime2, Value = date });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "current_timestamp", DbType = DbType.DateTime2, Value = DBNull.Value });
+                    }
+
+                    // sqlを実行する
+                    g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+
+                    // DBコミット
+                    g_clsConnectionNpgsql.DbCommit();
                 }
-                else
+                catch (Exception ex)
                 {
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "current_timestamp", DbType = DbType.DateTime2, Value = DBNull.Value });
+                    // ロールバック
+                    g_clsConnectionNpgsql.DbRollback();
+
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
                 }
 
-                // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                if (!m_bolInspection)
+                {
+                    // 合否判定結果の更新を行う
+                    try
+                    {
+                        // SQL文を作成する
+                        strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                             SET ng_reason = null
+                             ,  over_detection_except_result = 0
+                             ,  over_detection_except_datetime = null
+                             ,  over_detection_except_worker = null
+                             ,  before_over_detection_except_result = 0
+                             ,  before_over_detection_except_datetime = null
+                             ,  before_over_detection_except_worker = null
+                             ,  acceptance_check_result = 0
+                             ,  acceptance_check_datetime = null
+                             ,  acceptance_check_worker = null
+                             ,  before_acceptance_check_result = 0
+                             ,  before_acceptance_check_upd_datetime = null
+                             ,  before_acceptance_check_worker = null
+                             ,  result_update_datetime = null
+                             ,  result_update_worker = null
+                             ,  before_ng_reason = null
+                           WHERE fabric_name = :fabric_name
+                             AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
+                             AND inspection_num = :inspection_num";
 
-                // DBコミット
-                g_clsConnectionNpgsql.DbCommit();
-            }
-            catch (Exception ex)
-            {
-                // ロールバック
-                g_clsConnectionNpgsql.DbRollback();
+                        // SQLコマンドに各パラメータを設定する
+                        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
 
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-                // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // sqlを実行する
+                        g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
 
-                return;
+                        // DBコミット
+                        g_clsConnectionNpgsql.DbCommit();
+
+                        this.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        // ロールバック
+                        g_clsConnectionNpgsql.DbRollback();
+
+                        // ログ出力
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                        // メッセージ出力
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0043, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return;
+                    }
+                }
             }
             finally
             {
