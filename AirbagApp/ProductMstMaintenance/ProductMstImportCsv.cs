@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Threading.Tasks;
+
 using static ProductMstMaintenance.Common;
 
 namespace ProductMstMaintenance
@@ -362,7 +364,7 @@ namespace ProductMstMaintenance
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnImport_Click(object sender, EventArgs e)
+        private async void btnImport_Click(object sender, EventArgs e)
         {
             // 未入力チェック
             if (string.IsNullOrEmpty(txtFolder.Text))
@@ -383,61 +385,74 @@ namespace ProductMstMaintenance
 
             string[] strInputPng = Directory.GetFiles(txtFolder.Text, "*.bmp", SearchOption.TopDirectoryOnly);
 
-            // マスタ画像取り込み
-            ProcessMasterPng(strInputPng);
+            ProgressForm frmProgress = new ProgressForm();
+            frmProgress.StartPosition = FormStartPosition.CenterScreen;
+            frmProgress.Height = Screen.FromControl(this).Bounds.Height;
+            frmProgress.Width = Screen.FromControl(this).Bounds.Width;
+            frmProgress.Show(this);
 
-            if (m_bolProcEnd)
-            {
-                return;
-            }
+            await Task.Run(() =>
+            { 
 
-            // 品番マスタ情報取り込み
-            ProcessRegisterIni(strInputIni);
+                // マスタ画像取り込み
+                ProcessMasterPng(strInputPng);
 
-            if (m_bolProcEnd)
-            {
-                return;
-            }
+                if (m_bolProcEnd)
+                {
+                    return;
+                }
 
-            // PLCマスタ情報取り込み
-            ProcessPLCIni(strInputIni);
+                // 品番マスタ情報取り込み
+                ProcessRegisterIni(strInputIni);
 
-            if (m_bolProcEnd)
-            {
-                return;
-            }
+                if (m_bolProcEnd)
+                {
+                    return;
+                }
 
-            // エアバッグ情報取り込み
-            ProcessAirBagIni(strInputIni);
+                // PLCマスタ情報取り込み
+                ProcessPLCIni(strInputIni);
 
-            if (m_bolProcEnd)
-            {
-                return;
-            }
+                if (m_bolProcEnd)
+                {
+                    return;
+                }
 
-            // カメラ情報CSV取り込み
-            ProcessCameraCsv(strInputCsv);
+                // エアバッグ情報取り込み
+                ProcessAirBagIni(strInputIni);
 
-            if (m_bolProcEnd)
-            {
-                return;
-            }
+                if (m_bolProcEnd)
+                {
+                    return;
+                }
 
-            // 閾値情報CSV取り込み
-            ProcessThresholdCsv(strInputCsv);
+                // カメラ情報CSV取り込み
+                ProcessCameraCsv(strInputCsv);
 
-            if (m_bolProcEnd)
-            {
-                return;
-            }
+                if (m_bolProcEnd)
+                {
+                    return;
+                }
 
-            // 判定理由取り込み
-            ProcessDecisionReasonIni(strInputIni);
+                // 閾値情報CSV取り込み
+                ProcessThresholdCsv(strInputCsv);
 
-            if (m_bolProcEnd)
-            {
-                return;
-            }
+                if (m_bolProcEnd)
+                {
+                    return;
+                }
+
+                // 判定理由取り込み
+                ProcessDecisionReasonIni(strInputIni);
+
+                if (m_bolProcEnd)
+                {
+                    return;
+                }
+
+            });
+
+            frmProgress.Close();
 
             // 出力ファイル設定
             string strOutPutFilePath = Path.Combine( g_clsSystemSettingInfo.strLogFileOutputDirectory ,

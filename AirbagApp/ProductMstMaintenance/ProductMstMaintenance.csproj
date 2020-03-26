@@ -104,6 +104,12 @@
     <Compile Include="DTO\ConnectionNpgsql.cs" />
     <Compile Include="DTO\MessageInfo.cs" />
     <Compile Include="DTO\SystemSettingInfo.cs" />
+    <Compile Include="ProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgressForm.Designer.cs">
+      <DependentUpon>ProgressForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MyDataGridView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -133,6 +139,9 @@
     <Compile Include="ProductMstImportCsv.Designer.cs">
       <DependentUpon>ProductMstImportCsv.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ProgressForm.resx">
+      <DependentUpon>ProgressForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ProductMstMaintenance.resx">
       <DependentUpon>ProductMstMaintenance.cs</DependentUpon>
     </EmbeddedResource>
