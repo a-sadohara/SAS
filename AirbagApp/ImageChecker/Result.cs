@@ -737,6 +737,7 @@ namespace ImageChecker
         private async void btnRegstDecision_Click(object sender, EventArgs e)
         {
             bool bolProcOkNg = false;
+            bool bolIsOutputSuccessful = false;
 
             string strSQL = string.Empty;
             DataTable dtData;
@@ -766,13 +767,20 @@ namespace ImageChecker
                 }
 
                 // 帳票印刷
-                await Task<Boolean>.Run(() =>
-                    g_clsReportInfo.OutputReport(
-                        m_strFabricName,
-                        m_strInspectionDate,
-                        m_intInspectionNum,
-                        m_intNgCushionCount,
-                        m_dtData.Select("ng_reason <> ''").Length));
+                bolIsOutputSuccessful =
+                    await Task<Boolean>.Run(() =>
+                        g_clsReportInfo.OutputReport(
+                            m_strFabricName,
+                            m_strInspectionDate,
+                            m_strUnitNum,
+                            m_intInspectionNum,
+                            m_intNgCushionCount,
+                            m_dtData.Select("ng_reason <> ''").Length));
+
+                if (!bolIsOutputSuccessful)
+                {
+                    return;
+                }
 
                 // 検査結果CSV作成
                 try
