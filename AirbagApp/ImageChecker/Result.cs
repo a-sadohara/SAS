@@ -772,7 +772,6 @@ namespace ImageChecker
                         g_clsReportInfo.OutputReport(
                             m_strFabricName,
                             m_strInspectionDate,
-                            m_strUnitNum,
                             m_intInspectionNum,
                             m_intNgCushionCount,
                             m_dtData.Select("ng_reason <> ''").Length));
