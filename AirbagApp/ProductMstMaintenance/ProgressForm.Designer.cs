@@ -84,7 +84,6 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Load += new System.EventHandler(this.ProgressForm_Load);
-            this.Shown += new System.EventHandler(this.ImportImageZipProgressForm_Shown);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
