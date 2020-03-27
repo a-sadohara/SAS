@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
@@ -23,11 +24,21 @@ namespace ImageChecker
 
             // 一時フォルダ作成
             if (Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory) == false)
+            {
                 Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
+            }
+
+            // マスタ画面用フォルダ作成
+            if (Directory.Exists(g_strMasterImageDirPath) == false)
+            {
+                Directory.CreateDirectory(g_strMasterImageDirPath);
+            }
 
             // 一時ZIP解凍用フォルダ作成
-            if (Directory.Exists(g_strMasterImageDirPath) == false)
-                Directory.CreateDirectory(g_strMasterImageDirPath);
+            if (Directory.Exists(g_strZipExtractDirPath) == false)
+            {
+                Directory.CreateDirectory(g_strZipExtractDirPath);
+            }
 
             this.StartPosition = FormStartPosition.CenterScreen;
         }
@@ -39,6 +50,9 @@ namespace ImageChecker
         /// <returns></returns>
         private async Task<Boolean> bolInitializeTempDir()
         {
+            string strZipExtractDirPath = string.Empty;
+            string strFaultImageDirPath = string.Empty;
+
             try
             {
                 // 存在しない一時ディレクトリ作成
@@ -46,16 +60,6 @@ namespace ImageChecker
                 if (Directory.Exists(g_strMasterImageDirMarking) == false)
                 {
                     Directory.CreateDirectory(g_strMasterImageDirMarking);
-                }
-                // ZIP解凍用格納先
-                if (Directory.Exists(g_strZipExtractDirPath) == false)
-                {
-                    Directory.CreateDirectory(g_strZipExtractDirPath);
-                }
-                // 検反チェックシートPDFファイル格納先
-                if (Directory.Exists(g_strPdfOutKenTanCheckSheetPath) == false)
-                {
-                    Directory.CreateDirectory(g_strPdfOutKenTanCheckSheetPath);
                 }
 
                 // 一時ディレクトリ内のサブディレクトリとファイルを削除
@@ -68,23 +72,31 @@ namespace ImageChecker
                 {
                     File.Delete(FilePath);
                 }
-                // ZIP解凍用格納先
-                foreach (string DirPath in Directory.GetDirectories(g_strZipExtractDirPath, "*.*", SearchOption.TopDirectoryOnly))
+
+                List<string> lstUnitNum = new List<string>
                 {
-                    Directory.Delete(DirPath, true);
-                }
-                foreach (string FilePath in Directory.GetFiles(g_strZipExtractDirPath, "*.*", SearchOption.TopDirectoryOnly))
+                    g_strUnitNumN1,
+                    g_strUnitNumN2,
+                    g_strUnitNumN3,
+                    g_strUnitNumN4
+                };
+
+                for (int rowIndex = 0; rowIndex < lstUnitNum.Count; rowIndex++)
                 {
-                    File.Delete(FilePath);
-                }
-                // 検反チェックシートPDFファイル格納先
-                foreach (string DirPath in Directory.GetDirectories(g_strPdfOutKenTanCheckSheetPath, "*.*", SearchOption.TopDirectoryOnly))
-                {
-                    Directory.Delete(DirPath, true);
-                }
-                foreach (string FilePath in Directory.GetFiles(g_strPdfOutKenTanCheckSheetPath, "*.*", SearchOption.TopDirectoryOnly))
-                {
-                    File.Delete(FilePath);
+                    strZipExtractDirPath = Path.Combine(g_strZipExtractDirPath, lstUnitNum[rowIndex]);
+                    strFaultImageDirPath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, lstUnitNum[rowIndex]);
+
+                    // ZIP解凍用の一時ディレクトリが存在するかチェックする
+                    if (!Directory.Exists(strZipExtractDirPath))
+                    {
+                        Directory.CreateDirectory(strZipExtractDirPath);
+                    }
+
+                    // 欠点画像用の一時ディレクトリが存在するかチェックする
+                    if (!Directory.Exists(strFaultImageDirPath))
+                    {
+                        Directory.CreateDirectory(strFaultImageDirPath);
+                    }
                 }
 
                 return true;
@@ -97,7 +109,7 @@ namespace ImageChecker
         }
 
         /// <summary>
-        /// 欠点画像取り込み
+        /// マスタ画像取り込み
         /// </summary>
         /// <returns>true:正常終了 false:異常終了</returns>
         private async Task<Boolean> bolImpMasterImage()
@@ -112,6 +124,7 @@ namespace ImageChecker
                 {
                     Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
                 }
+
                 // マスタ画像格納先
                 if (Directory.Exists(g_strMasterImageDirPath) == false)
                 {
@@ -214,7 +227,7 @@ namespace ImageChecker
                 m_strWorkerNm = strWorkerName;
 
                 // ユーザIDに表示
-                txtUserId.Text = string.Format("{0} {1}", m_strEmployeeNum , m_strWorkerNm);
+                txtUserId.Text = string.Format("{0} {1}", m_strEmployeeNum, m_strWorkerNm);
 
                 // 入力不可にする
                 txtUserId.ReadOnly = true;

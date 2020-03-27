@@ -37,7 +37,6 @@
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlRight = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            //this.dgvProductInfo = new System.Windows.Forms.DataGridView();
             this.dgvProductInfo = new ImageChecker.MyDataGridView();
             this.Check = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.ProductName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -199,6 +198,6 @@
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Check;
         private System.Windows.Forms.DataGridViewTextBoxColumn ProductName;
-        private System.Windows.Forms.DataGridView dgvProductInfo;
+        private MyDataGridView dgvProductInfo;
     }
 }

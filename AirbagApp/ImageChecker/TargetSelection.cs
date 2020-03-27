@@ -74,31 +74,41 @@ namespace ImageChecker
         /// <summary>
         /// 欠点画像取り込み
         /// </summary>
-        /// <param name="strFaultImage"></param>
+        /// <param name="strFaultImageFileName"></param>
         /// <returns></returns>
         private async Task<Boolean> BolImpFatalImage(
-            string strNgImageCooperationDirectory,
-            string strFaultImage)
+            string[] lstdirectoryPath,
+            string strFaultImageFullPath,
+            string strFaultImageFileName)
         {
             DirectoryInfo diThaw = null;
             DirectoryInfo diMigrationTarget = null;
+            string strZipFileName = string.Empty;
+            string strZipExtractDirPath = string.Empty;
             string strZipFilePath = string.Empty;
 
             try
             {
-                strZipFilePath = Path.Combine(g_strZipExtractDirPath, strFaultImage + ".zip");
+                // ZIPファイル名を設定
+                strZipFileName = strFaultImageFileName + ".zip";
 
-                // ZIPファイルを一時ZIP解凍用格納先ディレクトリにコピーする
-                File.Copy(Path.Combine(strNgImageCooperationDirectory, strFaultImage + ".zip"), strZipFilePath, true);
+                // ZIPファイルの解凍先パスを設定
+                strZipExtractDirPath = Path.Combine(g_strZipExtractDirPath, lstdirectoryPath[2]);
+
+                // ZIPファイルのコピー先パスを設定
+                strZipFilePath = Path.Combine(strZipExtractDirPath, strZipFileName);
+
+                // ZIPファイルを一時フォルダにコピー
+                File.Copy(Path.Combine(lstdirectoryPath[1], strZipFileName), strZipFilePath, true);
 
                 // 欠点画像ZIPファイルの解凍
-                ZipFile.ExtractToDirectory(strZipFilePath, g_strZipExtractDirPath);
+                ZipFile.ExtractToDirectory(strZipFilePath, strZipExtractDirPath);
 
                 // 解凍先ディレクトリを取得
-                diThaw = new DirectoryInfo(Path.Combine(g_strZipExtractDirPath, strFaultImage));
+                diThaw = new DirectoryInfo(Path.Combine(strZipExtractDirPath, strFaultImageFileName));
 
                 // 移行先ディレクトリを作成
-                diMigrationTarget = Directory.CreateDirectory(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImage));
+                diMigrationTarget = Directory.CreateDirectory(strFaultImageFullPath);
 
                 // ファイルの取得
                 foreach (FileInfo fInfo in diThaw.GetFiles().Where(
@@ -172,7 +182,7 @@ namespace ImageChecker
         /// <param name="strKanaEnd">カナ（終了）</param>
         private bool bolDispDataGridView()
         {
-            string strSQL = "";
+            string strSQL = string.Empty;
             StringBuilder sbFabricInfo = new StringBuilder();
             StringBuilder sbInspectionInfo = new StringBuilder();
             StringBuilder sbInspectionState = new StringBuilder();
@@ -197,13 +207,13 @@ namespace ImageChecker
                 btnInspectionResult.Width = 230;
                 this.dgvTargetSelection.Columns.Add(btnOverDetectionExcept);
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "OverDetectionExcept";
-                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = string.Empty;
                 this.dgvTargetSelection.Columns.Add(btnAcceptanceCheck);
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "AcceptanceCheck";
-                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = string.Empty;
                 this.dgvTargetSelection.Columns.Add(btnInspectionResult);
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "InspectionResult";
-                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = "";
+                this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = string.Empty;
             }
 
             try
@@ -229,35 +239,40 @@ namespace ImageChecker
                                 , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                    WHERE fabric_name = dr.fabric_name
                                    AND   inspection_date = dr.inspection_date
-                                   AND   inspection_num = dr.inspection_num) AS detection_image_count
+                                   AND   inspection_num = dr.inspection_num
+                                   AND   unit_num = dr.unit_num) AS detection_image_count
                                 , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                    WHERE over_detection_except_result = :over_detection_except_result_ok
                                    AND   fabric_name = dr.fabric_name
                                    AND   inspection_date = dr.inspection_date
-                                   AND   inspection_num = dr.inspection_num) AS over_detection_image_count
+                                   AND   inspection_num = dr.inspection_num
+                                   AND   unit_num = dr.unit_num) AS over_detection_image_count
                                 , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                   WHERE (over_detection_except_result = :over_detection_except_result_ng
                                   OR over_detection_except_result = :over_detection_except_result_ng_non_detect)
                                   AND   fabric_name = dr.fabric_name
                                   AND   inspection_date = dr.inspection_date
-                                  AND   inspection_num = dr.inspection_num) AS acceptance_check_image_count
+                                  AND   inspection_num = dr.inspection_num
+                                  AND   unit_num = dr.unit_num) AS acceptance_check_image_count
                                 , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                    WHERE acceptance_check_result <> :acceptance_check_result_non
                                    AND   fabric_name = dr.fabric_name
                                    AND   inspection_date = dr.inspection_date
-                                   AND   inspection_num = dr.inspection_num) AS determine_count
+                                   AND   inspection_num = dr.inspection_num
+                                   AND   unit_num = dr.unit_num) AS determine_count
                                 , mpi.column_cnt
                                 , mpi.airbag_imagepath
                            FROM
                                " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header iih
                            LEFT JOIN (
-                                   SELECT fabric_name,inspection_date,inspection_num
+                                   SELECT fabric_name,inspection_date,inspection_num,unit_num
                                    FROM   " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
-                                   GROUP BY fabric_name,inspection_date,inspection_num
+                                   GROUP BY fabric_name,inspection_date,inspection_num,unit_num
                                ) dr
                            ON  iih.fabric_name = dr.fabric_name
                            AND iih.inspection_date = dr.inspection_date
                            AND iih.inspection_num = dr.inspection_num
+                           AND iih.unit_num = dr.unit_num
                            INNER JOIN mst_product_info mpi
                            ON  iih.product_name = mpi.product_name
                            WHERE (iih.result_datetime IS NULL OR
@@ -595,6 +610,7 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = clsHeaderData.strFabricName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = clsHeaderData.strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = clsHeaderData.intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = clsHeaderData.strUnitNum });
 
                 switch (btnTarget.Value.ToString())
                 {
@@ -616,7 +632,8 @@ namespace ImageChecker
 
                 strSQL += @"WHERE fabric_name = :fabric_name
                             AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
-                            AND inspection_num = :inspection_num";
+                            AND inspection_num = :inspection_num
+                            AND unit_num = :unit_num";
 
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
@@ -696,7 +713,7 @@ namespace ImageChecker
                 DataGridView dgv = (DataGridView)sender;
                 HeaderData clsHeaderData = new HeaderData();
                 DecisionResult clsDecisionResult = new DecisionResult();
-                string strFaultImageSubDirectory = "";
+                string strFaultImageSubDirectory = string.Empty;
 
                 // ボタン行以外はイベント終了
                 if (e.ColumnIndex < m_CON_COL_IDX_OVERDETECTIONEXCEPT)
@@ -731,6 +748,7 @@ namespace ImageChecker
                 clsHeaderData.intColumnCnt = int.Parse(m_dtData.Rows[e.RowIndex]["column_cnt"].ToString());
                 clsHeaderData.strAirbagImagepath = g_strMasterImageDirPath + Path.DirectorySeparatorChar +
                                                    Path.GetFileName(m_dtData.Rows[e.RowIndex]["airbag_imagepath"].ToString());
+                clsHeaderData.strFaultImageDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, clsHeaderData.strUnitNum);
 
                 // スーパーユーザが検査中ボタンを押下したかチェックする
                 if (m_bolIsSuperUser &&
@@ -745,13 +763,13 @@ namespace ImageChecker
                     return;
                 }
 
-                strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", ""),
+                strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", string.Empty),
                                                              m_dtData.Rows[e.RowIndex]["product_name"],
                                                              m_dtData.Rows[e.RowIndex]["fabric_name"],
                                                              m_dtData.Rows[e.RowIndex]["inspection_num"]);
 
                 // ディレクトリ存在チェック
-                if (Directory.Exists(g_clsSystemSettingInfo.strFaultImageDirectory + @"\" + strFaultImageSubDirectory) == false)
+                if (Directory.Exists(clsHeaderData.strFaultImageDirectory + @"\" + strFaultImageSubDirectory) == false)
                 {
                     MessageBox.Show(g_clsMessageInfo.strMsgW0006, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -852,13 +870,13 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnExceptTarget_Click(object sender, EventArgs e)
         {
-            string strUnitNum = "";
-            string strOrderImg = "";
-            string strFabricName = "";
-            string strProductName = "";
-            string strInspectionDate = "";
-            string strStartDatetime = "";
-            string strEndDatetime = "";
+            string strUnitNum = string.Empty;
+            string strOrderImg = string.Empty;
+            string strFabricName = string.Empty;
+            string strProductName = string.Empty;
+            string strInspectionDate = string.Empty;
+            string strStartDatetime = string.Empty;
+            string strEndDatetime = string.Empty;
             int intInspectionStartLine = -1;
             int intInspectionEndLine = -1;
             int intInspectionNum = 0;
@@ -935,13 +953,13 @@ namespace ImageChecker
         {
             try
             {
-                string strUnitNum = "";
-                string strOrderImg = "";
-                string strFabricName = "";
-                string strProductName = "";
-                string strInspectionDate = "";
-                string strStartDatetime = "";
-                string strEndDatetime = "";
+                string strUnitNum = string.Empty;
+                string strOrderImg = string.Empty;
+                string strFabricName = string.Empty;
+                string strProductName = string.Empty;
+                string strInspectionDate = string.Empty;
+                string strStartDatetime = string.Empty;
+                string strEndDatetime = string.Empty;
                 int intInspectionStartLine = -1;
                 int intInspectionEndLine = -1;
                 int intInspectionNum = 0;
@@ -1019,17 +1037,18 @@ namespace ImageChecker
 
             // 連携基盤部連携ファイルの取込処理
             string[] strSplitFileName = new string[0];
-            string strFileName = "";
-            string strSQL = "";
+            string strFileName = string.Empty;
+            string strSQL = string.Empty;
             int intCnt = 0;
             DataTable dtData;
 
             // パラメータ
-            string strInspectionDate = "";  // 検査日付(YYYY/MM/DD)
-            string strProductName = "";     // 品名
-            string strFabricName = "";      // 反番
+            string strInspectionDate = string.Empty;  // 検査日付(YYYY/MM/DD)
+            string strProductName = string.Empty;     // 品名
+            string strFabricName = string.Empty;      // 反番
             int intInspectionNum = 0;       // 検査番号
-            string strFaultImageSubDirectory = "";
+            string strFaultImageFullPath = string.Empty;
+            string strFaultImageFileName = string.Empty;
             int intExecutionCount = 0;
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -1038,10 +1057,10 @@ namespace ImageChecker
             // チェック対象の完了通知連携ディレクトリ・NG画像連携ディレクトリ情報を設定する
             List<string>[] lstdirectoryPath = new List<string>[]
             {
-                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN1, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN1 },
-                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN2, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN2 },
-                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN3, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN3 },
-                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN4, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN4 }
+                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN1, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN1, g_strUnitNumN1 },
+                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN2, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN2, g_strUnitNumN2 },
+                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN3, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN3, g_strUnitNumN3 },
+                new List<string> { g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN4, g_clsSystemSettingInfo.strNgImageCooperationDirectoryN4, g_strUnitNumN4 }
             };
 
             try
@@ -1059,11 +1078,12 @@ namespace ImageChecker
                         System.IO.SearchOption.TopDirectoryOnly))
                     {
                         // 初期化
-                        strInspectionDate = "";
-                        strProductName = "";
-                        strFabricName = "";
+                        strInspectionDate = string.Empty;
+                        strProductName = string.Empty;
+                        strFabricName = string.Empty;
                         intInspectionNum = 0;
-                        strFaultImageSubDirectory = "";
+                        strFaultImageFileName = string.Empty;
+                        strFaultImageFullPath = string.Empty;
                         lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                         intCnt = 0;
                         intExecutionCount = 0;
@@ -1082,7 +1102,7 @@ namespace ImageChecker
                             strFabricName = strSplitFileName[2];
                             intInspectionNum = int.Parse(strSplitFileName[3]);
 
-                            strFaultImageSubDirectory = string.Join("_", strInspectionDate.Replace("/", ""),
+                            strFaultImageFileName = string.Join("_", strInspectionDate.Replace("/", string.Empty),
                                                                             strProductName,
                                                                             strFabricName,
                                                                             intInspectionNum);
@@ -1103,12 +1123,14 @@ namespace ImageChecker
                             strSQL += @"WHERE fabric_name = :fabric_name ";
                             strSQL += @"AND   inspection_num = :inspection_num ";
                             strSQL += @"AND   TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd ";
+                            strSQL += @"AND   unit_num = :unit_num ";
 
                             // SQLコマンドに各パラメータを設定する
                             lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = lstdirectoryPath[rowIndex][2] });
 
                             g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
@@ -1129,11 +1151,13 @@ namespace ImageChecker
                             return;
                         }
 
+                        strFaultImageFullPath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, lstdirectoryPath[rowIndex][2], strFaultImageFileName);
+
                         // 欠点画像の取込み処理
                         // フォルダの存在チェック
-                        if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImageSubDirectory)) == false)
+                        if (Directory.Exists(strFaultImageFullPath) == false)
                         {
-                            lstTask.Add(Task<Boolean>.Run(() => BolImpFatalImage(lstdirectoryPath[rowIndex][1], strFaultImageSubDirectory)));
+                            lstTask.Add(Task<Boolean>.Run(() => BolImpFatalImage(lstdirectoryPath[rowIndex].ToArray(), strFaultImageFullPath, strFaultImageFileName)));
                             System.Threading.Thread.Sleep(1000);
                         }
 
@@ -1194,6 +1218,7 @@ namespace ImageChecker
                                     WHERE fabric_name = :fabric_name
                                         AND inspection_num = :inspection_num
                                         AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
+                                        AND unit_num = :unit_num
                                 ) header
                                 WHERE SEQ = 1";
 
@@ -1202,6 +1227,7 @@ namespace ImageChecker
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = lstdirectoryPath[rowIndex][2] });
 
                             // sqlを実行する
                             g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
@@ -1227,6 +1253,7 @@ namespace ImageChecker
                                     , inspection_num
                                     , inspection_date
                                     , branch_num
+                                    , unit_num
                                     , line
                                     , cloumns
                                     , ng_face
@@ -1260,6 +1287,7 @@ namespace ImageChecker
                                     , inspection_num
                                     , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
                                     , 1
+                                    , :unit_num
                                     , ng_line
                                     , columns
                                     , ng_face
@@ -1313,6 +1341,7 @@ namespace ImageChecker
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultNg });
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
                             lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
+                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = lstdirectoryPath[rowIndex][2] });
 
                             // SQLを実行する
                             intExecutionCount = g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
@@ -1352,7 +1381,8 @@ namespace ImageChecker
                                                    , result_datetime = :current_timestamp
                                                WHERE fabric_name = :fabric_name
                                                    AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
-                                                   AND inspection_num = :inspection_num";
+                                                   AND inspection_num = :inspection_num
+                                                   AND unit_num = :unit_num";
 
                                 // SQLコマンドに各パラメータを設定する
                                 lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -1360,6 +1390,7 @@ namespace ImageChecker
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "current_timestamp", DbType = DbType.DateTime2, Value = date });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = lstdirectoryPath[rowIndex][2] });
 
                                 if (dtData.Rows.Count == 0)
                                 {

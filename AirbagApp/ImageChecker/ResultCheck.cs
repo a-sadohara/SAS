@@ -121,7 +121,7 @@ namespace ImageChecker
                                                            m_strFabricName,
                                                            m_intInspectionNum);
 
-            m_strFaultImageSubDirPath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory,
+            m_strFaultImageSubDirPath = Path.Combine(clsHeaderData.strFaultImageDirectory,
                                                      m_strFaultImageSubDirName);
 
             InitializeComponent();
@@ -156,7 +156,8 @@ namespace ImageChecker
                            WHERE fabric_name = :fabric_name
                            AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                            AND   inspection_num = :inspection_num
-                           AND   branch_num = 1 ";
+                           AND   branch_num = 1
+                           AND   unit_num = :unit_num ";
 
                 if (m_clsDecisionResultCorrection.intBranchNum > 0 &&
                     m_clsDecisionResultCorrection.intLine > 0)
@@ -208,6 +209,7 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
 
                 if (m_clsDecisionResultCorrection.intBranchNum > 0 &&
                     m_clsDecisionResultCorrection.intLine > 0)
@@ -410,6 +412,7 @@ namespace ImageChecker
                                WHERE fabric_name = :fabric_name
                                AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                AND   inspection_num = :inspection_num
+                               AND   unit_num = :unit_num
                                AND   marking_imagepath = :marking_imagepath
                                AND   acceptance_check_result IN(:acceptance_check_result_ng_detect, 
                                                                 :acceptance_check_result_ng_nondetect)";
@@ -422,6 +425,7 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = strMarkingImagepath });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ng_nondetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
 
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
@@ -455,6 +459,7 @@ namespace ImageChecker
                                WHERE fabric_name = :fabric_name
                                AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                AND   inspection_num = :inspection_num
+                               AND   unit_num = :unit_num
                                AND   line = :line
                                AND   cloumns = :cloumns
                                AND   acceptance_check_result IN(:acceptance_check_result_ng_detect, 
@@ -467,6 +472,7 @@ namespace ImageChecker
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line", DbType = DbType.Int16, Value = Convert.ToInt32(m_dtData.Rows[intPageIdx]["line"]) });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "cloumns", DbType = DbType.String, Value = strCloumns });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter
                         {
                             ParameterName = "acceptance_check_result_ng_detect",
@@ -640,13 +646,16 @@ namespace ImageChecker
                               SET acceptance_check_status = :acceptance_check_status
                             WHERE fabric_name = :fabric_name
                               AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
-                              AND inspection_num = :inspection_num";
+                              AND inspection_num = :inspection_num
+                              AND unit_num = :unit_num";
 
                 // SQLコマンドに各パラメータを設定する
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_status", DbType = DbType.Int16, Value = intStatus });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
 
@@ -746,6 +755,7 @@ namespace ImageChecker
                               AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
                               AND inspection_num = :inspection_num
                               AND branch_num = :branch_num
+                              AND unit_num = :unit_num
                               AND ng_face = :ng_face
                               AND marking_imagepath = :marking_imagepath";
 
@@ -770,6 +780,7 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_face", DbType = DbType.String, Value = strNgFace });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = strMarkingImagepath });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
 
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
@@ -952,6 +963,7 @@ namespace ImageChecker
                                     AND inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                     AND inspection_num = :inspection_num
                                     AND branch_num = 1
+                                    AND unit_num = :unit_num
                                     AND over_detection_except_result <> :over_detection_except_result_ok
                                     AND acceptance_check_datetime IS NOT NULL
                              ) AS MAIN";
@@ -962,6 +974,7 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
@@ -1633,6 +1646,7 @@ namespace ImageChecker
                                WHERE fabric_name = :fabric_name
                                AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                AND   inspection_num = :inspection_num
+                               AND   unit_num = :unit_num
                                AND   org_imagepath = :org_imagepath";
 
                     // SQLコマンドに各パラメータを設定する
@@ -1641,6 +1655,7 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "org_imagepath", DbType = DbType.String, Value = strFileNameWithExtension });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
 
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 

@@ -139,7 +139,8 @@ namespace ImageChecker
                                 , result_datetime = :current_timestamp
                             WHERE fabric_name = :fabric_name
                                 AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
-                                AND inspection_num = :inspection_num";
+                                AND inspection_num = :inspection_num
+                                AND unit_num = :unit_num";
 
                     // SQLコマンドに各パラメータを設定する
                     List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -148,6 +149,7 @@ namespace ImageChecker
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
 
                     if (m_bolInspection == true)
                     {
@@ -203,13 +205,15 @@ namespace ImageChecker
                              ,  before_ng_reason = null
                            WHERE fabric_name = :fabric_name
                              AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date
-                             AND inspection_num = :inspection_num";
+                             AND inspection_num = :inspection_num
+                             AND unit_num = :unit_num";
 
                         // SQLコマンドに各パラメータを設定する
                         List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = m_intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
 
                         // sqlを実行する
                         g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);

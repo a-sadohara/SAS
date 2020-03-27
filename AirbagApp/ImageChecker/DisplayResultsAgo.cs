@@ -111,6 +111,7 @@ namespace ImageChecker
                            ON  iih.fabric_name = dr.fabric_name
                            AND iih.inspection_date = dr.inspection_date
                            AND iih.inspection_num = dr.inspection_num
+                           AND iih.unit_num = dr.unit_num
                            INNER JOIN mst_product_info mpi
                            ON  iih.product_name = mpi.product_name
                            WHERE iih.result_datetime < TO_TIMESTAMP('" + stBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS') ";
@@ -441,6 +442,7 @@ namespace ImageChecker
                                iih.fabric_name
                              , iih.inspection_date
                              , iih.inspection_num 
+                             , iih.unit_num
                              , MAX(mpi.column_cnt) AS column_cnt
                              , MAX(iih.inspection_target_line) AS inspection_target_line
                              , COUNT(*) AS image_inspection_count
@@ -451,10 +453,11 @@ namespace ImageChecker
                            ON  iih.fabric_name = dr.fabric_name
                            AND iih.inspection_date = dr.inspection_date
                            AND iih.inspection_num = dr.inspection_num
+                           AND iih.unit_num = dr.unit_num
                            INNER JOIN mst_product_info mpi
                            ON  iih.product_name = mpi.product_name
                            WHERE iih.result_datetime < TO_TIMESTAMP('" + strBefore48hourYmdhms + @"','YYYY/MM/DD HH24:MI:SS')
-                           GROUP BY iih.fabric_name, iih.inspection_date, iih.inspection_num";
+                           GROUP BY iih.fabric_name, iih.inspection_date, iih.inspection_num, iih.unit_num";
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL);
 
@@ -571,7 +574,7 @@ namespace ImageChecker
                                                          m_dtData.Rows[intSelIdx]["inspection_num"]);
 
             // ディレクトリ存在チェック
-            if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strFaultImageSubDirectory)) == false)
+            if (Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, m_dtData.Rows[intSelIdx]["unit_num"].ToString(), strFaultImageSubDirectory)) == false)
             {
                 MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -598,6 +601,7 @@ namespace ImageChecker
             clsHeaderData.intColumnCnt = int.Parse(m_dtData.Rows[intSelIdx]["column_cnt"].ToString());
             clsHeaderData.strAirbagImagepath = g_strMasterImageDirPath + Path.DirectorySeparatorChar +
                                                Path.GetFileName(m_dtData.Rows[intSelIdx]["airbag_imagepath"].ToString());
+            clsHeaderData.strFaultImageDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, clsHeaderData.strUnitNum);
 
             // 判定結果情報
             DecisionResult clsDecisionResult = new DecisionResult();
@@ -661,6 +665,7 @@ namespace ImageChecker
             int intInspectionNum = 0;
             string strFabricName = string.Empty;
             string strInspectionDate = string.Empty;
+            string strUnitNum = string.Empty;
             string strSQL = string.Empty;
             DataTable dtData;
 
@@ -685,6 +690,7 @@ namespace ImageChecker
                 {
                     strFabricName = m_dtData.Rows[intSelIdx]["fabric_name"].ToString();
                     strInspectionDate = m_dtData.Rows[intSelIdx]["inspection_date"].ToString();
+                    strUnitNum = m_dtData.Rows[intSelIdx]["unit_num"].ToString();
                     intInspectionNum = int.Parse(m_dtData.Rows[intSelIdx]["inspection_num"].ToString());
 
                     // NG画像の取得
@@ -701,17 +707,20 @@ namespace ImageChecker
                                             WHERE fabric_name = :fabric_name
                                             AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                             AND   inspection_num = :inspection_num
+                                            AND   unit_num = :unit_num
                                             AND   acceptance_check_result IN (:acceptance_check_result_ngdetect,
                                                                               :acceptance_check_result_ngnondetect)) AS image_inspection_count_ng
                                          , (SELECT COUNT(*) FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                             WHERE fabric_name = :fabric_name
                                             AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                             AND   inspection_num = :inspection_num
+                                            AND   unit_num = :unit_num
                                             AND   acceptance_check_result = :acceptance_check_result_ok) AS image_inspection_count_ok
                                        FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                        WHERE fabric_name = :fabric_name
                                        AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                        AND   inspection_num = :inspection_num
+                                       AND   unit_num = :unit_num
                                        AND   over_detection_except_result <> :over_detection_except_result_ok 
                                    ) imgcnt";
 
@@ -724,6 +733,7 @@ namespace ImageChecker
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ngnondetect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultOk });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
 
                         g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
@@ -753,6 +763,7 @@ namespace ImageChecker
                                     WHERE fabric_name = :fabric_name
                                       AND inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                       AND inspection_num = :inspection_num
+                                      AND unit_num = :unit_num
                                       AND ng_reason IS NOT NULL
                                  GROUP BY line, cloumns
                                      ) imgcnt";
@@ -764,6 +775,7 @@ namespace ImageChecker
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultOk });
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ok", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultOk });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
 
                         g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
@@ -785,6 +797,7 @@ namespace ImageChecker
                         g_clsReportInfo.OutputReport(
                             strFabricName,
                             strInspectionDate,
+                            strUnitNum,
                             intInspectionNum,
                             intNgCushionCnt,
                             intNgImageCnt));
@@ -816,9 +829,11 @@ namespace ImageChecker
                                                                 m_dtData.Rows[e.RowIndex]["inspection_num"]);
 
             ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
+                                                                           , m_dtData.Rows[e.RowIndex]["unit_num"].ToString()
                                                                            , strFaultImageSubDirectory
                                                                            , m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
                                                                            Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
+                                                                           , m_dtData.Rows[e.RowIndex]["unit_num"].ToString()
                                                                            , strFaultImageSubDirectory
                                                                            , m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
             frmViewEnlargedimage.ShowDialog(this);

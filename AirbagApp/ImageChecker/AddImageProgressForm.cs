@@ -63,22 +63,22 @@ namespace ImageChecker
 
             switch (m_clsHeaderData.strUnitNum)
             {
-                case "N1":
+                case g_strUnitNumN1:
                     m_strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN1;
                     m_strNgImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN1;
                     m_strNotDetectedImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNotDetectedImageCooperationDirectoryN1;
                     break;
-                case "N2":
+                case g_strUnitNumN2:
                     m_strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN2;
                     m_strNgImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN2;
                     m_strNotDetectedImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNotDetectedImageCooperationDirectoryN2;
                     break;
-                case "N3":
+                case g_strUnitNumN3:
                     m_strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN3;
                     m_strNgImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN3;
                     m_strNotDetectedImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNotDetectedImageCooperationDirectoryN3;
                     break;
-                case "N4":
+                case g_strUnitNumN4:
                     m_strCompletionNoticeCooperationDirectoryPath = g_clsSystemSettingInfo.strCompletionNoticeCooperationDirectoryN4;
                     m_strNgImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN4;
                     m_strNotDetectedImageCooperationDirectoryPath = g_clsSystemSettingInfo.strNotDetectedImageCooperationDirectoryN4;
@@ -200,6 +200,7 @@ namespace ImageChecker
                            WHERE fabric_name = :fabric_name
                            AND   inspection_num = :inspection_num
                            AND   TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
+                           AND   unit_num = :unit_num
                            AND   org_imagepath = :org_imagepath ";
 
                 // SQLコマンドに各パラメータを設定する
@@ -208,6 +209,7 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_clsHeaderData.intInspectionNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_clsHeaderData.strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "org_imagepath", DbType = DbType.String, Value = m_strSafeFileName });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_clsHeaderData.strUnitNum });
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
@@ -255,6 +257,7 @@ namespace ImageChecker
         private bool ImportUndetectedImage()
         {
             string strSQL = string.Empty;
+            string strZipExtractDirPath = string.Empty;
             string strZipFilePath = string.Empty;
             string strZipExtractToDirPath = string.Empty;
             string strZipArchiveEntryFilePath = string.Empty;
@@ -271,6 +274,7 @@ namespace ImageChecker
                              , inspection_num
                              , inspection_date
                              , branch_num
+                             , unit_num
                              , line
                              , cloumns
                              , ng_face
@@ -304,6 +308,7 @@ namespace ImageChecker
                              , inspection_num
                              , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
                              , 1
+                             , :unit_num
                              , ng_line
                              , columns
                              , ng_face
@@ -355,6 +360,7 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng_non_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNgNonDetect });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_clsHeaderData.strUnitNum });
 
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
@@ -387,14 +393,18 @@ namespace ImageChecker
                     Directory.CreateDirectory(m_strFaultImageSubDirPath);
                 }
 
-                // 一時ZIP解凍用フォルダ作成
-                if (Directory.Exists(g_strZipExtractDirPath) == true)
-                {
-                    Directory.Delete(g_strZipExtractDirPath, true);
-                }
-                Directory.CreateDirectory(g_strZipExtractDirPath);
+                // ZIPファイルの解凍先パスを設定
+                strZipExtractDirPath = Path.Combine(g_strZipExtractDirPath, m_clsHeaderData.strUnitNum);
 
-                strZipFilePath = Path.Combine(g_strZipExtractDirPath, m_strFileName + ".zip");
+                // 一時ZIP解凍用フォルダ作成
+                if (Directory.Exists(strZipExtractDirPath))
+                {
+                    Directory.Delete(strZipExtractDirPath, true);
+                }
+
+                Directory.CreateDirectory(strZipExtractDirPath);
+
+                strZipFilePath = Path.Combine(strZipExtractDirPath, m_strFileName + ".zip");
 
                 // 欠点画像ZIPファイルを一時ZIP解凍用フォルダにコピーする
                 File.Copy(Path.Combine(m_strNgImageCooperationDirectoryPath, m_strFileName + ".zip"), strZipFilePath, true);
@@ -405,7 +415,7 @@ namespace ImageChecker
                     foreach (ZipArchiveEntry zae in za.Entries)
                     {
                         strZipExtractToDirPath =
-                            Path.Combine(g_strZipExtractDirPath,
+                            Path.Combine(strZipExtractDirPath,
                             zae.FullName.Substring(0, (zae.FullName).IndexOf(Path.AltDirectorySeparatorChar)));
 
                         if (Directory.Exists(strZipExtractToDirPath) == true)
@@ -418,10 +428,10 @@ namespace ImageChecker
                 }
 
                 // 欠点画像ZIPを一時ディレクトリに解凍する
-                ZipFile.ExtractToDirectory(strZipFilePath, g_strZipExtractDirPath);
+                ZipFile.ExtractToDirectory(strZipFilePath, strZipExtractDirPath);
 
                 // 解凍先ディレクトリを取得
-                diThaw = new DirectoryInfo(Path.Combine(g_strZipExtractDirPath, m_strFileName));
+                diThaw = new DirectoryInfo(Path.Combine(strZipExtractDirPath, m_strFileName));
 
                 // 移行先ディレクトリを作成
                 diMigrationTarget = new DirectoryInfo(m_strFaultImageSubDirPath);

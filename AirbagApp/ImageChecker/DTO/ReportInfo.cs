@@ -32,12 +32,14 @@ namespace ImageChecker.DTO
         /// </summary>
         /// <param name="strFabricName">反番</param>
         /// <param name="strInspectionDate">検査日付</param>
+        /// <param name="strUnitNum">号機</param>
         /// <param name="intInspectionNum">検査番号</param>
         /// <param name="intNgCushionCnt">NGクッション数</param>
         /// <param name="intNgImageCnt">NG画像数</param>
         public async Task<Boolean> OutputReport(
             string strFabricName,
             string strInspectionDate,
+            string strUnitNum,
             int intInspectionNum,
             int intNgCushionCnt,
             int intNgImageCnt)
@@ -61,13 +63,15 @@ namespace ImageChecker.DTO
                                FROM " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header iih
                                WHERE iih.fabric_name = :fabric_name
                                AND   iih.inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
-                               AND   iih.inspection_num = :inspection_num";
+                               AND   iih.inspection_num = :inspection_num
+                               AND   unit_num = :unit_num";
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtHeaderData, strSQL, lstNpgsqlCommand);
 
@@ -92,6 +96,7 @@ namespace ImageChecker.DTO
                                WHERE dr.fabric_name = :fabric_name
                                AND   dr.inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
                                AND   dr.inspection_num = :inspection_num
+                               AND   dr.unit_num = :unit_num
                                AND   dr.ng_reason IS NOT NULL 
                                ORDER BY 
                                    dr.line ASC 
@@ -99,6 +104,7 @@ namespace ImageChecker.DTO
                                  , dr.ng_face ASC 
                                  , dr.over_detection_except_datetime ASC ";
 
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
                 g_clsConnectionNpgsql.SelectSQL(ref dtMeisaiData, strSQL, lstNpgsqlCommand);
 
                 // LocalReport作成

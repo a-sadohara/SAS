@@ -23,5 +23,8 @@
         // 品種登録情報						
         public int intColumnCnt { get; set; }
         public string strAirbagImagepath { get; set; }
+
+        // 欠点画像格納ディレクトリ
+        public string strFaultImageDirectory { get; set; }
     }
 }
