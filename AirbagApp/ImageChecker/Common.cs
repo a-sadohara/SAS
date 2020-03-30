@@ -2,6 +2,7 @@
 using log4net;
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -18,6 +19,11 @@ namespace ImageChecker
         public static string g_strDBUserPassword = string.Empty;
         public static string g_strDBServerName = string.Empty;
         public static string g_strDBPort = string.Empty;
+        public static string g_strNetworkDrive = string.Empty;
+        public static string g_strNetworkConnectionPath = string.Empty;
+        public static string g_strNetworkConnectionUser = string.Empty;
+        public static string g_strNetworkConnectionPassword = string.Empty;
+        public static string g_CON_NETWORK_CONNECTION_STRING = @"/c net use {0} {1} /user:{2} {3}";
 
         // コネクションクラス
         public static ConnectionNpgsql g_clsConnectionNpgsql;
@@ -97,6 +103,8 @@ namespace ImageChecker
             // Mutexオブジェクトを作成する
             System.Threading.Mutex mutex = new System.Threading.Mutex(false, mutexName);
 
+            int intExitCode = 0;
+            bool hasConnection = false;
             bool hasHandle = false;
 
             try
@@ -124,15 +132,61 @@ namespace ImageChecker
                 GetAppConfigValue("DBUserPassword", ref g_strDBUserPassword);
                 GetAppConfigValue("DBServerName", ref g_strDBServerName);
                 GetAppConfigValue("DBPort", ref g_strDBPort);
+                GetAppConfigValue("NetworkDrive", ref g_strNetworkDrive);
+                GetAppConfigValue("NetworkConnectionPath", ref g_strNetworkConnectionPath);
+                GetAppConfigValue("NetworkConnectionUser", ref g_strNetworkConnectionUser);
+                GetAppConfigValue("NetworkConnectionPassword", ref g_strNetworkConnectionPassword);
 
                 if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}",Environment.NewLine , m_sbErrMessage.ToString()));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
                     // メッセージ出力
                     System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
+                }
+
+                if (!string.IsNullOrWhiteSpace(g_strNetworkDrive) ||
+                    !string.IsNullOrWhiteSpace(g_strNetworkConnectionPath) ||
+                    !string.IsNullOrWhiteSpace(g_strNetworkConnectionUser) ||
+                    !string.IsNullOrWhiteSpace(g_strNetworkConnectionPassword))
+                {
+
+                    try
+                    {
+                        // ネットワークドライブ接続
+                        Process prCmd = new Process();
+                        prCmd.StartInfo.FileName = "cmd.exe";
+                        prCmd.StartInfo.Arguments =
+                            string.Format(
+                                g_CON_NETWORK_CONNECTION_STRING,
+                                g_strNetworkDrive,
+                                g_strNetworkConnectionPath,
+                                g_strNetworkConnectionUser,
+                                g_strNetworkConnectionPassword);
+                        prCmd.StartInfo.CreateNoWindow = true;
+                        prCmd.StartInfo.UseShellExecute = false;
+                        prCmd.StartInfo.RedirectStandardOutput = true;
+                        prCmd.Start();
+                        prCmd.WaitForExit();
+                        intExitCode = prCmd.ExitCode;
+
+                        // 接続された場合、変数を更新する
+                        if (intExitCode == 0)
+                        {
+                            hasConnection = true;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        hasConnection = false;
+                    }
+
+                    if (!hasConnection)
+                    {
+                        MessageBox.Show("ネットワークドライブに接続できませんでした。", g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
 
                 g_strConnectionString = string.Format(g_CON_CONNECTION_STRING, g_strDBServerName,
@@ -173,7 +227,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "初期起動時にエラーが発生しました。{0}{1}" ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
