@@ -354,13 +354,15 @@ namespace DelRecord
                 string strDeleteSql = @"DELETE FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result  
                                         WHERE inspection_num = :inspection_num 
                                         AND branch_num = :branch_num 
-                                        AND TO_CHAR(inspection_date, 'YYYY/MM/DD') = :inspection_date_yyyymmdd";
+                                        AND TO_CHAR(inspection_date, 'YYYY/MM/DD') = :inspection_date_yyyymmdd
+                                        AND unit_num = :unit_num";
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = m_intBranchNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_strInspectionDate });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
 
                 // sqlを実行する
                 intDeleteCont = g_clsConnectionNpgsql.ExecTranSQL(strDeleteSql, lstNpgsqlCommand);
