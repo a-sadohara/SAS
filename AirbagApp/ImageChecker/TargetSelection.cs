@@ -1,4 +1,5 @@
 ﻿using ImageChecker.DTO;
+using Npgsql;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1049,6 +1050,7 @@ namespace ImageChecker
             int intInspectionNum = 0;       // 検査番号
             string strFaultImageFullPath = string.Empty;
             string strFaultImageFileName = string.Empty;
+            string strRapidTableName = string.Empty;
             int intExecutionCount = 0;
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -1084,6 +1086,7 @@ namespace ImageChecker
                         intInspectionNum = 0;
                         strFaultImageFileName = string.Empty;
                         strFaultImageFullPath = string.Empty;
+                        strRapidTableName = string.Empty;
                         lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                         intCnt = 0;
                         intExecutionCount = 0;
@@ -1139,6 +1142,30 @@ namespace ImageChecker
                             {
                                 intCnt = int.Parse(dtData.Rows[0]["cnt"].ToString());
                             }
+                        }
+                        catch (PostgresException pgex)
+                        {
+                            // ログ出力
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                string.Format(
+                                    "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 取得対象テーブル:{7}{8}{9}",
+                                    g_clsMessageInfo.strMsgE0001,
+                                    Environment.NewLine,
+                                    strInspectionDate,
+                                    lstdirectoryPath[rowIndex][2],
+                                    intInspectionNum,
+                                    strProductName,
+                                    strFabricName,
+                                    pgex.TableName,
+                                    Environment.NewLine,
+                                    pgex.Message));
+
+                            // メッセージ出力
+                            MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            frmProgress.Close();
+                            return;
                         }
                         catch (Exception ex)
                         {
@@ -1232,6 +1259,32 @@ namespace ImageChecker
                             // sqlを実行する
                             g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
                         }
+                        catch (PostgresException pgex)
+                        {
+                            g_clsConnectionNpgsql.DbRollback();
+
+                            // ログ出力
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                string.Format(
+                                    "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 更新対象テーブル:{7}{8}{9}",
+                                    g_clsMessageInfo.strMsgE0002,
+                                    Environment.NewLine,
+                                    strInspectionDate,
+                                    lstdirectoryPath[rowIndex][2],
+                                    intInspectionNum,
+                                    strProductName,
+                                    strFabricName,
+                                    pgex.TableName,
+                                    Environment.NewLine,
+                                    pgex.Message));
+
+                            // メッセージ出力
+                            MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            frmProgress.Close();
+                            return;
+                        }
                         catch (Exception ex)
                         {
                             g_clsConnectionNpgsql.DbRollback();
@@ -1244,6 +1297,8 @@ namespace ImageChecker
                             frmProgress.Close();
                             return;
                         }
+
+                        strRapidTableName = "rapid_" + strFabricName + "_" + intInspectionNum + "_" + strInspectionDate.Replace("/", string.Empty);
 
                         try
                         {
@@ -1322,7 +1377,7 @@ namespace ImageChecker
                                 FROM (
                                     SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY rapid_endtime DESC) AS SEQ
                                         , rpd.*
-                                    FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + "_" + strInspectionDate.Replace("/", string.Empty) + @""" rpd
+                                    FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" rpd
                                     WHERE fabric_name = :fabric_name
                                     AND inspection_num = :inspection_num 
                                     AND rapid_result = :rapid_result
@@ -1345,15 +1400,57 @@ namespace ImageChecker
 
                             // SQLを実行する
                             intExecutionCount = g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                        }
+                        catch (PostgresException pgex)
+                        {
+                            g_clsConnectionNpgsql.DbRollback();
 
-                            if (intExecutionCount == 0)
+                            // ログ出力
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                string.Format(
+                                    "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 移送元テーブル:{7}, 移送先テーブル:{8}{9}{10}",
+                                    g_clsMessageInfo.strMsgE0002,
+                                    Environment.NewLine,
+                                    strInspectionDate,
+                                    lstdirectoryPath[rowIndex][2],
+                                    intInspectionNum,
+                                    strProductName,
+                                    strFabricName,
+                                    strRapidTableName,
+                                    pgex.TableName,
+                                    Environment.NewLine,
+                                    pgex.Message));
+
+                            // メッセージ出力
+                            MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            frmProgress.Close();
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            g_clsConnectionNpgsql.DbRollback();
+
+                            // ログ出力
+                            WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                            // メッセージ出力
+                            MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            frmProgress.Close();
+                            return;
+                        }
+
+                        if (intExecutionCount == 0)
+                        {
+                            dtData = new DataTable();
+                            DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+
+                            try
                             {
-                                dtData = new DataTable();
-                                DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-
                                 // NGデータが存在しない場合、検査無効データをチェックする
                                 strSQL = @"SELECT fabric_name
-                                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + strFabricName + "_" + intInspectionNum + "_" + strInspectionDate.Replace("/", string.Empty) + @""" rpd
+                                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" rpd
                                            WHERE fabric_name = :fabric_name
                                            AND inspection_num = :inspection_num 
                                            AND rapid_result = :rapid_result
@@ -1371,7 +1468,44 @@ namespace ImageChecker
 
                                 // SQLを実行する
                                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+                            }
+                            catch (PostgresException pgex)
+                            {
+                                // ログ出力
+                                WriteEventLog(
+                                    g_CON_LEVEL_ERROR,
+                                    string.Format(
+                                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 取得対象テーブル:{7}{8}{9}",
+                                        g_clsMessageInfo.strMsgE0001,
+                                        Environment.NewLine,
+                                        strInspectionDate,
+                                        lstdirectoryPath[rowIndex][2],
+                                        intInspectionNum,
+                                        strProductName,
+                                        strFabricName,
+                                        pgex.TableName,
+                                        Environment.NewLine,
+                                        pgex.Message));
 
+                                // メッセージ出力
+                                MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                                frmProgress.Close();
+                                return;
+                            }
+                            catch (Exception ex)
+                            {
+                                // ログ出力
+                                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                                // メッセージ出力
+                                MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                                frmProgress.Close();
+                                return;
+                            }
+
+                            try
+                            {
                                 // SQL文を作成する
                                 strSQL = @"UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                                                    SET over_detection_except_status = :over_detection_except_status
@@ -1407,22 +1541,45 @@ namespace ImageChecker
 
                                 // SQLを実行する
                                 g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
-
-                                // DBコミット
-                                g_clsConnectionNpgsql.DbCommit();
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            g_clsConnectionNpgsql.DbRollback();
+                            catch (PostgresException pgex)
+                            {
+                                g_clsConnectionNpgsql.DbRollback();
 
-                            // ログ出力
-                            WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
-                            // メッセージ出力
-                            MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0039, strFabricName, intInspectionNum), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                // ログ出力
+                                WriteEventLog(
+                                    g_CON_LEVEL_ERROR,
+                                    string.Format(
+                                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 更新対象テーブル:{7}{8}{9}",
+                                        g_clsMessageInfo.strMsgE0002,
+                                        Environment.NewLine,
+                                        strInspectionDate,
+                                        lstdirectoryPath[rowIndex][2],
+                                        intInspectionNum,
+                                        strProductName,
+                                        strFabricName,
+                                        pgex.TableName,
+                                        Environment.NewLine,
+                                        pgex.Message));
 
-                            frmProgress.Close();
-                            return;
+                                // メッセージ出力
+                                MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                                frmProgress.Close();
+                                return;
+                            }
+                            catch (Exception ex)
+                            {
+                                g_clsConnectionNpgsql.DbRollback();
+
+                                // ログ出力
+                                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                                // メッセージ出力
+                                MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                                frmProgress.Close();
+                                return;
+                            }
                         }
                     }
                 }
