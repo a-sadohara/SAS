@@ -19,11 +19,10 @@ namespace ImageChecker
         public static string g_strDBUserPassword = string.Empty;
         public static string g_strDBServerName = string.Empty;
         public static string g_strDBPort = string.Empty;
-        public static string g_strNetworkDrive = string.Empty;
-        public static string g_strNetworkConnectionPath = string.Empty;
-        public static string g_strNetworkConnectionUser = string.Empty;
-        public static string g_strNetworkConnectionPassword = string.Empty;
-        public static string g_CON_NETWORK_CONNECTION_STRING = @"/c net use {0} {1} /user:{2} {3}";
+        public static string g_strSharedFolderPath = string.Empty;
+        public static string g_strSharedFolderUser = string.Empty;
+        public static string g_strSharedFolderPassword = string.Empty;
+        public static string g_CON_SHARED_FOLDER_CONNECTION_STRING = @" use {0} /user:{1} {2}";
 
         // コネクションクラス
         public static ConnectionNpgsql g_clsConnectionNpgsql;
@@ -103,7 +102,6 @@ namespace ImageChecker
             // Mutexオブジェクトを作成する
             System.Threading.Mutex mutex = new System.Threading.Mutex(false, mutexName);
 
-            int intExitCode = 0;
             bool hasConnection = false;
             bool hasHandle = false;
 
@@ -132,10 +130,9 @@ namespace ImageChecker
                 GetAppConfigValue("DBUserPassword", ref g_strDBUserPassword);
                 GetAppConfigValue("DBServerName", ref g_strDBServerName);
                 GetAppConfigValue("DBPort", ref g_strDBPort);
-                GetAppConfigValue("NetworkDrive", ref g_strNetworkDrive);
-                GetAppConfigValue("NetworkConnectionPath", ref g_strNetworkConnectionPath);
-                GetAppConfigValue("NetworkConnectionUser", ref g_strNetworkConnectionUser);
-                GetAppConfigValue("NetworkConnectionPassword", ref g_strNetworkConnectionPassword);
+                GetAppConfigValue("SharedFolderPath", ref g_strSharedFolderPath);
+                GetAppConfigValue("SharedFolderUser", ref g_strSharedFolderUser);
+                GetAppConfigValue("SharedFolderPassword", ref g_strSharedFolderPassword);
 
                 if (m_sbErrMessage.Length > 0)
                 {
@@ -147,36 +144,29 @@ namespace ImageChecker
                     return;
                 }
 
-                if (!string.IsNullOrWhiteSpace(g_strNetworkDrive) ||
-                    !string.IsNullOrWhiteSpace(g_strNetworkConnectionPath) ||
-                    !string.IsNullOrWhiteSpace(g_strNetworkConnectionUser) ||
-                    !string.IsNullOrWhiteSpace(g_strNetworkConnectionPassword))
+                if (!string.IsNullOrWhiteSpace(g_strSharedFolderPath) &&
+                    !Directory.Exists(g_strSharedFolderPath))
                 {
-
                     try
                     {
-                        // ネットワークドライブ接続
-                        Process prCmd = new Process();
-                        prCmd.StartInfo.FileName = "cmd.exe";
-                        prCmd.StartInfo.Arguments =
-                            string.Format(
-                                g_CON_NETWORK_CONNECTION_STRING,
-                                g_strNetworkDrive,
-                                g_strNetworkConnectionPath,
-                                g_strNetworkConnectionUser,
-                                g_strNetworkConnectionPassword);
-                        prCmd.StartInfo.CreateNoWindow = true;
-                        prCmd.StartInfo.UseShellExecute = false;
-                        prCmd.StartInfo.RedirectStandardOutput = true;
-                        prCmd.Start();
-                        prCmd.WaitForExit();
-                        intExitCode = prCmd.ExitCode;
-
-                        // 接続された場合、変数を更新する
-                        if (intExitCode == 0)
+                        // 共有フォルダ接続
+                        using (Process prNet = new Process())
                         {
-                            hasConnection = true;
+                            prNet.StartInfo.FileName = "net.exe";
+                            prNet.StartInfo.Arguments =
+                                string.Format(
+                                    g_CON_SHARED_FOLDER_CONNECTION_STRING,
+                                    g_strSharedFolderPath,
+                                    g_strSharedFolderUser,
+                                    g_strSharedFolderPassword);
+                            prNet.StartInfo.CreateNoWindow = true;
+                            prNet.StartInfo.UseShellExecute = false;
+                            prNet.StartInfo.RedirectStandardOutput = true;
+                            prNet.Start();
+                            prNet.WaitForExit();
                         }
+
+                        hasConnection = Directory.Exists(g_strSharedFolderPath);
                     }
                     catch (Exception)
                     {
@@ -185,7 +175,8 @@ namespace ImageChecker
 
                     if (!hasConnection)
                     {
-                        MessageBox.Show("ネットワークドライブに接続できませんでした。", g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("共有フォルダに接続できません。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
                 }
 
