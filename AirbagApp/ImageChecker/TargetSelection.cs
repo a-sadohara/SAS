@@ -1464,6 +1464,12 @@ namespace ImageChecker
                             }
                             catch (PostgresException pgex)
                             {
+                                // キー重複の場合、次の取込処理へ移行する
+                                if (pgex.SqlState.Equals("23505"))
+                                {
+                                    continue;
+                                }
+
                                 g_clsConnectionNpgsql.DbRollback();
 
                                 // ログ出力
