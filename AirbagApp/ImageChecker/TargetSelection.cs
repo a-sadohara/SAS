@@ -1342,7 +1342,7 @@ namespace ImageChecker
                                     , inspection_num
                                     , TO_DATE(:inspection_date_yyyymmdd,'YYYY/MM/DD')
                                     , 1
-                                    , :unit_num
+                                    , unit_num
                                     , ng_line
                                     , columns
                                     , ng_face
@@ -1380,6 +1380,7 @@ namespace ImageChecker
                                     FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" rpd
                                     WHERE fabric_name = :fabric_name
                                     AND inspection_num = :inspection_num 
+                                    AND unit_num = :unit_num 
                                     AND rapid_result = :rapid_result
                                     AND edge_result = :edge_result
                                     AND masking_result = :masking_result
