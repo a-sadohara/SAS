@@ -6,16 +6,16 @@
         <TablixBody>
           <TablixColumns>
             <TablixColumn>
-              <Width>2.42296cm</Width>
+              <Width>2.62296cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>1.34565cm</Width>
+              <Width>1cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>1.07164cm</Width>
+              <Width>0.65cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>1.27395cm</Width>
+              <Width>1.22395cm</Width>
             </TablixColumn>
             <TablixColumn>
               <Width>3.03514cm</Width>
@@ -24,7 +24,7 @@
               <Width>6.24805cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>3.18783cm</Width>
+              <Width>3.80512cm</Width>
             </TablixColumn>
           </TablixColumns>
           <TablixRows>
@@ -98,6 +98,9 @@
                         <TopBorder>
                           <Width>2pt</Width>
                         </TopBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
                         <PaddingLeft>2pt</PaddingLeft>
                         <PaddingRight>2pt</PaddingRight>
                         <PaddingTop>2pt</PaddingTop>
@@ -122,7 +125,7 @@
                             </TextRun>
                           </TextRuns>
                           <Style>
-                            <TextAlign>Center</TextAlign>
+                            <TextAlign>Left</TextAlign>
                           </Style>
                         </Paragraph>
                       </Paragraphs>
@@ -134,6 +137,9 @@
                         <TopBorder>
                           <Width>2pt</Width>
                         </TopBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
                         <PaddingLeft>2pt</PaddingLeft>
                         <PaddingRight>2pt</PaddingRight>
                         <PaddingTop>2pt</PaddingTop>
@@ -355,6 +361,9 @@
                         <Border>
                           <Style>Solid</Style>
                         </Border>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
                         <PaddingLeft>2pt</PaddingLeft>
                         <PaddingRight>2pt</PaddingRight>
                         <PaddingTop>2pt</PaddingTop>
@@ -379,7 +388,7 @@
                             </TextRun>
                           </TextRuns>
                           <Style>
-                            <TextAlign>Center</TextAlign>
+                            <TextAlign>Left</TextAlign>
                           </Style>
                         </Paragraph>
                       </Paragraphs>
@@ -388,6 +397,9 @@
                         <Border>
                           <Style>Solid</Style>
                         </Border>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
                         <PaddingLeft>2pt</PaddingLeft>
                         <PaddingRight>2pt</PaddingRight>
                         <PaddingTop>2pt</PaddingTop>
