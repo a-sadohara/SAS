@@ -484,12 +484,14 @@ namespace ImageChecker
                     File.Delete(strZipFilePath);
                 }
 
-                if (diThaw.Exists)
+                if (diThaw != null &&
+                    diThaw.Exists)
                 {
                     diThaw.Delete(true);
                 }
 
-                if (diMigrationTarget.Exists)
+                if (diMigrationTarget != null &&
+                    diMigrationTarget.Exists)
                 {
                     diMigrationTarget.Delete(true);
                 }
