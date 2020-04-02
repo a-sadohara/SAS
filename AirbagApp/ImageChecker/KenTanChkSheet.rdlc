@@ -24,7 +24,7 @@
               <Width>6.24805cm</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>3.80512cm</Width>
+              <Width>3.87cm</Width>
             </TablixColumn>
           </TablixColumns>
           <TablixRows>
@@ -584,9 +584,9 @@
           </TablixMembers>
         </TablixRowHierarchy>
         <DataSetName>KenTanChkSheet</DataSetName>
-        <Left>0.17731cm</Left>
+        <Left>0.14cm</Left>
         <Height>1.2cm</Height>
-        <Width>18.58522cm</Width>
+        <Width>18.6501cm</Width>
         <Style>
           <Border>
             <Style>None</Style>
@@ -611,9 +611,9 @@
       </Tablix>
       <Line Name="Line1">
         <Top>1.205cm</Top>
-        <Left>0.18cm</Left>
+        <Left>0.14269cm</Left>
         <Height>0cm</Height>
-        <Width>18.579cm</Width>
+        <Width>18.64731cm</Width>
         <ZIndex>1</ZIndex>
         <Style>
           <Border>
@@ -634,7 +634,7 @@
   <Width>7.43077in</Width>
   <Page>
     <PageHeader>
-      <Height>7.96229cm</Height>
+      <Height>6.49733cm</Height>
       <PrintOnFirstPage>true</PrintOnFirstPage>
       <PrintOnLastPage>true</PrintOnLastPage>
       <ReportItems>
@@ -647,6 +647,7 @@
                   <Value>指図</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -656,9 +657,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>1.3cm</Top>
+          <Top>0.865cm</Top>
           <Left>0.16203cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <Style>
             <Border>
@@ -680,6 +681,7 @@
                   <Value>反番</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -689,9 +691,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>2.54375cm</Top>
+          <Top>1.915cm</Top>
           <Left>0.16232cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <ZIndex>1</ZIndex>
           <Style>
@@ -714,6 +716,7 @@
                   <Value>品名</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -723,9 +726,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>3.7875cm</Top>
+          <Top>2.965cm</Top>
           <Left>0.16232cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <ZIndex>2</ZIndex>
           <Style>
@@ -748,6 +751,7 @@
                   <Value>=Fields!OrderImg.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -757,9 +761,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>1.3cm</Top>
+          <Top>0.865cm</Top>
           <Left>3.51406cm</Left>
-          <Height>1.24379cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95461cm</Width>
           <ZIndex>3</ZIndex>
           <Style>
@@ -782,7 +786,7 @@
                   <Value>=Fields!FabricName.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
-                    <FontSize>12pt</FontSize>
+                    <FontSize>11pt</FontSize>
                     <FontWeight>Bold</FontWeight>
                   </Style>
                 </TextRun>
@@ -793,9 +797,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>2.54375cm</Top>
+          <Top>1.915cm</Top>
           <Left>3.51435cm</Left>
-          <Height>1.2438cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95432cm</Width>
           <ZIndex>4</ZIndex>
           <Style>
@@ -818,7 +822,7 @@
                   <Value>=Fields!ProductName.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
-                    <FontSize>12pt</FontSize>
+                    <FontSize>11pt</FontSize>
                     <FontWeight>Bold</FontWeight>
                   </Style>
                 </TextRun>
@@ -829,9 +833,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>3.7875cm</Top>
+          <Top>2.965cm</Top>
           <Left>3.51435cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95403cm</Width>
           <ZIndex>5</ZIndex>
           <Style>
@@ -854,6 +858,7 @@
                   <Value>巻取検査</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -867,6 +872,7 @@
                   <Value>開始・終了日</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -876,9 +882,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>1.3cm</Top>
+          <Top>0.865cm</Top>
           <Left>9.46809cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <ZIndex>6</ZIndex>
           <Style>
@@ -899,6 +905,7 @@
                   <Value>検査範囲(行)</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -908,9 +915,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>2.54375cm</Top>
+          <Top>1.915cm</Top>
           <Left>9.46809cm</Left>
-          <Height>1.24376cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <ZIndex>7</ZIndex>
           <Style>
@@ -933,6 +940,7 @@
                   <Value>検査番号</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -942,9 +950,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>3.7875cm</Top>
+          <Top>2.965cm</Top>
           <Left>9.46809cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <ZIndex>8</ZIndex>
           <Style>
@@ -967,6 +975,7 @@
                   <Value>=Fields!InspectionNum.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -976,9 +985,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>3.7875cm</Top>
+          <Top>2.965cm</Top>
           <Left>12.82012cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95403cm</Width>
           <ZIndex>9</ZIndex>
           <Style>
@@ -1001,6 +1010,7 @@
                   <Value>=Fields!InspectionLine.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1010,9 +1020,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>2.54375cm</Top>
+          <Top>1.915cm</Top>
           <Left>12.82012cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95403cm</Width>
           <ZIndex>10</ZIndex>
           <Style>
@@ -1035,12 +1045,14 @@
                   <Value>開始：</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
                 <TextRun>
                   <Value>=Fields!StartDatetime.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1054,12 +1066,14 @@
                   <Value>終了：</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
                 <TextRun>
                   <Value>=Fields!EndDatetime.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1069,9 +1083,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>1.3cm</Top>
+          <Top>0.865cm</Top>
           <Left>12.82012cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95403cm</Width>
           <ZIndex>11</ZIndex>
           <Style>
@@ -1106,7 +1120,6 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox18</rd:DefaultName>
-          <Top>0.3cm</Top>
           <Left>4.14935cm</Left>
           <Height>0.82021cm</Height>
           <Width>10.61988cm</Width>
@@ -1130,6 +1143,7 @@
                   <Value>号機</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1139,9 +1153,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>5.03125cm</Top>
+          <Top>4.015cm</Top>
           <Left>0.16232cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <ZIndex>13</ZIndex>
           <Style>
@@ -1164,6 +1178,7 @@
                   <Value>=Fields!UnitNum.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1173,9 +1188,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>5.03125cm</Top>
+          <Top>4.015cm</Top>
           <Left>3.51406cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95403cm</Width>
           <ZIndex>14</ZIndex>
           <Style>
@@ -1199,6 +1214,7 @@
 開始・終了日時</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1208,9 +1224,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>5.03125cm</Top>
+          <Top>4.015cm</Top>
           <Left>9.46809cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <ZIndex>15</ZIndex>
           <Style>
@@ -1231,12 +1247,14 @@
                   <Value>開始：</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
                 <TextRun>
                   <Value>=Fields!DecisionStartDatetime.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1250,12 +1268,14 @@
                   <Value>終了：</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
                 <TextRun>
                   <Value>=Fields!DecisionEndDatetime.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1265,9 +1285,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>5.03125cm</Top>
+          <Top>4.015cm</Top>
           <Left>12.82012cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95403cm</Width>
           <ZIndex>16</ZIndex>
           <ToolTip>DecisionStartDatetime</ToolTip>
@@ -1291,6 +1311,7 @@
                   <Value>NG</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1304,6 +1325,7 @@
                   <Value>クッション数</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1313,9 +1335,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>6.275cm</Top>
+          <Top>5.065cm</Top>
           <Left>0.16232cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <ZIndex>17</ZIndex>
           <Style>
@@ -1336,6 +1358,7 @@
                   <Value>=Fields!NgCushionCnt.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1345,9 +1368,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>6.275cm</Top>
+          <Top>5.065cm</Top>
           <Left>3.51435cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95403cm</Width>
           <ZIndex>18</ZIndex>
           <Style>
@@ -1371,6 +1394,7 @@
 画像枚数</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1380,9 +1404,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>6.275cm</Top>
+          <Top>5.065cm</Top>
           <Left>9.46809cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>3.35203cm</Width>
           <ZIndex>19</ZIndex>
           <Style>
@@ -1403,6 +1427,7 @@
                   <Value>=Fields!NgImageCnt.Value</Value>
                   <Style>
                     <FontFamily>メイリオ</FontFamily>
+                    <FontSize>9pt</FontSize>
                   </Style>
                 </TextRun>
               </TextRuns>
@@ -1412,9 +1437,9 @@
             </Paragraph>
           </Paragraphs>
           <rd:DefaultName>Textbox9</rd:DefaultName>
-          <Top>6.275cm</Top>
+          <Top>5.065cm</Top>
           <Left>12.82012cm</Left>
-          <Height>1.24375cm</Height>
+          <Height>1.05cm</Height>
           <Width>5.95403cm</Width>
           <ZIndex>20</ZIndex>
           <Style>
@@ -1437,7 +1462,7 @@
       </Style>
     </PageHeader>
     <PageFooter>
-      <Height>0.65673cm</Height>
+      <Height>0.6cm</Height>
       <PrintOnFirstPage>true</PrintOnFirstPage>
       <PrintOnLastPage>true</PrintOnLastPage>
       <ReportItems>
@@ -1496,8 +1521,8 @@
     <PageWidth>21cm</PageWidth>
     <LeftMargin>1cm</LeftMargin>
     <RightMargin>1cm</RightMargin>
-    <TopMargin>0cm</TopMargin>
-    <BottomMargin>0.1cm</BottomMargin>
+    <TopMargin>0.8cm</TopMargin>
+    <BottomMargin>0.8cm</BottomMargin>
     <ColumnSpacing>0.13cm</ColumnSpacing>
     <Style />
   </Page>
