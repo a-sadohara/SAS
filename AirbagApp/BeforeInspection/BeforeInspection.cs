@@ -1634,7 +1634,7 @@ namespace BeforeInspection
             txtWorker1.Enabled = false;
             txtWorker2.Enabled = false;
             btnStartDatetime.Enabled = false;
-            btnEndDatetime.Enabled = false;
+            btnEndDatetime.Enabled = true;
             btnInspectionDirectionS.Enabled = false;
             btnInspectionDirectionX.Enabled = false;
             btnInspectionDirectionY.Enabled = false;
