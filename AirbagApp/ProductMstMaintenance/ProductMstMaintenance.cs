@@ -209,7 +209,7 @@ namespace ProductMstMaintenance
         {
             ProductMstSelection frmProductMstSelection = new ProductMstSelection();
             frmProductMstSelection.ShowDialog(this);
-            if (!string.IsNullOrEmpty( frmProductMstSelection.strHinNm))
+            if (!string.IsNullOrEmpty(frmProductMstSelection.strHinNm))
             {
                 // 品番マスタから値の取得を行う
                 if (GetHinMstInitial(frmProductMstSelection.strHinNm) == false ||
@@ -456,7 +456,7 @@ namespace ProductMstMaintenance
 
                 return;
             }
-            
+
             if ((e.KeyChar < '0' || '9' < e.KeyChar) && e.KeyChar != '\b')
             {
                 // 0～9と、バックスペース以外の時は、イベントをキャンセルする
@@ -532,17 +532,17 @@ namespace ProductMstMaintenance
                 {
                     intColumnThreshold = (int)((double)NulltoInt(txtColumnThresholdAB.Text) * m_dblSizeRate);
                 }
-                
+
                 if (m_intColumn_cnt > 2 && txtColumnThreshold == txtColumnThresholdBC)
                 {
                     intColumnThreshold = (int)((double)NulltoInt(txtColumnThresholdBC.Text) * m_dblSizeRate);
                 }
-                
+
                 if (m_intColumn_cnt > 3 && txtColumnThreshold == txtColumnThresholdCD)
                 {
                     intColumnThreshold = (int)((double)NulltoInt(txtColumnThresholdCD.Text) * m_dblSizeRate);
                 }
-                
+
                 if (m_intColumn_cnt > 4 && txtColumnThreshold == txtColumnThresholdDE)
                 {
                     intColumnThreshold = (int)((double)NulltoInt(txtColumnThresholdDE.Text) * m_dblSizeRate);
@@ -580,7 +580,7 @@ namespace ProductMstMaintenance
                         intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdAB.Text) * m_dblSizeRate);
                     }
                 }
-                
+
                 if (txtLineThreshold == txtColumnThresholdATo)
                 {
                     intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdATo.Text) * m_dblSizeRate);
@@ -590,7 +590,7 @@ namespace ProductMstMaintenance
                         intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdAB.Text) * m_dblSizeRate);
                     }
                 }
-                
+
                 if (m_intColumn_cnt > 1 && txtLineThreshold == txtColumnThresholdBFrom)
                 {
                     intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdBFrom.Text) * m_dblSizeRate);
@@ -600,7 +600,7 @@ namespace ProductMstMaintenance
                         intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdBC.Text) * m_dblSizeRate);
                     }
                 }
-                
+
                 if (m_intColumn_cnt > 1 && txtLineThreshold == txtColumnThresholdBTo)
                 {
                     intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdBTo.Text) * m_dblSizeRate);
@@ -610,7 +610,7 @@ namespace ProductMstMaintenance
                         intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdBC.Text) * m_dblSizeRate);
                     }
                 }
-                
+
                 if (m_intColumn_cnt > 2 && txtLineThreshold == txtColumnThresholdCFrom)
                 {
                     intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdCFrom.Text) * m_dblSizeRate);
@@ -630,7 +630,7 @@ namespace ProductMstMaintenance
                         intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdCD.Text) * m_dblSizeRate);
                     }
                 }
-                
+
                 if (m_intColumn_cnt > 3 && txtLineThreshold == txtColumnThresholdDFrom)
                 {
                     intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdDFrom.Text) * m_dblSizeRate);
@@ -640,7 +640,7 @@ namespace ProductMstMaintenance
                         intColumnThresholdBottom = (int)((double)NulltoInt(txtColumnThresholdDE.Text) * m_dblSizeRate);
                     }
                 }
-                
+
                 if (m_intColumn_cnt > 3 && txtLineThreshold == txtColumnThresholdDTo)
                 {
                     intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdDTo.Text) * m_dblSizeRate);
@@ -657,14 +657,14 @@ namespace ProductMstMaintenance
                     intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdDE.Text) * m_dblSizeRate);
                     intColumnThresholdBottom = picMasterImage.ClientSize.Height;
                 }
-                
+
                 if (m_intColumn_cnt > 4 && txtLineThreshold == txtColumnThresholdETo)
                 {
                     intLineThreshold = (int)((double)NulltoInt(txtColumnThresholdETo.Text) * m_dblSizeRate);
                     intColumnThresholdTop = (int)((double)NulltoInt(txtColumnThresholdDE.Text) * m_dblSizeRate);
                     intColumnThresholdBottom = picMasterImage.ClientSize.Height;
                 }
-                
+
                 // 行判定用境界線が未設定（列数の設定等）の場合はスルー
                 if (intLineThreshold > -1)
                 {
@@ -689,17 +689,17 @@ namespace ProductMstMaintenance
             intRegimark2PointY = (int)((double)m_intRegimark2PointY * m_dblSizeRate);
 
             // 開始レジマーク箇所に「Ｘ」を描画
-            p = new Pen(Color.DeepSkyBlue, 3);
+            p = new Pen(Color.DeepSkyBlue, 1.5f);
             g.DrawLine(p, intRegimark1PointX - 8, intRegimark1PointY - 8, intRegimark1PointX + 8, intRegimark1PointY + 8);
             g.DrawLine(p, intRegimark1PointX + 8, intRegimark1PointY - 8, intRegimark1PointX - 8, intRegimark1PointY + 8);
 
             // 終了レジマーク箇所に「Ｘ」を描画
-            p = new Pen(Color.MediumVioletRed, 3);
+            p = new Pen(Color.MediumVioletRed, 1.5f);
             g.DrawLine(p, intRegimark2PointX - 8, intRegimark2PointY - 8, intRegimark2PointX + 8, intRegimark2PointY + 8);
             g.DrawLine(p, intRegimark2PointX + 8, intRegimark2PointY - 8, intRegimark2PointX - 8, intRegimark2PointY + 8);
 
             // 基準点描画用に生成
-            p = new Pen(Color.Orange, 3);
+            p = new Pen(Color.Orange, 1.5f);
 
             if (m_intBasePoint1X != 0 ||
                 m_intBasePoint1Y != 0)
@@ -780,7 +780,7 @@ namespace ProductMstMaintenance
                 m_dtData = new DataTable();
                 string strSQL = string.Empty;
 
-                if ( string.IsNullOrEmpty( strProductName ))
+                if (string.IsNullOrEmpty(strProductName))
                 {
                     // 画面初期表示
                     strSQL = g_CON_SELECT_MST_PRODUCT_INFO_TOP;
@@ -873,7 +873,7 @@ namespace ProductMstMaintenance
             m_strMstFilePath = NulltoString(dtCurentRow[m_CON_COLNAME_AIRBAG_IMAGEPATH]);
 
             // 長さ
-            if (!string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])) )
+            if (!string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])))
             {
                 lblLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])));
             }
@@ -903,7 +903,7 @@ namespace ProductMstMaintenance
             }
 
             // レジマーク間引き
-            if (string.IsNullOrEmpty( NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])))
+            if (string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])))
             {
                 lblRegimarkBetweenLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])));
             }
@@ -947,15 +947,15 @@ namespace ProductMstMaintenance
             m_intRegiMarkLengthPx = NulltoInt(Math.Floor(dc));
 
             // レジマーク表示部.開始レジマーク座標.N行
-            lblStartRegimarkPointN.Text = string.Format("({0},{1})" , NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X]) 
-                                                ,NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]) );
+            lblStartRegimarkPointN.Text = string.Format("({0},{1})", NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X])
+                                                , NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]));
 
             m_intRegimark1PointX = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X]);
             m_intRegimark1PointY = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]);
 
             // レジマーク表示部.終了レジマーク座標.N行
-            lblEndRegimarkPointN.Text = string.Format("({0},{1})" , NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X])
-                                              ,NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]) );
+            lblEndRegimarkPointN.Text = string.Format("({0},{1})", NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X])
+                                              , NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]));
 
             m_intRegimark2PointX = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X]);
             m_intRegimark2PointY = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]);
@@ -1135,8 +1135,8 @@ namespace ProductMstMaintenance
             strArrow = string.Empty;
 
             // 未設定の場合は空文字
-            if (string.IsNullOrEmpty( NulltoString(dtCurentRow[strPointXBase]) ) &&
-                string.IsNullOrEmpty(NulltoString(dtCurentRow[strPointYBase]) ))
+            if (string.IsNullOrEmpty(NulltoString(dtCurentRow[strPointXBase])) &&
+                string.IsNullOrEmpty(NulltoString(dtCurentRow[strPointYBase])))
             {
                 return;
             }
@@ -1402,7 +1402,7 @@ namespace ProductMstMaintenance
         {
             // 未入力データの場合はチェックしない
             // ※未入力データは必須入力チェックではじく
-            if (string.IsNullOrEmpty( txtCheckData.Text ))
+            if (string.IsNullOrEmpty(txtCheckData.Text))
             {
                 return true;
             }
@@ -1441,8 +1441,8 @@ namespace ProductMstMaintenance
         {
             // 未入力データの場合はチェックしない
             // ※未入力データは必須入力チェックではじく
-            if (string.IsNullOrEmpty( txtCheckDataFrom.Text ) ||
-                string.IsNullOrEmpty( txtCheckDataTo.Text ))
+            if (string.IsNullOrEmpty(txtCheckDataFrom.Text) ||
+                string.IsNullOrEmpty(txtCheckDataTo.Text))
             {
                 return true;
             }
@@ -1518,7 +1518,7 @@ namespace ProductMstMaintenance
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" , g_clsMessageInfo.strMsgE0002 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0022, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtProductName.Focus();
