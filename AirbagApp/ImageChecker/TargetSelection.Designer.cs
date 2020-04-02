@@ -233,7 +233,7 @@ namespace ImageChecker
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(50, 20);
             this.label4.TabIndex = 6;
-            this.label4.Text = "検査中";
+            this.label4.Text = "対応中";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label1
@@ -262,7 +262,7 @@ namespace ImageChecker
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(50, 20);
             this.label2.TabIndex = 4;
-            this.label2.Text = "検査前";
+            this.label2.Text = "作業可";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnLogout
