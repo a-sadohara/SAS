@@ -41,6 +41,12 @@ namespace DelImage
         public const int g_CON_LEVEL_INFO = 4;
         public const int g_CON_LEVEL_DEBUG = 5;
 
+        // 号機
+        public const string g_strUnitNumN1 = "N1";
+        public const string g_strUnitNumN2 = "N2";
+        public const string g_strUnitNumN3 = "N3";
+        public const string g_strUnitNumN4 = "N4";
+
         // 抽出データ
         private static DataTable m_dtData;
         private static string m_strFolderPath = string.Empty;
@@ -53,6 +59,7 @@ namespace DelImage
         private static string m_strInspectionDate = string.Empty;
         private static string m_strProductName = string.Empty;
         private static string m_strFabricName = string.Empty;
+        private static string m_strUnitNum = string.Empty;
         private static int m_intInspectionNum = 0;
 
         static void Main(string[] args)
@@ -98,7 +105,7 @@ namespace DelImage
                 }
 
                 // 保持期間の取得
-                DateTime datRetentionPeriod = DateTime.Now.Date.AddMonths(-1 * int.Parse(g_strImageRetentionPeriod));
+                DateTime datRetentionPeriod = DateTime.Now.Date.AddDays(-1 * int.Parse(g_strImageRetentionPeriod));
 
                 m_dtData = new DataTable();
 
@@ -109,6 +116,7 @@ namespace DelImage
                     m_strInspectionDate = DateTime.Parse(row["inspection_date"].ToString()).ToString("yyyyMMdd");
                     m_strProductName = row["product_name"].ToString();
                     m_strFabricName = row["fabric_name"].ToString();
+                    m_strUnitNum = row["unit_num"].ToString();
                     m_intInspectionNum = int.Parse(row["inspection_num"].ToString());
                     m_strFolderName =
                         string.Join(
@@ -122,12 +130,17 @@ namespace DelImage
                     m_strFolderPath =
                         Path.Combine(
                             g_clsSystemSettingInfo.strFaultImageDirectory,
+                            m_strUnitNum,
                             m_strFolderName);
 
                     // フォルダパスが存在する場合、削除
                     if (Directory.Exists(m_strFolderPath))
                     {
-                        m_sbDelImageInfo.AppendLine(m_strFolderName);
+                        m_sbDelImageInfo.AppendLine(
+                            string.Format(
+                                "{0}号機:{1}",
+                                m_strUnitNum,
+                                m_strFolderName));
                         Directory.Delete(m_strFolderPath, true);
                         m_intDeleteCont++;
                     }
@@ -222,9 +235,10 @@ namespace DelImage
             try
             {
                 // SQL文を作成する
-                string strSelectSql = @"SELECT inspection_date, product_name, fabric_name, inspection_num FROM " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
+                string strSelectSql = @"SELECT inspection_date, product_name, fabric_name, inspection_num, unit_num FROM " + g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header
                                         WHERE decision_end_datetime IS NOT NULL
-                                        AND TO_CHAR(decision_end_datetime,'YYYY/MM/DD') <= :decision_end_datetime_yyyymmdd";
+                                        AND TO_CHAR(decision_end_datetime,'YYYY/MM/DD') <= :decision_end_datetime_yyyymmdd
+                                        ORDER BY unit_num, fabric_name, inspection_date, inspection_num";
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
