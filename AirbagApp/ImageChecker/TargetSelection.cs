@@ -5,11 +5,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ImageChecker.Common;
@@ -81,74 +81,28 @@ namespace ImageChecker
             string strNgImageCooperationDirectory,
             string strUnitNum,
             string strFaultImageFullPath,
+            string strFaultImageDirectory,
             string strFaultImageFileName)
         {
-            DirectoryInfo diThaw = null;
-            DirectoryInfo diMigrationTarget = null;
-            string strZipFileName = string.Empty;
-            string strZipExtractDirPath = string.Empty;
-            string strZipFilePath = string.Empty;
+            // ZIPファイル名を設定
+            string strZipFileName = strZipFileName = strFaultImageFileName + ".zip";
+
+            // ZIPファイルの解凍先パスを設定
+            string strZipExtractDirPath = strZipExtractDirPath = Path.Combine(g_strZipExtractDirPath, strUnitNum);
+
+            // ZIPファイルのコピー先パスを設定
+            string strZipFilePath = strZipFilePath = Path.Combine(strZipExtractDirPath, strZipFileName);
 
             try
             {
-                // ZIPファイル名を設定
-                strZipFileName = strFaultImageFileName + ".zip";
-
-                // ZIPファイルの解凍先パスを設定
-                strZipExtractDirPath = Path.Combine(g_strZipExtractDirPath, strUnitNum);
-
-                // ZIPファイルのコピー先パスを設定
-                strZipFilePath = Path.Combine(strZipExtractDirPath, strZipFileName);
-
                 // ZIPファイルを一時フォルダにコピー
                 File.Copy(Path.Combine(strNgImageCooperationDirectory, strZipFileName), strZipFilePath, true);
 
                 // 欠点画像ZIPファイルの解凍
-                ZipFile.ExtractToDirectory(strZipFilePath, strZipExtractDirPath);
-
-                // 解凍先ディレクトリを取得
-                diThaw = new DirectoryInfo(Path.Combine(strZipExtractDirPath, strFaultImageFileName));
-
-                // 移行先ディレクトリを作成
-                diMigrationTarget = Directory.CreateDirectory(strFaultImageFullPath);
-
-                // ファイルの取得
-                foreach (FileInfo fInfo in diThaw.GetFiles().Where(
-                    x => string.Compare(x.Extension, ".jpg", true) == 0))
-                {
-                    using (Bitmap bmpOriginalImage = new Bitmap(fInfo.FullName))
-                    {
-                        // カメラ位置を考慮し、180度回転させる
-                        bmpOriginalImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
-
-                        for (int intProcessingTimes = 1; intProcessingTimes <= g_clsSystemSettingInfo.intRetryTimes; intProcessingTimes++)
-                        {
-                            try
-                            {
-                                // 画像を移行先ディレクトリに保存する
-                                bmpOriginalImage.Save(Path.Combine(diMigrationTarget.FullName, fInfo.Name), ImageFormat.Jpeg);
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-                                if (intProcessingTimes == g_clsSystemSettingInfo.intRetryTimes)
-                                {
-                                    // 試行後もエラーだった場合はリスローする
-                                    throw ex;
-                                }
-
-                                // 一時停止させ、処理をリトライする
-                                await Task.Delay(g_clsSystemSettingInfo.intRetryWaitSeconds);
-                            }
-                        }
-                    }
-                }
+                ZipFile.ExtractToDirectory(strZipFilePath, strFaultImageDirectory);
 
                 // ZIPファイルの削除
                 File.Delete(strZipFilePath);
-
-                // 解凍先ディレクトリの削除
-                diThaw.Delete(true);
 
                 return true;
             }
@@ -163,16 +117,9 @@ namespace ImageChecker
                     File.Delete(strZipFilePath);
                 }
 
-                if (diThaw != null &&
-                    diThaw.Exists)
+                if (Directory.Exists(strFaultImageFullPath))
                 {
-                    diThaw.Delete(true);
-                }
-
-                if (diMigrationTarget != null &&
-                    diMigrationTarget.Exists)
-                {
-                    diMigrationTarget.Delete(true);
+                    Directory.Delete(strFaultImageFullPath, true);
                 }
 
                 return false;
@@ -1054,10 +1001,12 @@ namespace ImageChecker
             int intInspectionNum = 0;       // 検査番号
             string strNgImageCooperationDirectory = string.Empty;
             string strFaultImageFullPath = string.Empty;
+            string strFaultImageDirectory = string.Empty;
             string strFaultImageFileName = string.Empty;
             string strRapidTableName = string.Empty;
             string strUnitNum = string.Empty;
             int intExecutionCount = 0;
+            DateTime dateSyncTargetDate = DateTime.Now.Date.AddDays(-2);
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
@@ -1092,6 +1041,7 @@ namespace ImageChecker
                         strNgImageCooperationDirectory = string.Empty;
                         strFaultImageFileName = string.Empty;
                         strFaultImageFullPath = string.Empty;
+                        strFaultImageDirectory = string.Empty;
                         strRapidTableName = string.Empty;
                         strUnitNum = string.Empty;
                         lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -1260,14 +1210,19 @@ namespace ImageChecker
                                 return;
                             }
 
-                            strFaultImageFullPath = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
-
-                            // 欠点画像の取込み処理
-                            // フォルダの存在チェック
-                            if (Directory.Exists(strFaultImageFullPath) == false)
+                            // 直近2日に行われた検査情報の場合、画像取込を行う
+                            if (dateSyncTargetDate < DateTime.Parse(strInspectionDate))
                             {
-                                lstTask.Add(Task<Boolean>.Run(() => BolImpFatalImage(strNgImageCooperationDirectory, strUnitNum, strFaultImageFullPath, strFaultImageFileName)));
-                                System.Threading.Thread.Sleep(1000);
+                                strFaultImageDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum);
+                                strFaultImageFullPath = Path.Combine(strFaultImageDirectory, strFaultImageFileName);
+
+                                // 欠点画像の取込み処理
+                                // フォルダの存在チェック
+                                if (!Directory.Exists(strFaultImageFullPath))
+                                {
+                                    lstTask.Add(Task<Boolean>.Run(() => BolImpFatalImage(strNgImageCooperationDirectory, strUnitNum, strFaultImageFullPath, strFaultImageDirectory, strFaultImageFileName)));
+                                    Thread.Sleep(1000);
+                                }
                             }
 
                             if (intCnt >= 1)

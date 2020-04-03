@@ -262,8 +262,6 @@ namespace ImageChecker
             string strZipExtractToDirPath = string.Empty;
             string strZipArchiveEntryFilePath = string.Empty;
             string strExtractionDestinationPath = string.Empty;
-            DirectoryInfo diThaw = null;
-            DirectoryInfo diMigrationTarget = null;
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
             try
@@ -431,50 +429,23 @@ namespace ImageChecker
                 // 欠点画像ZIPを一時ディレクトリに解凍する
                 ZipFile.ExtractToDirectory(strZipFilePath, strZipExtractDirPath);
 
-                // 解凍先ディレクトリを取得
-                diThaw = new DirectoryInfo(Path.Combine(strZipExtractDirPath, m_strFileName));
-
-                // 移行先ディレクトリを作成
-                diMigrationTarget = new DirectoryInfo(m_strFaultImageSubDirPath);
-
-                // ファイルの取得
-                foreach (FileInfo fInfo in diThaw.GetFiles().Where(
-                    x => string.Compare(x.Extension, ".jpg", true) == 0))
+                // 一時ディレクトリから欠点画像格納ディレクトリにファイルをコピーする。
+                foreach (string strFilePath in Directory.GetFiles(Path.Combine(strZipExtractToDirPath), "*", SearchOption.AllDirectories).Where(x => x.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)))
                 {
-                    using (Bitmap bmpOriginalImage = new Bitmap(fInfo.FullName))
+                    strZipArchiveEntryFilePath = Path.Combine(m_strFaultImageSubDirPath, Path.GetFileName(strFilePath));
+
+                    // 存在する場合は削除する
+                    if (File.Exists(strZipArchiveEntryFilePath))
                     {
-                        // カメラ位置を考慮し、180度回転させる
-                        bmpOriginalImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
-
-                        // 画像を移行先ディレクトリに保存する
-                        for (int intProcessingTimes = 1; intProcessingTimes <= g_clsSystemSettingInfo.intRetryTimes; intProcessingTimes++)
-                        {
-                            try
-                            {
-                                // 画像を移行先ディレクトリに保存する
-                                bmpOriginalImage.Save(Path.Combine(diMigrationTarget.FullName, fInfo.Name), ImageFormat.Jpeg);
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-                                if (intProcessingTimes == g_clsSystemSettingInfo.intRetryTimes)
-                                {
-                                    // 試行後もエラーだった場合はリスローする
-                                    throw ex;
-                                }
-
-                                // 一時停止させ、処理をリトライする
-                                Thread.Sleep(g_clsSystemSettingInfo.intRetryWaitSeconds);
-                            }
-                        }
+                        File.Delete(Path.Combine(strZipArchiveEntryFilePath));
                     }
+
+                    File.Copy(strFilePath, Path.Combine(strZipArchiveEntryFilePath));
                 }
 
-                // ZIPファイルの削除
+                // ファイル削除
+                Directory.Delete(strZipExtractToDirPath, true);
                 File.Delete(strZipFilePath);
-
-                // 解凍先ディレクトリの削除
-                diThaw.Delete(true);
             }
             catch (Exception ex)
             {
@@ -484,16 +455,9 @@ namespace ImageChecker
                     File.Delete(strZipFilePath);
                 }
 
-                if (diThaw != null &&
-                    diThaw.Exists)
+                if (Directory.Exists(strZipExtractToDirPath))
                 {
-                    diThaw.Delete(true);
-                }
-
-                if (diMigrationTarget != null &&
-                    diMigrationTarget.Exists)
-                {
-                    diMigrationTarget.Delete(true);
+                    Directory.Delete(strZipExtractToDirPath, true);
                 }
 
                 // ログ出力
