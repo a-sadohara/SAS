@@ -569,11 +569,11 @@ namespace ImageChecker
             {
                 // zipファイルを一時フォルダにコピーし、欠点画像格納ディレクトリへ解凍する
                 File.Copy(strZipFilePath, strZipCopyTargetPath, true);
+
                 SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
                 SevenZipExtractor extractor = new SevenZipExtractor(strZipCopyTargetPath);
                 extractor.ExtractAll(strFaultImageDirectory);
 
-                //g_clsCompressedFileInfo.ExtractFile(strZipCopyTargetPath, strFaultImageDirectory);
                 File.Delete(strZipCopyTargetPath);
 
                 return true;
