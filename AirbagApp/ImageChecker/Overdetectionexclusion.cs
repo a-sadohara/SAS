@@ -365,13 +365,16 @@ namespace ImageChecker
                     if (File.Exists(strMarkingImagepath) == false)
                     {
                         fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                        pctImage.Image = Image.FromStream(fs);
                     }
                     else
                     {
                         fs = new FileStream(strMarkingImagepath, FileMode.Open, FileAccess.Read);
+                        pctImage.Image = Image.FromStream(fs);
+                        pctImage.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                        pctImage.Refresh();
                     }
 
-                    pctImage.Image = System.Drawing.Image.FromStream(fs);
                     fs.Close();
 
                     // ステータス設定

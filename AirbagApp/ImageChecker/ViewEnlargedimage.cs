@@ -14,7 +14,7 @@ namespace ImageChecker
         private readonly string m_strMarkingImagepath = string.Empty;
 
         // 表示モード関連
-        private int m_intDispMode = 1;      
+        private int m_intDispMode = 1;
         private const int m_CON_DISP_MODE_MRK = 1;      // 1:マーキング
         private const int m_CON_DISP_MODE_ORG = 2;      // 2:オリジナル
 
@@ -73,13 +73,16 @@ namespace ImageChecker
             if (File.Exists(m_strMarkingImagepath) == false)
             {
                 fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                picImage.Image = Image.FromStream(fs);
             }
             else
             {
                 fs = new FileStream(m_strMarkingImagepath, FileMode.Open, FileAccess.Read);
+                picImage.Image = Image.FromStream(fs);
+                picImage.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                picImage.Refresh();
             }
-            
-            picImage.Image = Image.FromStream(fs);
+
             fs.Close();
 
             m_intDispMode = m_CON_DISP_MODE_MRK;
@@ -104,10 +107,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private async void picImage_Click(object sender, EventArgs e)
         {
-            PictureBox picImage = (PictureBox)sender;
-
             if (!_clickSemaphore.Wait(0))
+            {
                 return;
+            }
+
             try
             {
                 if (await _doubleClickSemaphore.WaitAsync(SystemInformation.DoubleClickTime))
@@ -128,31 +132,33 @@ namespace ImageChecker
                 if (File.Exists(m_strMarkingImagepath) == false)
                 {
                     fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                    picImage.Image = Image.FromStream(fs);
                 }
                 else
                 {
                     fs = new FileStream(m_strMarkingImagepath, FileMode.Open, FileAccess.Read);
-                    this.picImage.ImageLocation = m_strMarkingImagepath;
+                    picImage.Image = Image.FromStream(fs);
+                    picImage.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    picImage.Refresh();
                 }
-                
-                Image.FromStream(fs);
 
                 m_intDispMode = m_CON_DISP_MODE_MRK;
-            }    
+            }
             else
             {
                 // マーキング
                 if (File.Exists(m_strOrgImagepath) == false)
                 {
                     fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                    picImage.Image = Image.FromStream(fs);
                 }
                 else
                 {
                     fs = new FileStream(m_strOrgImagepath, FileMode.Open, FileAccess.Read);
-                    this.picImage.ImageLocation = m_strOrgImagepath;
+                    picImage.Image = Image.FromStream(fs);
+                    picImage.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    picImage.Refresh();
                 }
-                    
-                Image.FromStream(fs);
 
                 m_intDispMode = m_CON_DISP_MODE_ORG;
             }
