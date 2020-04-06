@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SevenZipNET;
 using static ImageChecker.Common;
 
 namespace ImageChecker
@@ -543,9 +544,9 @@ namespace ImageChecker
                 try
                 {
                     Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(strZipFilePath, strZipCopyTargetPath, strFaultImageDirectory, strFaultImageFullPath));
-                    Thread.Sleep(1000);
+                    //Thread.Sleep(1000);
 
-                    await Task.WhenAll(taskInputFaultImage);
+                    //await Task.WhenAll(taskInputFaultImage);
                     return taskInputFaultImage.Result;
                 }
                 finally
@@ -570,7 +571,11 @@ namespace ImageChecker
             {
                 // zipファイルを一時フォルダにコピーし、欠点画像格納ディレクトリへ解凍する
                 File.Copy(strZipFilePath, strZipCopyTargetPath, true);
-                g_clsCompressedFileInfo.ExtractFile(strZipCopyTargetPath, strFaultImageDirectory);
+                SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
+                SevenZipExtractor extractor = new SevenZipExtractor(strZipCopyTargetPath);
+                extractor.ExtractAll(strFaultImageDirectory);
+
+                //g_clsCompressedFileInfo.ExtractFile(strZipCopyTargetPath, strFaultImageDirectory);
                 File.Delete(strZipCopyTargetPath);
 
                 return true;
