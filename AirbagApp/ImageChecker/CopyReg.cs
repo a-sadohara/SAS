@@ -555,6 +555,8 @@ namespace ImageChecker
                                                , m_strFaultImageSubDirectory
                                                , m_strMarkingImagepath), FileMode.Open, FileAccess.Read);
                 picMarkingImage.Image = Image.FromStream(fs);
+                picMarkingImage.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                picMarkingImage.Refresh();
                 fs.Close();
 
                 // その他情報を表示

@@ -298,13 +298,17 @@ namespace ImageChecker
                 if (File.Exists(strImagePath) == false)
                 {
                     fs = new FileStream(g_CON_NO_IMAGE_FILE_PATH, FileMode.Open, FileAccess.Read);
+                    picMarkingImage.Image = Image.FromStream(fs);
                     bolExistsImageFile = false;
                 }
                 else
                 {
                     fs = new FileStream(strImagePath, FileMode.Open, FileAccess.Read);
+                    picMarkingImage.Image = Image.FromStream(fs);
+                    picMarkingImage.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    picMarkingImage.Refresh();
                 }
-                picMarkingImage.Image = System.Drawing.Image.FromStream(fs);
+
                 fs.Close();
 
                 // マスタ画像にNG位置をマーキングした画像を一時ファイル保存する
