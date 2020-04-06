@@ -544,9 +544,7 @@ namespace ImageChecker
                 try
                 {
                     Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(strZipFilePath, strZipCopyTargetPath, strFaultImageDirectory, strFaultImageFullPath));
-                    //Thread.Sleep(1000);
-
-                    //await Task.WhenAll(taskInputFaultImage);
+                    await taskInputFaultImage;
                     return taskInputFaultImage.Result;
                 }
                 finally
@@ -672,7 +670,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnResultUpdate_Click(object sender, EventArgs e)
+        private async void btnResultUpdate_Click(object sender, EventArgs e)
         {
             int intSelIdx = -1;
             string strFaultImageSubDirectory = string.Empty;
@@ -690,7 +688,8 @@ namespace ImageChecker
                                                          m_dtData.Rows[intSelIdx]["inspection_num"]);
 
             // ディレクトリ存在チェック
-            if (!BolCheckFaultImage(m_dtData.Rows[intSelIdx]["unit_num"].ToString(), strFaultImageSubDirectory).Result)
+            Boolean tskRet = await BolCheckFaultImage(m_dtData.Rows[intSelIdx]["unit_num"].ToString(), strFaultImageSubDirectory);
+            if (!tskRet)
             {
                 MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -932,7 +931,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void dgvCheckInspectionHistory_CellClick(object sender, DataGridViewCellEventArgs e)
+        private async void dgvCheckInspectionHistory_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
             {
@@ -944,8 +943,10 @@ namespace ImageChecker
                                                                 m_dtData.Rows[e.RowIndex]["fabric_name"],
                                                                 m_dtData.Rows[e.RowIndex]["inspection_num"]);
 
+
             // ディレクトリ存在チェック
-            if (!BolCheckFaultImage(m_dtData.Rows[e.RowIndex]["unit_num"].ToString(), strFaultImageSubDirectory).Result)
+            Boolean tskRet = await BolCheckFaultImage(m_dtData.Rows[e.RowIndex]["unit_num"].ToString(), strFaultImageSubDirectory);
+            if (!tskRet)
             {
                 MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;

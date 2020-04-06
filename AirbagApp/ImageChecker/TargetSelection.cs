@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SevenZipNET;
 using static ImageChecker.Common;
 
 namespace ImageChecker
@@ -98,7 +99,9 @@ namespace ImageChecker
                 File.Copy(Path.Combine(strNgImageCooperationDirectory, strZipFileName), strZipFilePath, true);
 
                 // 欠点画像ZIPファイルの解凍
-                g_clsCompressedFileInfo.ExtractFile(strZipFilePath, strFaultImageDirectory);
+                SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
+                SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
+                extractor.ExtractAll(strFaultImageDirectory);
 
                 // ZIPファイルの削除
                 File.Delete(strZipFilePath);
