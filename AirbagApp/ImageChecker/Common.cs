@@ -39,6 +39,9 @@ namespace ImageChecker
         // 帳票情報クラス
         public static ReportInfo g_clsReportInfo;
 
+        // 圧縮ファイル情報クラス
+        public static CompressedFileInfo g_clsCompressedFileInfo;
+
         // システム設定情報取得時のエラーメッセージ格納用
         private static StringBuilder m_sbErrMessage = new StringBuilder();
 
@@ -209,6 +212,9 @@ namespace ImageChecker
 
                 // 帳票情報インスタンス生成
                 g_clsReportInfo = new ReportInfo();
+
+                // 圧縮ファイル情報インスタンス生成
+                g_clsCompressedFileInfo = new CompressedFileInfo();
 
                 // パス設定
                 g_strMasterImageDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE);

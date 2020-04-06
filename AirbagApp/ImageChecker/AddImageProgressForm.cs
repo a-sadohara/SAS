@@ -427,7 +427,7 @@ namespace ImageChecker
                 }
 
                 // 欠点画像ZIPを一時ディレクトリに解凍する
-                ZipFile.ExtractToDirectory(strZipFilePath, strZipExtractDirPath);
+                g_clsCompressedFileInfo.ExtractFile(strZipFilePath, strZipExtractDirPath);
 
                 // 一時ディレクトリから欠点画像格納ディレクトリにファイルをコピーする。
                 foreach (string strFilePath in Directory.GetFiles(Path.Combine(strZipExtractToDirPath), "*", SearchOption.AllDirectories).Where(x => x.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)))

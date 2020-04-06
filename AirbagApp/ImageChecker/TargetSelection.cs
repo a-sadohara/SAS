@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -99,7 +98,7 @@ namespace ImageChecker
                 File.Copy(Path.Combine(strNgImageCooperationDirectory, strZipFileName), strZipFilePath, true);
 
                 // 欠点画像ZIPファイルの解凍
-                ZipFile.ExtractToDirectory(strZipFilePath, strFaultImageDirectory);
+                g_clsCompressedFileInfo.ExtractFile(strZipFilePath, strFaultImageDirectory);
 
                 // ZIPファイルの削除
                 File.Delete(strZipFilePath);

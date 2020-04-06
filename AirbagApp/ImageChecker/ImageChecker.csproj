@@ -148,6 +148,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\CompressedFileInfo.cs" />
     <Compile Include="DTO\ReportInfo.cs" />
     <Compile Include="ImportImageZipProgressForm.cs">
       <SubType>Form</SubType>
@@ -337,6 +338,12 @@
     <EmbeddedResource Include="ViewEnlargedimage.resx">
       <DependentUpon>ViewEnlargedimage.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="7z-extra\Far\7-ZipEng.hlf" />
+    <None Include="7z-extra\Far\7-ZipEng.lng" />
+    <None Include="7z-extra\Far\7-ZipRus.hlf" />
+    <None Include="7z-extra\Far\7-ZipRus.lng" />
+    <None Include="7z-extra\Far\7zToFar.ini" />
+    <None Include="7z-extra\Far\far7z.reg" />
     <None Include="App.manifest" />
     <None Include="KenTanChkSheet.xsc">
       <DependentUpon>KenTanChkSheet.xsd</DependentUpon>
@@ -366,6 +373,30 @@
   <ItemGroup>
     <Content Include="503a53ab0255280b5c4642f6aaacbbaa_xo.ico" />
     <Content Include="503a53ab0255280b5c4642f6aaacbbaa_xxo.ico" />
+    <Content Include="7z-extra\7za.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="7z-extra\7za.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="7z-extra\7zxa.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="7z-extra\Far\7-ZipFar.dll" />
+    <Content Include="7z-extra\Far\7-ZipFar64.dll" />
+    <Content Include="7z-extra\Far\far7z.txt" />
+    <Content Include="7z-extra\history.txt" />
+    <Content Include="7z-extra\License.txt" />
+    <Content Include="7z-extra\readme.txt" />
+    <Content Include="7z-extra\x64\7za.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="7z-extra\x64\7za.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="7z-extra\x64\7zxa.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="image\DispNum_2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

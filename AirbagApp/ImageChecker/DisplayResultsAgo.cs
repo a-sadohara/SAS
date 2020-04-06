@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -571,7 +570,7 @@ namespace ImageChecker
             {
                 // zipファイルを一時フォルダにコピーし、欠点画像格納ディレクトリへ解凍する
                 File.Copy(strZipFilePath, strZipCopyTargetPath, true);
-                ZipFile.ExtractToDirectory(strZipCopyTargetPath, strFaultImageDirectory);
+                g_clsCompressedFileInfo.ExtractFile(strZipCopyTargetPath, strFaultImageDirectory);
                 File.Delete(strZipCopyTargetPath);
 
                 return true;
