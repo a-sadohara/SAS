@@ -1,10 +1,12 @@
 ﻿using ImageChecker.DTO;
 using log4net;
+using SevenZipNET;
 using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ImageChecker
@@ -236,6 +238,98 @@ namespace ImageChecker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Login());
+        }
+
+        /// <summary>
+        /// 欠点画像取込
+        /// </summary>
+        /// <param name="strUnitNum">号機</param>
+        /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
+        public static async Task<Boolean> BolInputFaultImage(
+            string strUnitNum,
+            string strFaultImageFileName)
+        {
+            // NG画像連携ディレクトリ
+            string strNgImageCooperationDirectory = string.Empty;
+
+            // 号機に紐付くディレクトリ情報を設定
+            switch (strUnitNum)
+            {
+                case g_strUnitNumN1:
+                    strNgImageCooperationDirectory = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN1;
+                    break;
+                case g_strUnitNumN2:
+                    strNgImageCooperationDirectory = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN2;
+                    break;
+                case g_strUnitNumN3:
+                    strNgImageCooperationDirectory = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN3;
+                    break;
+                case g_strUnitNumN4:
+                    strNgImageCooperationDirectory = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN4;
+                    break;
+                default:
+                    return false;
+            }
+
+            // 欠点画像格納ディレクトリ
+            string strFaultImageDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum);
+
+            // 欠点画像解凍ディレクトリ
+            string strFaultImageDecompressionDirectory = Path.Combine(strFaultImageDirectory, strFaultImageFileName);
+
+            // zipファイル名
+            string strZipFileName = strFaultImageFileName + ".zip";
+
+            // zipファイルパス
+            string strZipFilePath = Path.Combine(strNgImageCooperationDirectory, strZipFileName);
+
+            // zipファイルコピーパス
+            string strZipFileCopyPath = Path.Combine(g_strZipExtractDirPath, strUnitNum, strZipFileName);
+
+            try
+            {
+                // zipファイルの存在チェックを行う
+                if (!File.Exists(strZipFilePath))
+                {
+                    return false;
+                }
+
+                // zipファイルを一時フォルダにコピーする
+                File.Copy(strZipFilePath, strZipFileCopyPath, true);
+
+                // 欠点画像格納ディレクトリへ解凍する
+                SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
+                SevenZipExtractor extractor = new SevenZipExtractor(strZipFileCopyPath);
+                extractor.ExtractAll(strFaultImageDirectory, true);
+
+                // 一時フォルダのzipファイルを削除する
+                File.Delete(strZipFileCopyPath);
+
+                if (!Directory.Exists(strFaultImageDecompressionDirectory))
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
+
+                // エラー発生時、中途半端に取り込まれた情報を削除する
+                if (File.Exists(strZipFileCopyPath))
+                {
+                    File.Delete(strZipFileCopyPath);
+                }
+
+                if (Directory.Exists(strFaultImageDecompressionDirectory))
+                {
+                    Directory.Delete(strFaultImageDecompressionDirectory, true);
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

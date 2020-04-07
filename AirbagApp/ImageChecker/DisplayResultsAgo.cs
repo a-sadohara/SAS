@@ -1,11 +1,11 @@
 ﻿using ImageChecker.DTO;
-using SevenZipNET;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -491,60 +491,82 @@ namespace ImageChecker
         /// <param name="strUnitNum">号機</param>
         /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
         private async Task<Boolean> BolCheckFaultImage(
+            int intInspectionNum,
+            string strInspectionDate,
             string strUnitNum,
+            string strFabricName,
             string strFaultImageFileName)
         {
-            string strFaultImageDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum);
-            string strFaultImageFullPath = Path.Combine(strFaultImageDirectory, strFaultImageFileName);
-            string strZipFileName = string.Empty;
-            string strZipFilePath = string.Empty;
-            string strZipCopyTargetDirectory = string.Empty;
-            string strZipCopyTargetPath = string.Empty;
-            string strNgImageCooperationDirectory = string.Empty;
-            ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
+            ImportImageZipProgressForm frmProgress = null;
+            DirectoryInfo diFaultImage = null;
+            DataTable dtData = null;
+            string strSQL = string.Empty;
+            string strFaultImageDecompressionDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
 
-            if (!Directory.Exists(strFaultImageFullPath))
+            if (!Directory.Exists(strFaultImageDecompressionDirectory))
             {
-                // 号機情報に紐付くNG画像連携ディレクトリを設定する
-                switch (strUnitNum)
-                {
-                    case g_strUnitNumN1:
-                        strNgImageCooperationDirectory = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN1;
-                        break;
-                    case g_strUnitNumN2:
-                        strNgImageCooperationDirectory = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN2;
-                        break;
-                    case g_strUnitNumN3:
-                        strNgImageCooperationDirectory = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN3;
-                        break;
-                    case g_strUnitNumN4:
-                        strNgImageCooperationDirectory = g_clsSystemSettingInfo.strNgImageCooperationDirectoryN4;
-                        break;
-                    default:
-                        return false;
-                }
-
-                strZipFileName = strFaultImageFileName + ".zip";
-                strZipFilePath = Path.Combine(strNgImageCooperationDirectory, strZipFileName);
-
-                // zipファイルの存在チェック
-                if (!File.Exists(strZipFilePath))
-                {
-                    return false;
-                }
-
-                strZipCopyTargetDirectory = Path.Combine(g_strZipExtractDirPath, strUnitNum);
-                strZipCopyTargetPath = Path.Combine(strZipCopyTargetDirectory, strZipFileName);
-
+                frmProgress = new ImportImageZipProgressForm();
                 frmProgress.StartPosition = FormStartPosition.CenterScreen;
                 frmProgress.Size = this.Size;
                 frmProgress.Show(this);
 
                 try
                 {
-                    Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(strZipFilePath, strZipCopyTargetPath, strFaultImageDirectory, strFaultImageFullPath));
+                    Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, strFaultImageFileName));
                     await taskInputFaultImage;
-                    return taskInputFaultImage.Result;
+
+                    if (!taskInputFaultImage.Result)
+                    {
+                        return false;
+                    }
+
+                    try
+                    {
+                        diFaultImage = new DirectoryInfo(strFaultImageDecompressionDirectory);
+                        dtData = new DataTable();
+
+                        // 合否判定結果テーブルに登録されているオリジナル画像・マーキング画像の総数を取得する
+                        strSQL = @"SELECT COUNT(DISTINCT(marking_imagepath)) * 2 AS COUNT
+                                   FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                   WHERE fabric_name = :fabric_name
+                                   AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                   AND   inspection_num = :inspection_num
+                                   AND   unit_num = :unit_num";
+
+                        // SQLコマンドに各パラメータを設定する
+                        List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int16, Value = intInspectionNum });
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
+
+                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                        // 解凍した画像数と比較する
+                        if (Convert.ToInt32(dtData.Rows[0]["COUNT"]) > diFaultImage.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0).Count())
+                        {
+                            return false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // ログ出力
+                        WriteEventLog(
+                            g_CON_LEVEL_ERROR,
+                            string.Format(
+                                "{0}{1}{2}",
+                                g_clsMessageInfo.strMsgE0060,
+                                Environment.NewLine, ex.Message));
+
+                        // メッセージ出力
+                        MessageBox.Show(
+                            g_clsMessageInfo.strMsgE0050,
+                            g_CON_MESSAGE_TITLE_ERROR,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+
+                        return false;
+                    }
                 }
                 finally
                 {
@@ -553,48 +575,6 @@ namespace ImageChecker
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// 欠点画像存在チェック
-        /// </summary>
-        private async Task<Boolean> BolInputFaultImage(
-            string strZipFilePath,
-            string strZipCopyTargetPath,
-            string strFaultImageDirectory,
-            string strFaultImageFullPath)
-        {
-            try
-            {
-                // zipファイルを一時フォルダにコピーし、欠点画像格納ディレクトリへ解凍する
-                File.Copy(strZipFilePath, strZipCopyTargetPath, true);
-
-                SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
-                SevenZipExtractor extractor = new SevenZipExtractor(strZipCopyTargetPath);
-                extractor.ExtractAll(strFaultImageDirectory);
-
-                File.Delete(strZipCopyTargetPath);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
-
-                // エラー発生時、中途半端に取り込まれた情報を削除する
-                if (File.Exists(strZipCopyTargetPath))
-                {
-                    File.Delete(strZipCopyTargetPath);
-                }
-
-                if (Directory.Exists(strFaultImageFullPath))
-                {
-                    Directory.Delete(strFaultImageFullPath, true);
-                }
-
-                return false;
-            }
         }
         #endregion
 
@@ -687,7 +667,14 @@ namespace ImageChecker
                                                          m_dtData.Rows[intSelIdx]["inspection_num"]);
 
             // ディレクトリ存在チェック
-            Boolean tskRet = await BolCheckFaultImage(m_dtData.Rows[intSelIdx]["unit_num"].ToString(), strFaultImageSubDirectory);
+            Boolean tskRet =
+                await BolCheckFaultImage(
+                    Convert.ToInt32(m_dtData.Rows[intSelIdx]["inspection_num"].ToString()),
+                    m_dtData.Rows[intSelIdx]["inspection_date"].ToString(),
+                    m_dtData.Rows[intSelIdx]["unit_num"].ToString(),
+                    m_dtData.Rows[intSelIdx]["fabric_name"].ToString(),
+                    strFaultImageSubDirectory);
+
             if (!tskRet)
             {
                 MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -944,7 +931,14 @@ namespace ImageChecker
 
 
             // ディレクトリ存在チェック
-            Boolean tskRet = await BolCheckFaultImage(m_dtData.Rows[e.RowIndex]["unit_num"].ToString(), strFaultImageSubDirectory);
+            Boolean tskRet =
+                await BolCheckFaultImage(
+                    Convert.ToInt32(m_dtData.Rows[e.RowIndex]["inspection_num"].ToString()),
+                    m_dtData.Rows[e.RowIndex]["inspection_date"].ToString(),
+                    m_dtData.Rows[e.RowIndex]["unit_num"].ToString(),
+                    m_dtData.Rows[e.RowIndex]["fabric_name"].ToString(),
+                    strFaultImageSubDirectory);
+
             if (!tskRet)
             {
                 MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
