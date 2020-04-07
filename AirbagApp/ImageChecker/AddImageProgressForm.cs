@@ -1,9 +1,8 @@
 ﻿using ImageChecker.DTO;
+using SevenZipNET;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -427,7 +426,9 @@ namespace ImageChecker
                 }
 
                 // 欠点画像ZIPを一時ディレクトリに解凍する
-                g_clsCompressedFileInfo.ExtractFile(strZipFilePath, strZipExtractDirPath);
+                SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
+                SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
+                extractor.ExtractAll(strZipExtractDirPath);
 
                 // 一時ディレクトリから欠点画像格納ディレクトリにファイルをコピーする。
                 foreach (string strFilePath in Directory.GetFiles(Path.Combine(strZipExtractToDirPath), "*", SearchOption.AllDirectories).Where(x => x.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)))
