@@ -562,6 +562,46 @@ namespace ImageChecker
                 g_clsConnectionNpgsql.DbClose();
             }
         }
+
+        /// <summary>
+        /// 欠点画像存在チェック
+        /// </summary>
+        /// <param name="intInspectionNum">検査番号</param>
+        /// <param name="strInspectionDate">検査日付</param>
+        /// <param name="strUnitNum">号機</param>
+        /// <param name="strFabricName">反番</param>
+        /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
+        private async Task<Boolean> BolCheckFaultImage(
+            int intInspectionNum,
+            string strInspectionDate,
+            string strUnitNum,
+            string strFabricName,
+            string strFaultImageFileName)
+        {
+            if (!Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName)))
+            {
+                ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
+                frmProgress.StartPosition = FormStartPosition.CenterScreen;
+                frmProgress.Size = this.Size;
+                frmProgress.Show(this);
+
+                try
+                {
+                    return await BolReInputFaultImage(
+                        intInspectionNum,
+                        strInspectionDate,
+                        strUnitNum,
+                        strFabricName,
+                        strFaultImageFileName);
+                }
+                finally
+                {
+                    frmProgress.Close();
+                }
+            }
+
+            return true;
+        }
         #endregion
 
         #region イベント
@@ -602,7 +642,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -659,13 +699,21 @@ namespace ImageChecker
                     return;
                 }
 
-                strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", string.Empty),
-                                                             m_dtData.Rows[e.RowIndex]["product_name"],
-                                                             m_dtData.Rows[e.RowIndex]["fabric_name"],
-                                                             m_dtData.Rows[e.RowIndex]["inspection_num"]);
+                strFaultImageSubDirectory = string.Join("_", clsHeaderData.strInspectionDate.Replace("/", string.Empty),
+                                                             clsHeaderData.strProductName,
+                                                             clsHeaderData.strFabricName,
+                                                             clsHeaderData.intInspectionNum);
 
                 // ディレクトリ存在チェック
-                if (Directory.Exists(clsHeaderData.strFaultImageDirectory + @"\" + strFaultImageSubDirectory) == false)
+                bool tskRet =
+                    await BolCheckFaultImage(
+                        clsHeaderData.intInspectionNum,
+                        clsHeaderData.strInspectionDate,
+                        clsHeaderData.strUnitNum,
+                        clsHeaderData.strFabricName,
+                        strFaultImageSubDirectory);
+
+                if (!tskRet)
                 {
                     MessageBox.Show(g_clsMessageInfo.strMsgW0006, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -903,7 +951,6 @@ namespace ImageChecker
             }
         }
         #endregion
-
 
         /// <summary>
         /// フォームアクティブ
