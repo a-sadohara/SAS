@@ -5,6 +5,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -245,10 +246,21 @@ namespace ImageChecker
         /// </summary>
         /// <param name="strUnitNum">号機</param>
         /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
+        /// <param name="bolUndetectedImageFlag">未検知画像フラグ</param>
+        /// <param name="strFaultImageFolderName">欠点画像フォルダ名</param>
         public static async Task<Boolean> BolInputFaultImage(
             string strUnitNum,
-            string strFaultImageFileName)
+            string strFaultImageFileName,
+            bool bolUndetectedImageFlag = false,
+            string strFaultImageFolderName = null)
         {
+            // 引数チェック
+            if (bolUndetectedImageFlag &&
+                string.IsNullOrWhiteSpace(strFaultImageFolderName))
+            {
+                return false;
+            }
+
             // NG画像連携ディレクトリ
             string strNgImageCooperationDirectory = string.Empty;
 
@@ -271,11 +283,28 @@ namespace ImageChecker
                     return false;
             }
 
-            // 欠点画像格納ディレクトリ
-            string strFaultImageDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum);
+            // 解凍ディレクトリ
+            string strDecompressionDirectory = string.Empty;
 
-            // 欠点画像解凍ディレクトリ
-            string strFaultImageDecompressionDirectory = Path.Combine(strFaultImageDirectory, strFaultImageFileName);
+            // 欠点画像格納ディレクトリ
+            string strFaultImageDecompressionDirectory = string.Empty;
+
+            if (bolUndetectedImageFlag)
+            {
+                // 一時ディレクトリを設定
+                strDecompressionDirectory = Path.Combine(g_strZipExtractDirPath, strUnitNum);
+
+                // 欠点画像格納ディレクトリを設定
+                strFaultImageDecompressionDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFolderName);
+            }
+            else
+            {
+                // 欠点画像格納ディレクトリを設定
+                strDecompressionDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum);
+            }
+
+            // 解凍サブディレクトリ
+            string strDecompressionSubDirectory = Path.Combine(strDecompressionDirectory, strFaultImageFileName);
 
             // zipファイル名
             string strZipFileName = strFaultImageFileName + ".zip";
@@ -297,17 +326,33 @@ namespace ImageChecker
                 // zipファイルを一時フォルダにコピーする
                 File.Copy(strZipFilePath, strZipFileCopyPath, true);
 
-                // 欠点画像格納ディレクトリへ解凍する
+                // zipファイルを解凍する(同名ファイルは上書きする)
                 SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
                 SevenZipExtractor extractor = new SevenZipExtractor(strZipFileCopyPath);
-                extractor.ExtractAll(strFaultImageDirectory, true);
+                extractor.ExtractAll(strDecompressionDirectory, true);
 
                 // 一時フォルダのzipファイルを削除する
                 File.Delete(strZipFileCopyPath);
 
-                if (!Directory.Exists(strFaultImageDecompressionDirectory))
+                // 解凍有無をチェックする
+                if (!Directory.Exists(strDecompressionSubDirectory))
                 {
                     return false;
+                }
+
+                if (bolUndetectedImageFlag)
+                {
+                    // 解凍サブディレクトリの情報を取得する
+                    DirectoryInfo diDecompressionInfo = new DirectoryInfo(strDecompressionSubDirectory);
+
+                    // 一時ディレクトリから欠点画像格納ディレクトリにファイルをコピーする(同名ファイルは上書きする)
+                    foreach (FileInfo filePath in diDecompressionInfo.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0))
+                    {
+                        File.Copy(filePath.FullName, Path.Combine(strFaultImageDecompressionDirectory, filePath.Name), true);
+                    }
+
+                    // 解凍サブディレクトリを削除する
+                    diDecompressionInfo.Delete(true);
                 }
             }
             catch (Exception ex)
@@ -321,9 +366,9 @@ namespace ImageChecker
                     File.Delete(strZipFileCopyPath);
                 }
 
-                if (Directory.Exists(strFaultImageDecompressionDirectory))
+                if (Directory.Exists(strDecompressionSubDirectory))
                 {
-                    Directory.Delete(strFaultImageDecompressionDirectory, true);
+                    Directory.Delete(strDecompressionSubDirectory, true);
                 }
 
                 return false;

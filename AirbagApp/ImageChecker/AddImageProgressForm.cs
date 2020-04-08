@@ -1,13 +1,11 @@
 ﻿using ImageChecker.DTO;
-using SevenZipNET;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using static ImageChecker.Common;
@@ -253,7 +251,7 @@ namespace ImageChecker
         /// <summary>
         /// 未検知画像取込
         /// </summary>
-        private bool ImportUndetectedImage()
+        private async Task<Boolean> ImportUndetectedImage()
         {
             string strSQL = string.Empty;
             string strZipExtractDirPath = string.Empty;
@@ -382,101 +380,10 @@ namespace ImageChecker
                 return false;
             }
 
-            // 欠点画像ディレクトリに格納する
-            try
-            {
-                // 欠点画像格納ディレクトリに存在しない場合はフォルダを作成する
-                if (Directory.Exists(m_strFaultImageSubDirPath) == false)
-                {
-                    Directory.CreateDirectory(m_strFaultImageSubDirPath);
-                }
-
-                // ZIPファイルの解凍先パスを設定
-                strZipExtractDirPath = Path.Combine(g_strZipExtractDirPath, m_clsHeaderData.strUnitNum);
-
-                // 一時ZIP解凍用フォルダ作成
-                if (Directory.Exists(strZipExtractDirPath))
-                {
-                    Directory.Delete(strZipExtractDirPath, true);
-                }
-
-                Directory.CreateDirectory(strZipExtractDirPath);
-
-                strZipFilePath = Path.Combine(strZipExtractDirPath, m_strFileName + ".zip");
-
-                // 欠点画像ZIPファイルを一時ZIP解凍用フォルダにコピーする
-                File.Copy(Path.Combine(m_strNgImageCooperationDirectoryPath, m_strFileName + ".zip"), strZipFilePath, true);
-
-                // 一時ディレクトリに欠点画像のフォルダが存在する場合は削除する
-                using (ZipArchive za = ZipFile.Open(strZipFilePath, ZipArchiveMode.Read))
-                {
-                    foreach (ZipArchiveEntry zae in za.Entries)
-                    {
-                        strZipExtractToDirPath =
-                            Path.Combine(strZipExtractDirPath,
-                            zae.FullName.Substring(0, (zae.FullName).IndexOf(Path.AltDirectorySeparatorChar)));
-
-                        if (Directory.Exists(strZipExtractToDirPath) == true)
-                        {
-                            Directory.Delete(strZipExtractToDirPath, true);
-                        }
-
-                        break;
-                    }
-                }
-
-                // 欠点画像ZIPを一時ディレクトリに解凍する
-                SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
-                SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
-                extractor.ExtractAll(strZipExtractDirPath);
-
-                // 一時ディレクトリから欠点画像格納ディレクトリにファイルをコピーする。
-                foreach (string strFilePath in Directory.GetFiles(Path.Combine(strZipExtractToDirPath), "*", SearchOption.AllDirectories).Where(x => x.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)))
-                {
-                    strZipArchiveEntryFilePath = Path.Combine(m_strFaultImageSubDirPath, Path.GetFileName(strFilePath));
-
-                    // 存在する場合は削除する
-                    if (File.Exists(strZipArchiveEntryFilePath))
-                    {
-                        File.Delete(Path.Combine(strZipArchiveEntryFilePath));
-                    }
-
-                    File.Copy(strFilePath, Path.Combine(strZipArchiveEntryFilePath));
-                }
-
-                // ファイル削除
-                Directory.Delete(strZipExtractToDirPath, true);
-                File.Delete(strZipFilePath);
-            }
-            catch (Exception ex)
-            {
-                // エラー発生時、中途半端に取り込まれた情報を削除する
-                if (File.Exists(strZipFilePath))
-                {
-                    File.Delete(strZipFilePath);
-                }
-
-                if (Directory.Exists(strZipExtractToDirPath))
-                {
-                    Directory.Delete(strZipExtractToDirPath, true);
-                }
-
-                // ログ出力
-                WriteEventLog(
-                    g_CON_LEVEL_ERROR,
-                    string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
-
-                // メッセージ出力
-                MessageBox.Show(
-                    g_clsMessageInfo.strMsgE0041,
-                    g_CON_MESSAGE_TITLE_ERROR,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                return false;
-            }
-
-            return true;
+            // 未検知画像の取込を行う
+            DirectoryInfo diFaultImage = new DirectoryInfo(m_strFaultImageSubDirPath);
+            Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(m_clsHeaderData.strUnitNum, m_strFileName, true, diFaultImage.Name));
+            return await taskInputFaultImage;
         }
         #endregion
 
@@ -555,7 +462,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="source"></param>
         /// <param name="e"></param>
-        private void fsWatcher_Changed(System.Object source, System.IO.FileSystemEventArgs e)
+        private async void fsWatcher_Changed(System.Object source, System.IO.FileSystemEventArgs e)
         {
             // ファイル存在チェック
             if (File.Exists(m_strChkFilePath) == false)
@@ -563,11 +470,8 @@ namespace ImageChecker
                 return;
             }
 
-            // 未検知画像取込を行う
-            if (ImportUndetectedImage())
-            {
-                bolChgFile = true;
-            }
+            // 未検知画像の取込を行う
+            bolChgFile = await ImportUndetectedImage();
 
             StopSysFileWatcher();
         }
