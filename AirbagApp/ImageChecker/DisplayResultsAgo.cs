@@ -502,6 +502,7 @@ namespace ImageChecker
             DataTable dtData = null;
             string strSQL = string.Empty;
             string strFaultImageDecompressionDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
+            int intTotalCount = 0;
 
             if (!Directory.Exists(strFaultImageDecompressionDirectory))
             {
@@ -512,21 +513,12 @@ namespace ImageChecker
 
                 try
                 {
-                    Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, strFaultImageFileName));
-                    await taskInputFaultImage;
-
-                    if (!taskInputFaultImage.Result)
-                    {
-                        return false;
-                    }
-
                     try
                     {
-                        diFaultImage = new DirectoryInfo(strFaultImageDecompressionDirectory);
                         dtData = new DataTable();
 
                         // 合否判定結果テーブルに登録されているオリジナル画像・マーキング画像の総数を取得する
-                        strSQL = @"SELECT COUNT(DISTINCT(marking_imagepath)) * 2 AS COUNT
+                        strSQL = @"SELECT COUNT(DISTINCT(org_imagepath)) * 2 AS TotalCount
                                    FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                    WHERE fabric_name = :fabric_name
                                    AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
@@ -542,8 +534,49 @@ namespace ImageChecker
 
                         g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
+                        intTotalCount = Convert.ToInt32(dtData.Rows[0]["TotalCount"]);
+
+                        dtData = new DataTable();
+
+                        // 合否判定結果テーブルに登録されている未検知画像情報を取得する
+                        strSQL = @"SELECT DISTINCT(org_imagepath)
+                                   FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                                   WHERE fabric_name = :fabric_name
+                                   AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                                   AND   inspection_num = :inspection_num
+                                   AND   unit_num = :unit_num
+                                   AND   over_detection_except_result = :over_detection_except_result_ng_non_detect
+                                   ORDER BY org_imagepath";
+
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng_non_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNgNonDetect });
+
+                        g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                        // 欠点画像の取込を行う
+                        Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, strFaultImageFileName));
+                        await taskInputFaultImage;
+
+                        if (!taskInputFaultImage.Result)
+                        {
+                            return false;
+                        }
+
+                        // 未検知画像の取込を行う
+                        foreach (DataRow row in dtData.Rows)
+                        {
+                            Task<Boolean> taskInputFaultImageUndetected = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, row["org_imagepath"].ToString().Replace(".jpg", string.Empty), true, strFaultImageFileName));
+                            await taskInputFaultImageUndetected;
+
+                            if (!taskInputFaultImageUndetected.Result)
+                            {
+                                return false;
+                            }
+                        }
+
+                        diFaultImage = new DirectoryInfo(strFaultImageDecompressionDirectory);
+
                         // 解凍した画像数と比較する
-                        if (Convert.ToInt32(dtData.Rows[0]["COUNT"]) > diFaultImage.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0).Count())
+                        if (intTotalCount > diFaultImage.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0).Count())
                         {
                             return false;
                         }
