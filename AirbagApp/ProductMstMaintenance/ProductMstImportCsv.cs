@@ -1662,8 +1662,8 @@ namespace ProductMstMaintenance
 
             // 最大範囲入力チェック
             if (CheckRangeInput(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION], "照度情報", intRowCount, 0, 255, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM], "開始レジマークカメラ番号", intRowCount, 1, 26, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM], "終了レジマークカメラ番号", intRowCount, 1, 26, strFileReadLine) == false)
+                CheckRangeInput(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM], "開始レジマークカメラ番号", intRowCount, 1, 27, strFileReadLine) == false ||
+                CheckRangeInput(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM], "終了レジマークカメラ番号", intRowCount, 1, 27, strFileReadLine) == false)
             {
                 return false;
             }
@@ -1926,7 +1926,7 @@ namespace ProductMstMaintenance
             }
 
             // 最大範囲入力チェック
-            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 27, strFileReadLine) == false ||
+            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 54, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, 1, 480, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, 1, 480, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, 1, 480, strFileReadLine) == false ||
