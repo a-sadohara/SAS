@@ -437,8 +437,6 @@ namespace ProductMstMaintenance
                                                        , point_4_plus_direction_y = :point_4_plus_direction_y
                                                        , point_5_plus_direction_x = :point_5_plus_direction_x
                                                        , point_5_plus_direction_y = :point_5_plus_direction_y
-                                                       , stretch_rate_x = (CAST(:AreaMagX as NUMERIC) / 100)
-                                                       , stretch_rate_y = (CAST(:AreaMagY as NUMERIC) / 100)
                                                        , stretch_rate_x_upd = (CAST(:AreaMagX as NUMERIC) / 100)
                                                        , stretch_rate_y_upd = (CAST(:AreaMagY as NUMERIC) / 100)
                                                        , regimark_3_imagepath = :TempFile3
