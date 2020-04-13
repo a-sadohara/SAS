@@ -38,7 +38,7 @@
             this.prgBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.prgBar.Location = new System.Drawing.Point(27, 49);
-            this.prgBar.MarqueeAnimationSpeed = 70;
+            this.prgBar.MarqueeAnimationSpeed = 20;
             this.prgBar.Name = "prgBar";
             this.prgBar.Size = new System.Drawing.Size(385, 23);
             this.prgBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
@@ -68,7 +68,7 @@
             this.lblMessage.TabIndex = 2;
             this.lblMessage.Text = "未検知画像の登録中です。しばらくお待ちください...";
             // 
-            // ProgressForm
+            // AddImageProgressForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
@@ -80,7 +80,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ProgressForm";
+            this.Name = "AddImageProgressForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Load += new System.EventHandler(this.ProgressForm_Load);
             this.ResumeLayout(false);
