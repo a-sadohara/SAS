@@ -903,7 +903,7 @@ namespace ProductMstMaintenance
             }
 
             // レジマーク間引き
-            if (string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])))
+            if (!string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])))
             {
                 lblRegimarkBetweenLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])));
             }
@@ -913,20 +913,26 @@ namespace ProductMstMaintenance
             }
 
             // 伸縮率X
-            string strStretchRateX = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_X_UPD]);
-            if (string.IsNullOrEmpty(strStretchRateX))
+            string strStretchRateX = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_X]);
+            if (!string.IsNullOrEmpty(strStretchRateX))
             {
-                strStretchRateX = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_X]);
+                txtStretchRateX.Text = string.Format("{0:f2}", double.Parse(strStretchRateX));
             }
-            txtStretchRateX.Text = string.Format("{0:f2}", double.Parse(strStretchRateX));
+            else
+            {
+                txtStretchRateX.Text = string.Empty;
+            }
 
             // 伸縮率Y
-            string strStretchRateY = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_Y_UPD]);
-            if (string.IsNullOrEmpty(strStretchRateY))
+            string strStretchRateY = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_Y]);
+            if (!string.IsNullOrEmpty(strStretchRateY))
             {
-                strStretchRateY = NulltoString(dtCurentRow[m_CON_COLNAME_STRETCH_RATE_Y]);
+                txtStretchRateY.Text = string.Format("{0:f2}", double.Parse(strStretchRateY));
             }
-            txtStretchRateY.Text = string.Format("{0:f2}", double.Parse(strStretchRateY));
+            else
+            {
+                txtStretchRateY.Text = string.Empty;
+            }
 
             // AIモデル未検査フラグ
             if (NulltoInt(dtCurentRow[m_CON_COLNAME_AI_MODEL_NON_INSPECTION_FLG]) == 1)
@@ -1489,8 +1495,8 @@ namespace ProductMstMaintenance
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_non_inspection_flg", DbType = DbType.Int32, Value = intChkFlg });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_name", DbType = DbType.String, Value = txtAiModelName.Text });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_x_upd", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateX.Text) });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_y_upd", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateY.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_x", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateX.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_y", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateY.Text) });
                 lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdAB, "column_threshold_01"));
                 lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdBC, "column_threshold_02"));
                 lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdCD, "column_threshold_03"));

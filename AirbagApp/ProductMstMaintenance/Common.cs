@@ -385,8 +385,8 @@ namespace ProductMstMaintenance
                                           , :point_5_plus_direction_y
                                           , (CAST(:AreaMagX as NUMERIC) / 100)
                                           , (CAST(:AreaMagY as NUMERIC) / 100)
-                                          , null
-                                          , null
+                                          , (CAST(:AreaMagX as NUMERIC) / 100)
+                                          , (CAST(:AreaMagY as NUMERIC) / 100)
                                           , :TempFile3
                                           , :TempFile4
                                           , :AutoCalcAreaMagFlg
@@ -439,8 +439,8 @@ namespace ProductMstMaintenance
                                                        , point_5_plus_direction_y = :point_5_plus_direction_y
                                                        , stretch_rate_x = (CAST(:AreaMagX as NUMERIC) / 100)
                                                        , stretch_rate_y = (CAST(:AreaMagY as NUMERIC) / 100)
-                                                       , stretch_rate_x_upd = null
-                                                       , stretch_rate_y_upd = null
+                                                       , stretch_rate_x_upd = (CAST(:AreaMagX as NUMERIC) / 100)
+                                                       , stretch_rate_y_upd = (CAST(:AreaMagY as NUMERIC) / 100)
                                                        , regimark_3_imagepath = :TempFile3
                                                        , regimark_4_imagepath = :TempFile4
                                                        , stretch_rate_auto_calc_flg = :AutoCalcAreaMagFlg
@@ -642,8 +642,8 @@ namespace ProductMstMaintenance
         public const string g_CON_UPDATE_MST_PRODUCT_INFO_DISP_INPUT =
             @"UPDATE mst_product_info SET ai_model_non_inspection_flg = :ai_model_non_inspection_flg
                                         , ai_model_name = :ai_model_name
-                                        , stretch_rate_x_upd = :stretch_rate_x_upd
-                                        , stretch_rate_y_upd = :stretch_rate_y_upd
+                                        , stretch_rate_x = :stretch_rate_x
+                                        , stretch_rate_y = :stretch_rate_y
                                         , column_threshold_01 = :column_threshold_01
                                         , column_threshold_02 = :column_threshold_02
                                         , column_threshold_03 = :column_threshold_03
