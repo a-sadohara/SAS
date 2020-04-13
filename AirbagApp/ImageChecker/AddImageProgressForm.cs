@@ -1,4 +1,5 @@
 ﻿using ImageChecker.DTO;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -259,10 +260,14 @@ namespace ImageChecker
             string strZipExtractToDirPath = string.Empty;
             string strZipArchiveEntryFilePath = string.Empty;
             string strExtractionDestinationPath = string.Empty;
+            string strRapidTableName = string.Empty;
+            int intExecutionCount = 0;
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
             try
             {
+                strRapidTableName = "rapid_" + m_clsHeaderData.strFabricName + "_" + m_clsHeaderData.intInspectionNum + "_" + m_clsHeaderData.strInspectionDate.Replace("/", string.Empty);
+
                 // 判定結果の取り込み処理
                 strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
                                fabric_name
@@ -335,7 +340,7 @@ namespace ImageChecker
                              , NULL
                              , NULL
                              , NULL
-                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""rapid_" + m_clsHeaderData.strFabricName + "_" + m_clsHeaderData.intInspectionNum + "_" + m_clsHeaderData.strInspectionDate.Replace("/", string.Empty) + @"""
+                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @"""
                            WHERE fabric_name = :fabric_name
                              AND inspection_num = :inspection_num 
                              AND ng_image = :ng_image 
@@ -359,7 +364,68 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_clsHeaderData.strUnitNum });
 
                 // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+                intExecutionCount = g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
+
+                // rapidテーブルに該当の未検知情報が存在しない場合、エラーとする
+                if (intExecutionCount == 0)
+                {
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_WARN,
+                        string.Format(
+                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 画像ファイル:{7}, 移送元テーブル:{8}, 移送先テーブル:{9}",
+                            g_clsMessageInfo.strMsgE0039,
+                            Environment.NewLine,
+                            m_clsHeaderData.strInspectionDate,
+                            m_clsHeaderData.strUnitNum,
+                            m_clsHeaderData.intInspectionNum,
+                            m_clsHeaderData.strProductName,
+                            m_clsHeaderData.strFabricName,
+                            m_strSafeFileName,
+                            strRapidTableName,
+                            "decision_result"));
+
+
+                    // メッセージ出力
+                    MessageBox.Show(
+                        string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    return false;
+                }
+            }
+            catch (PostgresException pgex)
+            {
+                g_clsConnectionNpgsql.DbRollback();
+
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 画像ファイル:{7}, 移送元テーブル:{8}, 移送先テーブル:{9}{10}{11}",
+                        g_clsMessageInfo.strMsgE0002,
+                        Environment.NewLine,
+                        m_clsHeaderData.strInspectionDate,
+                        m_clsHeaderData.strUnitNum,
+                        m_clsHeaderData.intInspectionNum,
+                        m_clsHeaderData.strProductName,
+                        m_clsHeaderData.strFabricName,
+                        m_strSafeFileName,
+                        strRapidTableName,
+                        pgex.TableName,
+                        Environment.NewLine,
+                        pgex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(
+                    string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -372,7 +438,7 @@ namespace ImageChecker
 
                 // メッセージ出力
                 MessageBox.Show(
-                    g_clsMessageInfo.strMsgE0057,
+                    string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
                     g_CON_MESSAGE_TITLE_ERROR,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
