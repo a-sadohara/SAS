@@ -261,7 +261,9 @@ namespace ImageChecker
             string strZipArchiveEntryFilePath = string.Empty;
             string strExtractionDestinationPath = string.Empty;
             string strRapidTableName = string.Empty;
+            string strMsg = string.Empty;
             int intExecutionCount = 0;
+            DataTable dtData = null;
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
             try
@@ -365,36 +367,6 @@ namespace ImageChecker
 
                 // sqlを実行する
                 intExecutionCount = g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
-
-                // rapidテーブルに該当の未検知情報が存在しない場合、エラーとする
-                if (intExecutionCount == 0)
-                {
-                    // ログ出力
-                    WriteEventLog(
-                        g_CON_LEVEL_WARN,
-                        string.Format(
-                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 画像ファイル:{7}, 移送元テーブル:{8}, 移送先テーブル:{9}",
-                            g_clsMessageInfo.strMsgE0039,
-                            Environment.NewLine,
-                            m_clsHeaderData.strInspectionDate,
-                            m_clsHeaderData.strUnitNum,
-                            m_clsHeaderData.intInspectionNum,
-                            m_clsHeaderData.strProductName,
-                            m_clsHeaderData.strFabricName,
-                            m_strSafeFileName,
-                            strRapidTableName,
-                            "decision_result"));
-
-
-                    // メッセージ出力
-                    MessageBox.Show(
-                        string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
-                        g_CON_MESSAGE_TITLE_ERROR,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    return false;
-                }
             }
             catch (PostgresException pgex)
             {
@@ -442,6 +414,117 @@ namespace ImageChecker
                     g_CON_MESSAGE_TITLE_ERROR,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+
+                return false;
+            }
+
+            // rapidテーブルに該当の未検知情報が存在しない場合、検査無効情報をチェックする
+            if (intExecutionCount == 0)
+            {
+                try
+                {
+                    dtData = new DataTable();
+                    strSQL = @"SELECT
+                                   fabric_name
+                               FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @"""
+                               WHERE fabric_name = :fabric_name
+                                   AND inspection_num = :inspection_num 
+                                   AND ng_image = :ng_image 
+                                   AND unit_num = :unit_num 
+                                   AND rapid_result = :rapid_result
+                                   AND edge_result = :edge_result
+                                   AND masking_result = :masking_result";
+
+                    // SQLコマンドに各パラメータを設定する
+                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_clsHeaderData.strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_clsHeaderData.intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_image", DbType = DbType.String, Value = m_strSafeFileName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_clsHeaderData.strUnitNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultDis });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultDis });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultDis });
+
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+
+                    if (dtData.Rows.Count > 0)
+                    {
+                        // 検査情報無効のエラーを表示する
+                        strMsg = g_clsMessageInfo.strMsgE0063;
+                    }
+                    else
+                    {
+                        // 検査情報無しのエラーを表示する
+                        strMsg = g_clsMessageInfo.strMsgE0057;
+                    }
+
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_WARN,
+                        string.Format(
+                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 画像ファイル:{7}, 取得対象テーブル:{8}",
+                            g_clsMessageInfo.strMsgE0039,
+                            Environment.NewLine,
+                            m_clsHeaderData.strInspectionDate,
+                            m_clsHeaderData.strUnitNum,
+                            m_clsHeaderData.intInspectionNum,
+                            m_clsHeaderData.strProductName,
+                            m_clsHeaderData.strFabricName,
+                            m_strSafeFileName,
+                            strRapidTableName));
+
+                    // メッセージ出力
+                    MessageBox.Show(
+                        string.Format(strMsg, m_strSafeFileName),
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+                catch (PostgresException pgex)
+                {
+                    g_clsConnectionNpgsql.DbRollback();
+
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_ERROR,
+                        string.Format(
+                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 画像ファイル:{7}, 取得対象テーブル:{8}{9}{10}",
+                            g_clsMessageInfo.strMsgE0001,
+                            Environment.NewLine,
+                            m_clsHeaderData.strInspectionDate,
+                            m_clsHeaderData.strUnitNum,
+                            m_clsHeaderData.intInspectionNum,
+                            m_clsHeaderData.strProductName,
+                            m_clsHeaderData.strFabricName,
+                            m_strSafeFileName,
+                            pgex.TableName,
+                            Environment.NewLine,
+                            pgex.Message));
+
+                    // メッセージ出力
+                    MessageBox.Show(
+                        string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+                catch (Exception ex)
+                {
+                    g_clsConnectionNpgsql.DbRollback();
+
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_ERROR,
+                        string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+
+                    // メッセージ出力
+                    MessageBox.Show(
+                        string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
 
                 return false;
             }
