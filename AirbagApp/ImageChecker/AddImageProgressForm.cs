@@ -376,7 +376,7 @@ namespace ImageChecker
                 WriteEventLog(
                     g_CON_LEVEL_ERROR,
                     string.Format(
-                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 画像ファイル:{7}, 移送元テーブル:{8}, 移送先テーブル:{9}{10}{11}",
+                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 画像ファイル:{7}, 移送元テーブル:{8}, 移送先テーブル:{9}, 処理ブロック:{10}{11}{12}",
                         g_clsMessageInfo.strMsgE0002,
                         Environment.NewLine,
                         m_clsHeaderData.strInspectionDate,
@@ -386,7 +386,8 @@ namespace ImageChecker
                         m_clsHeaderData.strFabricName,
                         m_strSafeFileName,
                         strRapidTableName,
-                        pgex.TableName,
+                        "decision_result",
+                        "検査NG情報取得",
                         Environment.NewLine,
                         pgex.Message));
 
@@ -447,7 +448,6 @@ namespace ImageChecker
 
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
-
                     if (dtData.Rows.Count > 0)
                     {
                         // 検査情報無効のエラーを表示する
@@ -489,7 +489,7 @@ namespace ImageChecker
                     WriteEventLog(
                         g_CON_LEVEL_ERROR,
                         string.Format(
-                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 画像ファイル:{7}, 取得対象テーブル:{8}{9}{10}",
+                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 画像ファイル:{7}, 取得対象テーブル:{8}, 処理ブロック:{9}{10}{11}",
                             g_clsMessageInfo.strMsgE0001,
                             Environment.NewLine,
                             m_clsHeaderData.strInspectionDate,
@@ -498,7 +498,8 @@ namespace ImageChecker
                             m_clsHeaderData.strProductName,
                             m_clsHeaderData.strFabricName,
                             m_strSafeFileName,
-                            pgex.TableName,
+                            strRapidTableName,
+                            "検査対象外更新",
                             Environment.NewLine,
                             pgex.Message));
 

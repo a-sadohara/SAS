@@ -1086,22 +1086,22 @@ namespace ImageChecker
                             WriteEventLog(
                                 g_CON_LEVEL_ERROR,
                                 string.Format(
-                                    "{0}{1}検査日付:{2}, 検査番号:{3}, 品名:{4}, 反番:{5}, 取得対象テーブル:{6}{7}{8}",
+                                    "{0}{1}検査日付:{2}, 検査番号:{3}, 品名:{4}, 反番:{5}, 取得対象テーブル:{6}, 処理ブロック:{7}{8}{9}",
                                     g_clsMessageInfo.strMsgE0001,
                                     Environment.NewLine,
                                     strInspectionDate,
                                     intInspectionNum,
                                     strProductName,
                                     strFabricName,
-                                    pgex.TableName,
+                                    g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".inspection_info_header",
+                                    "号機情報取得",
                                     Environment.NewLine,
                                     pgex.Message));
 
                             // メッセージ出力
                             MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                            frmProgress.Close();
-                            return;
+                            continue;
                         }
                         catch (Exception ex)
                         {
@@ -1110,8 +1110,7 @@ namespace ImageChecker
                             // メッセージ出力
                             MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                            frmProgress.Close();
-                            return;
+                            continue;
                         }
 
                         for (int rowCount = 0; rowCount < dtPublicHeaderData.Rows.Count; rowCount++)
@@ -1169,7 +1168,7 @@ namespace ImageChecker
                                 WriteEventLog(
                                     g_CON_LEVEL_ERROR,
                                     string.Format(
-                                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 取得対象テーブル:{7}{8}{9}",
+                                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 取得対象テーブル:{7}, 処理ブロック:{8}{9}{10}",
                                         g_clsMessageInfo.strMsgE0001,
                                         Environment.NewLine,
                                         strInspectionDate,
@@ -1177,15 +1176,15 @@ namespace ImageChecker
                                         intInspectionNum,
                                         strProductName,
                                         strFabricName,
-                                        pgex.TableName,
+                                        g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header",
+                                        "取込済チェック",
                                         Environment.NewLine,
                                         pgex.Message));
 
                                 // メッセージ出力
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                frmProgress.Close();
-                                return;
+                                continue;
                             }
                             catch (Exception ex)
                             {
@@ -1194,8 +1193,7 @@ namespace ImageChecker
                                 // メッセージ出力
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                frmProgress.Close();
-                                return;
+                                continue;
                             }
 
                             // 直近2日に行われた検査情報の欠点画像を取得する
@@ -1285,7 +1283,7 @@ namespace ImageChecker
                                 WriteEventLog(
                                     g_CON_LEVEL_ERROR,
                                     string.Format(
-                                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 更新対象テーブル:{7}{8}{9}",
+                                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 更新対象テーブル:{7}, 処理ブロック:{8}{9}{10}",
                                         g_clsMessageInfo.strMsgE0002,
                                         Environment.NewLine,
                                         strInspectionDate,
@@ -1293,15 +1291,15 @@ namespace ImageChecker
                                         intInspectionNum,
                                         strProductName,
                                         strFabricName,
-                                        pgex.TableName,
+                                        g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header",
+                                        "検査情報ヘッダ取込",
                                         Environment.NewLine,
                                         pgex.Message));
 
                                 // メッセージ出力
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                frmProgress.Close();
-                                return;
+                                continue;
                             }
                             catch (Exception ex)
                             {
@@ -1312,8 +1310,7 @@ namespace ImageChecker
                                 // メッセージ出力
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                frmProgress.Close();
-                                return;
+                                continue;
                             }
 
                             strRapidTableName = "rapid_" + strFabricName + "_" + intInspectionNum + "_" + strInspectionDate.Replace("/", string.Empty);
@@ -1428,7 +1425,7 @@ namespace ImageChecker
                                 WriteEventLog(
                                     g_CON_LEVEL_ERROR,
                                     string.Format(
-                                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 移送元テーブル:{7}, 移送先テーブル:{8}{9}{10}",
+                                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 移送元テーブル:{7}, 移送先テーブル:{8}, 処理ブロック:{9}{10}{11}",
                                         g_clsMessageInfo.strMsgE0002,
                                         Environment.NewLine,
                                         strInspectionDate,
@@ -1437,15 +1434,15 @@ namespace ImageChecker
                                         strProductName,
                                         strFabricName,
                                         strRapidTableName,
-                                        pgex.TableName,
+                                        "decision_result",
+                                        "検査NG情報取得",
                                         Environment.NewLine,
                                         pgex.Message));
 
                                 // メッセージ出力
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                frmProgress.Close();
-                                return;
+                                continue;
                             }
                             catch (Exception ex)
                             {
@@ -1456,8 +1453,7 @@ namespace ImageChecker
                                 // メッセージ出力
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                frmProgress.Close();
-                                return;
+                                continue;
                             }
 
                             if (intExecutionCount == 0)
@@ -1479,9 +1475,9 @@ namespace ImageChecker
 
                                     // SQLコマンドに各パラメータを設定する
                                     lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
                                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
                                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
                                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultDis });
                                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultDis });
                                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultDis });
@@ -1491,11 +1487,13 @@ namespace ImageChecker
                                 }
                                 catch (PostgresException pgex)
                                 {
+                                    g_clsConnectionNpgsql.DbRollback();
+
                                     // ログ出力
                                     WriteEventLog(
                                         g_CON_LEVEL_ERROR,
                                         string.Format(
-                                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 取得対象テーブル:{7}{8}{9}",
+                                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 取得対象テーブル:{7}, 処理ブロック:{8}{9}{10}",
                                             g_clsMessageInfo.strMsgE0001,
                                             Environment.NewLine,
                                             strInspectionDate,
@@ -1503,15 +1501,15 @@ namespace ImageChecker
                                             intInspectionNum,
                                             strProductName,
                                             strFabricName,
-                                            pgex.TableName,
+                                            strRapidTableName,
+                                            "検査無効情報取得",
                                             Environment.NewLine,
                                             pgex.Message));
 
                                     // メッセージ出力
                                     MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                    frmProgress.Close();
-                                    return;
+                                    continue;
                                 }
                                 catch (Exception ex)
                                 {
@@ -1520,8 +1518,7 @@ namespace ImageChecker
                                     // メッセージ出力
                                     MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                    frmProgress.Close();
-                                    return;
+                                    continue;
                                 }
 
                                 try
@@ -1570,7 +1567,7 @@ namespace ImageChecker
                                     WriteEventLog(
                                         g_CON_LEVEL_ERROR,
                                         string.Format(
-                                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 更新対象テーブル:{7}{8}{9}",
+                                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 更新対象テーブル:{7}, 処理ブロック:{8}{9}{10}",
                                             g_clsMessageInfo.strMsgE0002,
                                             Environment.NewLine,
                                             strInspectionDate,
@@ -1578,15 +1575,15 @@ namespace ImageChecker
                                             intInspectionNum,
                                             strProductName,
                                             strFabricName,
-                                            pgex.TableName,
+                                            g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header",
+                                            "検査対象外更新",
                                             Environment.NewLine,
                                             pgex.Message));
 
                                     // メッセージ出力
                                     MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                    frmProgress.Close();
-                                    return;
+                                    continue;
                                 }
                                 catch (Exception ex)
                                 {
@@ -1597,10 +1594,12 @@ namespace ImageChecker
                                     // メッセージ出力
                                     MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                    frmProgress.Close();
-                                    return;
+                                    continue;
                                 }
                             }
+
+                            // DBコミット
+                            g_clsConnectionNpgsql.DbCommit();
                         }
                     }
                 }
@@ -1613,13 +1612,11 @@ namespace ImageChecker
                     {
                         // メッセージ出力
                         MessageBox.Show(g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        frmProgress.Close();
+
                         return;
                     }
                 }
 
-                // DBコミット
-                g_clsConnectionNpgsql.DbCommit();
                 // DBクローズ
                 g_clsConnectionNpgsql.DbClose();
             }
