@@ -102,7 +102,7 @@ namespace ImageChecker.DTO
                                    dr.line ASC 
                                  , dr.cloumns ASC 
                                  , dr.ng_face ASC 
-                                 , dr.over_detection_except_datetime ASC ";
+                                 , acceptance_check_datetime ASC ";
 
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
                 g_clsConnectionNpgsql.SelectSQL(ref dtMeisaiData, strSQL, lstNpgsqlCommand);
