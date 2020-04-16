@@ -6,9 +6,8 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
 using static ProductMstMaintenance.Common;
 
 namespace ProductMstMaintenance
@@ -349,8 +348,8 @@ namespace ProductMstMaintenance
             m_intErrorMasterImg = 0;
             m_intSuccesDecisionReasonReg = 0;
             m_intErrorDecisionReasonReg = 0;
-            m_strErrorOutFileName = "";
-            m_strCheckMstFile = "";
+            m_strErrorOutFileName = string.Empty;
+            m_strCheckMstFile = string.Empty;
 
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
@@ -392,7 +391,7 @@ namespace ProductMstMaintenance
             frmProgress.Show(this);
 
             await Task.Run(() =>
-            { 
+            {
 
                 // マスタ画像取り込み
                 ProcessMasterPng(strInputPng);
@@ -455,7 +454,7 @@ namespace ProductMstMaintenance
             frmProgress.Close();
 
             // 出力ファイル設定
-            string strOutPutFilePath = Path.Combine( g_clsSystemSettingInfo.strLogFileOutputDirectory ,
+            string strOutPutFilePath = Path.Combine(g_clsSystemSettingInfo.strLogFileOutputDirectory,
                                                                                          m_CON_OUTLOGFILE_NAME
                                                                                         + ".csv");
 
@@ -593,9 +592,9 @@ namespace ProductMstMaintenance
                     catch (Exception ex)
                     {
                         // ログファイルにエラー出力を行う
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         if (m_bolProcEnd)
                         {
                             return;
@@ -663,8 +662,8 @@ namespace ProductMstMaintenance
                     if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_REGISTER + "[0-9][0-9][0-9]]", RegexOptions.IgnoreCase) == true)
                     {
                         // セクションの場合はセクションリストに追加
-                        string strFileTextLineReplace = strFileTextLine.Replace("[", "");
-                        strFileTextLineReplace = strFileTextLineReplace.Replace("]", "");
+                        string strFileTextLineReplace = strFileTextLine.Replace("[", string.Empty);
+                        strFileTextLineReplace = strFileTextLineReplace.Replace("]", string.Empty);
                         lstRegisterIniSection.Add(strFileTextLineReplace);
 
                     }
@@ -746,10 +745,10 @@ namespace ProductMstMaintenance
                     // ファイル名セクション名は設定済みのためスキップ
                     continue;
                 }
-                
+
                 if (fieldInfo.Name == m_CON_COL_IMAGE_FILE)
                 {
-                    m_strCheckMstFile = "";
+                    m_strCheckMstFile = string.Empty;
                     // 特殊対応項目の場合は特殊対応して設定
                     strTenmIniValue = NulltoString(GetIniValue(strInputfilePath
                                                              , strRegister
@@ -762,7 +761,7 @@ namespace ProductMstMaintenance
                     continue;
 
                 }
-                
+
                 if (strUniKey is null == false)
                 {
                     // 特殊対応項目の場合は特殊対応して設定
@@ -875,8 +874,8 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                OutPutImportLog(string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0053 ,Environment.NewLine , ex.Message));
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053 ,Environment.NewLine, ex.Message));
+                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                 return false;
             }
         }
@@ -906,9 +905,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         m_intErrorRegPTC = m_intErrorRegPTC + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         if (m_bolProcEnd)
                         {
                             return;
@@ -968,8 +967,8 @@ namespace ProductMstMaintenance
                     if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_KIND + "[0-9][0-9]]", RegexOptions.IgnoreCase) == true)
                     {
                         // セクションの場合はセクションリストに追加
-                        string strFileTextLineReplace = strFileTextLine.Replace("[", "");
-                        strFileTextLineReplace = strFileTextLineReplace.Replace("]", "");
+                        string strFileTextLineReplace = strFileTextLine.Replace("[", string.Empty);
+                        strFileTextLineReplace = strFileTextLineReplace.Replace("]", string.Empty);
                         lstPLCIniSection.Add(strFileTextLineReplace);
                     }
                 }
@@ -1137,14 +1136,14 @@ namespace ProductMstMaintenance
                 }
 
                 string strErrorMessage = "更新対象のレコードが存在しません。[{0}]";
-                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053 ,Environment.NewLine , string.Format(strErrorMessage, strKINDNumber)));
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053 ,Environment.NewLine , string.Format(strErrorMessage, strKINDNumber)));
+                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strKINDNumber)));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strKINDNumber)));
                 return false;
             }
             catch (Exception ex)
             {
-                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053 ,Environment.NewLine,  ex.Message));
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0053 ,Environment.NewLine, ex.Message));
+                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                 return false;
             }
         }
@@ -1174,9 +1173,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0015 ,Environment.NewLine, ex.Message));
+                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         if (m_bolProcEnd)
                         {
                             return;
@@ -1236,8 +1235,8 @@ namespace ProductMstMaintenance
                     if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_AIRBAG + "[0-9][0-9][0-9]]", RegexOptions.IgnoreCase) == true)
                     {
                         // セクションの場合はセクションリストに追加
-                        string strFileTextLineReplace = strFileTextLine.Replace("[", "");
-                        strFileTextLineReplace = strFileTextLineReplace.Replace("]", "");
+                        string strFileTextLineReplace = strFileTextLine.Replace("[", string.Empty);
+                        strFileTextLineReplace = strFileTextLineReplace.Replace("]", string.Empty);
                         lstRegisterIniSection.Add(strFileTextLineReplace);
 
                     }
@@ -1289,7 +1288,7 @@ namespace ProductMstMaintenance
                     // ファイル名セクション名は設定済みのためスキップ
                     continue;
                 }
-                
+
                 if (fieldInfo.Name == m_CON_COL_AIRBAG_NUMBER)
                 {
                     // セクションの数だけループする
@@ -1310,12 +1309,12 @@ namespace ProductMstMaintenance
                                                                  , strRegister
                                                                  , m_CON_COL_AIRBAG_COORD + String.Format("{0:00}", i));
 
-                                if (!string.IsNullOrEmpty(strTopPoint) )
+                                if (!string.IsNullOrEmpty(strTopPoint))
                                 {
                                     strTopPoint = strTopPoint + ",";
                                 }
 
-                                if (string.IsNullOrEmpty( strPointValue) )
+                                if (string.IsNullOrEmpty(strPointValue))
                                 {
                                     strTopPoint = strTopPoint + "(,)";
                                 }
@@ -1324,11 +1323,11 @@ namespace ProductMstMaintenance
                                     string[] strPointValueSplit = strPointValue.Split(m_CON_SEPARATOR_AIRBAG_COORD);
                                     if (strPointValueSplit.Length == 1)
                                     {
-                                        strTopPoint = string.Format("{0}({1},)" ,strTopPoint, strPointValueSplit[1]);
+                                        strTopPoint = string.Format("{0}({1},)", strTopPoint, strPointValueSplit[1]);
                                     }
                                     else
                                     {
-                                        strTopPoint = string.Format("{0}({1},{2})" ,strTopPoint , strPointValueSplit[0] , strPointValueSplit[1]);
+                                        strTopPoint = string.Format("{0}({1},{2})", strTopPoint, strPointValueSplit[0], strPointValueSplit[1]);
                                     }
 
                                 }
@@ -1462,8 +1461,8 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053 , Environment.NewLine, ex.Message));
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053 ,Environment.NewLine, ex.Message));
+                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                 return false;
             }
         }
@@ -1493,9 +1492,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine, ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         m_intErrorCameraReg = m_intErrorCameraReg + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         if (m_bolProcEnd)
                         {
                             return;
@@ -1512,7 +1511,7 @@ namespace ProductMstMaintenance
                 }
             }
 
-            m_strErrorOutFileName = "";
+            m_strErrorOutFileName = string.Empty;
             // ログファイル結果出力を行う
             string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0007,
                                                     (m_intSuccesCameraReg + m_intErrorCameraReg),
@@ -1545,7 +1544,7 @@ namespace ProductMstMaintenance
                     // カメラ情報ファイルを１行読み込む
                     strFileTextLine = sr.ReadLine();
                     intRowCount = intRowCount + 1;
-                    if (string.IsNullOrEmpty( strFileTextLine) || intRowCount == 1)
+                    if (string.IsNullOrEmpty(strFileTextLine) || intRowCount == 1)
                     {
                         // 空行（最終行）またはヘッダ行の場合読み飛ばす
                         continue;
@@ -1560,10 +1559,10 @@ namespace ProductMstMaintenance
                         m_intErrorCameraReg = m_intErrorCameraReg + 1;
                         continue;
                     }
-                    
+
                     // csvのリストに現在行を追加
                     lstCameraCsvInfo.Add(cciCurrentData);
-                    
+
                 }
 
                 return lstCameraCsvInfo;
@@ -1637,7 +1636,7 @@ namespace ProductMstMaintenance
             if (stArrayData.Length <= m_CON_COL_END_REGIMARK_CAMERA_NUM)
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(string.Format("{0},\"{1} \"", string.Format(g_clsMessageInfo.strMsgE0010, intRowCount) , strFileReadLine ));
+                OutPutImportLog(string.Format("{0},\"{1} \"", string.Format(g_clsMessageInfo.strMsgE0010, intRowCount), strFileReadLine));
                 return false;
             }
 
@@ -1745,7 +1744,7 @@ namespace ProductMstMaintenance
             {
                 OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0025, (m_intSuccesCameraReg + m_intErrorCameraReg)) + Environment.NewLine + ex.Message + "\"," +
                                 "\"" + strData + "\"");
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0053 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                 return false;
             }
         }
@@ -1775,9 +1774,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0015 ,Environment.NewLine, ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         if (m_bolProcEnd)
                         {
                             return;
@@ -1794,7 +1793,7 @@ namespace ProductMstMaintenance
                 }
             }
 
-            m_strErrorOutFileName = "";
+            m_strErrorOutFileName = string.Empty;
             // ログファイル結果出力を行う
             string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0008,
                                                     (m_intSuccesThresholdReg + m_intErrorThresholdReg),
@@ -1827,7 +1826,7 @@ namespace ProductMstMaintenance
                     // 閾値情報ファイルを１行読み込む
                     strFileTextLine = sr.ReadLine();
                     intRowCount = intRowCount + 1;
-                    if (string.IsNullOrEmpty( strFileTextLine)  || intRowCount == 1)
+                    if (string.IsNullOrEmpty(strFileTextLine) || intRowCount == 1)
                     {
                         // 空行（最終行）またはヘッダ行の場合読み飛ばす
                         continue;
@@ -2087,7 +2086,7 @@ namespace ProductMstMaintenance
             {
                 OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0026, (m_intSuccesThresholdReg + m_intErrorThresholdReg)) + Environment.NewLine + ex.Message + "\"," +
                                 "\"" + strData + "\"");
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0053 , Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                 return false;
             }
         }
@@ -2111,7 +2110,7 @@ namespace ProductMstMaintenance
                 // マスタ画像を取り込み先のフォルダにコピーする。
                 try
                 {
-                    File.Copy(InputfilePath, Path.Combine( g_clsSystemSettingInfo.strMasterImageDirectory , Path.GetFileName(InputfilePath)), true);
+                    File.Copy(InputfilePath, Path.Combine(g_clsSystemSettingInfo.strMasterImageDirectory, Path.GetFileName(InputfilePath)), true);
                     m_intSuccesMasterImg = m_intSuccesMasterImg + 1;
                 }
                 catch (Exception ex)
@@ -2127,7 +2126,7 @@ namespace ProductMstMaintenance
                 }
             }
 
-            m_strErrorOutFileName = "";
+            m_strErrorOutFileName = string.Empty;
             // ログファイル結果出力を行う
             string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0009,
                                                     (m_intSuccesMasterImg + m_intErrorMasterImg),
@@ -2161,9 +2160,9 @@ namespace ProductMstMaintenance
                     }
                     catch (Exception ex)
                     {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 ,Environment.NewLine , ex.Message));
+                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                         if (m_bolProcEnd)
                         {
                             return;
@@ -2180,7 +2179,7 @@ namespace ProductMstMaintenance
                 }
             }
 
-            m_strErrorOutFileName = "";
+            m_strErrorOutFileName = string.Empty;
             // ログファイル結果出力を行う
             string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0010,
                                                     (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg),
@@ -2224,7 +2223,6 @@ namespace ProductMstMaintenance
                         // 判定理由ではないため、読み飛ばす
                         continue;
                     }
-                    
 
                     // ファイル読み込み＆入力データチェックを行う
                     if (ReadDecisionReasonCsvData(strFileTextLine
@@ -2325,8 +2323,8 @@ namespace ProductMstMaintenance
             drcData = new IniDecisionReasonInfo();
 
             // 不要な文字を削除する。
-            string strWk = strFileReadLine.Replace("Name", "");
-            strWk = strWk.Substring(0,strWk.LastIndexOf(" "));
+            string strWk = strFileReadLine.Replace("Name", string.Empty);
+            strWk = strWk.Substring(0, strWk.LastIndexOf(" "));
 
             // =で分割して配列に格納する
             stArrayData = strWk.Split('=');
@@ -2409,8 +2407,8 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                OutPutImportLog(string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0028 , Environment.NewLine , ex.Message));
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 , Environment.NewLine , ex.Message));
+                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0028, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
                 return false;
             }
         }
@@ -2455,8 +2453,8 @@ namespace ProductMstMaintenance
             }
             catch (Exception ex)
             {
-                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 , Environment.NewLine , ex.Message));
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0029 ,Environment.NewLine, ex.Message));
+                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0029, Environment.NewLine, ex.Message));
                 return false;
             }
         }
@@ -2478,7 +2476,7 @@ namespace ProductMstMaintenance
                                                 , string strTextLine)
         {
             // 必須入力チェック
-            if (string.IsNullOrEmpty( strCheckData))
+            if (string.IsNullOrEmpty(strCheckData))
             {
                 // ログファイルにエラー出力を行う
                 OutPutImportLog(intRowCount + "行目　"
@@ -2508,7 +2506,7 @@ namespace ProductMstMaintenance
         {
             // 未入力データの場合はチェックしない
             // ※未入力データは必須入力チェックではじく
-            if (string.IsNullOrEmpty( strCheckData))
+            if (string.IsNullOrEmpty(strCheckData))
             {
                 return true;
             }
@@ -2546,7 +2544,7 @@ namespace ProductMstMaintenance
         {
             // 未入力データの場合はチェックしない
             // ※未入力データは必須入力チェックではじく
-            if (string.IsNullOrEmpty( strCheckData ))
+            if (string.IsNullOrEmpty(strCheckData))
             {
                 return true;
             }
@@ -2599,7 +2597,7 @@ namespace ProductMstMaintenance
             string time = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
             // 出力ファイル設定
-            strOutPutFilePath = Path.Combine( g_clsSystemSettingInfo.strLogFileOutputDirectory ,
+            strOutPutFilePath = Path.Combine(g_clsSystemSettingInfo.strLogFileOutputDirectory,
                                                                                   m_CON_OUTLOGFILE_NAME + ".csv");
 
             try
