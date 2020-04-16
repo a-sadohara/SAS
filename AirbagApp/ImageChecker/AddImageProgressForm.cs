@@ -93,11 +93,18 @@ namespace ImageChecker
         /// <summary>
         /// ファイル監視中止
         /// </summary>
-        private void StopSysFileWatcher()
+        /// <param name="bolImportFlag">取込フラグ</param>
+        private async void StopSysFileWatcher(bool bolImportFlag)
         {
             m_fsWatcher.EnableRaisingEvents = false;
             m_fsWatcher.Dispose();
             m_fsWatcher = null;
+
+            if (bolImportFlag)
+            {
+                // 未検知画像の取込を行う
+                bolChgFile = await ImportUndetectedImage();
+            }
 
             //this.Close();
             // ※InvalidOperationExceptionが発生
@@ -612,7 +619,7 @@ namespace ImageChecker
         /// </summary>
         /// <param name="source"></param>
         /// <param name="e"></param>
-        private async void fsWatcher_Changed(System.Object source, System.IO.FileSystemEventArgs e)
+        private void fsWatcher_Changed(Object source, FileSystemEventArgs e)
         {
             // ファイル存在チェック
             if (File.Exists(m_strChkFilePath) == false)
@@ -620,10 +627,7 @@ namespace ImageChecker
                 return;
             }
 
-            // 未検知画像の取込を行う
-            bolChgFile = await ImportUndetectedImage();
-
-            StopSysFileWatcher();
+            StopSysFileWatcher(true);
         }
 
         /// <summary>
@@ -633,7 +637,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            StopSysFileWatcher();
+            StopSysFileWatcher(false);
         }
         #endregion
     }
