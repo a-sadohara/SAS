@@ -1176,12 +1176,17 @@ namespace ProductMstMaintenance
         private void DispPointChange()
         {
             // 初期化
+            bool bolVsbColumn1Flg = false;
             bool bolVsbColumn2Flg = false;
             bool bolVsbColumn3Flg = false;
             bool bolVsbColumn4Flg = false;
             bool bolVsbColumn5Flg = false;
 
             // 列数でコントロール表示フラグを設定する
+            if (m_intColumn_cnt > 0)
+            {
+                bolVsbColumn1Flg = true;
+            }
             if (m_intColumn_cnt > 1)
             {
                 bolVsbColumn2Flg = true;
@@ -1201,6 +1206,9 @@ namespace ProductMstMaintenance
 
             // フラグからコントロールの表示非表示を設定する
             // 基準点
+            lblBasePointA.Visible = bolVsbColumn1Flg;
+            lblTitlePlusDirectionA.Visible = bolVsbColumn1Flg;
+            lblPlusDirectionA.Visible = bolVsbColumn1Flg;
             lblBasePointB.Visible = bolVsbColumn2Flg;
             lblTitlePlusDirectionB.Visible = bolVsbColumn2Flg;
             lblPlusDirectionB.Visible = bolVsbColumn2Flg;
@@ -1221,6 +1229,9 @@ namespace ProductMstMaintenance
             txtColumnThresholdDE.Visible = bolVsbColumn5Flg;
 
             // 行判定用境界線設定
+            txtColumnThresholdAFrom.Visible = bolVsbColumn1Flg;
+            txtColumnThresholdATo.Visible = bolVsbColumn1Flg;
+            lblADash.Visible = bolVsbColumn1Flg;
             txtColumnThresholdBFrom.Visible = bolVsbColumn2Flg;
             txtColumnThresholdBTo.Visible = bolVsbColumn2Flg;
             lblBDash.Visible = bolVsbColumn2Flg;

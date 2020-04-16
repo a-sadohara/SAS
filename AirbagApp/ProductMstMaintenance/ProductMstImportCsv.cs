@@ -1137,7 +1137,7 @@ namespace ProductMstMaintenance
 
                 string strErrorMessage = "更新対象のレコードが存在しません。[{0}]";
                 OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strKINDNumber)));
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strKINDNumber)));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2},{3}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strKINDNumber), m_strErrorOutFileName));
                 return false;
             }
             catch (Exception ex)
@@ -1430,6 +1430,8 @@ namespace ProductMstMaintenance
         {
             try
             {
+                string strFileNum = string.Empty;
+
                 // SQL文を作成する
                 string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_AIRBAG;
 
@@ -1451,13 +1453,25 @@ namespace ProductMstMaintenance
                     else
                     {
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
+
+                        if (fieldInfo.Name.Equals(m_CON_COL_FILE_NUM))
+                        {
+                            strFileNum = string.Format("{0}:{1}", m_CON_COL_FILE_NUM, NulltoString(fieldInfo.GetValue(idrCurrentData)));
+                        }
                     }
                 }
 
                 // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+                if (g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand) > 0)
+                {
+                    return true;
+                }
 
-                return true;
+                string strErrorMessage = "更新対象のレコードが存在しません。[{0}]";
+                OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strFileNum)));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2},{3}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strFileNum), m_strErrorOutFileName));
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -1705,10 +1719,16 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static Boolean ExecRegProductInfoCamera(CameraCsvInfo cciCurrentData)
         {
-            string strData = string.Join(",", cciCurrentData.strProductName +
-                                              cciCurrentData.intIlluminationInformation.ToString() +
-                                              cciCurrentData.intStartRegimarkCameraNum.ToString() +
-                                              cciCurrentData.intEndRegimarkCameraNum.ToString());
+            string strData =
+                string.Join(
+                    ",",
+                    cciCurrentData.strProductName,
+                    cciCurrentData.intIlluminationInformation.ToString(),
+                    cciCurrentData.intStartRegimarkCameraNum.ToString(),
+                    cciCurrentData.intEndRegimarkCameraNum.ToString());
+
+            string strErrorMessage = string.Empty;
+
             try
             {
                 // SQL文を作成する
@@ -1736,14 +1756,20 @@ namespace ProductMstMaintenance
                 }
 
                 // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+                if (g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand) > 0)
+                {
+                    return true;
+                }
 
-                return true;
+                strErrorMessage = "更新対象のレコードが存在しません。[{0}]";
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0025, (m_intSuccesCameraReg + m_intErrorCameraReg) + 1) + Environment.NewLine + string.Format(strErrorMessage, strData));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2},{3}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strData), m_strErrorOutFileName));
+                return false;
             }
             catch (Exception ex)
             {
-                OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0025, (m_intSuccesCameraReg + m_intErrorCameraReg)) + Environment.NewLine + ex.Message + "\"," +
-                                "\"" + strData + "\"");
+                strErrorMessage = "{0},[{1}]";
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0025, (m_intSuccesCameraReg + m_intErrorCameraReg) + 1) + Environment.NewLine + string.Format(strErrorMessage, ex.Message, strData));
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                 return false;
             }
@@ -2026,23 +2052,28 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static Boolean ExecRegProductInfoThreshold(ThresholdCsvInfo tciCurrentData)
         {
-            string strData = string.Join(",", tciCurrentData.strProductName +
-                                              tciCurrentData.intTakingCameraCnt.ToString() +
-                                              tciCurrentData.intColumnThreshold01.ToString() +
-                                              tciCurrentData.intColumnThreshold02.ToString() +
-                                              tciCurrentData.intColumnThreshold03.ToString() +
-                                              tciCurrentData.intColumnThreshold04.ToString() +
-                                              tciCurrentData.intLineThresholda1.ToString() +
-                                              tciCurrentData.intLineThresholda2.ToString() +
-                                              tciCurrentData.intLineThresholdb1.ToString() +
-                                              tciCurrentData.intLineThresholdb2.ToString() +
-                                              tciCurrentData.intLineThresholdc1.ToString() +
-                                              tciCurrentData.intLineThresholdc2.ToString() +
-                                              tciCurrentData.intLineThresholdd1.ToString() +
-                                              tciCurrentData.intLineThresholdd2.ToString() +
-                                              tciCurrentData.intLineThresholde1.ToString() +
-                                              tciCurrentData.intLineThresholde2.ToString() +
-                                              tciCurrentData.strAiModelName);
+            string strData =
+                string.Join(
+                    ",",
+                    tciCurrentData.strProductName,
+                    tciCurrentData.intTakingCameraCnt.ToString(),
+                    tciCurrentData.intColumnThreshold01.ToString(),
+                    tciCurrentData.intColumnThreshold02.ToString(),
+                    tciCurrentData.intColumnThreshold03.ToString(),
+                    tciCurrentData.intColumnThreshold04.ToString(),
+                    tciCurrentData.intLineThresholda1.ToString(),
+                    tciCurrentData.intLineThresholda2.ToString(),
+                    tciCurrentData.intLineThresholdb1.ToString(),
+                    tciCurrentData.intLineThresholdb2.ToString(),
+                    tciCurrentData.intLineThresholdc1.ToString(),
+                    tciCurrentData.intLineThresholdc2.ToString(),
+                    tciCurrentData.intLineThresholdd1.ToString(),
+                    tciCurrentData.intLineThresholdd2.ToString(),
+                    tciCurrentData.intLineThresholde1.ToString(),
+                    tciCurrentData.intLineThresholde2.ToString(),
+                    tciCurrentData.strAiModelName);
+
+            string strErrorMessage = string.Empty;
 
             try
             {
@@ -2078,14 +2109,20 @@ namespace ProductMstMaintenance
                 }
 
                 // sqlを実行する
-                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+                if (g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand) > 0)
+                {
+                    return true;
+                }
 
-                return true;
+                strErrorMessage = "更新対象のレコードが存在しません。[{0}]";
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0026, (m_intSuccesThresholdReg + m_intErrorThresholdReg) + 1) + Environment.NewLine + string.Format(strErrorMessage, strData));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2},{3}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strData), m_strErrorOutFileName));
+                return false;
             }
             catch (Exception ex)
             {
-                OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0026, (m_intSuccesThresholdReg + m_intErrorThresholdReg)) + Environment.NewLine + ex.Message + "\"," +
-                                "\"" + strData + "\"");
+                strErrorMessage = "{0},[{1}]";
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0026, (m_intSuccesThresholdReg + m_intErrorThresholdReg) + 1) + Environment.NewLine + string.Format(strErrorMessage, ex.Message, strData));
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                 return false;
             }
