@@ -71,6 +71,7 @@ namespace ProductMstMaintenance
         private const string m_CON_COLNAME_LINE_THRESHOLD_D2 = "line_threshold_d2";
         private const string m_CON_COLNAME_LINE_THRESHOLD_E1 = "line_threshold_e1";
         private const string m_CON_COLNAME_LINE_THRESHOLD_E2 = "line_threshold_e2";
+        private const string m_CON_COLNAME_COLUMN_CNT = "column_cnt";
 
         // 変数
         private double m_dblSizeRateW = 100.00;
@@ -1059,46 +1060,21 @@ namespace ProductMstMaintenance
             txtColumnThresholdAFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A1]);
             txtColumnThresholdATo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_A2]);
 
-            if (!string.IsNullOrEmpty(txtColumnThresholdAFrom.Text) && !string.IsNullOrEmpty(txtColumnThresholdATo.Text))
-            {
-                m_intColumn_cnt = 1;
-            }
-
             // 行判定用境界線設定表示部.B列
             txtColumnThresholdBFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B1]);
             txtColumnThresholdBTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_B2]);
-
-            if (!string.IsNullOrEmpty(txtColumnThresholdBFrom.Text) && !string.IsNullOrEmpty(txtColumnThresholdBTo.Text))
-            {
-                m_intColumn_cnt = 2;
-            }
 
             // 行判定用境界線設定表示部.C列
             txtColumnThresholdCFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C1]);
             txtColumnThresholdCTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_C2]);
 
-            if (!string.IsNullOrEmpty(txtColumnThresholdCFrom.Text) && !string.IsNullOrEmpty(txtColumnThresholdCTo.Text))
-            {
-                m_intColumn_cnt = 3;
-            }
-
             // 行判定用境界線設定表示部.D列
             txtColumnThresholdDFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D1]);
             txtColumnThresholdDTo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_D2]);
 
-            if (!string.IsNullOrEmpty(txtColumnThresholdDFrom.Text) && !string.IsNullOrEmpty(txtColumnThresholdDTo.Text))
-            {
-                m_intColumn_cnt = 4;
-            }
-
             // 行判定用境界線設定表示部.E列
             txtColumnThresholdEFrom.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E1]);
             txtColumnThresholdETo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E2]);
-
-            if (!string.IsNullOrEmpty(txtColumnThresholdEFrom.Text) && !string.IsNullOrEmpty(txtColumnThresholdETo.Text))
-            {
-                m_intColumn_cnt = 5;
-            }
 
             // 開始レジマーク座標.N行+1行
             string strPointNPlus1 = string.Empty;
@@ -1116,6 +1092,9 @@ namespace ProductMstMaintenance
             strPointNPlus1 = strPointNPlus1 + ",";
             strPointNPlus1 = strPointNPlus1 + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]) + ")";
             lblEndRegimarkPointNMinus1Line.Text = strPointNPlus1;
+
+            // 列数
+            m_intColumn_cnt = NulltoInt(dtCurentRow[m_CON_COLNAME_COLUMN_CNT]);
         }
 
         /// <summary>
@@ -1182,6 +1161,17 @@ namespace ProductMstMaintenance
             bool bolVsbColumn4Flg = false;
             bool bolVsbColumn5Flg = false;
 
+            bool bolVsbColumnThresholdAB = false;
+            bool bolVsbColumnThresholdBC = false;
+            bool bolVsbColumnThresholdCD = false;
+            bool bolVsbColumnThresholdDE = false;
+
+            bool bolVsbLineThresholdA = false;
+            bool bolVsbLineThresholdB = false;
+            bool bolVsbLineThresholdC = false;
+            bool bolVsbLineThresholdD = false;
+            bool bolVsbLineThresholdE = false;
+
             // 列数でコントロール表示フラグを設定する
             if (m_intColumn_cnt > 0)
             {
@@ -1204,6 +1194,65 @@ namespace ProductMstMaintenance
                 bolVsbColumn5Flg = true;
             }
 
+            if (bolVsbColumn2Flg &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdAB.Text))
+            {
+                bolVsbColumnThresholdAB = true;
+            }
+
+            if (bolVsbColumn3Flg &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdBC.Text))
+            {
+                bolVsbColumnThresholdBC = true;
+            }
+
+            if (bolVsbColumn4Flg &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdCD.Text))
+            {
+                bolVsbColumnThresholdCD = true;
+            }
+
+            if (bolVsbColumn5Flg &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdDE.Text))
+            {
+                bolVsbColumnThresholdDE = true;
+            }
+
+            if (bolVsbColumn1Flg &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdAFrom.Text) &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdATo.Text))
+            {
+                bolVsbLineThresholdA = true;
+            }
+
+            if (bolVsbColumn2Flg &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdBFrom.Text) &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdBTo.Text))
+            {
+                bolVsbLineThresholdB = true;
+            }
+
+            if (bolVsbColumn3Flg &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdCFrom.Text) &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdCTo.Text))
+            {
+                bolVsbLineThresholdC = true;
+            }
+
+            if (bolVsbColumn4Flg &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdDFrom.Text) &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdDTo.Text))
+            {
+                bolVsbLineThresholdD = true;
+            }
+
+            if (bolVsbColumn5Flg &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdEFrom.Text) &&
+                !string.IsNullOrWhiteSpace(txtColumnThresholdETo.Text))
+            {
+                bolVsbLineThresholdE = true;
+            }
+
             // フラグからコントロールの表示非表示を設定する
             // 基準点
             lblBasePointA.Visible = bolVsbColumn1Flg;
@@ -1223,27 +1272,27 @@ namespace ProductMstMaintenance
             lblPlusDirectionE.Visible = bolVsbColumn5Flg;
 
             // 列判定用境界線設定
-            txtColumnThresholdAB.Visible = bolVsbColumn2Flg;
-            txtColumnThresholdBC.Visible = bolVsbColumn3Flg;
-            txtColumnThresholdCD.Visible = bolVsbColumn4Flg;
-            txtColumnThresholdDE.Visible = bolVsbColumn5Flg;
+            txtColumnThresholdAB.Visible = bolVsbColumnThresholdAB;
+            txtColumnThresholdBC.Visible = bolVsbColumnThresholdBC;
+            txtColumnThresholdCD.Visible = bolVsbColumnThresholdCD;
+            txtColumnThresholdDE.Visible = bolVsbColumnThresholdDE;
 
             // 行判定用境界線設定
-            txtColumnThresholdAFrom.Visible = bolVsbColumn1Flg;
-            txtColumnThresholdATo.Visible = bolVsbColumn1Flg;
-            lblADash.Visible = bolVsbColumn1Flg;
-            txtColumnThresholdBFrom.Visible = bolVsbColumn2Flg;
-            txtColumnThresholdBTo.Visible = bolVsbColumn2Flg;
-            lblBDash.Visible = bolVsbColumn2Flg;
-            txtColumnThresholdCFrom.Visible = bolVsbColumn3Flg;
-            txtColumnThresholdCTo.Visible = bolVsbColumn3Flg;
-            lblCDash.Visible = bolVsbColumn3Flg;
-            txtColumnThresholdDFrom.Visible = bolVsbColumn4Flg;
-            txtColumnThresholdDTo.Visible = bolVsbColumn4Flg;
-            lblDDash.Visible = bolVsbColumn4Flg;
-            txtColumnThresholdEFrom.Visible = bolVsbColumn5Flg;
-            txtColumnThresholdETo.Visible = bolVsbColumn5Flg;
-            lblEDash.Visible = bolVsbColumn5Flg;
+            txtColumnThresholdAFrom.Visible = bolVsbLineThresholdA;
+            txtColumnThresholdATo.Visible = bolVsbLineThresholdA;
+            lblADash.Visible = bolVsbLineThresholdA;
+            txtColumnThresholdBFrom.Visible = bolVsbLineThresholdB;
+            txtColumnThresholdBTo.Visible = bolVsbLineThresholdB;
+            lblBDash.Visible = bolVsbLineThresholdB;
+            txtColumnThresholdCFrom.Visible = bolVsbLineThresholdC;
+            txtColumnThresholdCTo.Visible = bolVsbLineThresholdC;
+            lblCDash.Visible = bolVsbLineThresholdC;
+            txtColumnThresholdDFrom.Visible = bolVsbLineThresholdD;
+            txtColumnThresholdDTo.Visible = bolVsbLineThresholdD;
+            lblDDash.Visible = bolVsbLineThresholdD;
+            txtColumnThresholdEFrom.Visible = bolVsbLineThresholdE;
+            txtColumnThresholdETo.Visible = bolVsbLineThresholdE;
+            lblEDash.Visible = bolVsbLineThresholdE;
         }
 
         /// <summary>

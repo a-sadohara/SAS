@@ -561,6 +561,7 @@ namespace ProductMstMaintenance
                      , point_5_plus_direction_y
                      , start_regimark_camera_num
                      , end_regimark_camera_num
+                     , column_cnt
                      , illumination_information
                      , column_threshold_01
                      , column_threshold_02
@@ -624,6 +625,7 @@ namespace ProductMstMaintenance
                 , point_5_plus_direction_y
                 , start_regimark_camera_num
                 , end_regimark_camera_num
+                , column_cnt
                 , illumination_information
                 , column_threshold_01
                 , column_threshold_02
