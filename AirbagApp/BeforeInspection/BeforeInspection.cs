@@ -1396,9 +1396,6 @@ namespace BeforeInspection
                     return;
                 }
 
-                // 検査番号の表示
-                lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
-
                 // ステータスの表示設定(検査終了)
                 SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusEnd);
 
@@ -1419,14 +1416,17 @@ namespace BeforeInspection
                 // 終了時刻
                 lblEndDatetime.Text = string.Empty;
 
-                // 検査番号の採番
-                if (bolNumberInspectionNum(out m_intInspectionNum) == false)
+                // 検査番号の移送
+                m_intInspectionNum = intInspectionNum;
+
+                // 検査情報ヘッダーの登録
+                if (RegStartInspectionInfoHeader(m_intInspectionNum, 1) == false)
                 {
                     return;
                 }
 
-                // 検査情報ヘッダーの登録
-                if (RegStartInspectionInfoHeader(m_intInspectionNum, 1) == false)
+                // 検査番号の再取得
+                if (!bolGetInspectionNum(out m_intInspectionNum))
                 {
                     return;
                 }
@@ -1497,14 +1497,17 @@ namespace BeforeInspection
                 // 終了時刻
                 lblEndDatetime.Text = string.Empty;
 
-                // 検査番号の採番
-                if (bolNumberInspectionNum(out m_intInspectionNum) == false)
+                // 検査番号の移送
+                m_intInspectionNum = intInspectionNum;
+
+                // 検査情報ヘッダーの登録
+                if (RegStartInspectionInfoHeader(m_intInspectionNum, 1) == false)
                 {
                     return;
                 }
 
-                // 検査情報ヘッダーの登録
-                if (RegStartInspectionInfoHeader(m_intInspectionNum, m_intBranchNum) == false)
+                // 検査番号の再取得
+                if (!bolGetInspectionNum(out m_intInspectionNum))
                 {
                     return;
                 }

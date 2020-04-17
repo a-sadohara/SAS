@@ -149,28 +149,17 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnBak_Click(object sender, EventArgs e)
         {
-            //TODO
-            int intSelIdx = txtInput.SelectionStart;
-
-            // 前を削除
-            if (txtInput.SelectionStart == 0 || txtInput.Text.Substring(txtInput.SelectionStart - 1, 1) == "-")
+            if (txtInput.TextLength == 0)
             {
                 return;
             }
 
-            if (txtInput.SelectionStart > 0)
-            {
-                txtInput.Text = txtInput.Text.Remove(txtInput.SelectionStart - 1, 1);
-            }
+            // 1文字削除
+            txtInput.Text = txtInput.Text.Remove(txtInput.TextLength - 1, 1);
 
             // カーソル位置を調整
-            txtInput.SelectionStart = intSelIdx - 1;
+            txtInput.SelectionStart = txtInput.TextLength;
             txtInput.Select();
-
-            if (txtInput.Text == "-")
-            {
-                txtInput.Text = string.Empty;
-            }
         }
 
         /// <summary>
