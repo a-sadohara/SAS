@@ -817,25 +817,29 @@ namespace BeforeInspection
 
                 // DBオープン
                 strSQL = @"SELECT 
-                               product_name
-                             , order_img
-                             , inspection_target_line
-                             , inspection_end_line
-                             , inspection_start_line
-                             , worker_1
-                             , worker_2
-                             , TO_CHAR(start_datetime,'YYYY/MM/DD HH24:MI:SS') AS start_datetime
-                             , TO_CHAR(end_datetime,'YYYY/MM/DD HH24:MI:SS') AS end_datetime
-                             , inspection_direction 
-                             , illumination_information 
-                             , start_regimark_camera_num 
-                             , end_regimark_camera_num 
+                               iih.product_name
+                             , iih.order_img
+                             , iih.inspection_target_line
+                             , iih.inspection_end_line
+                             , iih.inspection_start_line
+                             , iih.worker_1
+                             , iih.worker_2
+                             , TO_CHAR(iih.start_datetime,'YYYY/MM/DD HH24:MI:SS') AS start_datetime
+                             , TO_CHAR(iih.end_datetime,'YYYY/MM/DD HH24:MI:SS') AS end_datetime
+                             , iih.inspection_direction 
+                             , iih.illumination_information 
+                             , iih.start_regimark_camera_num 
+                             , iih.end_regimark_camera_num 
+                             , COALESCE(mpi.line_length, 0) AS line_length 
                            FROM 
-                               inspection_info_header 
-                           WHERE TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd 
-                             AND unit_num = :unit_num 
-                             AND inspection_num = :inspection_num
-                             AND branch_num = :branch_num";
+                               inspection_info_header AS iih 
+                           LEFT JOIN 
+                               mst_product_info AS mpi 
+                           ON iih.product_name = mpi.product_name 
+                           WHERE TO_CHAR(iih.inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd 
+                             AND iih.unit_num = :unit_num 
+                             AND iih.inspection_num = :inspection_num
+                             AND iih.branch_num = :branch_num";
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -867,6 +871,7 @@ namespace BeforeInspection
                     sw.WriteLine(dtData.Rows[0]["illumination_information"].ToString());
                     sw.WriteLine(dtData.Rows[0]["start_regimark_camera_num"].ToString());
                     sw.WriteLine(dtData.Rows[0]["end_regimark_camera_num"].ToString());
+                    sw.WriteLine(dtData.Rows[0]["line_length"].ToString());
                 }
                 return true;
             }
