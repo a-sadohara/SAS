@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace BeforeInspection
@@ -44,18 +45,18 @@ namespace BeforeInspection
             if (m_strTextMode.Equals(m_CON_TEXTMODE_ORDERIMG) ||
                 m_strTextMode.Equals(m_CON_TEXTMODE_NUMBER))
             {
-                List<Control> lstButtonInfo = new List<Control>();
-                lstButtonInfo.Add(btnA);
-                lstButtonInfo.Add(btnB);
-                lstButtonInfo.Add(btnC);
-                lstButtonInfo.Add(btnD);
-                lstButtonInfo.Add(btnE);
-                lstButtonInfo.Add(btnHyphen);
+                List<Button> lstStringButton = new List<Button>();
+                lstStringButton.Add(btnA);
+                lstStringButton.Add(btnB);
+                lstStringButton.Add(btnC);
+                lstStringButton.Add(btnD);
+                lstStringButton.Add(btnE);
+                lstStringButton.Add(btnHyphen);
 
-                foreach (Control ctr in lstButtonInfo)
+                foreach (Button ctrButton in lstStringButton)
                 {
                     // 文字ボタンを非表示にする
-                    ctr.Visible = false;
+                    ctrButton.Visible = false;
                 }
 
                 // 列の幅を0に設定する
@@ -184,5 +185,44 @@ namespace BeforeInspection
             txtInput.SelectionLength = 0;
         }
         #endregion
+
+        /// <summary>
+        /// キーボード入力
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtInput_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // 現在有効な数値ボタン・文字ボタンを判定
+            foreach (Button ctrButton in tableLayoutPanel1.Controls.OfType<Button>().Where(x => x.Visible && x.Text.Length == 1))
+            {
+                if (string.Compare(ctrButton.Text, e.KeyChar.ToString(), true) == 0)
+                {
+                    btnVal_Click(ctrButton, null);
+                    return;
+                }
+            }
+
+            // バックスペースキーの判定
+            if (e.KeyChar == (char)Keys.Back)
+            {
+                btnBak_Click(null, null);
+                return;
+            }
+
+            // エスケープキーの判定
+            if (e.KeyChar == (char)Keys.Escape)
+            {
+                btnAllClear_Click(null, null);
+                return;
+            }
+
+            // エンターキーの判定
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                btnEnter_Click(null, null);
+                return;
+            }
+        }
     }
 }
