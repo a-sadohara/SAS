@@ -14,7 +14,7 @@ namespace BeforeInspection
         private int m_intInspectionNum = 0;             // 検査番号
         private int m_intBranchNum = 0;                 // 枝番
         private string m_strUnitNum = string.Empty;               // 号機
-        private int m_intIlluminationInformation = -1;  // 照度情報
+        private int m_intIlluminationInformation = 0;   // 照度情報
         private int m_intStartRegimarkCameraNum = 0;    // 開始レジマークカメラ番号
         private int m_intEndRegimarkCameraNum = 0;      // 終了レジマークカメラ番号
         private string m_strWorker1 = string.Empty;               // 作業者情報(社員番号)検反部No.1
@@ -752,7 +752,7 @@ namespace BeforeInspection
                                           string strProductName)
         {
             // 初期化
-            intIlluminationInformation = -1;
+            intIlluminationInformation = 0;
             intStartRegimarkCameraNum = 0;
             intEndRegimarkCameraNum = 0;
 
@@ -779,9 +779,20 @@ namespace BeforeInspection
 
                 if (dtData.Rows.Count > 0)
                 {
-                    intIlluminationInformation = int.Parse(dtData.Rows[0]["illumination_information"].ToString());
-                    intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["start_regimark_camera_num"].ToString());
-                    intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
+                    if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["illumination_information"].ToString()))
+                    {
+                        intIlluminationInformation = int.Parse(dtData.Rows[0]["illumination_information"].ToString());
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["start_regimark_camera_num"].ToString()))
+                    {
+                        intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["start_regimark_camera_num"].ToString());
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["end_regimark_camera_num"].ToString()))
+                    {
+                        intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
+                    }
                 }
 
                 return true;
@@ -789,7 +800,16 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}{3}{4}",
+                        g_clsMessageInfo.strMsgE0001,
+                        Environment.NewLine,
+                        ex.Message,
+                        Environment.NewLine,
+                        "[照度情報・開始レジマークカメラ番号・終了レジマークカメラ番号]"));
+
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0021)).ShowDialog(this);
 
