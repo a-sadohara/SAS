@@ -400,6 +400,7 @@
             this.txtInput.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtInput.Click += new System.EventHandler(this.txtInput_Click);
             this.txtInput.Enter += new System.EventHandler(this.txtInput_Enter);
+            this.txtInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtInput_KeyDown);
             this.txtInput.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtInput_KeyPress);
             // 
             // TenKeyInput

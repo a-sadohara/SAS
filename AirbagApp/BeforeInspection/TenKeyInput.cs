@@ -202,23 +202,31 @@ namespace BeforeInspection
                     return;
                 }
             }
+        }
 
+        /// <summary>
+        /// キーボード入力
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtInput_KeyDown(object sender, KeyEventArgs e)
+        {
             // バックスペースキーの判定
-            if (e.KeyChar == (char)Keys.Back)
+            if (e.KeyCode == Keys.Back)
             {
                 btnBak_Click(null, null);
                 return;
             }
 
-            // エスケープキーの判定
-            if (e.KeyChar == (char)Keys.Escape)
+            // デリートキーの判定
+            if (e.KeyCode == Keys.Delete)
             {
                 btnAllClear_Click(null, null);
                 return;
             }
 
             // エンターキーの判定
-            if (e.KeyChar == (char)Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
             {
                 btnEnter_Click(null, null);
                 return;
