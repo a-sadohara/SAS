@@ -314,9 +314,6 @@ namespace ImageChecker
             // zipファイルパス
             string strZipFilePath = Path.Combine(strNgImageCooperationDirectory, strZipFileName);
 
-            // zipファイルコピーパス
-            string strZipFileCopyPath = Path.Combine(g_strZipExtractDirPath, strUnitNum, strZipFileName);
-
             try
             {
                 // zipファイルの存在チェックを行う
@@ -325,16 +322,10 @@ namespace ImageChecker
                     return false;
                 }
 
-                // zipファイルを一時フォルダにコピーする
-                File.Copy(strZipFilePath, strZipFileCopyPath, true);
-
                 // zipファイルを解凍する(同名ファイルは上書きする)
                 SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
-                SevenZipExtractor extractor = new SevenZipExtractor(strZipFileCopyPath);
+                SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
                 extractor.ExtractAll(strDecompressionDirectory, true);
-
-                // 一時フォルダのzipファイルを削除する
-                File.Delete(strZipFileCopyPath);
 
                 // 解凍有無をチェックする
                 if (!Directory.Exists(strDecompressionSubDirectory))
@@ -363,11 +354,6 @@ namespace ImageChecker
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
 
                 // エラー発生時、中途半端に取り込まれた情報を削除する
-                if (File.Exists(strZipFileCopyPath))
-                {
-                    File.Delete(strZipFileCopyPath);
-                }
-
                 if (Directory.Exists(strDecompressionSubDirectory))
                 {
                     Directory.Delete(strDecompressionSubDirectory, true);
