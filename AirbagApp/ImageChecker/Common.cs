@@ -314,52 +314,61 @@ namespace ImageChecker
             // zipファイルパス
             string strZipFilePath = Path.Combine(strNgImageCooperationDirectory, strZipFileName);
 
-            try
+            // zipファイルの存在チェックを行う
+            if (!File.Exists(strZipFilePath))
             {
-                // zipファイルの存在チェックを行う
-                if (!File.Exists(strZipFilePath))
+                return false;
+            }
+
+            // zipファイルを解凍する
+            Task<Boolean> taskExtractZipAll = Task<Boolean>.Run(() => ExtractZipAll(strZipFilePath, strDecompressionDirectory, strDecompressionSubDirectory));
+
+            using (Process prCmd = new Process())
+            {
+                prCmd.StartInfo.FileName = "cmd.exe";
+                prCmd.StartInfo.Arguments = @"/c wmic process where name=""7za.exe"" CALL setpriority ""high priority""";
+                prCmd.StartInfo.CreateNoWindow = true;
+                prCmd.StartInfo.UseShellExecute = false;
+                prCmd.StartInfo.RedirectStandardOutput = true;
+                prCmd.Start();
+                prCmd.WaitForExit();
+            }
+
+            await taskExtractZipAll;
+
+            // 解凍有無をチェックする
+            if (!taskExtractZipAll.Result ||
+                !Directory.Exists(strDecompressionSubDirectory))
+            {
+                return false;
+            }
+
+            if (bolUndetectedImageFlag)
+            {
+                // 解凍サブディレクトリの情報を取得する
+                DirectoryInfo diDecompressionInfo = new DirectoryInfo(strDecompressionSubDirectory);
+
+                try
                 {
-                    return false;
-                }
-
-                // zipファイルを解凍する(同名ファイルは上書きする)
-                SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
-                SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
-                extractor.ExtractAll(strDecompressionDirectory, true);
-
-                // 解凍有無をチェックする
-                if (!Directory.Exists(strDecompressionSubDirectory))
-                {
-                    return false;
-                }
-
-                if (bolUndetectedImageFlag)
-                {
-                    // 解凍サブディレクトリの情報を取得する
-                    DirectoryInfo diDecompressionInfo = new DirectoryInfo(strDecompressionSubDirectory);
-
                     // 一時ディレクトリから欠点画像格納ディレクトリにファイルをコピーする(同名ファイルは上書きする)
                     foreach (FileInfo filePath in diDecompressionInfo.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0))
                     {
                         File.Copy(filePath.FullName, Path.Combine(strFaultImageDecompressionDirectory, filePath.Name), true);
                     }
-
-                    // 解凍サブディレクトリを削除する
-                    diDecompressionInfo.Delete(true);
                 }
-            }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
-
-                // エラー発生時、中途半端に取り込まれた情報を削除する
-                if (Directory.Exists(strDecompressionSubDirectory))
+                catch (Exception ex)
                 {
-                    Directory.Delete(strDecompressionSubDirectory, true);
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
+
+                    // エラー発生時、中途半端に取り込まれた情報を削除する
+                    diDecompressionInfo.Delete(true);
+
+                    return false;
                 }
 
-                return false;
+                // 解凍サブディレクトリを削除する
+                diDecompressionInfo.Delete(true);
             }
 
             return true;
@@ -424,35 +433,6 @@ namespace ImageChecker
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng_non_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNgNonDetect });
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
-
-                // 欠点画像の取込を行う
-                Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, strFaultImageFileName));
-                await taskInputFaultImage;
-
-                if (!taskInputFaultImage.Result)
-                {
-                    return false;
-                }
-
-                // 未検知画像の取込を行う
-                foreach (DataRow row in dtData.Rows)
-                {
-                    Task<Boolean> taskInputFaultImageUndetected = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, row["org_imagepath"].ToString().Replace(".jpg", string.Empty), true, strFaultImageFileName));
-                    await taskInputFaultImageUndetected;
-
-                    if (!taskInputFaultImageUndetected.Result)
-                    {
-                        return false;
-                    }
-                }
-
-                diFaultImage = new DirectoryInfo(strFaultImageDecompressionDirectory);
-
-                // 解凍した画像数と比較する
-                if (intTotalCount > diFaultImage.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0).Count())
-                {
-                    return false;
-                }
             }
             catch (Exception ex)
             {
@@ -470,6 +450,71 @@ namespace ImageChecker
                     g_CON_MESSAGE_TITLE_ERROR,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+
+                return false;
+            }
+
+            // 欠点画像の取込を行う
+            Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, strFaultImageFileName));
+            await taskInputFaultImage;
+
+            if (!taskInputFaultImage.Result)
+            {
+                return false;
+            }
+
+            // 未検知画像の取込を行う
+            foreach (DataRow row in dtData.Rows)
+            {
+                Task<Boolean> taskInputFaultImageUndetected = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, row["org_imagepath"].ToString().Replace(".jpg", string.Empty), true, strFaultImageFileName));
+                await taskInputFaultImageUndetected;
+
+                if (!taskInputFaultImageUndetected.Result)
+                {
+                    return false;
+                }
+            }
+
+            diFaultImage = new DirectoryInfo(strFaultImageDecompressionDirectory);
+
+            // 解凍した画像数と比較する
+            if (intTotalCount > diFaultImage.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0).Count())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// zip解凍
+        /// </summary>
+        /// <param name="strZipFilePath">zipファイルパス</param>
+        /// <param name="strDecompressionDirectory">解凍ディレクトリ</param>
+        /// <param name="strDecompressionSubDirectory">解凍サブディレクトリ</param>
+        private static async Task<Boolean> ExtractZipAll(
+            string strZipFilePath,
+            string strDecompressionDirectory,
+            string strDecompressionSubDirectory)
+        {
+            SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
+            SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
+
+            try
+            {
+                // zipファイルを解凍する(同名ファイルは上書きする)
+                extractor.ExtractAll(strDecompressionDirectory, true);
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
+
+                // エラー発生時、中途半端に取り込まれた情報を削除する
+                if (Directory.Exists(strDecompressionSubDirectory))
+                {
+                    Directory.Delete(strDecompressionSubDirectory, true);
+                }
 
                 return false;
             }
