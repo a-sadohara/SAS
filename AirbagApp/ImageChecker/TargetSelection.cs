@@ -1000,6 +1000,7 @@ namespace ImageChecker
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
+            Random random = new Random();
 
             // チェック対象の完了通知連携ディレクトリを設定する
             string[] strCompletionNoticeCooperationDirectoryArray =
@@ -1200,8 +1201,16 @@ namespace ImageChecker
                             if (!Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName)) &&
                                 dateSyncTargetDate < DateTime.Parse(strInspectionDate))
                             {
-                                lstTask.Add(Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, strFaultImageFileName)));
-                                await Task.Delay(1000);
+                                if (lstTask.Count != 0)
+                                {
+                                    // 複数取込の場合、ランダムで1秒以上6秒未満の待ち時間を挟む
+                                    await Task.Delay(random.Next(1, 6) * 1000);
+                                }
+
+                                string strUnitNumInfo = strUnitNum;
+                                string strFaultImageFileNameInfo = strFaultImageFileName;
+
+                                lstTask.Add(Task<Boolean>.Run(() => BolInputFaultImage(strUnitNumInfo, strFaultImageFileNameInfo)));
                             }
 
                             if (intCnt >= 1)

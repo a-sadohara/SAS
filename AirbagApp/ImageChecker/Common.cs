@@ -326,12 +326,6 @@ namespace ImageChecker
             // zipファイルパス
             string strZipFilePath = Path.Combine(strNgImageCooperationDirectory, strZipFileName);
 
-            // zipファイルの存在チェックを行う
-            if (!File.Exists(strZipFilePath))
-            {
-                return false;
-            }
-
             // zipファイルを解凍する
             Task<Boolean> taskExtractZipAll = Task<Boolean>.Run(() => ExtractZipAll(strZipFilePath, strDecompressionDirectory, strDecompressionSubDirectory));
 
@@ -343,8 +337,7 @@ namespace ImageChecker
             await taskExtractZipAll;
 
             // 解凍有無をチェックする
-            if (!taskExtractZipAll.Result ||
-                !Directory.Exists(strDecompressionSubDirectory))
+            if (!taskExtractZipAll.Result)
             {
                 return false;
             }
@@ -504,11 +497,11 @@ namespace ImageChecker
             string strDecompressionSubDirectory)
         {
             SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
-            SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
 
             try
             {
                 // zipファイルを解凍する(同名ファイルは上書きする)
+                SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
                 extractor.ExtractAll(strDecompressionDirectory, true);
             }
             catch (Exception ex)
