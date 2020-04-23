@@ -27,7 +27,7 @@ namespace ImageChecker
         public static string g_strSharedFolderPath = string.Empty;
         public static string g_strSharedFolderUser = string.Empty;
         public static string g_strSharedFolderPassword = string.Empty;
-        public static string g_CON_SHARED_FOLDER_CONNECTION_STRING = @" use {0} /user:{1} {2}";
+        private const string g_CON_SHARED_FOLDER_CONNECTION_STRING = @" use {0} /user:{1} {2}";
 
         // コネクションクラス
         public static ConnectionNpgsql g_clsConnectionNpgsql;
@@ -83,6 +83,15 @@ namespace ImageChecker
         public const string g_strUnitNumN2 = "N2";
         public const string g_strUnitNumN3 = "N3";
         public const string g_strUnitNumN4 = "N4";
+
+        // プロセス優先度
+        public const string g_strPriorityRealtime = "Realtime";
+        public const string g_strPriorityHighPriority = "High Priority";
+        public const string g_strPriorityAboveNormal = "Above Normal";
+        public const string g_strPriorityNormal = "Normal";
+        public const string g_strProcessNameImageChecker = "ImageChecker.exe";
+        public const string g_strProcessName7zip = "7za.exe";
+        private const string g_CON_CHANGE_PRIORITY = @"/c wmic process where name=""{0}"" CALL setpriority ""{1}""";
 
         // ログイン関連
         public static bool g_bolStatus = false; //0:ログアウト 1:ログイン
@@ -219,6 +228,9 @@ namespace ImageChecker
                 g_strMasterImageDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE);
                 g_strMasterImageDirMarking = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE_MARKING);
                 g_strZipExtractDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_ZIP_EXTRACT_DIR_PATH);
+
+                // プロセス優先度を変更する
+                ChangeProcessingPriority(g_strProcessNameImageChecker);
             }
             catch (Exception ex)
             {
@@ -323,16 +335,10 @@ namespace ImageChecker
             // zipファイルを解凍する
             Task<Boolean> taskExtractZipAll = Task<Boolean>.Run(() => ExtractZipAll(strZipFilePath, strDecompressionDirectory, strDecompressionSubDirectory));
 
-            using (Process prCmd = new Process())
-            {
-                prCmd.StartInfo.FileName = "cmd.exe";
-                prCmd.StartInfo.Arguments = @"/c wmic process where name=""7za.exe"" CALL setpriority ""high priority""";
-                prCmd.StartInfo.CreateNoWindow = true;
-                prCmd.StartInfo.UseShellExecute = false;
-                prCmd.StartInfo.RedirectStandardOutput = true;
-                prCmd.Start();
-                prCmd.WaitForExit();
-            }
+            await Task.Delay(1000);
+
+            // 解凍処理のプロセス優先度を変更する
+            ChangeProcessingPriority(g_strProcessName7zip);
 
             await taskExtractZipAll;
 
@@ -520,6 +526,33 @@ namespace ImageChecker
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// プロセス優先度変更
+        /// </summary>
+        /// <param name="strProcessName">対象プロセス</param>
+        private static void ChangeProcessingPriority(string strProcessName)
+        {
+            // プロセス優先度を変更する
+            if (!string.IsNullOrWhiteSpace(g_clsSystemSettingInfo.strProcessingPriority) &&
+                !g_clsSystemSettingInfo.strProcessingPriority.Equals(g_strPriorityNormal))
+            {
+                using (Process prCmd = new Process())
+                {
+                    prCmd.StartInfo.FileName = "cmd.exe";
+                    prCmd.StartInfo.Arguments =
+                        string.Format(
+                            g_CON_CHANGE_PRIORITY,
+                            strProcessName,
+                            g_clsSystemSettingInfo.strProcessingPriority);
+                    prCmd.StartInfo.CreateNoWindow = true;
+                    prCmd.StartInfo.UseShellExecute = false;
+                    prCmd.StartInfo.RedirectStandardOutput = true;
+                    prCmd.Start();
+                    prCmd.WaitForExit();
+                }
+            }
         }
 
         /// <summary>

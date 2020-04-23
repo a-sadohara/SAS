@@ -1201,7 +1201,7 @@ namespace ImageChecker
                                 dateSyncTargetDate < DateTime.Parse(strInspectionDate))
                             {
                                 lstTask.Add(Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, strFaultImageFileName)));
-                                Thread.Sleep(1000);
+                                await Task.Delay(1000);
                             }
 
                             if (intCnt >= 1)

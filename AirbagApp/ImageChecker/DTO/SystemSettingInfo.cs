@@ -119,6 +119,9 @@ namespace ImageChecker.DTO
         public readonly int intRetryTimes;
         // リトライ待機時間（秒）
         public readonly int intRetryWaitSeconds;
+        // プロセス優先度
+        public readonly int intProcessingPriority;
+        public readonly string strProcessingPriority;
 
         /// <summary>
         /// コンストラクタ
@@ -210,6 +213,7 @@ namespace ImageChecker.DTO
                 GetSystemSettingValue("SuperUser", ref strSuperUser);
                 GetSystemSettingValue("RetryTimes", ref intRetryTimes);
                 GetSystemSettingValue("RetryWaitSeconds", ref intRetryWaitSeconds);
+                GetSystemSettingValue("ProcessingPriority", ref intProcessingPriority);
 
                 // リトライ回数
                 if (intRetryTimes <= 0)
@@ -223,6 +227,26 @@ namespace ImageChecker.DTO
                 if (intRetryWaitSeconds <= 0)
                 {
                     intRetryWaitSeconds = 1000;
+                }
+
+                // プロセス優先度
+                switch (intProcessingPriority)
+                {
+                    case 1:
+                        strProcessingPriority = g_strPriorityRealtime;
+                        break;
+                    case 2:
+                        strProcessingPriority = g_strPriorityHighPriority;
+                        break;
+                    case 3:
+                        strProcessingPriority = g_strPriorityAboveNormal;
+                        break;
+                    case 4:
+                        strProcessingPriority = g_strPriorityNormal;
+                        break;
+                    default:
+                        strProcessingPriority = string.Empty;
+                        break;
                 }
 
                 if (lststrErrorMessage.Count > 0)
