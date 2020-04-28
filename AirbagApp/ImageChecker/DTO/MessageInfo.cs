@@ -126,7 +126,7 @@ namespace ImageChecker.DTO
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("メッセージ情報取得時にエラーが発生しました。{0}{1} ", Environment.NewLine, ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show("メッセージ情報取得時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("メッセージ情報取得時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
         }

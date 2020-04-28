@@ -516,7 +516,7 @@ namespace ImageChecker
             bool bolProcOkNg = false;
 
             // 列のスタイル変更
-            this.dgvDecisionResult.Columns[0].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //№
+            this.dgvDecisionResult.Columns[0].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;     //№
 
             // 作業者の表示
             lblWorkerName.Text = string.Format(m_CON_FORMAT_WORKER_NAME, g_clsLoginInfo.strWorkerName);

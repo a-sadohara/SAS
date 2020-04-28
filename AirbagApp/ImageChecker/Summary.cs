@@ -147,9 +147,9 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
@@ -222,7 +222,7 @@ namespace ImageChecker
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
                 // ヘッダ表示
-                lblDecisionStartTime.Text = string.Format(m_CON_FORMAT_DECISION_START_DATETIME, 
+                lblDecisionStartTime.Text = string.Format(m_CON_FORMAT_DECISION_START_DATETIME,
                                                           dtData.Rows[0]["decision_start_datetime"].ToString());    // 判定開始日時
                 lblDecisionEndTime.Text = string.Format(m_CON_FORMAT_DECISION_END_DATETIME,
                                                         dtData.Rows[0]["decision_end_datetime"].ToString());        // 判定終了日時
@@ -230,7 +230,7 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -240,7 +240,7 @@ namespace ImageChecker
             try
             {
                 // 列のスタイル変更
-                this.dgvDecisionResult.Columns[0].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;     //№
+                this.dgvDecisionResult.Columns[0].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;     //№
 
                 // カウント系のヘッダ表示
                 dtData = new DataTable();
@@ -298,7 +298,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -347,7 +347,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -423,7 +423,7 @@ namespace ImageChecker
                         {
                             stResultName = g_clsSystemSettingInfo.strOverDetectionExceptResultNameNg;
                         }
-                            
+
                         arrRow.Add(stResultName);
 
                         arrRow.Add(row["ng_reason"]);
@@ -440,7 +440,7 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -535,7 +535,7 @@ namespace ImageChecker
             {
                 g_clsConnectionNpgsql.DbRollback();
                 g_clsConnectionNpgsql.DbClose();
-                
+
                 return;
             }
             g_clsConnectionNpgsql.DbCommit();
@@ -615,7 +615,7 @@ namespace ImageChecker
             {
                 // 過検知除外ステータス更新(中断)
                 if (blnUpdOverDetectionExceptStatus(m_strFabricName, m_strInspectionDate, m_intInspectionNum,
-                                                    g_clsSystemSettingInfo.intOverDetectionExceptStatusStp)== false)
+                                                    g_clsSystemSettingInfo.intOverDetectionExceptStatusStp) == false)
                 {
                     // エラー時
                     g_clsConnectionNpgsql.DbRollback();

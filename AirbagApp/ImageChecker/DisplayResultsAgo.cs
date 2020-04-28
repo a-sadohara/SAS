@@ -575,8 +575,8 @@ namespace ImageChecker
             txtNgReason.Text = "";
 
             // 列のスタイル変更
-            this.dgvCheckInspectionHistory.Columns["No"].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.dgvCheckInspectionHistory.Columns["InspectionNum"].DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.dgvCheckInspectionHistory.Columns["No"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            this.dgvCheckInspectionHistory.Columns["InspectionNum"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
 
             try
             {

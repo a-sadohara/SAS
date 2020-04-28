@@ -39,7 +39,7 @@ namespace ImageChecker.DTO
             intIdxMax = Application.OpenForms.Count - 1;
 
             // ログイン画面以外を最後から閉じる
-            while (intIdxMax > 0) 
+            while (intIdxMax > 0)
             {
                 // 起動画面ループ
                 foreach (Form frm in Application.OpenForms)
