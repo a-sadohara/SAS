@@ -14,9 +14,94 @@ namespace ImageChecker.DTO
 
         // データテーブル
         private DataTable m_dtSystemSettingInfo = new DataTable();
+        private DataTable m_dtMstDecisionReason = new DataTable();
 
         // エラーメッセージ格納用
         private List<String> lststrErrorMessage = new List<String>();
+
+        private const string con_strInstanceName = "InstanceName";
+        private const string con_strTemporaryDirectory = "TemporaryDirectory";
+        private const string con_strNgImageCooperationDirectoryN1 = "NgImageCooperationDirectoryN1";
+        private const string con_strNgImageCooperationDirectoryN2 = "NgImageCooperationDirectoryN2";
+        private const string con_strNgImageCooperationDirectoryN3 = "NgImageCooperationDirectoryN3";
+        private const string con_strNgImageCooperationDirectoryN4 = "NgImageCooperationDirectoryN4";
+        private const string con_strCompletionNoticeCooperationDirectoryN1 = "CompletionNoticeCooperationDirectoryN1";
+        private const string con_strCompletionNoticeCooperationDirectoryN2 = "CompletionNoticeCooperationDirectoryN2";
+        private const string con_strCompletionNoticeCooperationDirectoryN3 = "CompletionNoticeCooperationDirectoryN3";
+        private const string con_strCompletionNoticeCooperationDirectoryN4 = "CompletionNoticeCooperationDirectoryN4";
+        private const string con_strFaultImageDirectory = "FaultImageDirectory";
+        private const string con_strMasterImageDirectory = "MasterImageDirectory";
+        private const string con_strNotDetectedImageCooperationDirectoryN1 = "NotDetectedImageCooperationDirectoryN1";
+        private const string con_strNotDetectedImageCooperationDirectoryN2 = "NotDetectedImageCooperationDirectoryN2";
+        private const string con_strNotDetectedImageCooperationDirectoryN3 = "NotDetectedImageCooperationDirectoryN3";
+        private const string con_strNotDetectedImageCooperationDirectoryN4 = "NotDetectedImageCooperationDirectoryN4";
+        private const string con_strCooperationBaseInstanceName = "CooperationBaseInstanceName";
+        private const string con_strWaitingTimeProcessed = "WaitingTimeProcessed";
+        private const string con_strProductionManagementCooperationDirectory = "ProductionManagementCooperationDirectory";
+        private const string con_strInspectionResltCsvDirectory = "InspectionResltCsvDirectory";
+        private const string con_strInspectionDirectionS = "InspectionDirectionS";
+        private const string con_strInspectionDirectionX = "InspectionDirectionX";
+        private const string con_strInspectionDirectionY = "InspectionDirectionY";
+        private const string con_strInspectionDirectionR = "InspectionDirectionR";
+        private const string con_strOverDetectionExceptStatusBef = "OverDetectionExceptStatusBef";
+        private const string con_strOverDetectionExceptStatusChk = "OverDetectionExceptStatusChk";
+        private const string con_strOverDetectionExceptStatusStp = "OverDetectionExceptStatusStp";
+        private const string con_strOverDetectionExceptStatusEnd = "OverDetectionExceptStatusEnd";
+        private const string con_strOverDetectionExceptStatusExc = "OverDetectionExceptStatusExc";
+        private const string con_strOverDetectionExceptStatusNameBef = "OverDetectionExceptStatusNameBef";
+        private const string con_strOverDetectionExceptStatusNameChk = "OverDetectionExceptStatusNameChk";
+        private const string con_strOverDetectionExceptStatusNameStp = "OverDetectionExceptStatusNameStp";
+        private const string con_strOverDetectionExceptStatusNameEnd = "OverDetectionExceptStatusNameEnd";
+        private const string con_strOverDetectionExceptStatusNameExc = "OverDetectionExceptStatusNameExc";
+        private const string con_strAcceptanceCheckStatusBef = "AcceptanceCheckStatusBef";
+        private const string con_strAcceptanceCheckStatusChk = "AcceptanceCheckStatusChk";
+        private const string con_strAcceptanceCheckStatusStp = "AcceptanceCheckStatusStp";
+        private const string con_strAcceptanceCheckStatusEnd = "AcceptanceCheckStatusEnd";
+        private const string con_strAcceptanceCheckStatusExc = "AcceptanceCheckStatusExc";
+        private const string con_strAcceptanceCheckStatusNameBef = "AcceptanceCheckStatusNameBef";
+        private const string con_strAcceptanceCheckStatusNameChk = "AcceptanceCheckStatusNameChk";
+        private const string con_strAcceptanceCheckStatusNameStp = "AcceptanceCheckStatusNameStp";
+        private const string con_strAcceptanceCheckStatusNameEnd = "AcceptanceCheckStatusNameEnd";
+        private const string con_strAcceptanceCheckStatusNameExc = "AcceptanceCheckStatusNameExc";
+        private const string con_strRapidResultNon = "RapidResultNon";
+        private const string con_strRapidResultOk = "RapidResultOk";
+        private const string con_strRapidResultNg = "RapidResultNg";
+        private const string con_strRapidResultErr = "RapidResultErr";
+        private const string con_strRapidResultDis = "RapidResultDis";
+        private const string con_strEdgeResultNon = "EdgeResultNon";
+        private const string con_strEdgeResultOk = "EdgeResultOk";
+        private const string con_strEdgeResultNg = "EdgeResultNg";
+        private const string con_strEdgeResultErr = "EdgeResultErr";
+        private const string con_strEdgeResultDis = "EdgeResultDis";
+        private const string con_strMaskingResultNon = "MaskingResultNon";
+        private const string con_strMaskingResultOk = "MaskingResultOk";
+        private const string con_strMaskingResultNg = "MaskingResultNg";
+        private const string con_strMaskingResultErr = "MaskingResultErr";
+        private const string con_strMaskingResultDis = "MaskingResultDis";
+        private const string con_strOverDetectionExceptResultNon = "OverDetectionExceptResultNon";
+        private const string con_strOverDetectionExceptResultOk = "OverDetectionExceptResultOk";
+        private const string con_strOverDetectionExceptResultNg = "OverDetectionExceptResultNg";
+        private const string con_strOverDetectionExceptResultNgNonDetect = "OverDetectionExceptResultNgNonDetect";
+        private const string con_strOverDetectionExceptResultNameNon = "OverDetectionExceptResultNameNon";
+        private const string con_strOverDetectionExceptResultNameOk = "OverDetectionExceptResultNameOk";
+        private const string con_strOverDetectionExceptResultNameNg = "OverDetectionExceptResultNameNg";
+        private const string con_strOverDetectionExceptResultNameNgNonDetect = "OverDetectionExceptResultNameNgNonDetect";
+        private const string con_strAcceptanceCheckResultNon = "AcceptanceCheckResultNon";
+        private const string con_strAcceptanceCheckResultOk = "AcceptanceCheckResultOk";
+        private const string con_strAcceptanceCheckResultNgDetect = "AcceptanceCheckResultNgDetect";
+        private const string con_strAcceptanceCheckResultNgNonDetect = "AcceptanceCheckResultNgNonDetect";
+        private const string con_strAcceptanceCheckResultNameNon = "AcceptanceCheckResultNameNon";
+        private const string con_strAcceptanceCheckResultNameOk = "AcceptanceCheckResultNameOk";
+        private const string con_strAcceptanceCheckResultNameNgDetect = "AcceptanceCheckResultNameNgDetect";
+        private const string con_strAcceptanceCheckResultNameNgNonDetect = "AcceptanceCheckResultNameNgNonDetect";
+        private const string con_strSuperUser = "SuperUser";
+        private const string con_strRetryTimes = "RetryTimes";
+        private const string con_strRetryWaitSeconds = "RetryWaitSeconds";
+        private const string con_strProcessingPriority = "ProcessingPriority";
+        private const string con_strMainNGReason1 = "MainNGReason1";
+        private const string con_strMainNGReason2 = "MainNGReason2";
+        private const string con_strMainNGReason3 = "MainNGReason3";
+        private const string con_strMainNGReason4 = "MainNGReason4";
 
         //==============
         // App.Config
@@ -122,6 +207,15 @@ namespace ImageChecker.DTO
         // プロセス優先度
         public readonly int intProcessingPriority;
         public readonly string strProcessingPriority;
+        // NG理由(主要)
+        public readonly int intMainNGReason1;
+        public readonly int intMainNGReason2;
+        public readonly int intMainNGReason3;
+        public readonly int intMainNGReason4;
+        public readonly string strMainNGReason1;
+        public readonly string strMainNGReason2;
+        public readonly string strMainNGReason3;
+        public readonly string strMainNGReason4;
 
         /// <summary>
         /// コンストラクタ
@@ -130,90 +224,181 @@ namespace ImageChecker.DTO
         {
             try
             {
+                // システム設定情報から設定値を取得
                 GetSystemSettingValue();
+                GetSystemSettingValue(con_strNgImageCooperationDirectoryN1, ref strNgImageCooperationDirectoryN1);
+                GetSystemSettingValue(con_strNgImageCooperationDirectoryN2, ref strNgImageCooperationDirectoryN2);
+                GetSystemSettingValue(con_strNgImageCooperationDirectoryN3, ref strNgImageCooperationDirectoryN3);
+                GetSystemSettingValue(con_strNgImageCooperationDirectoryN4, ref strNgImageCooperationDirectoryN4);
+                GetSystemSettingValue(con_strCompletionNoticeCooperationDirectoryN1, ref strCompletionNoticeCooperationDirectoryN1);
+                GetSystemSettingValue(con_strCompletionNoticeCooperationDirectoryN2, ref strCompletionNoticeCooperationDirectoryN2);
+                GetSystemSettingValue(con_strCompletionNoticeCooperationDirectoryN3, ref strCompletionNoticeCooperationDirectoryN3);
+                GetSystemSettingValue(con_strCompletionNoticeCooperationDirectoryN4, ref strCompletionNoticeCooperationDirectoryN4);
+                GetSystemSettingValue(con_strFaultImageDirectory, ref strFaultImageDirectory);
+                GetSystemSettingValue(con_strMasterImageDirectory, ref strMasterImageDirectory);
+                GetSystemSettingValue(con_strNotDetectedImageCooperationDirectoryN1, ref strNotDetectedImageCooperationDirectoryN1);
+                GetSystemSettingValue(con_strNotDetectedImageCooperationDirectoryN2, ref strNotDetectedImageCooperationDirectoryN2);
+                GetSystemSettingValue(con_strNotDetectedImageCooperationDirectoryN3, ref strNotDetectedImageCooperationDirectoryN3);
+                GetSystemSettingValue(con_strNotDetectedImageCooperationDirectoryN4, ref strNotDetectedImageCooperationDirectoryN4);
+                GetSystemSettingValue(con_strCooperationBaseInstanceName, ref strCooperationBaseInstanceName);
+                GetSystemSettingValue(con_strWaitingTimeProcessed, ref intWaitingTimeProcessed);
+                GetSystemSettingValue(con_strProductionManagementCooperationDirectory, ref strProductionManagementCooperationDirectory);
+                GetSystemSettingValue(con_strInspectionResltCsvDirectory, ref strInspectionResltCsvDirectory);
+                GetSystemSettingValue(con_strInspectionDirectionS, ref strInspectionDirectionS);
+                GetSystemSettingValue(con_strInspectionDirectionX, ref strInspectionDirectionX);
+                GetSystemSettingValue(con_strInspectionDirectionY, ref strInspectionDirectionY);
+                GetSystemSettingValue(con_strInspectionDirectionR, ref strInspectionDirectionR);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusBef, ref intOverDetectionExceptStatusBef);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusChk, ref intOverDetectionExceptStatusChk);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusStp, ref intOverDetectionExceptStatusStp);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusEnd, ref intOverDetectionExceptStatusEnd);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusExc, ref intOverDetectionExceptStatusExc);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusNameBef, ref strOverDetectionExceptStatusNameBef);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusNameChk, ref strOverDetectionExceptStatusNameChk);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusNameStp, ref strOverDetectionExceptStatusNameStp);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusNameEnd, ref strOverDetectionExceptStatusNameEnd);
+                GetSystemSettingValue(con_strOverDetectionExceptStatusNameExc, ref strOverDetectionExceptStatusNameExc);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusBef, ref intAcceptanceCheckStatusBef);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusChk, ref intAcceptanceCheckStatusChk);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusStp, ref intAcceptanceCheckStatusStp);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusEnd, ref intAcceptanceCheckStatusEnd);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusExc, ref intAcceptanceCheckStatusExc);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusNameBef, ref strAcceptanceCheckStatusNameBef);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusNameChk, ref strAcceptanceCheckStatusNameChk);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusNameStp, ref strAcceptanceCheckStatusNameStp);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusNameEnd, ref strAcceptanceCheckStatusNameEnd);
+                GetSystemSettingValue(con_strAcceptanceCheckStatusNameExc, ref strAcceptanceCheckStatusNameExc);
+                GetSystemSettingValue(con_strRapidResultNon, ref intRapidResultNon);
+                GetSystemSettingValue(con_strRapidResultOk, ref intRapidResultOk);
+                GetSystemSettingValue(con_strRapidResultNg, ref intRapidResultNg);
+                GetSystemSettingValue(con_strRapidResultErr, ref intRapidResultErr);
+                GetSystemSettingValue(con_strRapidResultDis, ref intRapidResultDis);
+                GetSystemSettingValue(con_strEdgeResultNon, ref intEdgeResultNon);
+                GetSystemSettingValue(con_strEdgeResultOk, ref intEdgeResultOk);
+                GetSystemSettingValue(con_strEdgeResultNg, ref intEdgeResultNg);
+                GetSystemSettingValue(con_strEdgeResultErr, ref intEdgeResultErr);
+                GetSystemSettingValue(con_strEdgeResultDis, ref intEdgeResultDis);
+                GetSystemSettingValue(con_strMaskingResultNon, ref intMaskingResultNon);
+                GetSystemSettingValue(con_strMaskingResultOk, ref intMaskingResultOk);
+                GetSystemSettingValue(con_strMaskingResultNg, ref intMaskingResultNg);
+                GetSystemSettingValue(con_strMaskingResultErr, ref intMaskingResultErr);
+                GetSystemSettingValue(con_strMaskingResultDis, ref intMaskingResultDis);
+                GetSystemSettingValue(con_strOverDetectionExceptResultNon, ref intOverDetectionExceptResultNon);
+                GetSystemSettingValue(con_strOverDetectionExceptResultOk, ref intOverDetectionExceptResultOk);
+                GetSystemSettingValue(con_strOverDetectionExceptResultNg, ref intOverDetectionExceptResultNg);
+                GetSystemSettingValue(con_strOverDetectionExceptResultNgNonDetect, ref intOverDetectionExceptResultNgNonDetect);
+                GetSystemSettingValue(con_strOverDetectionExceptResultNameNon, ref strOverDetectionExceptResultNameNon);
+                GetSystemSettingValue(con_strOverDetectionExceptResultNameOk, ref strOverDetectionExceptResultNameOk);
+                GetSystemSettingValue(con_strOverDetectionExceptResultNameNg, ref strOverDetectionExceptResultNameNg);
+                GetSystemSettingValue(con_strOverDetectionExceptResultNameNgNonDetect, ref strOverDetectionExceptResultNameNgNonDetect);
+                GetSystemSettingValue(con_strAcceptanceCheckResultNon, ref intAcceptanceCheckResultNon);
+                GetSystemSettingValue(con_strAcceptanceCheckResultOk, ref intAcceptanceCheckResultOk);
+                GetSystemSettingValue(con_strAcceptanceCheckResultNgDetect, ref intAcceptanceCheckResultNgDetect);
+                GetSystemSettingValue(con_strAcceptanceCheckResultNgNonDetect, ref intAcceptanceCheckResultNgNonDetect);
+                GetSystemSettingValue(con_strAcceptanceCheckResultNameNon, ref strAcceptanceCheckResultNameNon);
+                GetSystemSettingValue(con_strAcceptanceCheckResultNameOk, ref strAcceptanceCheckResultNameOk);
+                GetSystemSettingValue(con_strAcceptanceCheckResultNameNgDetect, ref strAcceptanceCheckResultNameNgDetect);
+                GetSystemSettingValue(con_strAcceptanceCheckResultNameNgNonDetect, ref strAcceptanceCheckResultNameNgNonDetect);
+                GetSystemSettingValue(con_strSuperUser, ref strSuperUser);
+                GetSystemSettingValue(con_strRetryTimes, ref intRetryTimes);
+                GetSystemSettingValue(con_strRetryWaitSeconds, ref intRetryWaitSeconds);
+                GetSystemSettingValue(con_strProcessingPriority, ref intProcessingPriority);
+                GetSystemSettingValue(con_strMainNGReason1, ref intMainNGReason1);
+                GetSystemSettingValue(con_strMainNGReason2, ref intMainNGReason2);
+                GetSystemSettingValue(con_strMainNGReason3, ref intMainNGReason3);
+                GetSystemSettingValue(con_strMainNGReason4, ref intMainNGReason4);
 
-                // App.Configから情報を取得
-                GetAppConfigValue("InstanceName", ref strInstanceName);
-                GetAppConfigValue("TemporaryDirectory", ref strTemporaryDirectory);
+                // App.Configから設定値を取得・上書き
+                GetAppConfigValue(con_strInstanceName, ref strInstanceName);
+                GetAppConfigValue(con_strTemporaryDirectory, ref strTemporaryDirectory);
+                GetAppConfigValue(con_strNgImageCooperationDirectoryN1, ref strNgImageCooperationDirectoryN1);
+                GetAppConfigValue(con_strNgImageCooperationDirectoryN2, ref strNgImageCooperationDirectoryN2);
+                GetAppConfigValue(con_strNgImageCooperationDirectoryN3, ref strNgImageCooperationDirectoryN3);
+                GetAppConfigValue(con_strNgImageCooperationDirectoryN4, ref strNgImageCooperationDirectoryN4);
+                GetAppConfigValue(con_strCompletionNoticeCooperationDirectoryN1, ref strCompletionNoticeCooperationDirectoryN1);
+                GetAppConfigValue(con_strCompletionNoticeCooperationDirectoryN2, ref strCompletionNoticeCooperationDirectoryN2);
+                GetAppConfigValue(con_strCompletionNoticeCooperationDirectoryN3, ref strCompletionNoticeCooperationDirectoryN3);
+                GetAppConfigValue(con_strCompletionNoticeCooperationDirectoryN4, ref strCompletionNoticeCooperationDirectoryN4);
+                GetAppConfigValue(con_strFaultImageDirectory, ref strFaultImageDirectory);
+                GetAppConfigValue(con_strMasterImageDirectory, ref strMasterImageDirectory);
+                GetAppConfigValue(con_strNotDetectedImageCooperationDirectoryN1, ref strNotDetectedImageCooperationDirectoryN1);
+                GetAppConfigValue(con_strNotDetectedImageCooperationDirectoryN2, ref strNotDetectedImageCooperationDirectoryN2);
+                GetAppConfigValue(con_strNotDetectedImageCooperationDirectoryN3, ref strNotDetectedImageCooperationDirectoryN3);
+                GetAppConfigValue(con_strNotDetectedImageCooperationDirectoryN4, ref strNotDetectedImageCooperationDirectoryN4);
+                GetAppConfigValue(con_strCooperationBaseInstanceName, ref strCooperationBaseInstanceName);
+                GetAppConfigValue(con_strWaitingTimeProcessed, ref intWaitingTimeProcessed);
+                GetAppConfigValue(con_strProductionManagementCooperationDirectory, ref strProductionManagementCooperationDirectory);
+                GetAppConfigValue(con_strInspectionResltCsvDirectory, ref strInspectionResltCsvDirectory);
+                GetAppConfigValue(con_strInspectionDirectionS, ref strInspectionDirectionS);
+                GetAppConfigValue(con_strInspectionDirectionX, ref strInspectionDirectionX);
+                GetAppConfigValue(con_strInspectionDirectionY, ref strInspectionDirectionY);
+                GetAppConfigValue(con_strInspectionDirectionR, ref strInspectionDirectionR);
+                GetAppConfigValue(con_strOverDetectionExceptStatusBef, ref intOverDetectionExceptStatusBef);
+                GetAppConfigValue(con_strOverDetectionExceptStatusChk, ref intOverDetectionExceptStatusChk);
+                GetAppConfigValue(con_strOverDetectionExceptStatusStp, ref intOverDetectionExceptStatusStp);
+                GetAppConfigValue(con_strOverDetectionExceptStatusEnd, ref intOverDetectionExceptStatusEnd);
+                GetAppConfigValue(con_strOverDetectionExceptStatusExc, ref intOverDetectionExceptStatusExc);
+                GetAppConfigValue(con_strOverDetectionExceptStatusNameBef, ref strOverDetectionExceptStatusNameBef);
+                GetAppConfigValue(con_strOverDetectionExceptStatusNameChk, ref strOverDetectionExceptStatusNameChk);
+                GetAppConfigValue(con_strOverDetectionExceptStatusNameStp, ref strOverDetectionExceptStatusNameStp);
+                GetAppConfigValue(con_strOverDetectionExceptStatusNameEnd, ref strOverDetectionExceptStatusNameEnd);
+                GetAppConfigValue(con_strOverDetectionExceptStatusNameExc, ref strOverDetectionExceptStatusNameExc);
+                GetAppConfigValue(con_strAcceptanceCheckStatusBef, ref intAcceptanceCheckStatusBef);
+                GetAppConfigValue(con_strAcceptanceCheckStatusChk, ref intAcceptanceCheckStatusChk);
+                GetAppConfigValue(con_strAcceptanceCheckStatusStp, ref intAcceptanceCheckStatusStp);
+                GetAppConfigValue(con_strAcceptanceCheckStatusEnd, ref intAcceptanceCheckStatusEnd);
+                GetAppConfigValue(con_strAcceptanceCheckStatusExc, ref intAcceptanceCheckStatusExc);
+                GetAppConfigValue(con_strAcceptanceCheckStatusNameBef, ref strAcceptanceCheckStatusNameBef);
+                GetAppConfigValue(con_strAcceptanceCheckStatusNameChk, ref strAcceptanceCheckStatusNameChk);
+                GetAppConfigValue(con_strAcceptanceCheckStatusNameStp, ref strAcceptanceCheckStatusNameStp);
+                GetAppConfigValue(con_strAcceptanceCheckStatusNameEnd, ref strAcceptanceCheckStatusNameEnd);
+                GetAppConfigValue(con_strAcceptanceCheckStatusNameExc, ref strAcceptanceCheckStatusNameExc);
+                GetAppConfigValue(con_strRapidResultNon, ref intRapidResultNon);
+                GetAppConfigValue(con_strRapidResultOk, ref intRapidResultOk);
+                GetAppConfigValue(con_strRapidResultNg, ref intRapidResultNg);
+                GetAppConfigValue(con_strRapidResultErr, ref intRapidResultErr);
+                GetAppConfigValue(con_strRapidResultDis, ref intRapidResultDis);
+                GetAppConfigValue(con_strEdgeResultNon, ref intEdgeResultNon);
+                GetAppConfigValue(con_strEdgeResultOk, ref intEdgeResultOk);
+                GetAppConfigValue(con_strEdgeResultNg, ref intEdgeResultNg);
+                GetAppConfigValue(con_strEdgeResultErr, ref intEdgeResultErr);
+                GetAppConfigValue(con_strEdgeResultDis, ref intEdgeResultDis);
+                GetAppConfigValue(con_strMaskingResultNon, ref intMaskingResultNon);
+                GetAppConfigValue(con_strMaskingResultOk, ref intMaskingResultOk);
+                GetAppConfigValue(con_strMaskingResultNg, ref intMaskingResultNg);
+                GetAppConfigValue(con_strMaskingResultErr, ref intMaskingResultErr);
+                GetAppConfigValue(con_strMaskingResultDis, ref intMaskingResultDis);
+                GetAppConfigValue(con_strOverDetectionExceptResultNon, ref intOverDetectionExceptResultNon);
+                GetAppConfigValue(con_strOverDetectionExceptResultOk, ref intOverDetectionExceptResultOk);
+                GetAppConfigValue(con_strOverDetectionExceptResultNg, ref intOverDetectionExceptResultNg);
+                GetAppConfigValue(con_strOverDetectionExceptResultNgNonDetect, ref intOverDetectionExceptResultNgNonDetect);
+                GetAppConfigValue(con_strOverDetectionExceptResultNameNon, ref strOverDetectionExceptResultNameNon);
+                GetAppConfigValue(con_strOverDetectionExceptResultNameOk, ref strOverDetectionExceptResultNameOk);
+                GetAppConfigValue(con_strOverDetectionExceptResultNameNg, ref strOverDetectionExceptResultNameNg);
+                GetAppConfigValue(con_strOverDetectionExceptResultNameNgNonDetect, ref strOverDetectionExceptResultNameNgNonDetect);
+                GetAppConfigValue(con_strAcceptanceCheckResultNon, ref intAcceptanceCheckResultNon);
+                GetAppConfigValue(con_strAcceptanceCheckResultOk, ref intAcceptanceCheckResultOk);
+                GetAppConfigValue(con_strAcceptanceCheckResultNgDetect, ref intAcceptanceCheckResultNgDetect);
+                GetAppConfigValue(con_strAcceptanceCheckResultNgNonDetect, ref intAcceptanceCheckResultNgNonDetect);
+                GetAppConfigValue(con_strAcceptanceCheckResultNameNon, ref strAcceptanceCheckResultNameNon);
+                GetAppConfigValue(con_strAcceptanceCheckResultNameOk, ref strAcceptanceCheckResultNameOk);
+                GetAppConfigValue(con_strAcceptanceCheckResultNameNgDetect, ref strAcceptanceCheckResultNameNgDetect);
+                GetAppConfigValue(con_strAcceptanceCheckResultNameNgNonDetect, ref strAcceptanceCheckResultNameNgNonDetect);
+                GetAppConfigValue(con_strSuperUser, ref strSuperUser);
+                GetAppConfigValue(con_strRetryTimes, ref intRetryTimes);
+                GetAppConfigValue(con_strRetryWaitSeconds, ref intRetryWaitSeconds);
+                GetAppConfigValue(con_strProcessingPriority, ref intProcessingPriority);
+                GetAppConfigValue(con_strMainNGReason1, ref intMainNGReason1);
+                GetAppConfigValue(con_strMainNGReason2, ref intMainNGReason2);
+                GetAppConfigValue(con_strMainNGReason3, ref intMainNGReason3);
+                GetAppConfigValue(con_strMainNGReason4, ref intMainNGReason4);
 
-                // システム設定から情報を取得
-                GetSystemSettingValue("NgImageCooperationDirectoryN1", ref strNgImageCooperationDirectoryN1);
-                GetSystemSettingValue("NgImageCooperationDirectoryN2", ref strNgImageCooperationDirectoryN2);
-                GetSystemSettingValue("NgImageCooperationDirectoryN3", ref strNgImageCooperationDirectoryN3);
-                GetSystemSettingValue("NgImageCooperationDirectoryN4", ref strNgImageCooperationDirectoryN4);
-                GetSystemSettingValue("CompletionNoticeCooperationDirectoryN1", ref strCompletionNoticeCooperationDirectoryN1);
-                GetSystemSettingValue("CompletionNoticeCooperationDirectoryN2", ref strCompletionNoticeCooperationDirectoryN2);
-                GetSystemSettingValue("CompletionNoticeCooperationDirectoryN3", ref strCompletionNoticeCooperationDirectoryN3);
-                GetSystemSettingValue("CompletionNoticeCooperationDirectoryN4", ref strCompletionNoticeCooperationDirectoryN4);
-                GetSystemSettingValue("FaultImageDirectory", ref strFaultImageDirectory);
-                GetSystemSettingValue("MasterImageDirectory", ref strMasterImageDirectory);
-                GetSystemSettingValue("NotDetectedImageCooperationDirectoryN1", ref strNotDetectedImageCooperationDirectoryN1);
-                GetSystemSettingValue("NotDetectedImageCooperationDirectoryN2", ref strNotDetectedImageCooperationDirectoryN2);
-                GetSystemSettingValue("NotDetectedImageCooperationDirectoryN3", ref strNotDetectedImageCooperationDirectoryN3);
-                GetSystemSettingValue("NotDetectedImageCooperationDirectoryN4", ref strNotDetectedImageCooperationDirectoryN4);
-                GetSystemSettingValue("CooperationBaseInstanceName", ref strCooperationBaseInstanceName);
-                GetSystemSettingValue("WaitingTimeProcessed", ref intWaitingTimeProcessed);
-                GetSystemSettingValue("ProductionManagementCooperationDirectory", ref strProductionManagementCooperationDirectory);
-                GetSystemSettingValue("InspectionResltCsvDirectory", ref strInspectionResltCsvDirectory);
-                GetSystemSettingValue("InspectionDirectionS", ref strInspectionDirectionS);
-                GetSystemSettingValue("InspectionDirectionX", ref strInspectionDirectionX);
-                GetSystemSettingValue("InspectionDirectionY", ref strInspectionDirectionY);
-                GetSystemSettingValue("InspectionDirectionR", ref strInspectionDirectionR);
-                GetSystemSettingValue("OverDetectionExceptStatusBef", ref intOverDetectionExceptStatusBef);
-                GetSystemSettingValue("OverDetectionExceptStatusChk", ref intOverDetectionExceptStatusChk);
-                GetSystemSettingValue("OverDetectionExceptStatusStp", ref intOverDetectionExceptStatusStp);
-                GetSystemSettingValue("OverDetectionExceptStatusEnd", ref intOverDetectionExceptStatusEnd);
-                GetSystemSettingValue("OverDetectionExceptStatusExc", ref intOverDetectionExceptStatusExc);
-                GetSystemSettingValue("OverDetectionExceptStatusNameBef", ref strOverDetectionExceptStatusNameBef);
-                GetSystemSettingValue("OverDetectionExceptStatusNameChk", ref strOverDetectionExceptStatusNameChk);
-                GetSystemSettingValue("OverDetectionExceptStatusNameStp", ref strOverDetectionExceptStatusNameStp);
-                GetSystemSettingValue("OverDetectionExceptStatusNameEnd", ref strOverDetectionExceptStatusNameEnd);
-                GetSystemSettingValue("OverDetectionExceptStatusNameExc", ref strOverDetectionExceptStatusNameExc);
-                GetSystemSettingValue("AcceptanceCheckStatusBef", ref intAcceptanceCheckStatusBef);
-                GetSystemSettingValue("AcceptanceCheckStatusChk", ref intAcceptanceCheckStatusChk);
-                GetSystemSettingValue("AcceptanceCheckStatusStp", ref intAcceptanceCheckStatusStp);
-                GetSystemSettingValue("AcceptanceCheckStatusEnd", ref intAcceptanceCheckStatusEnd);
-                GetSystemSettingValue("AcceptanceCheckStatusExc", ref intAcceptanceCheckStatusExc);
-                GetSystemSettingValue("AcceptanceCheckStatusNameBef", ref strAcceptanceCheckStatusNameBef);
-                GetSystemSettingValue("AcceptanceCheckStatusNameChk", ref strAcceptanceCheckStatusNameChk);
-                GetSystemSettingValue("AcceptanceCheckStatusNameStp", ref strAcceptanceCheckStatusNameStp);
-                GetSystemSettingValue("AcceptanceCheckStatusNameEnd", ref strAcceptanceCheckStatusNameEnd);
-                GetSystemSettingValue("AcceptanceCheckStatusNameExc", ref strAcceptanceCheckStatusNameExc);
-                GetSystemSettingValue("RapidResultNon", ref intRapidResultNon);
-                GetSystemSettingValue("RapidResultOk", ref intRapidResultOk);
-                GetSystemSettingValue("RapidResultNg", ref intRapidResultNg);
-                GetSystemSettingValue("RapidResultErr", ref intRapidResultErr);
-                GetSystemSettingValue("RapidResultDis", ref intRapidResultDis);
-                GetSystemSettingValue("EdgeResultNon", ref intEdgeResultNon);
-                GetSystemSettingValue("EdgeResultOk", ref intEdgeResultOk);
-                GetSystemSettingValue("EdgeResultNg", ref intEdgeResultNg);
-                GetSystemSettingValue("EdgeResultErr", ref intEdgeResultErr);
-                GetSystemSettingValue("EdgeResultDis", ref intEdgeResultDis);
-                GetSystemSettingValue("MaskingResultNon", ref intMaskingResultNon);
-                GetSystemSettingValue("MaskingResultOk", ref intMaskingResultOk);
-                GetSystemSettingValue("MaskingResultNg", ref intMaskingResultNg);
-                GetSystemSettingValue("MaskingResultErr", ref intMaskingResultErr);
-                GetSystemSettingValue("MaskingResultDis", ref intMaskingResultDis);
-                GetSystemSettingValue("OverDetectionExceptResultNon", ref intOverDetectionExceptResultNon);
-                GetSystemSettingValue("OverDetectionExceptResultOk", ref intOverDetectionExceptResultOk);
-                GetSystemSettingValue("OverDetectionExceptResultNg", ref intOverDetectionExceptResultNg);
-                GetSystemSettingValue("OverDetectionExceptResultNgNonDetect", ref intOverDetectionExceptResultNgNonDetect);
-                GetSystemSettingValue("OverDetectionExceptResultNameNon", ref strOverDetectionExceptResultNameNon);
-                GetSystemSettingValue("OverDetectionExceptResultNameOk", ref strOverDetectionExceptResultNameOk);
-                GetSystemSettingValue("OverDetectionExceptResultNameNg", ref strOverDetectionExceptResultNameNg);
-                GetSystemSettingValue("OverDetectionExceptResultNameNgNonDetect", ref strOverDetectionExceptResultNameNgNonDetect);
-                GetSystemSettingValue("AcceptanceCheckResultNon", ref intAcceptanceCheckResultNon);
-                GetSystemSettingValue("AcceptanceCheckResultOk", ref intAcceptanceCheckResultOk);
-                GetSystemSettingValue("AcceptanceCheckResultNgDetect", ref intAcceptanceCheckResultNgDetect);
-                GetSystemSettingValue("AcceptanceCheckResultNgNonDetect", ref intAcceptanceCheckResultNgNonDetect);
-                GetSystemSettingValue("AcceptanceCheckResultNameNon", ref strAcceptanceCheckResultNameNon);
-                GetSystemSettingValue("AcceptanceCheckResultNameOk", ref strAcceptanceCheckResultNameOk);
-                GetSystemSettingValue("AcceptanceCheckResultNameNgDetect", ref strAcceptanceCheckResultNameNgDetect);
-                GetSystemSettingValue("AcceptanceCheckResultNameNgNonDetect", ref strAcceptanceCheckResultNameNgNonDetect);
-                GetSystemSettingValue("SuperUser", ref strSuperUser);
-                GetSystemSettingValue("RetryTimes", ref intRetryTimes);
-                GetSystemSettingValue("RetryWaitSeconds", ref intRetryWaitSeconds);
-                GetSystemSettingValue("ProcessingPriority", ref intProcessingPriority);
+                // 判定理由マスタから判定理由を取得
+                GetNgReasonValue();
+                GetNgReasonValue(intMainNGReason1, ref strMainNGReason1);
+                GetNgReasonValue(intMainNGReason2, ref strMainNGReason2);
+                GetNgReasonValue(intMainNGReason3, ref strMainNGReason3);
+                GetNgReasonValue(intMainNGReason4, ref strMainNGReason4);
 
                 // リトライ回数
                 if (intRetryTimes <= 0)
@@ -249,6 +434,9 @@ namespace ImageChecker.DTO
                         break;
                 }
 
+                m_dtSystemSettingInfo.Dispose();
+                m_dtMstDecisionReason.Dispose();
+
                 if (lststrErrorMessage.Count > 0)
                 {
                     foreach (string Message in lststrErrorMessage)
@@ -282,8 +470,13 @@ namespace ImageChecker.DTO
         /// <returns>true:正常終了 false:異常終了</returns>
         private void GetAppConfigValue(string strKey, ref string strValue)
         {
-            strValue = ConfigurationManager.AppSettings[strKey];
-            if (string.IsNullOrEmpty(strValue))
+            string strAppConfig = ConfigurationManager.AppSettings[strKey];
+
+            if (!string.IsNullOrWhiteSpace(strAppConfig))
+            {
+                strValue = strAppConfig;
+            }
+            else if (strValue == null)
             {
                 lststrErrorMessage.Add(string.Format("Key[{0}] AppConfigに存在しません。", strKey));
             }
@@ -297,7 +490,7 @@ namespace ImageChecker.DTO
         /// <returns>true:正常終了 false:異常終了</returns>
         private void GetAppConfigValue(string strKey, ref int intValue)
         {
-            string strValue = string.Empty;
+            string strValue = intValue.ToString();
 
             try
             {
@@ -369,6 +562,45 @@ namespace ImageChecker.DTO
             else
             {
                 lststrErrorMessage.Add(string.Format("Id[{0}] システム情報設定テーブルに存在しません。", strId));
+            }
+        }
+
+        /// <summary>
+        /// 判定理由マスタ設定値取得
+        /// </summary>
+        private void GetNgReasonValue()
+        {
+            string strSQL = string.Empty;
+
+            try
+            {
+                // SQL抽出から情報を取得
+                m_dtMstDecisionReason = new DataTable();
+                strSQL = @"SELECT * FROM mst_decision_reason";
+
+                g_clsConnectionNpgsql.SelectSQL(ref m_dtMstDecisionReason, strSQL);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// NG理由取得
+        /// </summary>
+        /// <param name="intReasonCode">理由コード</param>
+        /// <param name="strDecisionReason">判定理由</param>
+        public void GetNgReasonValue(int intReasonCode, ref string strDecisionReason)
+        {
+            DataRow[] dr = m_dtMstDecisionReason.Select("reason_code = '" + intReasonCode + "'");
+            if (dr.Length > 0)
+            {
+                strDecisionReason = dr[0]["decision_reason"].ToString();
+            }
+            else
+            {
+                lststrErrorMessage.Add(string.Format("reason_code[{0}] 判定理由マスタテーブルに存在しません。", intReasonCode));
             }
         }
     }

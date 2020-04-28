@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -74,10 +75,6 @@ namespace ImageChecker
         public const string g_CON_ACCEPTANCE_CHECK_RESULT_NG_DETECT = "AI検知";
         public const string g_CON_ACCEPTANCE_CHECK_RESULT_NG_NON_DETECT = "未検知";
         public const string g_CON_NG_REASON_OK = "過検知";
-        public const string g_CON_NG_REASON_WHITE_THREAD_ONE = "□結節有(白糸上単発)";
-        public const string g_CON_NG_REASON_WHITE_THREAD_MULTI = "□結節有(白糸上連続)";
-        public const string g_CON_NG_REASON_BLACK_THREAD_ONE = "□結節有(黒糸上単発)";
-        public const string g_CON_NG_REASON_BLACK_THREAD_MULTI = "□結節有(黒糸上連続)";
         public const string g_CON_NG_REASON_OTHER_NG_JUDGEMENT = "□他画像でNG判定済み";
 
         // 号機
@@ -116,7 +113,7 @@ namespace ImageChecker
             string mutexName = "ImageChecker";
 
             // Mutexオブジェクトを作成する
-            System.Threading.Mutex mutex = new System.Threading.Mutex(false, mutexName);
+            Mutex mutex = new Mutex(false, mutexName);
 
             bool hasConnection = false;
             bool hasHandle = false;
@@ -128,7 +125,7 @@ namespace ImageChecker
                     // Mutexの所有権を要求する
                     hasHandle = mutex.WaitOne(0, false);
                 }
-                catch (System.Threading.AbandonedMutexException)
+                catch (AbandonedMutexException)
                 {
                     // 別のアプリケーションがMutexを解放せず終了した場合、変数を更新する
                     hasHandle = true;
@@ -155,7 +152,7 @@ namespace ImageChecker
                     // ログ出力
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
                     // メッセージ出力
-                    System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("接続文字列取得時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -239,7 +236,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("初期起動時に例外が発生しました。", g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }

@@ -69,10 +69,10 @@ namespace ImageChecker
                 this.dgvMstDecisionReason.Rows[0].Cells[1].Value = g_CON_ACCEPTANCE_CHECK_RESULT_NG_DETECT;
                 this.dgvMstDecisionReason.Rows[1].Cells[1].Value = g_CON_NG_REASON_OK;
                 this.dgvMstDecisionReason.Rows[2].Cells[1].Value = g_CON_ACCEPTANCE_CHECK_RESULT_NG_NON_DETECT;
-                this.dgvMstDecisionReason.Rows[3].Cells[1].Value = g_CON_NG_REASON_WHITE_THREAD_ONE;
-                this.dgvMstDecisionReason.Rows[4].Cells[1].Value = g_CON_NG_REASON_WHITE_THREAD_MULTI;
-                this.dgvMstDecisionReason.Rows[5].Cells[1].Value = g_CON_NG_REASON_BLACK_THREAD_ONE;
-                this.dgvMstDecisionReason.Rows[6].Cells[1].Value = g_CON_NG_REASON_BLACK_THREAD_MULTI;
+                this.dgvMstDecisionReason.Rows[3].Cells[1].Value = g_clsSystemSettingInfo.strMainNGReason1;
+                this.dgvMstDecisionReason.Rows[4].Cells[1].Value = g_clsSystemSettingInfo.strMainNGReason2;
+                this.dgvMstDecisionReason.Rows[5].Cells[1].Value = g_clsSystemSettingInfo.strMainNGReason3;
+                this.dgvMstDecisionReason.Rows[6].Cells[1].Value = g_clsSystemSettingInfo.strMainNGReason4;
                 this.dgvMstDecisionReason.Rows[7].Cells[1].Value = g_CON_NG_REASON_OTHER_NG_JUDGEMENT;
             }
 
@@ -136,7 +136,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0030, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0030, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
@@ -261,17 +261,18 @@ namespace ImageChecker
         private bool CheckNGReason(string strNGReason)
         {
             // グリッドに追加するNG内容をチェックする
-            switch (strNGReason)
+            if (strNGReason.Equals(g_CON_NG_REASON_OK) ||
+                strNGReason.Equals(g_clsSystemSettingInfo.strMainNGReason1) ||
+                strNGReason.Equals(g_clsSystemSettingInfo.strMainNGReason2) ||
+                strNGReason.Equals(g_clsSystemSettingInfo.strMainNGReason3) ||
+                strNGReason.Equals(g_clsSystemSettingInfo.strMainNGReason4) ||
+                strNGReason.Equals(g_CON_NG_REASON_OTHER_NG_JUDGEMENT))
             {
-                case g_CON_NG_REASON_OK:
-                case g_CON_NG_REASON_WHITE_THREAD_ONE:
-                case g_CON_NG_REASON_WHITE_THREAD_MULTI:
-                case g_CON_NG_REASON_BLACK_THREAD_ONE:
-                case g_CON_NG_REASON_BLACK_THREAD_MULTI:
-                case g_CON_NG_REASON_OTHER_NG_JUDGEMENT:
-                    return false;
-                default:
-                    return true;
+                return false;
+            }
+            else
+            {
+                return true;
             }
         }
         #endregion

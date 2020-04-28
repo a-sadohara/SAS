@@ -670,7 +670,7 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
             }
@@ -1058,10 +1058,10 @@ namespace ImageChecker
             this.MinimumSize = this.Size;
 
             // ボタン名設定
-            btnWhiteThreadOne.Text = g_CON_NG_REASON_WHITE_THREAD_ONE;
-            btnWhiteThreadMulti.Text = g_CON_NG_REASON_WHITE_THREAD_MULTI;
-            btnBlackThreadOne.Text = g_CON_NG_REASON_BLACK_THREAD_ONE;
-            btnBlackThreadMulti.Text = g_CON_NG_REASON_BLACK_THREAD_MULTI;
+            btnWhiteThreadOne.Text = g_clsSystemSettingInfo.strMainNGReason1;
+            btnWhiteThreadMulti.Text = g_clsSystemSettingInfo.strMainNGReason2;
+            btnBlackThreadOne.Text = g_clsSystemSettingInfo.strMainNGReason3;
+            btnBlackThreadMulti.Text = g_clsSystemSettingInfo.strMainNGReason4;
 
             bool bolDispForm = false;
 
@@ -1137,8 +1137,8 @@ namespace ImageChecker
                     fs.Close();
 
                     // 枠線表示用に調整
-                    picMasterImageNo1.Controls.Add(new System.Windows.Forms.PictureBox());
-                    picMasterImageNo2.Controls.Add(new System.Windows.Forms.PictureBox());
+                    picMasterImageNo1.Controls.Add(new PictureBox());
+                    picMasterImageNo2.Controls.Add(new PictureBox());
                 }
                 catch (Exception ex)
                 {
@@ -1388,8 +1388,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_WHITE_THREAD_ONE,
-                                     g_CON_NG_REASON_WHITE_THREAD_ONE);
+                                     g_clsSystemSettingInfo.strMainNGReason1,
+                                     g_clsSystemSettingInfo.strMainNGReason1);
         }
 
         /// <summary>
@@ -1406,8 +1406,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_WHITE_THREAD_MULTI,
-                                     g_CON_NG_REASON_WHITE_THREAD_MULTI);
+                                     g_clsSystemSettingInfo.strMainNGReason2,
+                                     g_clsSystemSettingInfo.strMainNGReason2);
         }
 
         /// <summary>
@@ -1424,8 +1424,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
-                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
+                                     g_clsSystemSettingInfo.strMainNGReason3,
+                                     g_clsSystemSettingInfo.strMainNGReason3);
         }
 
         /// <summary>
@@ -1442,8 +1442,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_BLACK_THREAD_MULTI,
-                                     g_CON_NG_REASON_BLACK_THREAD_MULTI);
+                                     g_clsSystemSettingInfo.strMainNGReason4,
+                                     g_clsSystemSettingInfo.strMainNGReason4);
         }
 
         /// <summary>

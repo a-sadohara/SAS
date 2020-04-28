@@ -670,8 +670,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_WHITE_THREAD_ONE,
-                                     g_CON_NG_REASON_WHITE_THREAD_ONE);
+                                     g_clsSystemSettingInfo.strMainNGReason1,
+                                     g_clsSystemSettingInfo.strMainNGReason1);
         }
 
         /// <summary>
@@ -688,8 +688,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_WHITE_THREAD_MULTI,
-                                     g_CON_NG_REASON_WHITE_THREAD_MULTI);
+                                     g_clsSystemSettingInfo.strMainNGReason2,
+                                     g_clsSystemSettingInfo.strMainNGReason2);
         }
 
         /// <summary>
@@ -706,8 +706,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_BLACK_THREAD_ONE,
-                                     g_CON_NG_REASON_BLACK_THREAD_ONE);
+                                     g_clsSystemSettingInfo.strMainNGReason3,
+                                     g_clsSystemSettingInfo.strMainNGReason3);
         }
 
         /// <summary>
@@ -724,8 +724,8 @@ namespace ImageChecker
             }
 
             UpdAcceptanceCheckResult(intGetStatusNg(),
-                                     g_CON_NG_REASON_BLACK_THREAD_MULTI,
-                                     g_CON_NG_REASON_BLACK_THREAD_MULTI);
+                                     g_clsSystemSettingInfo.strMainNGReason4,
+                                     g_clsSystemSettingInfo.strMainNGReason4);
         }
 
         /// <summary>
