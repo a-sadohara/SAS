@@ -252,13 +252,20 @@ namespace ImageChecker
                 // NG理由
                 if (!string.IsNullOrEmpty(txtNgReason.Text))
                 {
-                    if (txtNgReason.Text == g_CON_NG_REASON_OK)
+                    switch (txtNgReason.Text)
                     {
-                        strSQL += @"AND dr.ng_reason IS NULL ";
-                    }
-                    else if (string.IsNullOrEmpty(txtNgReason.Text) == false)
-                    {
-                        strSQL += string.Format("AND dr.ng_reason LIKE '%{0}%'", txtNgReason.Text);
+                        case g_CON_NG_REASON_OK:
+                            strSQL += @"AND dr.ng_reason IS NULL ";
+                            break;
+                        case g_CON_ACCEPTANCE_CHECK_RESULT_NG_DETECT:
+                            strSQL += string.Format("AND dr.acceptance_check_result = {0} ", g_clsSystemSettingInfo.intAcceptanceCheckResultNgDetect);
+                            break;
+                        case g_CON_ACCEPTANCE_CHECK_RESULT_NG_NON_DETECT:
+                            strSQL += string.Format("AND dr.acceptance_check_result = {0} ", g_clsSystemSettingInfo.intAcceptanceCheckResultNgNonDetect);
+                            break;
+                        default:
+                            strSQL += string.Format("AND dr.ng_reason LIKE '%{0}%' ", txtNgReason.Text);
+                            break;
                     }
                 }
 

@@ -66,12 +66,14 @@ namespace ImageChecker
             if (m_bolMainReason)
             {
                 // 主要のNG理由内容を設定する
-                this.dgvMstDecisionReason.Rows[0].Cells[1].Value = g_CON_NG_REASON_OK;
-                this.dgvMstDecisionReason.Rows[1].Cells[1].Value = g_CON_NG_REASON_WHITE_THREAD_ONE;
-                this.dgvMstDecisionReason.Rows[2].Cells[1].Value = g_CON_NG_REASON_WHITE_THREAD_MULTI;
-                this.dgvMstDecisionReason.Rows[3].Cells[1].Value = g_CON_NG_REASON_BLACK_THREAD_ONE;
-                this.dgvMstDecisionReason.Rows[4].Cells[1].Value = g_CON_NG_REASON_BLACK_THREAD_MULTI;
-                this.dgvMstDecisionReason.Rows[5].Cells[1].Value = g_CON_NG_REASON_OTHER_NG_JUDGEMENT;
+                this.dgvMstDecisionReason.Rows[0].Cells[1].Value = g_CON_ACCEPTANCE_CHECK_RESULT_NG_DETECT;
+                this.dgvMstDecisionReason.Rows[1].Cells[1].Value = g_CON_NG_REASON_OK;
+                this.dgvMstDecisionReason.Rows[2].Cells[1].Value = g_CON_ACCEPTANCE_CHECK_RESULT_NG_NON_DETECT;
+                this.dgvMstDecisionReason.Rows[3].Cells[1].Value = g_CON_NG_REASON_WHITE_THREAD_ONE;
+                this.dgvMstDecisionReason.Rows[4].Cells[1].Value = g_CON_NG_REASON_WHITE_THREAD_MULTI;
+                this.dgvMstDecisionReason.Rows[5].Cells[1].Value = g_CON_NG_REASON_BLACK_THREAD_ONE;
+                this.dgvMstDecisionReason.Rows[6].Cells[1].Value = g_CON_NG_REASON_BLACK_THREAD_MULTI;
+                this.dgvMstDecisionReason.Rows[7].Cells[1].Value = g_CON_NG_REASON_OTHER_NG_JUDGEMENT;
             }
 
             try

@@ -71,6 +71,8 @@ namespace ImageChecker
         public const string g_CON_MESSAGE_TITLE_QUESTION = "確認";
 
         // NG理由（主要）
+        public const string g_CON_ACCEPTANCE_CHECK_RESULT_NG_DETECT = "AI検知";
+        public const string g_CON_ACCEPTANCE_CHECK_RESULT_NG_NON_DETECT = "未検知";
         public const string g_CON_NG_REASON_OK = "過検知";
         public const string g_CON_NG_REASON_WHITE_THREAD_ONE = "□結節有(白糸上単発)";
         public const string g_CON_NG_REASON_WHITE_THREAD_MULTI = "□結節有(白糸上連続)";
