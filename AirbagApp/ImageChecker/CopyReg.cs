@@ -501,6 +501,12 @@ namespace ImageChecker
         {
             this.SuspendLayout();
 
+            // ボタン名設定
+            btnWhiteThreadOne.Text = g_clsSystemSettingInfo.strMainNGReason1;
+            btnWhiteThreadMulti.Text = g_clsSystemSettingInfo.strMainNGReason2;
+            btnBlackThreadOne.Text = g_clsSystemSettingInfo.strMainNGReason3;
+            btnBlackThreadMulti.Text = g_clsSystemSettingInfo.strMainNGReason4;
+
             bool bolProcOkNg = false;
 
             string strSQL = string.Empty;
