@@ -1127,7 +1127,7 @@ namespace ProductMstMaintenance
             }
 
             strPoint = "(";
-            if (NulltoInt(dtCurentRow[strPointXPlus]) == 1)
+            if (NulltoInt(dtCurentRow[strPointXPlus]) == 0)
             {
                 strArrow = strArrow + "←";
             }
