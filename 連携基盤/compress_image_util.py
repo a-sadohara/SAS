@@ -42,7 +42,7 @@ app_name = inifile.get('APP', 'app_name')
 # ------------------------------------------------------------------------------------
 def exists_dir(target_path, logger):
     logger.debug('[%s:%s] フォルダを作成します。フォルダ名：[%s]',
-                 app_id, app_name, target_path, logger)
+                 app_id, app_name, target_path)
     result = file_util.make_directory(target_path, logger, app_id, app_name)
 
     return result

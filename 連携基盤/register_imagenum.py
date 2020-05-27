@@ -429,12 +429,12 @@ def main():
 
                 logger.info("[%s:%s] %s処理は正常に終了しました。", app_id, app_name, app_name)
 
-                logger.debug("[%s:%s] レジマーク情報登録機能呼出を開始します。", app_id, app_name, app_name)
+                logger.debug("[%s:%s] レジマーク情報登録機能呼出を開始します。", app_id, app_name)
                 result = register_regimark_info.main(product_name, fabric_name, inspection_num, imaging_starttime)
                 if result:
-                    logger.debug("[%s:%s] レジマーク情報登録機能が終了しました。", app_id, app_name, app_name)
+                    logger.debug("[%s:%s] レジマーク情報登録機能が終了しました。", app_id, app_nam)
                 else:
-                    logger.error("[%s:%s] レジマーク情報登録機能が失敗しました。", app_id, app_name, app_name)
+                    logger.error("[%s:%s] レジマーク情報登録機能が失敗しました。", app_id, app_name)
                     sys.exit()
 
         # DB接続を切断
