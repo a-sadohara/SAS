@@ -1074,9 +1074,21 @@ namespace BeforeInspection
                         m_intBranchNum = int.Parse(dtData.Rows[0]["branch_num"].ToString());
                         m_strWorker1 = dtData.Rows[0]["worker_1"].ToString();
                         m_strWorker2 = dtData.Rows[0]["worker_2"].ToString();
-                        m_intIlluminationInformation = int.Parse(dtData.Rows[0]["illumination_information"].ToString());
-                        m_intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["start_regimark_camera_num"].ToString());
-                        m_intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
+
+                        if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["illumination_information"].ToString()))
+                        {
+                            m_intIlluminationInformation = int.Parse(dtData.Rows[0]["illumination_information"].ToString());
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["start_regimark_camera_num"].ToString()))
+                        {
+                            m_intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["start_regimark_camera_num"].ToString());
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["end_regimark_camera_num"].ToString()))
+                        {
+                            m_intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
+                        }
                     }
                     catch (Exception ex)
                     {
