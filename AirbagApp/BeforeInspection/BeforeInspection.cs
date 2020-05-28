@@ -851,6 +851,7 @@ namespace BeforeInspection
                              , iih.start_regimark_camera_num 
                              , iih.end_regimark_camera_num 
                              , COALESCE(mpi.line_length, 0) AS line_length 
+                             , COALESCE(mpi.regimark_between_length, 0) AS regimark_between_length
                            FROM 
                                inspection_info_header AS iih 
                            LEFT JOIN 
@@ -892,6 +893,7 @@ namespace BeforeInspection
                     sw.WriteLine(dtData.Rows[0]["start_regimark_camera_num"].ToString());
                     sw.WriteLine(dtData.Rows[0]["end_regimark_camera_num"].ToString());
                     sw.WriteLine(dtData.Rows[0]["line_length"].ToString());
+                    sw.WriteLine(dtData.Rows[0]["regimark_between_length"].ToString());
                 }
                 return true;
             }
