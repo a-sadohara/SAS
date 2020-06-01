@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using static BeforeInspection.Common;
 
@@ -1392,6 +1393,20 @@ namespace BeforeInspection
             {
                 if (bolNumberInspectionNum(out intInspectionNum) == false)
                 {
+                    return;
+                }
+            }
+
+            // 撮像装置部の処理状況を確認する
+            if (intInspectionNum != m_intInspectionNum)
+            {
+                DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
+
+                // 撮像装置部が処理中のファイルが存在する場合、本処理をストップする。
+                if (diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, ".busy", true) == 0).Count() != 0)
+                {
+                    // メッセージ出力
+                    new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065)).ShowDialog(this);
                     return;
                 }
             }
