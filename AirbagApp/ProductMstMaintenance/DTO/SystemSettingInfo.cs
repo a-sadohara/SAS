@@ -18,13 +18,13 @@ namespace ProductMstMaintenance.DTO
         // エラーメッセージ格納用
         private StringBuilder m_sbErrMessage = new StringBuilder();
 
-        // 一時ディレクトリ
-        private const string con_strTemporaryDirectory = "TemporaryDirectory";
-
         //==============
         // App.Config
         //==============
-        public readonly string strTemporaryDirectory;       // 一時ディレクトリ
+        public readonly string strTemporaryDirectory;                       // 一時ディレクトリ
+        public readonly string strSharedFolderPath = string.Empty;        // 共有フォルダディレクトリ情報
+        public readonly string strSharedFolderUser = string.Empty;        // 共有フォルダユーザ情報
+        public readonly string strSharedFolderPassword = string.Empty;    // 共有フォルダパスワード情報
 
         //==============================
         //システム情報設定テーブル
@@ -46,7 +46,10 @@ namespace ProductMstMaintenance.DTO
                 GetSystemSettingValue("LogFileOutputDirectory", ref strLogFileOutputDirectory);
 
                 // App.Configから設定値を取得
-                GetAppConfigValue(con_strTemporaryDirectory, ref strTemporaryDirectory);
+                GetAppConfigValue("TemporaryDirectory", ref strTemporaryDirectory);
+                GetAppConfigValue("SharedFolderPath", ref strSharedFolderPath);
+                GetAppConfigValue("SharedFolderUser", ref strSharedFolderUser);
+                GetAppConfigValue("SharedFolderPassword", ref strSharedFolderPassword);
 
                 if (m_sbErrMessage.Length > 0)
                 {
