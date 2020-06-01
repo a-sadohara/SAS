@@ -123,14 +123,8 @@ namespace ProductMstMaintenance
                     // パス設定
                     g_strMasterImageDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE);
 
-                    // マスタ画像取り込み
-                    if (!bolImpMasterImage())
-                    {
-                        // メッセージ出力
-                        MessageBox.Show("マスタ画像参照時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        return;
-                    }
+                    // 一時フォルダへマスタ画像を取り込む
+                    bolImpMasterImage();
                 }
                 catch (Exception ex)
                 {
@@ -169,7 +163,7 @@ namespace ProductMstMaintenance
         /// マスタ画像取り込み
         /// </summary>
         /// <returns>true:正常終了 false:異常終了</returns>
-        public static bool bolImpMasterImage()
+        public static void bolImpMasterImage()
         {
             string strTempFilePath = string.Empty;
             DirectoryInfo diMaster = new DirectoryInfo(g_clsSystemSettingInfo.strMasterImageDirectory);
@@ -218,11 +212,7 @@ namespace ProductMstMaintenance
                             "マスタ画像参照時に例外が発生しました。{0}{1}",
                             Environment.NewLine,
                             "一時ディレクトリに取り込んだ画像枚数とマスタ画像枚数が一致しません。"));
-
-                    return false;
                 }
-
-                return true;
             }
             catch (Exception ex)
             {
@@ -232,8 +222,6 @@ namespace ProductMstMaintenance
                         "マスタ画像参照時に例外が発生しました。{0}{1}",
                         Environment.NewLine,
                         ex.Message));
-
-                return false;
             }
         }
 

@@ -332,14 +332,8 @@ namespace ProductMstMaintenance
                 return false;
             }
 
-            // マスタ画像取り込み
-            if (!bolImpMasterImage())
-            {
-                // メッセージ出力
-                MessageBox.Show("マスタ画像参照時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return false;
-            }
+            // 一時フォルダへマスタ画像を取り込む
+            bolImpMasterImage();
 
             // 取得結果反映処理
             CreateFormInfo();
