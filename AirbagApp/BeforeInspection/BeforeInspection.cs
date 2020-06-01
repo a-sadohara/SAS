@@ -1406,7 +1406,7 @@ namespace BeforeInspection
                 if (diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, ".busy", true) == 0).Count() != 0)
                 {
                     // メッセージ出力
-                    new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065)).ShowDialog(this);
+                    new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).ShowDialog(this);
                     return;
                 }
             }

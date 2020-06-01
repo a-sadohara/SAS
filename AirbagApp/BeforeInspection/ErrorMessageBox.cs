@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using static BeforeInspection.Common;
 
@@ -12,13 +13,21 @@ namespace BeforeInspection
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="strTitle">タイトル</param>
         /// <param name="strDetail">詳細</param>
-        public ErrorMessageBox(string strDetail)
-        {           
-            m_strDetail = strDetail;
-
+        /// <param name="bolWarningMessageFlag">警告メッセージフラグ</param>
+        public ErrorMessageBox(string strDetail, bool bolWarningMessageFlag = false)
+        {
             InitializeComponent();
+
+            if (bolWarningMessageFlag)
+            {
+                lblMessage.Text = strDetail;
+                lblMessage.Font = new Font(lblMessage.Font.OriginalFontName, 26);
+            }
+            else
+            {
+                m_strDetail = strDetail;
+            }
 
             this.FormBorderStyle = FormBorderStyle.None;
         }
