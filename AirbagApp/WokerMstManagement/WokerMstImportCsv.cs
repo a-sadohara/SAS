@@ -253,9 +253,9 @@ namespace WokerMstManagement
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015 , Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
 
-                    OutPutImportLog(string.Format("{0}{1}{2}{3}{4}" , "\"",g_clsMessageInfo.strMsgE0015 , Environment.NewLine , ex.Message , "\""));
+                    OutPutImportLog(string.Format("{0}{1}{2}{3}{4}", "\"", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message, "\""));
                     if (m_bolProcEnd == true)
                     {
                         return;
@@ -287,7 +287,7 @@ namespace WokerMstManagement
                                                   intDCount, intDOkCount, intDNgCount) + Environment.NewLine +
                                     string.Format(g_clsMessageInfo.strMsgI0002, m_strOutPutFilePath),
                                     "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    if (m_bolProcEnd == true) 
+                    if (m_bolProcEnd == true)
                     {
                         return;
                     }
@@ -628,7 +628,7 @@ namespace WokerMstManagement
             if (string.IsNullOrEmpty(strCheckData))
             {
                 // ログファイルにエラー出力を行う
-                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0011 , strItemName) + ",\"" + strData + "\"");
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0011, strItemName) + ",\"" + strData + "\"");
                 if (m_bolProcEnd == true)
                 {
                     return false;
@@ -744,7 +744,7 @@ namespace WokerMstManagement
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0017 , Environment.NewLine , ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0017, Environment.NewLine, ex.Message));
 
                         // ログファイル出力
                         OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0019, intRowCount.ToString()) + "\r\n" + ex.Message + "\",\"" + strData + "\"");
@@ -791,7 +791,7 @@ namespace WokerMstManagement
                     catch (Exception ex)
                     {
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0018 , Environment.NewLine , ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0018, Environment.NewLine, ex.Message));
 
                         // ログファイル出力
                         OutPutImportLog("\"" + string.Format(g_clsMessageInfo.strMsgE0020, intRowCount.ToString()) + "\r\n" + ex.Message + "\",\"" + strData + "\"");
@@ -825,7 +825,7 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0017 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0017, Environment.NewLine, ex.Message));
 
                 return false;
             }
@@ -862,10 +862,10 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0018 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0018, Environment.NewLine, ex.Message));
 
                 // ログファイル出力
-                OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message + "\",\""+ strData + "\"");
+                OutPutImportLog("\"" + g_clsMessageInfo.strMsgE0018 + "\r\n" + ex.Message + "\",\"" + strData + "\"");
                 if (m_bolProcEnd == true)
                 {
                     return false;
@@ -902,12 +902,12 @@ namespace WokerMstManagement
                     // １行ずつ出力を行う
                     sw.WriteLine(time + "," + strLogText);
                 }
-                
+
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR,string.Format("{0}{1}{2}" ,g_clsMessageInfo.strMsgE0016 , Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0016, Environment.NewLine, ex.Message));
 
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0055, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);

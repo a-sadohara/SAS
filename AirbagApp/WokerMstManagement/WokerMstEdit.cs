@@ -52,7 +52,7 @@ namespace WokerMstManagement
                 {
                     g_intUpdateFlg = 1;
                 }
-                else 
+                else
                 {
                     return;
                 }
@@ -60,7 +60,7 @@ namespace WokerMstManagement
 
 
 
-            if (m_intEditMode == g_CON_EDITMODE_UPD) 
+            if (m_intEditMode == g_CON_EDITMODE_UPD)
             {
                 if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0003
                                                 , txtEmployeeNum.Text
@@ -86,7 +86,7 @@ namespace WokerMstManagement
                 {
                     g_intUpdateFlg = 1;
                 }
-                else 
+                else
                 {
                     return;
                 }
@@ -195,14 +195,14 @@ namespace WokerMstManagement
         /// 入力チェック
         /// </summary>
         /// <returns></returns>
-        private Boolean InputDataCheck() 
+        private Boolean InputDataCheck()
         {
             // 必須入力チェック
             if (CheckRequiredInput(txtEmployeeNum, "社員番号") == false ||
                 CheckRequiredInput(txtWorkerNameSei, "作業者名　姓") == false ||
                 CheckRequiredInput(txtWorkerNameMei, "作業者名　名") == false ||
                 CheckRequiredInput(txtWorkerNameSeiKana, "読みカナ　姓") == false ||
-                CheckRequiredInput(txtWorkerNameMeiKana, "読みカナ　名") == false) 
+                CheckRequiredInput(txtWorkerNameMeiKana, "読みカナ　名") == false)
             {
                 return false;
             }
@@ -216,7 +216,7 @@ namespace WokerMstManagement
         /// <param name="tbxCheckData">チェック対象テキストボックス</param>
         /// <param name="strItemName">チェック対象項目名</param>
         /// <returns></returns>
-        private Boolean CheckRequiredInput(TextBox tbxCheckData, String strItemName) 
+        private Boolean CheckRequiredInput(TextBox tbxCheckData, String strItemName)
         {
             // 必須入力チェック
             if (string.IsNullOrEmpty(tbxCheckData.Text))
@@ -233,7 +233,7 @@ namespace WokerMstManagement
         /// 登録処理
         /// </summary>
         /// <returns></returns>
-        private Boolean RegistrationUser() 
+        private Boolean RegistrationUser()
         {
             try
             {
@@ -270,7 +270,7 @@ namespace WokerMstManagement
 
                 return true;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 try
                 {
@@ -288,7 +288,7 @@ namespace WokerMstManagement
                         // それ以外の例外時
 
                         // ログ出力
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
 
                         // メッセージ出力
                         MessageBox.Show(g_clsMessageInfo.strMsgE0004, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -299,7 +299,7 @@ namespace WokerMstManagement
                     // ※DB非接続時は重複時の判断でエラーになる考慮
 
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
 
                     // メッセージ出力
                     MessageBox.Show(g_clsMessageInfo.strMsgE0004, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -349,7 +349,7 @@ namespace WokerMstManagement
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0005, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -386,7 +386,7 @@ namespace WokerMstManagement
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void txtWorkerNameKana_KeyPress(object sender, KeyPressEventArgs e)
-        { 
+        {
             if (e.KeyChar == '\r')
             {
                 // 改行の時は、次のコントロールをアクティブにする
