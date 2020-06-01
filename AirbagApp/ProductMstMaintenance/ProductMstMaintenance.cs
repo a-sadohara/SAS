@@ -825,8 +825,8 @@ namespace ProductMstMaintenance
         /// </summary>
         private void CreateFormInfo()
         {
-            if (!string.IsNullOrWhiteSpace(g_clsSystemSettingInfo.strSharedFolderPath) &&
-                !Directory.Exists(g_clsSystemSettingInfo.strSharedFolderPath))
+            if (!string.IsNullOrWhiteSpace(g_clsSystemSettingInfo.strSharedFolderUser) &&
+                !string.IsNullOrWhiteSpace(g_clsSystemSettingInfo.strSharedFolderPassword))
             {
                 // 共有フォルダ接続
                 using (Process prNet = new Process())
@@ -835,7 +835,7 @@ namespace ProductMstMaintenance
                     prNet.StartInfo.Arguments =
                         string.Format(
                             m_CON_SHARED_FOLDER_CONNECTION_STRING,
-                            g_clsSystemSettingInfo.strSharedFolderPath,
+                            g_clsSystemSettingInfo.strMasterImageDirectory,
                             g_clsSystemSettingInfo.strSharedFolderUser,
                             g_clsSystemSettingInfo.strSharedFolderPassword);
                     prNet.StartInfo.CreateNoWindow = true;

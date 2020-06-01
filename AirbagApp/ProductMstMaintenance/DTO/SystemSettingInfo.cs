@@ -22,7 +22,6 @@ namespace ProductMstMaintenance.DTO
         // App.Config
         //==============
         public readonly string strTemporaryDirectory;                       // 一時ディレクトリ
-        public readonly string strSharedFolderPath = string.Empty;        // 共有フォルダディレクトリ情報
         public readonly string strSharedFolderUser = string.Empty;        // 共有フォルダユーザ情報
         public readonly string strSharedFolderPassword = string.Empty;    // 共有フォルダパスワード情報
 
@@ -47,7 +46,6 @@ namespace ProductMstMaintenance.DTO
 
                 // App.Configから設定値を取得
                 GetAppConfigValue("TemporaryDirectory", ref strTemporaryDirectory);
-                GetAppConfigValue("SharedFolderPath", ref strSharedFolderPath);
                 GetAppConfigValue("SharedFolderUser", ref strSharedFolderUser);
                 GetAppConfigValue("SharedFolderPassword", ref strSharedFolderPassword);
 
