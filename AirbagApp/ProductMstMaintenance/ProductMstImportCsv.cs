@@ -843,7 +843,11 @@ namespace ProductMstMaintenance
         {
             try
             {
+                DataTable dtData = new DataTable();
+
                 // SQL文を作成する
+                string strSelectSql = g_CON_SELECT_MST_PRODUCT_INFO_FILE_NUM;
+                string strUpdateSql = g_CON_UPDATE_MST_PRODUCT_INFO_PRODUCT_NAME;
                 string strCreateSql = g_CON_INSERT_MST_PRODUCT_INFO;
 
                 // SQLコマンドに各パラメータを設定する
@@ -867,7 +871,16 @@ namespace ProductMstMaintenance
                     }
                 }
 
-                // sqlを実行する
+                // SQL(SELECT)を実行し、品名が同一のレコードをチェックする
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSelectSql, lstNpgsqlCommand);
+
+                if (dtData.Rows.Count > 0)
+                {
+                    // SQL(UPDATE)を実行し、既存レコードの品名を「品名_ファイルNo」に更新する
+                    g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
+                }
+
+                // SQL(UPSERT)を実行し、新規レコードを追加する
                 g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
                 return true;

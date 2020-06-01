@@ -590,6 +590,14 @@ namespace ProductMstMaintenance
         public const string g_CON_SELECT_MST_PRODUCT_INFO_PMS =
             @"SELECT 'false',product_name FROM mst_product_info ORDER BY product_name";
 
+        // ファイルNo取得SQL
+        public const string g_CON_SELECT_MST_PRODUCT_INFO_FILE_NUM =
+            @"SELECT file_num FROM mst_product_info WHERE product_name = :Name ";
+
+        // 品名更新SQL
+        public const string g_CON_UPDATE_MST_PRODUCT_INFO_PRODUCT_NAME =
+            @"UPDATE mst_product_info SET product_name = product_name || '_' || file_num  WHERE product_name = :Name ";
+
         // 判定理由取得SQL
         public const string g_CON_SELECT_INFO_DECISION_REASON_SER =
             @"SELECT reason_code, decision_reason FROM mst_decision_reason ORDER BY reason_code";
