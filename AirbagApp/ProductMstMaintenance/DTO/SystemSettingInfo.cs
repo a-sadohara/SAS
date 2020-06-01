@@ -18,9 +18,13 @@ namespace ProductMstMaintenance.DTO
         // エラーメッセージ格納用
         private StringBuilder m_sbErrMessage = new StringBuilder();
 
+        // 一時ディレクトリ
+        private const string con_strTemporaryDirectory = "TemporaryDirectory";
+
         //==============
         // App.Config
         //==============
+        public readonly string strTemporaryDirectory;       // 一時ディレクトリ
 
         //==============================
         //システム情報設定テーブル
@@ -41,6 +45,9 @@ namespace ProductMstMaintenance.DTO
                 GetSystemSettingValue("MasterImageDirectory", ref strMasterImageDirectory);
                 GetSystemSettingValue("LogFileOutputDirectory", ref strLogFileOutputDirectory);
 
+                // App.Configから設定値を取得
+                GetAppConfigValue(con_strTemporaryDirectory, ref strTemporaryDirectory);
+
                 if (m_sbErrMessage.Length > 0)
                 {
                     throw new Exception(m_sbErrMessage.ToString());
@@ -51,7 +58,7 @@ namespace ProductMstMaintenance.DTO
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "システム設定取得時にエラーが発生しました。{0}{1}" ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("システム設定取得時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
                 // メッセージ出力
                 MessageBox.Show("システム設定取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -68,7 +75,7 @@ namespace ProductMstMaintenance.DTO
             strValue = ConfigurationManager.AppSettings[strKey];
             if (strValue == null)
             {
-                m_sbErrMessage.AppendLine(string.Format("Key[{0}] AppConfigに存在しません。" , strKey ));
+                m_sbErrMessage.AppendLine(string.Format("Key[{0}] AppConfigに存在しません。", strKey));
             }
         }
 
@@ -89,7 +96,7 @@ namespace ProductMstMaintenance.DTO
             }
             catch (Exception ex)
             {
-                m_sbErrMessage.AppendLine(string.Format("Key[{0}]{1} " , strKey, ex.Message));
+                m_sbErrMessage.AppendLine(string.Format("Key[{0}]{1} ", strKey, ex.Message));
             }
         }
 
@@ -132,7 +139,7 @@ namespace ProductMstMaintenance.DTO
             }
             catch (Exception ex)
             {
-                m_sbErrMessage.AppendLine(string.Format("Id[{0}] {1}" , strId , ex.Message));
+                m_sbErrMessage.AppendLine(string.Format("Id[{0}] {1}", strId, ex.Message));
             }
         }
 
@@ -144,14 +151,14 @@ namespace ProductMstMaintenance.DTO
         /// <returns>true:正常終了 false:異常終了</returns>
         public void GetSystemSettingValue(string strId, ref string strValue)
         {
-            DataRow[] dr = m_dtSystemSettingInfo.Select(string.Format("id = '{0}'" , strId ));
+            DataRow[] dr = m_dtSystemSettingInfo.Select(string.Format("id = '{0}'", strId));
             if (dr.Length > 0)
             {
                 strValue = dr[0]["value"].ToString();
             }
             else
             {
-                m_sbErrMessage.AppendLine(string.Format("Id[{0}] システム情報設定テーブルに存在しません。" , strId ));
+                m_sbErrMessage.AppendLine(string.Format("Id[{0}] システム情報設定テーブルに存在しません。", strId));
             }
         }
     }

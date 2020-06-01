@@ -332,6 +332,15 @@ namespace ProductMstMaintenance
                 return false;
             }
 
+            // マスタ画像取り込み
+            if (!bolImpMasterImage())
+            {
+                // メッセージ出力
+                MessageBox.Show("マスタ画像参照時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+
             // 取得結果反映処理
             CreateFormInfo();
 
@@ -871,7 +880,7 @@ namespace ProductMstMaintenance
             txtProductName.Text = NulltoString(dtCurentRow[m_CON_COLNAME_PRODUCT_NAME]);
 
             //エアバック画像ファイルパス
-            m_strMstFilePath = NulltoString(dtCurentRow[m_CON_COLNAME_AIRBAG_IMAGEPATH]);
+            m_strMstFilePath = Path.Combine(g_strMasterImageDirPath, Path.GetFileName(NulltoString(dtCurentRow[m_CON_COLNAME_AIRBAG_IMAGEPATH])));
 
             // 長さ
             if (!string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])))
