@@ -552,10 +552,17 @@ namespace ProductMstMaintenance
 
             //上部に表示する説明テキストを指定する
             fbd.Description = "フォルダを指定してください。";
-            //ルートフォルダを指定する
-            fbd.RootFolder = Environment.SpecialFolder.Desktop;
-            //RootFolder以下にあるフォルダである必要がある
-            fbd.SelectedPath = @"C:\Windows";
+
+            // 初期ディレクトリを指定する
+            fbd.SelectedPath = @"C:\";
+
+            // システム設定情報テーブルに品番情報取込ディレクトリが指定されている場合、初期ディレクトリを更新する
+            if (!string.IsNullOrWhiteSpace(g_clsSystemSettingInfo.strProductInfoImportDirectory) &&
+                Directory.Exists(g_clsSystemSettingInfo.strProductInfoImportDirectory))
+            {
+                fbd.SelectedPath = g_clsSystemSettingInfo.strProductInfoImportDirectory;
+            }
+
             //ユーザーが新しいフォルダを作成できるようにする
             fbd.ShowNewFolderButton = true;
 

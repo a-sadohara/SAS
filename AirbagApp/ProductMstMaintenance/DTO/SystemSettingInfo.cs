@@ -28,8 +28,9 @@ namespace ProductMstMaintenance.DTO
         //==============================
         //システム情報設定テーブル
         //==============================
-        public readonly string strMasterImageDirectory;     // マスタ画像格納ディレクトリ
-        public readonly string strLogFileOutputDirectory;   // ログファイル出力先
+        public readonly string strMasterImageDirectory;         // マスタ画像格納ディレクトリ
+        public readonly string strLogFileOutputDirectory;       // ログファイル出力先
+        public readonly string strProductInfoImportDirectory;   // 品番情報取込ディレクトリ
 
         /// <summary>
         /// コンストラクタ
@@ -43,6 +44,7 @@ namespace ProductMstMaintenance.DTO
                 // システム設定から情報を取得
                 GetSystemSettingValue("MasterImageDirectory", ref strMasterImageDirectory);
                 GetSystemSettingValue("LogFileOutputDirectory", ref strLogFileOutputDirectory);
+                GetSystemSettingValue("ProductInfoImportDirectory", ref strProductInfoImportDirectory);
 
                 // App.Configから設定値を取得
                 GetAppConfigValue("TemporaryDirectory", ref strTemporaryDirectory);
