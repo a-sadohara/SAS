@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using static BeforeInspection.Common;
 
 namespace BeforeInspection
 {
@@ -22,7 +22,7 @@ namespace BeforeInspection
             if (bolWarningMessageFlag)
             {
                 lblMessage.Text = strDetail;
-                lblMessage.Font = new Font(lblMessage.Font.OriginalFontName, 26);
+                lblMessage.TextAlign = ContentAlignment.MiddleLeft;
             }
             else
             {
@@ -40,6 +40,21 @@ namespace BeforeInspection
         private void ErrorMessageBox_Load(object sender, EventArgs e)
         {
             lblDetail.Text = m_strDetail;
+        }
+
+        /// <summary>
+        /// 初期表示
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void ErrorMessageBox_Shown(object sender, EventArgs e)
+        {
+            await Task.Delay(10);
+            this.lblMessage.Click += new EventHandler(this.ErrorMessage_Click);
+            this.tlpMain.Click += new EventHandler(this.ErrorMessage_Click);
+            this.lblDetail.Click += new EventHandler(this.ErrorMessage_Click);
+            this.picIcon.Click += new EventHandler(this.ErrorMessage_Click);
+            this.tableLayoutPanel1.Click += new EventHandler(this.ErrorMessage_Click);
         }
 
         /// <summary>

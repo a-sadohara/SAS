@@ -51,7 +51,6 @@
             this.lblMessage.TabIndex = 0;
             this.lblMessage.Text = "例外が発生しました。\r\n巻取機を開始しないでください。";
             this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblMessage.Click += new System.EventHandler(this.ErrorMessage_Click);
             // 
             // tlpMain
             // 
@@ -70,7 +69,6 @@
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.4677F));
             this.tlpMain.Size = new System.Drawing.Size(800, 450);
             this.tlpMain.TabIndex = 1;
-            this.tlpMain.Click += new System.EventHandler(this.ErrorMessage_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -102,7 +100,6 @@
             this.lblDetail.TabIndex = 0;
             this.lblDetail.Text = "詳細メッセージ";
             this.lblDetail.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblDetail.Click += new System.EventHandler(this.ErrorMessage_Click);
             // 
             // picIcon
             // 
@@ -117,7 +114,6 @@
             this.picIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picIcon.TabIndex = 1;
             this.picIcon.TabStop = false;
-            this.picIcon.Click += new System.EventHandler(this.ErrorMessage_Click);
             // 
             // ErrorMessageBox
             // 
@@ -129,8 +125,10 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ErrorMessageBox";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Load += new System.EventHandler(this.ErrorMessageBox_Load);
+            this.Shown += new System.EventHandler(this.ErrorMessageBox_Shown);
             this.tlpMain.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picIcon)).EndInit();

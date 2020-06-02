@@ -67,6 +67,12 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void DispTenKeyInputForm(object sender, EventArgs e)
         {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+
             TextBox txtBox = (TextBox)sender;
             TenKeyInput frmTenKeyInput = null;
 
@@ -1153,6 +1159,12 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void txtProductName_Click(object sender, EventArgs e)
         {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+
             // 品番選択画面
             ProductNameSelection frmHinNoSelection = new ProductNameSelection();
             frmHinNoSelection.ShowDialog(this);
@@ -1183,6 +1195,12 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void txtWorker_Click(object sender, EventArgs e)
         {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+
             TextBox txtWorker = (TextBox)sender;
 
             // 作業者選択画面表示
@@ -1377,6 +1395,12 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnSet_MouseClick(object sender, MouseEventArgs e)
         {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+
             if (InputDataCheck() == false)
             {
                 return;
@@ -1393,20 +1417,6 @@ namespace BeforeInspection
             {
                 if (bolNumberInspectionNum(out intInspectionNum) == false)
                 {
-                    return;
-                }
-            }
-
-            // 撮像装置部の処理状況を確認する
-            if (intInspectionNum != m_intInspectionNum)
-            {
-                DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
-
-                // 撮像装置部が処理中のファイルが存在する場合、本処理をストップする。
-                if (diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, ".busy", true) == 0).Count() != 0)
-                {
-                    // メッセージ出力
-                    new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).ShowDialog(this);
                     return;
                 }
             }
@@ -1585,6 +1595,12 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnInspectionStop_MouseClick(object sender, MouseEventArgs e)
         {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+
             // 確認メッセージ出力
             DialogResult result = MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0008,
                                                                 m_intInspectionNum,
@@ -1632,6 +1648,12 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnNextFabric_MouseClick(object sender, MouseEventArgs e)
         {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+
             // 検査番号の取得
             bolGetInspectionNum(out m_intInspectionNum);
 
@@ -1669,6 +1691,12 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnStartDatetime_MouseClick(object sender, MouseEventArgs e)
         {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+
             lblStartDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         }
 
@@ -1679,6 +1707,12 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnEndDatetime_MouseClick(object sender, MouseEventArgs e)
         {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+
             // 終了時刻の表示
             lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
 
@@ -1708,6 +1742,12 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnInspectionDirection_MouseClick(object sender, MouseEventArgs e)
         {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+
             Button btn = (Button)sender;
 
             if (btn == btnInspectionDirectionS)
@@ -1729,8 +1769,49 @@ namespace BeforeInspection
             {
                 SetInspectionDirectionSetting(g_clsSystemSettingInfo.strInspectionDirectionR);
             }
-
         }
 
+        /// <summary>
+        /// 初期表示イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BeforeInspection_Shown(object sender, EventArgs e)
+        {
+            this.Activated += new EventHandler(this.BeforeInspection_Activated);
+            this.BeforeInspection_Activated(null, null);
+        }
+
+        /// <summary>
+        /// フォームアクティブイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BeforeInspection_Activated(object sender, EventArgs e)
+        {
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckImagingDeviceCooperationDirectory())
+            {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// 撮像装置部連携ディレクトリチェック
+        /// </summary>
+        private bool bolCheckImagingDeviceCooperationDirectory()
+        {
+            DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
+
+            // 撮像装置部が処理中のファイルが存在する場合、本処理をストップする。
+            if (diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, ".busy", true) == 0).Count() != 0)
+            {
+                // メッセージ出力
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).ShowDialog(this);
+                return false;
+            }
+
+            return true;
+        }
     }
 }

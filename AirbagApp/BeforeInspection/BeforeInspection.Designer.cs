@@ -1199,6 +1199,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "検査開始前設定";
             this.Load += new System.EventHandler(this.BeforeInspection_Load);
+            this.Shown += new System.EventHandler(this.BeforeInspection_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.BeforeInspection_KeyDown);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlTitleHinNo.ResumeLayout(false);
