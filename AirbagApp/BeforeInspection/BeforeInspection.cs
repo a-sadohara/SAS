@@ -4,6 +4,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static BeforeInspection.Common;
 
@@ -48,6 +49,9 @@ namespace BeforeInspection
         private Color m_clrStatusActBack = System.Drawing.Color.White;
         private Color m_clrStatusNonActFore = System.Drawing.SystemColors.ControlLightLight;
         private Color m_clrStatusNonActBack = System.Drawing.Color.Transparent;
+
+        // 前回のチェック時刻
+        private DateTime datCheckTime;
 
         #region メソッド
         /// <summary>
@@ -1787,10 +1791,15 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BeforeInspection_Activated(object sender, EventArgs e)
+        private async void BeforeInspection_Activated(object sender, EventArgs e)
         {
-            // 撮像装置部が処理中か確認する。
-            bolCheckImagingDeviceCooperationDirectory();
+            if (datCheckTime < DateTime.Now.AddMinutes(-1))
+            {
+                await Task.Delay(10);
+
+                // 撮像装置部が処理中か確認する。
+                bolCheckImagingDeviceCooperationDirectory();
+            }
         }
 
         /// <summary>
@@ -1798,13 +1807,14 @@ namespace BeforeInspection
         /// </summary>
         private bool bolCheckImagingDeviceCooperationDirectory()
         {
+            datCheckTime = DateTime.Now;
             DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
 
             // 撮像装置部が処理中のファイルが存在する場合、本処理をストップする。
             if (diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, ".busy", true) == 0).Count() != 0)
             {
                 // メッセージ出力
-                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).ShowDialog(this);
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).Show(this);
                 return false;
             }
 
