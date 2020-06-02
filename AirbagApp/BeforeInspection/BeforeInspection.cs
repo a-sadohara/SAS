@@ -1790,10 +1790,7 @@ namespace BeforeInspection
         private void BeforeInspection_Activated(object sender, EventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
-            {
-                return;
-            }
+            bolCheckImagingDeviceCooperationDirectory();
         }
 
         /// <summary>
