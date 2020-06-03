@@ -2,8 +2,6 @@
 using ProductMstMaintenance.DTO;
 using System;
 using System.Configuration;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -39,10 +37,6 @@ namespace ProductMstMaintenance
         public const int g_CON_LEVEL_WARN = 3;
         public const int g_CON_LEVEL_INFO = 4;
         public const int g_CON_LEVEL_DEBUG = 5;
-
-        // マスタ画像一時ディレクトリ
-        public const string g_CON_DIR_MASTER_IMAGE = "MasterImage";
-        public static string g_strMasterImageDirPath = string.Empty;
 
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
@@ -119,12 +113,6 @@ namespace ProductMstMaintenance
                     {
                         return;
                     }
-
-                    // パス設定
-                    g_strMasterImageDirPath = Path.Combine(g_clsSystemSettingInfo.strTemporaryDirectory, g_CON_DIR_MASTER_IMAGE);
-
-                    // 一時フォルダへマスタ画像を取り込む
-                    bolImpMasterImage();
                 }
                 catch (Exception ex)
                 {
@@ -156,72 +144,6 @@ namespace ProductMstMaintenance
                     mutex.ReleaseMutex();
                 }
                 mutex.Close();
-            }
-        }
-
-        /// <summary>
-        /// マスタ画像取り込み
-        /// </summary>
-        /// <returns>true:正常終了 false:異常終了</returns>
-        public static void bolImpMasterImage()
-        {
-            string strTempFilePath = string.Empty;
-            DirectoryInfo diMaster = new DirectoryInfo(g_clsSystemSettingInfo.strMasterImageDirectory);
-            DirectoryInfo diTemporary = null;
-
-            try
-            {
-                // 一時ディレクトリ作成
-                if (!Directory.Exists(g_clsSystemSettingInfo.strTemporaryDirectory))
-                {
-                    Directory.CreateDirectory(g_clsSystemSettingInfo.strTemporaryDirectory);
-                }
-
-                // マスタ画像格納先
-                if (!Directory.Exists(g_strMasterImageDirPath))
-                {
-                    Directory.CreateDirectory(g_strMasterImageDirPath);
-                }
-
-                // マスタ画像の更新
-                foreach (FileInfo filePath in diMaster.GetFiles().Where(x => string.Compare(x.Extension, ".bmp", true) == 0))
-                {
-                    strTempFilePath = Path.Combine(g_strMasterImageDirPath, filePath.Name);
-
-                    if (File.Exists(strTempFilePath))
-                    {
-                        // タイムスタンプ比較し、上書きするか判定する
-                        if (File.GetLastWriteTime(filePath.FullName).CompareTo(File.GetLastWriteTime(strTempFilePath)) <= 0)
-                        {
-                            continue;
-                        }
-                    }
-
-                    // マスタ画像を一時フォルダにコピーする
-                    File.Copy(filePath.FullName, strTempFilePath, true);
-                }
-
-                diTemporary = new DirectoryInfo(g_strMasterImageDirPath);
-
-                if (diMaster.GetFiles().Where(x => string.Compare(x.Extension, ".bmp", true) == 0).Count() !=
-                    diTemporary.GetFiles().Where(x => string.Compare(x.Extension, ".bmp", true) == 0).Count())
-                {
-                    WriteEventLog(
-                        g_CON_LEVEL_ERROR,
-                        string.Format(
-                            "マスタ画像参照時に例外が発生しました。{0}{1}",
-                            Environment.NewLine,
-                            "一時ディレクトリに取り込んだ画像枚数とマスタ画像枚数が一致しません。"));
-                }
-            }
-            catch (Exception ex)
-            {
-                WriteEventLog(
-                    g_CON_LEVEL_ERROR,
-                    string.Format(
-                        "マスタ画像参照時に例外が発生しました。{0}{1}",
-                        Environment.NewLine,
-                        ex.Message));
             }
         }
 

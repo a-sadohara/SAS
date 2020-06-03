@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -17,7 +16,6 @@ namespace ProductMstMaintenance
         private const int m_CON_REALITY_SIZE_W = 640;
         private const int m_CON_REALITY_SIZE_H = 480;
         private const string m_CON_DISPLAY_POSITION_LABEL = "表示位置：{0},{1}";
-        private const string m_CON_SHARED_FOLDER_CONNECTION_STRING = @" use {0} /user:{1} {2}";
 
         // マスタ列名
         private const string m_CON_COLNAME_PRODUCT_NAME = "product_name";
@@ -333,9 +331,6 @@ namespace ProductMstMaintenance
                 txtProductName.Select();
                 return false;
             }
-
-            // 一時フォルダへマスタ画像を取り込む
-            bolImpMasterImage();
 
             // 取得結果反映処理
             CreateFormInfo();
@@ -825,27 +820,6 @@ namespace ProductMstMaintenance
         /// </summary>
         private void CreateFormInfo()
         {
-            if (!string.IsNullOrWhiteSpace(g_clsSystemSettingInfo.strSharedFolderUser) &&
-                !string.IsNullOrWhiteSpace(g_clsSystemSettingInfo.strSharedFolderPassword))
-            {
-                // 共有フォルダ接続
-                using (Process prNet = new Process())
-                {
-                    prNet.StartInfo.FileName = "net.exe";
-                    prNet.StartInfo.Arguments =
-                        string.Format(
-                            m_CON_SHARED_FOLDER_CONNECTION_STRING,
-                            g_clsSystemSettingInfo.strMasterImageDirectory,
-                            g_clsSystemSettingInfo.strSharedFolderUser,
-                            g_clsSystemSettingInfo.strSharedFolderPassword);
-                    prNet.StartInfo.CreateNoWindow = true;
-                    prNet.StartInfo.UseShellExecute = false;
-                    prNet.StartInfo.RedirectStandardOutput = true;
-                    prNet.Start();
-                    prNet.WaitForExit();
-                }
-            }
-
             // 取得結果描画
             MappingDtToForm(m_dtData);
 
@@ -897,7 +871,7 @@ namespace ProductMstMaintenance
             txtProductName.Text = NulltoString(dtCurentRow[m_CON_COLNAME_PRODUCT_NAME]);
 
             //エアバック画像ファイルパス
-            m_strMstFilePath = Path.Combine(g_strMasterImageDirPath, Path.GetFileName(NulltoString(dtCurentRow[m_CON_COLNAME_AIRBAG_IMAGEPATH])));
+            m_strMstFilePath = NulltoString(dtCurentRow[m_CON_COLNAME_AIRBAG_IMAGEPATH]);
 
             // 長さ
             if (!string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])))

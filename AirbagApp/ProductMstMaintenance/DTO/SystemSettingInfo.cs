@@ -21,9 +21,6 @@ namespace ProductMstMaintenance.DTO
         //==============
         // App.Config
         //==============
-        public readonly string strTemporaryDirectory;                       // 一時ディレクトリ
-        public readonly string strSharedFolderUser = string.Empty;        // 共有フォルダユーザ情報
-        public readonly string strSharedFolderPassword = string.Empty;    // 共有フォルダパスワード情報
 
         //==============================
         //システム情報設定テーブル
@@ -45,11 +42,6 @@ namespace ProductMstMaintenance.DTO
                 GetSystemSettingValue("MasterImageDirectory", ref strMasterImageDirectory);
                 GetSystemSettingValue("LogFileOutputDirectory", ref strLogFileOutputDirectory);
                 GetSystemSettingValue("ProductInfoImportDirectory", ref strProductInfoImportDirectory);
-
-                // App.Configから設定値を取得
-                GetAppConfigValue("TemporaryDirectory", ref strTemporaryDirectory);
-                GetAppConfigValue("SharedFolderUser", ref strSharedFolderUser);
-                GetAppConfigValue("SharedFolderPassword", ref strSharedFolderPassword);
 
                 if (m_sbErrMessage.Length > 0)
                 {
