@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using static ProductMstMaintenance.Common;
 
@@ -16,6 +18,7 @@ namespace ProductMstMaintenance
         private const int m_CON_REALITY_SIZE_W = 640;
         private const int m_CON_REALITY_SIZE_H = 480;
         private const string m_CON_DISPLAY_POSITION_LABEL = "表示位置：{0},{1}";
+        private const string m_CON_PROCESSNAME_EXPLORER = "explorer";
 
         // マスタ列名
         private const string m_CON_COLNAME_PRODUCT_NAME = "product_name";
@@ -820,6 +823,21 @@ namespace ProductMstMaintenance
         /// </summary>
         private void CreateFormInfo()
         {
+            // ProcessStartInfoオブジェクトを作成する
+            ProcessStartInfo psi = new ProcessStartInfo();
+
+            // 実行ファイル(エクスプローラ)を指定する
+            psi.FileName = m_CON_PROCESSNAME_EXPLORER;
+
+            // 引数にマスタ画像格納ディレクトリを設定する
+            psi.Arguments = g_clsSystemSettingInfo.strMasterImageDirectory;
+
+            // 画面上は非表示とするよう設定する
+            psi.WindowStyle = ProcessWindowStyle.Hidden;
+
+            // アプリケーションを起動する
+            Process pExplorer = Process.Start(psi);
+
             // 取得結果描画
             MappingDtToForm(m_dtData);
 
@@ -856,6 +874,18 @@ namespace ProductMstMaintenance
 
             // 品名にフォーカスを合わせる
             txtProductName.Focus();
+
+            // 非表示で起動したエクスプローラの情報を取得する
+            Process p =
+                Process.GetProcesses().Where(
+                    x => x.ProcessName.Equals(m_CON_PROCESSNAME_EXPLORER) &&
+                    x.MainWindowHandle == IntPtr.Zero).AsEnumerable().FirstOrDefault();
+
+            if (p != null)
+            {
+                // 対象プロセスをキルする
+                p.Kill();
+            }
         }
 
         /// <summary>
