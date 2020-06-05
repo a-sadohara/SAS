@@ -1224,25 +1224,25 @@ namespace ProductMstMaintenance
                 bolVsbColumn5Flg = true;
             }
 
-            if (bolVsbColumn2Flg &&
+            if (bolVsbColumn1Flg &&
                 !string.IsNullOrWhiteSpace(txtColumnThresholdAB.Text))
             {
                 bolVsbColumnThresholdAB = true;
             }
 
-            if (bolVsbColumn3Flg &&
+            if (bolVsbColumn2Flg &&
                 !string.IsNullOrWhiteSpace(txtColumnThresholdBC.Text))
             {
                 bolVsbColumnThresholdBC = true;
             }
 
-            if (bolVsbColumn4Flg &&
+            if (bolVsbColumn3Flg &&
                 !string.IsNullOrWhiteSpace(txtColumnThresholdCD.Text))
             {
                 bolVsbColumnThresholdCD = true;
             }
 
-            if (bolVsbColumn5Flg &&
+            if (bolVsbColumn4Flg &&
                 !string.IsNullOrWhiteSpace(txtColumnThresholdDE.Text))
             {
                 bolVsbColumnThresholdDE = true;
