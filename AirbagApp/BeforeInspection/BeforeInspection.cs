@@ -569,8 +569,13 @@ namespace BeforeInspection
         /// <param name="intInspectionNum">検査番号</param>
         /// <param name="intBranchNum">枝番</param>
         /// <param name="strEndDateTime">終了時刻</param>
+        /// <param name="bolFileOutputFlag">ファイル出力フラグ</param>
         /// <returns>true:正常終了 false:異常終了</returns>
-        private Boolean UpdEndInspectionInfoHeader(int intInspectionNum, int intBranchNum, string strEndDateTime)
+        private Boolean UpdEndInspectionInfoHeader(
+            int intInspectionNum,
+            int intBranchNum,
+            string strEndDateTime,
+            bool bolFileOutputFlag = true)
         {
             string strSql = string.Empty;
             try
@@ -596,7 +601,8 @@ namespace BeforeInspection
 
 
                 // 撮像装置部へ連携用ファイル出力
-                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum, g_clsConnectionNpgsql) == false)
+                if (bolFileOutputFlag &&
+                    bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum, g_clsConnectionNpgsql) == false)
                 {
                     btnEndDatetime.Focus();
                     return false;
@@ -1521,7 +1527,7 @@ namespace BeforeInspection
                 }
 
                 // 検査情報ヘッダーの更新
-                if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")) == false)
+                if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), false) == false)
                 {
                     return;
                 }
