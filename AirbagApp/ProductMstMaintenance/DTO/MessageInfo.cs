@@ -52,6 +52,8 @@ namespace ProductMstMaintenance.DTO
         public readonly string strMsgQ0006;
         public readonly string strMsgW0002;
         public readonly string strMsgW0004;
+        public readonly string strMsgW0009;
+        public readonly string strMsgW0010;
 
         /// <summary>
         /// コンストラクタ
@@ -95,6 +97,8 @@ namespace ProductMstMaintenance.DTO
                 GetMessageContent("Q0006", ref strMsgQ0006);
                 GetMessageContent("W0002", ref strMsgW0002);
                 GetMessageContent("W0004", ref strMsgW0004);
+                GetMessageContent("W0009", ref strMsgW0009);
+                GetMessageContent("W0010", ref strMsgW0010);
 
                 if (m_sbErrMessage.Length > 0)
                     throw new Exception(m_sbErrMessage.ToString());

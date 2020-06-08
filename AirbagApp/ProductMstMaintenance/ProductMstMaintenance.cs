@@ -835,8 +835,22 @@ namespace ProductMstMaintenance
             // 画面上は非表示とするよう設定する
             psi.WindowStyle = ProcessWindowStyle.Hidden;
 
-            // アプリケーションを起動する
-            Process pExplorer = Process.Start(psi);
+            try
+            {
+                // アプリケーションを起動する
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_WARN,
+                    string.Format(
+                        "{0}{1}{2}",
+                        g_clsMessageInfo.strMsgW0009,
+                        Environment.NewLine,
+                        ex.Message));
+            }
 
             // 取得結果描画
             MappingDtToForm(m_dtData);
@@ -875,16 +889,30 @@ namespace ProductMstMaintenance
             // 品名にフォーカスを合わせる
             txtProductName.Focus();
 
-            // 非表示で起動したエクスプローラの情報を取得する
-            Process p =
-                Process.GetProcesses().Where(
-                    x => x.ProcessName.Equals(m_CON_PROCESSNAME_EXPLORER) &&
-                    x.MainWindowHandle == IntPtr.Zero).AsEnumerable().FirstOrDefault();
-
-            if (p != null)
+            try
             {
-                // 対象プロセスをキルする
-                p.Kill();
+                // 非表示で起動したエクスプローラの情報を取得する
+                Process p =
+                    Process.GetProcesses().Where(
+                        x => x.ProcessName.Equals(m_CON_PROCESSNAME_EXPLORER) &&
+                        x.MainWindowHandle == IntPtr.Zero).AsEnumerable().FirstOrDefault();
+
+                if (p != null)
+                {
+                    // 対象プロセスをキルする
+                    p.Kill();
+                }
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_WARN,
+                    string.Format(
+                        "{0}{1}{2}",
+                        g_clsMessageInfo.strMsgW0010,
+                        Environment.NewLine,
+                        ex.Message));
             }
         }
 
