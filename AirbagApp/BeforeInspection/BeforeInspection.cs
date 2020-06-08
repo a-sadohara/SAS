@@ -1417,6 +1417,7 @@ namespace BeforeInspection
             }
 
             int intInspectionNum = 0;
+            string strEndDatetime = lblEndDatetime.Text;
 
             // 検査番号の採番
             if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
@@ -1429,6 +1430,14 @@ namespace BeforeInspection
                 {
                     return;
                 }
+            }
+
+            // 終了時刻入力時に設定ボタン押下で検査番号が繰り上がる場合、
+            // 画面上の終了時刻をクリアする
+            if (intInspectionNum != m_intInspectionNum &&
+                !string.IsNullOrEmpty(lblEndDatetime.Text))
+            {
+                lblEndDatetime.Text = string.Empty;
             }
 
             // 確認メッセージ出力
@@ -1445,6 +1454,8 @@ namespace BeforeInspection
                                                                        "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result != DialogResult.Yes)
             {
+                // キャンセルする際は、退避していた終了時刻を画面上に復元する
+                lblEndDatetime.Text = strEndDatetime;
                 return;
             }
 
