@@ -36,6 +36,8 @@ namespace BeforeInspection
         private const string m_CON_TEXTMODE_ORDERIMG = "1";
         private const string m_CON_TEXTMODE_FABRICNAME = "2";
         private const string m_CON_TEXTMODE_NUMBER = "3";
+        private const string m_CON_EXTENSION_TEXT = ".txt";
+        private const string m_CON_EXTENSION_BUSY = ".busy";
         private const int m_CON_MAXLENGTH_ORDERIMG = 7;
         private const int m_CON_MAXLENGTH_FABRICNAME = 10;
 
@@ -843,15 +845,14 @@ namespace BeforeInspection
         /// <returns></returns>
         private bool bolOutFile(string strFabricName, int intInspectionNum, int intBranchNum, ConnectionNpgsql objPgsqlConnect)
         {
-            StreamWriter sw = null;
             string strSQL = string.Empty;
+            string strFilePath = string.Empty;
+            string strFileNameBusy = string.Empty;
+            string strFileNameText = string.Empty;
             DataTable dtData = new DataTable();
 
             try
             {
-                // txtファイルの作成
-                sw = File.CreateText(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory + @"\" + strFabricName + "_" + intInspectionNum.ToString() + "_" + intBranchNum.ToString() + ".txt");
-
                 // DBオープン
                 strSQL = @"SELECT 
                                iih.product_name
@@ -891,26 +892,37 @@ namespace BeforeInspection
 
                 if (dtData.Rows.Count > 0)
                 {
-                    // 値の設定
-                    sw.WriteLine(intInspectionNum.ToString());
-                    sw.WriteLine(intBranchNum.ToString());
-                    sw.WriteLine(dtData.Rows[0]["product_name"].ToString());
-                    sw.WriteLine(m_strUnitNum.ToString());
-                    sw.WriteLine(dtData.Rows[0]["order_img"].ToString());
-                    sw.WriteLine(strFabricName);
-                    sw.WriteLine(dtData.Rows[0]["inspection_target_line"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["inspection_end_line"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["inspection_start_line"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["worker_1"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["worker_2"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["start_datetime"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["end_datetime"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["inspection_direction"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["illumination_information"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["start_regimark_camera_num"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["end_regimark_camera_num"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["line_length"].ToString());
-                    sw.WriteLine(dtData.Rows[0]["regimark_between_length"].ToString());
+                    strFilePath = g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory + @"\" + strFabricName + "_" + intInspectionNum.ToString() + "_" + intBranchNum.ToString();
+                    strFileNameBusy = strFilePath + m_CON_EXTENSION_BUSY;
+                    strFileNameText = strFilePath + m_CON_EXTENSION_TEXT;
+
+                    // busyファイルの作成
+                    using (StreamWriter sw = File.CreateText(strFileNameBusy))
+                    {
+                        // 値の設定
+                        sw.WriteLine(intInspectionNum.ToString());
+                        sw.WriteLine(intBranchNum.ToString());
+                        sw.WriteLine(dtData.Rows[0]["product_name"].ToString());
+                        sw.WriteLine(m_strUnitNum.ToString());
+                        sw.WriteLine(dtData.Rows[0]["order_img"].ToString());
+                        sw.WriteLine(strFabricName);
+                        sw.WriteLine(dtData.Rows[0]["inspection_target_line"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["inspection_end_line"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["inspection_start_line"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["worker_1"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["worker_2"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["start_datetime"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["end_datetime"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["inspection_direction"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["illumination_information"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["start_regimark_camera_num"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["end_regimark_camera_num"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["line_length"].ToString());
+                        sw.WriteLine(dtData.Rows[0]["regimark_between_length"].ToString());
+                    }
+
+                    // 拡張子をtxtに変更
+                    File.Move(strFileNameBusy, strFileNameText);
                 }
                 return true;
             }
@@ -925,13 +937,6 @@ namespace BeforeInspection
                 objPgsqlConnect.DbRollback();
 
                 return false;
-            }
-            finally
-            {
-                if (sw != null)
-                {
-                    sw.Close();
-                }
             }
         }
         #endregion
@@ -950,7 +955,7 @@ namespace BeforeInspection
             DataTable dtData;
 
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.TopMost = true;
+            //this.TopMost = true;
             this.WindowState = FormWindowState.Maximized;
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
@@ -1828,7 +1833,7 @@ namespace BeforeInspection
             DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
 
             // 撮像装置部が処理中のファイルが存在する場合、本処理をストップする。
-            if (diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, ".busy", true) == 0).Count() != 0)
+            if (diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, m_CON_EXTENSION_BUSY, true) == 0).Count() != 0)
             {
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).Show(this);
