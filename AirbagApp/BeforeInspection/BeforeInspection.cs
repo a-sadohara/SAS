@@ -922,12 +922,19 @@ namespace BeforeInspection
                     }
 
                     // 拡張子をtxtに変更
-                    File.Move(strFileNameBusy, strFileNameText);
+                    File.Copy(strFileNameBusy, strFileNameText, true);
+                    File.Delete(strFileNameBusy);
                 }
                 return true;
             }
             catch (Exception ex)
             {
+                // 作成したbusyファイルが残っている場合、削除する
+                if (File.Exists(strFileNameBusy))
+                {
+                    File.Delete(strFileNameBusy);
+                }
+
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0036, Environment.NewLine, ex.Message));
                 // メッセージ出力
@@ -955,7 +962,7 @@ namespace BeforeInspection
             DataTable dtData;
 
             this.StartPosition = FormStartPosition.CenterScreen;
-            //this.TopMost = true;
+            this.TopMost = true;
             this.WindowState = FormWindowState.Maximized;
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
