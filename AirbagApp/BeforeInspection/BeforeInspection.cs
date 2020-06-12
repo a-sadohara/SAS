@@ -1840,7 +1840,8 @@ namespace BeforeInspection
             DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
 
             // 撮像装置部が処理中のファイルが存在する場合、本処理をストップする。
-            if (diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, m_CON_EXTENSION_BUSY, true) == 0).Count() != 0)
+            if (diImagingDevice.Exists &&
+                diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, m_CON_EXTENSION_BUSY, true) == 0).Count() != 0)
             {
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).Show(this);
