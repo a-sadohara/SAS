@@ -132,18 +132,18 @@ namespace ProductMstMaintenance
             {
                 // 初期化
                 txtProductName.Text = string.Empty;
-                lblLength.Text = string.Empty;
-                lblWidth.Text = string.Empty;
-                lblLineLength.Text = string.Empty;
-                lblRegimarkBetweenLength.Text = string.Empty;
+                txtLength.Text = string.Empty;
+                txtWidth.Text = string.Empty;
+                txtLineLength.Text = string.Empty;
+                txtRegimarkBetweenLength.Text = string.Empty;
                 txtStretchRateX.Text = string.Empty;
                 txtStretchRateY.Text = string.Empty;
                 chkAiModelNonInspectionFlg.Checked = true;
                 txtAiModelName.Text = string.Empty;
                 picMasterImage.Image = null;
-                lblStartRegimarkPointN.Text = string.Empty;
+                txtStartRegimarkPointN.Text = string.Empty;
                 lblStartRegimarkPointNPlus1Line.Text = string.Empty;
-                lblEndRegimarkPointN.Text = string.Empty;
+                txtEndRegimarkPointN.Text = string.Empty;
                 lblEndRegimarkPointNMinus1Line.Text = string.Empty;
                 lblBasePointA.Text = string.Empty;
                 lblBasePointB.Text = string.Empty;
@@ -155,9 +155,9 @@ namespace ProductMstMaintenance
                 lblPlusDirectionC.Text = string.Empty;
                 lblPlusDirectionD.Text = string.Empty;
                 lblPlusDirectionE.Text = string.Empty;
-                lblStartRegimarkCameraNum.Text = string.Empty;
-                lblEndRegimarkCameraNum.Text = string.Empty;
-                lblIlluminationInformation.Text = string.Empty;
+                txtStartRegimarkCameraNum.Text = string.Empty;
+                txtEndRegimarkCameraNum.Text = string.Empty;
+                txtIlluminationInformation.Text = string.Empty;
                 txtColumnThresholdAB.Text = string.Empty;
                 txtColumnThresholdBC.Text = string.Empty;
                 txtColumnThresholdCD.Text = string.Empty;
@@ -934,41 +934,41 @@ namespace ProductMstMaintenance
             // 長さ
             if (!string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])))
             {
-                lblLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])));
+                txtLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_LENGTH])));
             }
             else
             {
-                lblLength.Text = string.Empty;
+                txtLength.Text = string.Empty;
             }
 
             // 幅
             if (!string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH])))
             {
-                lblWidth.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH])));
+                txtWidth.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_WIDTH])));
             }
             else
             {
-                lblWidth.Text = string.Empty;
+                txtWidth.Text = string.Empty;
             }
 
             // 行長さ
             if (!string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_LINE_LENGTH])))
             {
-                lblLineLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_LINE_LENGTH])));
+                txtLineLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_LINE_LENGTH])));
             }
             else
             {
-                lblLineLength.Text = string.Empty;
+                txtLineLength.Text = string.Empty;
             }
 
             // レジマーク間引き
             if (!string.IsNullOrEmpty(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])))
             {
-                lblRegimarkBetweenLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])));
+                txtRegimarkBetweenLength.Text = String.Format("{0:#,0}", int.Parse(NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_BETWEEN_LENGTH])));
             }
             else
             {
-                lblRegimarkBetweenLength.Text = string.Empty;
+                txtRegimarkBetweenLength.Text = string.Empty;
             }
 
             // 伸縮率X
@@ -1012,14 +1012,14 @@ namespace ProductMstMaintenance
             m_intRegiMarkLengthPx = NulltoInt(Math.Floor(dc));
 
             // レジマーク表示部.開始レジマーク座標.N行
-            lblStartRegimarkPointN.Text = string.Format("({0},{1})", NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X])
+            txtStartRegimarkPointN.Text = string.Format("{0},{1}", NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X])
                                                 , NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]));
 
             m_intRegimark1PointX = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X]);
             m_intRegimark1PointY = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]);
 
             // レジマーク表示部.終了レジマーク座標.N行
-            lblEndRegimarkPointN.Text = string.Format("({0},{1})", NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X])
+            txtEndRegimarkPointN.Text = string.Format("{0},{1}", NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X])
                                               , NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]));
 
             m_intRegimark2PointX = NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X]);
@@ -1099,11 +1099,11 @@ namespace ProductMstMaintenance
             m_intBasePoint5Y = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_5_Y]);
 
             // 開始レジマークカメラ番号
-            lblStartRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_START_REGIMARK_CAMERA_NUM]);
+            txtStartRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_START_REGIMARK_CAMERA_NUM]);
             // 終了レジマークカメラ番号
-            lblEndRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_END_REGIMARK_CAMERA_NUM]);
+            txtEndRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_END_REGIMARK_CAMERA_NUM]);
             // 照度情報
-            lblIlluminationInformation.Text = NulltoString(dtCurentRow[m_CON_COLNAME_ILLUMINATION_INFORMATION]);
+            txtIlluminationInformation.Text = NulltoString(dtCurentRow[m_CON_COLNAME_ILLUMINATION_INFORMATION]);
 
             // A-B列
             txtColumnThresholdAB.Text = NulltoString(dtCurentRow[m_CON_COLNAME_COLUMN_THRESHOLD_01]);
@@ -1135,21 +1135,18 @@ namespace ProductMstMaintenance
             txtColumnThresholdETo.Text = NulltoString(dtCurentRow[m_CON_COLNAME_LINE_THRESHOLD_E2]);
 
             // 開始レジマーク座標.N行+1行
-            string strPointNPlus1 = string.Empty;
-            strPointNPlus1 = "(";
-            strPointNPlus1 = strPointNPlus1 + NulltoString(NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X])
-                                                         + m_intRegiMarkLengthPx);
-            strPointNPlus1 = strPointNPlus1 + ",";
-            strPointNPlus1 = strPointNPlus1 + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]) + ")";
-            lblStartRegimarkPointNPlus1Line.Text = strPointNPlus1;
+            lblStartRegimarkPointNPlus1Line.Text =
+                string.Format(
+                    "{0},{1}",
+                    NulltoString(NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_X]) + m_intRegiMarkLengthPx),
+                    NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_1_POINT_Y]));
 
             // 終了レジマーク座標.N行+1行
-            strPointNPlus1 = "(";
-            strPointNPlus1 = strPointNPlus1 + NulltoString(NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X])
-                                                         - m_intRegiMarkLengthPx);
-            strPointNPlus1 = strPointNPlus1 + ",";
-            strPointNPlus1 = strPointNPlus1 + NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]) + ")";
-            lblEndRegimarkPointNMinus1Line.Text = strPointNPlus1;
+            lblEndRegimarkPointNMinus1Line.Text =
+                string.Format(
+                    "{0},{1}",
+                    NulltoString(NulltoInt(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_X]) - m_intRegiMarkLengthPx),
+                    NulltoString(dtCurentRow[m_CON_COLNAME_REGIMARK_2_POINT_Y]));
 
             // 列数
             m_intColumn_cnt = NulltoInt(dtCurentRow[m_CON_COLNAME_COLUMN_CNT]);
@@ -1609,12 +1606,27 @@ namespace ProductMstMaintenance
                     intChkFlg = 1;
                 }
 
+                // 開始・終了レジマークの値をX座標・Y座標に分解する
+                string[] strStartRegimarkPointN = txtStartRegimarkPointN.Text.Split(',');
+                string[] strEndRegimarkPointN = txtEndRegimarkPointN.Text.Split(',');
+
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "length", DbType = DbType.Int32, Value = NulltoInt(txtLength.Text.Replace(",", string.Empty)) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "width", DbType = DbType.Int32, Value = NulltoInt(txtWidth.Text.Replace(",", string.Empty)) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "line_length", DbType = DbType.Int32, Value = NulltoInt(txtLineLength.Text.Replace(",", string.Empty)) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "regimark_between_length", DbType = DbType.Int32, Value = NulltoInt(txtRegimarkBetweenLength.Text.Replace(",", string.Empty)) });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_non_inspection_flg", DbType = DbType.Int32, Value = intChkFlg });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_name", DbType = DbType.String, Value = txtAiModelName.Text });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_x", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateX.Text) });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_y", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateY.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "regimark_1_point_x", DbType = DbType.Int32, Value = NulltoInt(strStartRegimarkPointN[0]) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "regimark_1_point_y", DbType = DbType.Int32, Value = NulltoInt(strStartRegimarkPointN[1]) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "regimark_2_point_x", DbType = DbType.Int32, Value = NulltoInt(strEndRegimarkPointN[0]) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "regimark_2_point_y", DbType = DbType.Int32, Value = NulltoInt(strEndRegimarkPointN[1]) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_regimark_camera_num", DbType = DbType.Int32, Value = NulltoInt(txtStartRegimarkCameraNum.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_regimark_camera_num", DbType = DbType.Int32, Value = NulltoInt(txtEndRegimarkCameraNum.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "illumination_information", DbType = DbType.Int32, Value = NulltoInt(txtIlluminationInformation.Text) });
                 lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdAB, "column_threshold_01"));
                 lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdBC, "column_threshold_02"));
                 lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdCD, "column_threshold_03"));
