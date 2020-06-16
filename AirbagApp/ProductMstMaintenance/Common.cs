@@ -656,21 +656,10 @@ namespace ProductMstMaintenance
 
         // 品名マスタメンテ画面更新SQL
         public const string g_CON_UPDATE_MST_PRODUCT_INFO_DISP_INPUT =
-            @"UPDATE mst_product_info SET length = :length
-                                        , width = :width
-                                        , line_length = :line_length
-                                        , regimark_between_length = :regimark_between_length
-                                        , ai_model_non_inspection_flg = :ai_model_non_inspection_flg
+            @"UPDATE mst_product_info SET ai_model_non_inspection_flg = :ai_model_non_inspection_flg
                                         , ai_model_name = :ai_model_name
                                         , stretch_rate_x = :stretch_rate_x
                                         , stretch_rate_y = :stretch_rate_y
-                                        , regimark_1_point_x = :regimark_1_point_x
-                                        , regimark_1_point_y = :regimark_1_point_y
-                                        , regimark_2_point_x = :regimark_2_point_x
-                                        , regimark_2_point_y = :regimark_2_point_y
-                                        , start_regimark_camera_num = :start_regimark_camera_num
-                                        , end_regimark_camera_num = :end_regimark_camera_num
-                                        , illumination_information = :illumination_information
                                         , column_threshold_01 = :column_threshold_01
                                         , column_threshold_02 = :column_threshold_02
                                         , column_threshold_03 = :column_threshold_03
