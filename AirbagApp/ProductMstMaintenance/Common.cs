@@ -660,6 +660,8 @@ namespace ProductMstMaintenance
                                         , ai_model_name = :ai_model_name
                                         , stretch_rate_x = :stretch_rate_x
                                         , stretch_rate_y = :stretch_rate_y
+                                        , start_regimark_camera_num = :start_regimark_camera_num
+                                        , end_regimark_camera_num = :end_regimark_camera_num
                                         , column_threshold_01 = :column_threshold_01
                                         , column_threshold_02 = :column_threshold_02
                                         , column_threshold_03 = :column_threshold_03

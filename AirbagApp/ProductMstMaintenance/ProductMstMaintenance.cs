@@ -155,8 +155,8 @@ namespace ProductMstMaintenance
                 lblPlusDirectionC.Text = string.Empty;
                 lblPlusDirectionD.Text = string.Empty;
                 lblPlusDirectionE.Text = string.Empty;
-                lblStartRegimarkCameraNum.Text = string.Empty;
-                lblEndRegimarkCameraNum.Text = string.Empty;
+                txtStartRegimarkCameraNum.Text = string.Empty;
+                txtEndRegimarkCameraNum.Text = string.Empty;
                 lblIlluminationInformation.Text = string.Empty;
                 txtColumnThresholdAB.Text = string.Empty;
                 txtColumnThresholdBC.Text = string.Empty;
@@ -892,15 +892,12 @@ namespace ProductMstMaintenance
             try
             {
                 // 非表示で起動したエクスプローラの情報を取得する
-                Process p =
-                    Process.GetProcesses().Where(
-                        x => x.ProcessName.Equals(m_CON_PROCESSNAME_EXPLORER) &&
-                        x.MainWindowHandle == IntPtr.Zero).AsEnumerable().FirstOrDefault();
-
-                if (p != null)
+                foreach (Process pExplorer in Process.GetProcesses().Where(
+                    x => x.ProcessName.Equals(m_CON_PROCESSNAME_EXPLORER) &&
+                    x.MainWindowHandle == IntPtr.Zero))
                 {
                     // 対象プロセスをキルする
-                    p.Kill();
+                    pExplorer.Kill();
                 }
             }
             catch (Exception ex)
@@ -1099,9 +1096,9 @@ namespace ProductMstMaintenance
             m_intBasePoint5Y = NulltoInt(dtCurentRow[m_CON_COLNAME_BASE_POINT_5_Y]);
 
             // 開始レジマークカメラ番号
-            lblStartRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_START_REGIMARK_CAMERA_NUM]);
+            txtStartRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_START_REGIMARK_CAMERA_NUM]);
             // 終了レジマークカメラ番号
-            lblEndRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_END_REGIMARK_CAMERA_NUM]);
+            txtEndRegimarkCameraNum.Text = NulltoString(dtCurentRow[m_CON_COLNAME_END_REGIMARK_CAMERA_NUM]);
             // 照度情報
             lblIlluminationInformation.Text = NulltoString(dtCurentRow[m_CON_COLNAME_ILLUMINATION_INFORMATION]);
 
@@ -1394,6 +1391,8 @@ namespace ProductMstMaintenance
             if (CheckRequiredInput(txtProductName, "品名") == false ||
                 CheckRequiredInput(txtStretchRateX, "伸縮率（Xb）[%]") == false ||
                 CheckRequiredInput(txtStretchRateY, "伸縮率（Yb）[%]") == false ||
+                CheckRequiredInput(txtStartRegimarkCameraNum, "検出カメラ番号(開始レジマーク)") == false ||
+                CheckRequiredInput(txtEndRegimarkCameraNum, "検出カメラ番号(終了レジマーク)") == false ||
                 CheckRequiredInput(txtColumnThresholdAB, "A-B列") == false ||
                 CheckRequiredInput(txtColumnThresholdBC, "B-C列") == false ||
                 CheckRequiredInput(txtColumnThresholdCD, "C-D列") == false ||
@@ -1415,6 +1414,8 @@ namespace ProductMstMaintenance
             // 範囲チェック
             if (CheckRangeInputDouble(txtStretchRateX, "伸縮率（Xb）[%]", 1.00, 300.00) == false ||
                 CheckRangeInputDouble(txtStretchRateY, "伸縮率（Yb）[%]", 1.00, 300.00) == false ||
+                CheckRangeInput(txtStartRegimarkCameraNum, "検出カメラ番号(開始レジマーク)", 1, 27) == false ||
+                CheckRangeInput(txtEndRegimarkCameraNum, "検出カメラ番号(終了レジマーク)", 1, 27) == false ||
                 CheckRangeInput(txtColumnThresholdAB, "A-B列", 1, 480) == false ||
                 CheckRangeInput(txtColumnThresholdBC, "B-C列", 1, 480) == false ||
                 CheckRangeInput(txtColumnThresholdCD, "C-D列", 1, 480) == false ||
@@ -1615,6 +1616,8 @@ namespace ProductMstMaintenance
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_name", DbType = DbType.String, Value = txtAiModelName.Text });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_x", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateX.Text) });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "stretch_rate_y", DbType = DbType.Double, Value = NulltoDbl(txtStretchRateY.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_regimark_camera_num", DbType = DbType.Int32, Value = NulltoInt(txtStartRegimarkCameraNum.Text) });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_regimark_camera_num", DbType = DbType.Int32, Value = NulltoInt(txtEndRegimarkCameraNum.Text) });
                 lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdAB, "column_threshold_01"));
                 lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdBC, "column_threshold_02"));
                 lstNpgsqlCommand.Add(DBOrInt(txtColumnThresholdCD, "column_threshold_03"));
