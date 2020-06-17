@@ -496,7 +496,6 @@ namespace ProductMstMaintenance
                                         , line_threshold_d2 = :intLineThresholdd2
                                         , line_threshold_e1 = :intLineThresholde1
                                         , line_threshold_e2 = :intLineThresholde2
-                                        , ai_model_name = :strAiModelName
                                     WHERE product_name = :strProductName ";
 
         // 判定理由マスタ登録SQL
@@ -515,6 +514,10 @@ namespace ProductMstMaintenance
         // ファイルNo取得SQL
         public const string g_CON_SELECT_MST_PRODUCT_INFO_FILE_NUM =
             @"SELECT file_num FROM mst_product_info WHERE product_name = :Name ";
+
+        // 頂点情報取得SQL
+        public const string g_CON_SELECT_MST_PRODUCT_INFO_TOP_POINT =
+            @"SELECT product_name, column_cnt, top_point_a, top_point_b, top_point_c, top_point_d, top_point_e FROM mst_product_info WHERE file_num = :file_num ";
 
         // 品名更新SQL
         public const string g_CON_UPDATE_MST_PRODUCT_INFO_PRODUCT_NAME =

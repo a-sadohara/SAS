@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -20,7 +21,6 @@ namespace ProductMstMaintenance
         private const string m_CON_FILE_NAME_CONFIG_PLC = "ConfigPLC";
         private const string m_CON_FILE_NAME_AIRBAG_COORD = "AirBagCoord";
         private const string m_CON_FILE_NAME_CAMERA_INFO = "カメラ情報";
-        private const string m_CON_FILE_NAME_THRESHOLD_INFO = "閾値情報";
         private const string m_CON_FILE_NAME_REASON_JUDGMENT = "ScratchName";
 
         // INIファイルのセクション
@@ -53,25 +53,6 @@ namespace ProductMstMaintenance
         private const int m_CON_COL_ILLUMINATION_INFORMATION = 1;
         private const int m_CON_COL_START_REGIMARK_CAMERA_NUM = 2;
         private const int m_CON_COL_END_REGIMARK_CAMERA_NUM = 3;
-
-        // 閾値CSVファイル配置情報
-        private const int m_CON_COL_PRODUCT_NAME_THRESHOLD = 0;
-        private const int m_CON_COL_TAKING_CAMERA_CNT = 1;
-        private const int m_CON_COL_COLUMN_THRESHOLD_01 = 2;
-        private const int m_CON_COL_COLUMN_THRESHOLD_02 = 3;
-        private const int m_CON_COL_COLUMN_THRESHOLD_03 = 4;
-        private const int m_CON_COL_COLUMN_THRESHOLD_04 = 5;
-        private const int m_CON_COL_LINE_THRESHOLD_A1 = 6;
-        private const int m_CON_COL_LINE_THRESHOLD_A2 = 7;
-        private const int m_CON_COL_LINE_THRESHOLD_B1 = 8;
-        private const int m_CON_COL_LINE_THRESHOLD_B2 = 9;
-        private const int m_CON_COL_LINE_THRESHOLD_C1 = 10;
-        private const int m_CON_COL_LINE_THRESHOLD_C2 = 11;
-        private const int m_CON_COL_LINE_THRESHOLD_D1 = 12;
-        private const int m_CON_COL_LINE_THRESHOLD_D2 = 13;
-        private const int m_CON_COL_LINE_THRESHOLD_E1 = 14;
-        private const int m_CON_COL_LINE_THRESHOLD_E2 = 15;
-        private const int m_CON_COL_AI_MODEL_NAME = 16;
 
         // 判定理由CSVファイル配置情報
         private const int m_CON_COL_REASON_CODE = 0;
@@ -126,6 +107,9 @@ namespace ProductMstMaintenance
 
         // プロセス終了フラグ
         private static bool m_bolProcEnd = false;
+
+        // ファイルNoリスト
+        private static List<string> m_strFileNumList = new List<string>();
 
         /// <summary>
         /// 特殊対応ディクショナリ
@@ -292,30 +276,6 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
-        /// 閾値情報CSVファイル
-        /// </summary>
-        private struct ThresholdCsvInfo
-        {
-            public string strProductName;
-            public int intTakingCameraCnt;
-            public int intColumnThreshold01;
-            public int intColumnThreshold02;
-            public int intColumnThreshold03;
-            public int intColumnThreshold04;
-            public int intLineThresholda1;
-            public int intLineThresholda2;
-            public int intLineThresholdb1;
-            public int intLineThresholdb2;
-            public int intLineThresholdc1;
-            public int intLineThresholdc2;
-            public int intLineThresholdd1;
-            public int intLineThresholdd2;
-            public int intLineThresholde1;
-            public int intLineThresholde2;
-            public string strAiModelName;
-        }
-
-        /// <summary>
         /// 判定理由情報CSVファイル
         /// </summary>
         private struct IniDecisionReasonInfo
@@ -384,6 +344,8 @@ namespace ProductMstMaintenance
 
             string[] strInputPng = Directory.GetFiles(txtFolder.Text, "*.bmp", SearchOption.TopDirectoryOnly);
 
+            m_strFileNumList.Clear();
+
             ProgressForm frmProgress = new ProgressForm();
             frmProgress.StartPosition = FormStartPosition.CenterScreen;
             frmProgress.Height = Screen.FromControl(this).Bounds.Height;
@@ -433,8 +395,8 @@ namespace ProductMstMaintenance
                     return;
                 }
 
-                // 閾値情報CSV取り込み
-                ProcessThresholdCsv(strInputCsv);
+                // 閾値情報取り込み
+                ProcessImportThreshold();
 
                 if (m_bolProcEnd)
                 {
@@ -452,6 +414,12 @@ namespace ProductMstMaintenance
             });
 
             frmProgress.Close();
+
+            // 非同期処理終了後のフラグをチェックする
+            if (m_bolProcEnd)
+            {
+                return;
+            }
 
             // 出力ファイル設定
             string strOutPutFilePath = Path.Combine(g_clsSystemSettingInfo.strLogFileOutputDirectory,
@@ -848,6 +816,9 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static Boolean ExecRegProductInfo(IniDataRegister idrCurrentData)
         {
+            int intListCount = m_strFileNumList.Count;
+            int intExecutionCount = 0;
+
             try
             {
                 DataTable dtData = new DataTable();
@@ -875,6 +846,12 @@ namespace ProductMstMaintenance
                     else
                     {
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
+
+                        // 処理対象のファイルNoをリストに追加する
+                        if (fieldInfo.Name.Equals(m_CON_COL_FILE_NUM))
+                        {
+                            m_strFileNumList.Add(NulltoString(fieldInfo.GetValue(idrCurrentData)));
+                        }
                     }
                 }
 
@@ -888,7 +865,7 @@ namespace ProductMstMaintenance
                 }
 
                 // SQL(UPSERT)を実行し、新規レコードを追加する
-                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+                intExecutionCount = g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
                 return true;
             }
@@ -896,6 +873,14 @@ namespace ProductMstMaintenance
             {
                 OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
+
+                // ファイルNoリストから、取込失敗した情報を削除する
+                if (intExecutionCount != 1 &&
+                    intListCount != m_strFileNumList.Count)
+                {
+                    m_strFileNumList.RemoveAt(m_strFileNumList.Count - 1);
+                }
+
                 return false;
             }
         }
@@ -1796,356 +1781,476 @@ namespace ProductMstMaintenance
         }
         #endregion
 
-        #region 閾値情報CSV取り込み
+        #region 閾値情報取り込み
         /// <summary>
         /// 閾値情報取り込み
         /// </summary>
-        /// <param name="strInputCsv">読み込みcsvファイル全種類</param>
-        private static void ProcessThresholdCsv(string[] strInputCsv)
+        private static void ProcessImportThreshold()
         {
-            List<ThresholdCsvInfo> lstThresholdCsvInfo = new List<ThresholdCsvInfo>();
+            #region 変数宣言
+            int intTakingCameraCnt = 27;
+            int intCommaPosition = 0;
+            int intColumnCnt = 0;
+            int intLineThresholda1 = 0;
+            int intLineThresholda2 = 0;
+            int intLineThresholdb1 = 0;
+            int intLineThresholdb2 = 0;
+            int intLineThresholdc1 = 0;
+            int intLineThresholdc2 = 0;
+            int intLineThresholdd1 = 0;
+            int intLineThresholdd2 = 0;
+            int intLineThresholde1 = 0;
+            int intLineThresholde2 = 0;
+            int intColumnThreshold01 = 0;
+            int intColumnThreshold02 = 0;
+            int intColumnThreshold03 = 0;
+            int intColumnThreshold04 = 0;
+            int intTopPointA_XMin = 0;
+            int intTopPointA_XMax = 0;
+            int intTopPointA_YMin = 0;
+            int intTopPointA_YMax = 0;
+            int intTopPointB_XMin = 0;
+            int intTopPointB_XMax = 0;
+            int intTopPointB_YMin = 0;
+            int intTopPointB_YMax = 0;
+            int intTopPointC_XMin = 0;
+            int intTopPointC_XMax = 0;
+            int intTopPointC_YMin = 0;
+            int intTopPointC_YMax = 0;
+            int intTopPointD_XMin = 0;
+            int intTopPointD_XMax = 0;
+            int intTopPointD_YMin = 0;
+            int intTopPointD_YMax = 0;
+            int intTopPointE_XMin = 0;
+            int intTopPointE_XMax = 0;
+            int intTopPointE_YMin = 0;
+            int intTopPointE_YMax = 0;
+            List<int> intTopPointAList_X = new List<int>();
+            List<int> intTopPointAList_Y = new List<int>();
+            List<int> intTopPointBList_X = new List<int>();
+            List<int> intTopPointBList_Y = new List<int>();
+            List<int> intTopPointCList_X = new List<int>();
+            List<int> intTopPointCList_Y = new List<int>();
+            List<int> intTopPointDList_X = new List<int>();
+            List<int> intTopPointDList_Y = new List<int>();
+            List<int> intTopPointEList_X = new List<int>();
+            List<int> intTopPointEList_Y = new List<int>();
+            string strSpace = " ";
+            string strReplacementCharacter = "),(";
+            string strLeftBracket = "(";
+            string strRightBracket = ")";
+            string strProductName = string.Empty;
+            string strErrorMessage = string.Empty;
+            List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+            DataTable dtData = new DataTable();
+            #endregion
 
-            // フォルダ内のファイルの数だけループする
-            foreach (string InputfilePath in strInputCsv)
+            // 取込対象の品番に対して、閾値情報の算出を行う
+            foreach (string strFileNum in m_strFileNumList)
             {
-                m_strErrorOutFileName = Path.GetFileName(InputfilePath);
+                #region 変数初期化
+                intCommaPosition = 0;
+                intColumnCnt = 0;
+                intLineThresholda1 = 0;
+                intLineThresholda2 = 0;
+                intLineThresholdb1 = 0;
+                intLineThresholdb2 = 0;
+                intLineThresholdc1 = 0;
+                intLineThresholdc2 = 0;
+                intLineThresholdd1 = 0;
+                intLineThresholdd2 = 0;
+                intLineThresholde1 = 0;
+                intLineThresholde2 = 0;
+                intColumnThreshold01 = 0;
+                intColumnThreshold02 = 0;
+                intColumnThreshold03 = 0;
+                intColumnThreshold04 = 0;
+                intTopPointA_XMin = 0;
+                intTopPointA_XMax = 0;
+                intTopPointA_YMin = 0;
+                intTopPointA_YMax = 0;
+                intTopPointB_XMin = 0;
+                intTopPointB_XMax = 0;
+                intTopPointB_YMin = 0;
+                intTopPointB_YMax = 0;
+                intTopPointC_XMin = 0;
+                intTopPointC_XMax = 0;
+                intTopPointC_YMin = 0;
+                intTopPointC_YMax = 0;
+                intTopPointD_XMin = 0;
+                intTopPointD_XMax = 0;
+                intTopPointD_YMin = 0;
+                intTopPointD_YMax = 0;
+                intTopPointE_XMin = 0;
+                intTopPointE_XMax = 0;
+                intTopPointE_YMin = 0;
+                intTopPointE_YMax = 0;
+                intTopPointAList_X.Clear();
+                intTopPointAList_Y.Clear();
+                intTopPointBList_X.Clear();
+                intTopPointBList_Y.Clear();
+                intTopPointCList_X.Clear();
+                intTopPointCList_Y.Clear();
+                intTopPointDList_X.Clear();
+                intTopPointDList_Y.Clear();
+                intTopPointEList_X.Clear();
+                intTopPointEList_Y.Clear();
+                strProductName = string.Empty;
+                strErrorMessage = string.Empty;
+                lstNpgsqlCommand.Clear();
+                dtData.Clear();
+                #endregion
 
-                // 閾値情報を判定する。
-                if (Regex.IsMatch(Path.GetFileName(InputfilePath), m_CON_FILE_NAME_THRESHOLD_INFO + ".csv", RegexOptions.IgnoreCase) == true)
+                #region 品番情報取得
+                try
                 {
-                    try
+                    // SQL文を設定する
+                    string strSelectSql = g_CON_SELECT_MST_PRODUCT_INFO_TOP_POINT;
+
+                    // SQLコマンドに各パラメータを設定する
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = m_CON_COL_FILE_NUM, DbType = DbType.String, Value = NulltoString(strFileNum) });
+
+                    // SQL文を実行する
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSelectSql, lstNpgsqlCommand);
+                }
+                catch (Exception ex)
+                {
+                    OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0021, Environment.NewLine, ex.Message));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0021, Environment.NewLine, ex.Message));
+                    m_intErrorThresholdReg++;
+                    continue;
+                }
+
+                if (dtData.Rows.Count == 0)
+                {
+                    m_intErrorThresholdReg++;
+                    continue;
+                }
+                #endregion
+
+                #region 閾値情報算出
+                try
+                {
+                    intColumnCnt = NulltoInt(dtData.Rows[0]["column_cnt"].ToString());
+                    strProductName = NulltoString(dtData.Rows[0]["product_name"].ToString());
+
+                    // 頂点座標Aの設定値より、X座標・Y座標を抽出する
+                    foreach (string strTopPointA in
+                        NulltoString(dtData.Rows[0]["top_point_a"].ToString())
+                        .Replace(strReplacementCharacter, strSpace)
+                        .Replace(strLeftBracket, string.Empty)
+                        .Replace(strRightBracket, string.Empty)
+                        .Split(strSpace.ToCharArray()))
                     {
-                        // CSVファイルを取り込み、閾値情報を取得し登録する。
-                        lstThresholdCsvInfo = ImportThresholdCsvData(InputfilePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        if (m_bolProcEnd)
+                        if (string.IsNullOrWhiteSpace(strTopPointA))
                         {
-                            return;
+                            continue;
                         }
-                        continue;
+
+                        intCommaPosition = strTopPointA.IndexOf(",");
+                        intTopPointAList_X.Add(NulltoInt(strTopPointA.Substring(0, intCommaPosition)));
+                        intTopPointAList_Y.Add(NulltoInt(strTopPointA.Substring(++intCommaPosition)));
                     }
 
-                    // 読み込み行が存在する場合は登録を行う
-                    if (lstThresholdCsvInfo.Count > 0)
+                    // 頂点座標Bの設定値より、X座標・Y座標を抽出する
+                    foreach (string strTopPointB in
+                        NulltoString(dtData.Rows[0]["top_point_b"].ToString())
+                        .Replace(strReplacementCharacter, strSpace)
+                        .Replace(strLeftBracket, string.Empty)
+                        .Replace(strRightBracket, string.Empty)
+                        .Split(strSpace.ToCharArray()))
                     {
-                        // 読み込んだ値をDBに登録する
-                        UPDMstProductInfoInThreshold(lstThresholdCsvInfo);
+                        if (string.IsNullOrWhiteSpace(strTopPointB))
+                        {
+                            continue;
+                        }
+
+                        intCommaPosition = strTopPointB.IndexOf(",");
+                        intTopPointBList_X.Add(NulltoInt(strTopPointB.Substring(0, intCommaPosition)));
+                        intTopPointBList_Y.Add(NulltoInt(strTopPointB.Substring(++intCommaPosition)));
+                    }
+
+                    // 頂点座標Cの設定値より、X座標・Y座標を抽出する
+                    foreach (string strTopPointC in
+                        NulltoString(dtData.Rows[0]["top_point_c"].ToString())
+                        .Replace(strReplacementCharacter, strSpace)
+                        .Replace(strLeftBracket, string.Empty)
+                        .Replace(strRightBracket, string.Empty)
+                        .Split(strSpace.ToCharArray()))
+                    {
+                        if (string.IsNullOrWhiteSpace(strTopPointC))
+                        {
+                            continue;
+                        }
+
+                        intCommaPosition = strTopPointC.IndexOf(",");
+                        intTopPointCList_X.Add(NulltoInt(strTopPointC.Substring(0, intCommaPosition)));
+                        intTopPointCList_Y.Add(NulltoInt(strTopPointC.Substring(++intCommaPosition)));
+                    }
+
+                    // 頂点座標Dの設定値より、X座標・Y座標を抽出する
+                    foreach (string strTopPointD in
+                        NulltoString(dtData.Rows[0]["top_point_d"].ToString())
+                        .Replace(strReplacementCharacter, strSpace)
+                        .Replace(strLeftBracket, string.Empty)
+                        .Replace(strRightBracket, string.Empty)
+                        .Split(strSpace.ToCharArray()))
+                    {
+                        if (string.IsNullOrWhiteSpace(strTopPointD))
+                        {
+                            continue;
+                        }
+
+                        intCommaPosition = strTopPointD.IndexOf(",");
+                        intTopPointDList_X.Add(NulltoInt(strTopPointD.Substring(0, intCommaPosition)));
+                        intTopPointDList_Y.Add(NulltoInt(strTopPointD.Substring(++intCommaPosition)));
+                    }
+
+                    // 頂点座標Eの設定値より、X座標・Y座標を抽出する
+                    foreach (string strTopPointE in
+                        NulltoString(dtData.Rows[0]["top_point_e"].ToString())
+                        .Replace(strReplacementCharacter, strSpace)
+                        .Replace(strLeftBracket, string.Empty)
+                        .Replace(strRightBracket, string.Empty)
+                        .Split(strSpace.ToCharArray()))
+                    {
+                        if (string.IsNullOrWhiteSpace(strTopPointE))
+                        {
+                            continue;
+                        }
+
+                        intCommaPosition = strTopPointE.IndexOf(",");
+                        intTopPointEList_X.Add(NulltoInt(strTopPointE.Substring(0, intCommaPosition)));
+                        intTopPointEList_Y.Add(NulltoInt(strTopPointE.Substring(++intCommaPosition)));
+                    }
+
+                    // 頂点座標AのX座標から最小値・最大値を取得する
+                    if (intTopPointAList_X.Count != 0)
+                    {
+                        intTopPointA_XMin = intTopPointAList_X.Min();
+                        intTopPointA_XMax = intTopPointAList_X.Max();
+                    }
+
+                    // 頂点座標AのY座標から最小値・最大値を取得する
+                    if (intTopPointAList_Y.Count != 0)
+                    {
+                        intTopPointA_YMin = intTopPointAList_Y.Min();
+                        intTopPointA_YMax = intTopPointAList_Y.Max();
+                    }
+
+                    // 頂点座標BのX座標から最小値・最大値を取得する
+                    if (intTopPointBList_X.Count != 0)
+                    {
+                        intTopPointB_XMin = intTopPointBList_X.Min();
+                        intTopPointB_XMax = intTopPointBList_X.Max();
+                    }
+
+                    // 頂点座標BのY座標から最小値・最大値を取得する
+                    if (intTopPointBList_Y.Count != 0)
+                    {
+                        intTopPointB_YMin = intTopPointBList_Y.Min();
+                        intTopPointB_YMax = intTopPointBList_Y.Max();
+                    }
+
+                    // 頂点座標CのX座標から最小値・最大値を取得する
+                    if (intTopPointCList_X.Count != 0)
+                    {
+                        intTopPointC_XMin = intTopPointCList_X.Min();
+                        intTopPointC_XMax = intTopPointCList_X.Max();
+                    }
+
+                    // 頂点座標CのY座標から最小値・最大値を取得する
+                    if (intTopPointCList_Y.Count != 0)
+                    {
+                        intTopPointC_YMin = intTopPointCList_Y.Min();
+                        intTopPointC_YMax = intTopPointCList_Y.Max();
+                    }
+
+                    // 頂点座標DのX座標から最小値・最大値を取得する
+                    if (intTopPointDList_X.Count != 0)
+                    {
+                        intTopPointD_XMin = intTopPointDList_X.Min();
+                        intTopPointD_XMax = intTopPointDList_X.Max();
+                    }
+
+                    // 頂点座標DのY座標から最小値・最大値を取得する
+                    if (intTopPointDList_Y.Count != 0)
+                    {
+                        intTopPointD_YMin = intTopPointDList_Y.Min();
+                        intTopPointD_YMax = intTopPointDList_Y.Max();
+                    }
+
+                    // 頂点座標EのX座標から最小値・最大値を取得する
+                    if (intTopPointEList_X.Count != 0)
+                    {
+                        intTopPointE_XMin = intTopPointEList_X.Min();
+                        intTopPointE_XMax = intTopPointEList_X.Max();
+                    }
+
+                    // 頂点座標EのY座標から最小値・最大値を取得する
+                    if (intTopPointEList_Y.Count != 0)
+                    {
+                        intTopPointE_YMin = intTopPointEList_Y.Min();
+                        intTopPointE_YMax = intTopPointEList_Y.Max();
+                    }
+
+                    if (intColumnCnt > 0)
+                    {
+                        // 行閾値を設定する
+                        intLineThresholda1 = intTopPointA_XMin;
+                        intLineThresholda2 = intTopPointA_XMax;
+
+                        // 次列の情報をチェックする
+                        if (intTopPointB_YMin != 0)
+                        {
+                            // 列閾値を算出し設定する
+                            intColumnThreshold01 = NulltoInt(Math.Round(intTopPointA_YMax + (intTopPointB_YMin - intTopPointA_YMax) / 2m));
+                        }
+                        else
+                        {
+                            // 次列の情報が無い場合、A列Y座標の最大値を設定する
+                            intColumnThreshold01 = intTopPointA_YMax;
+                        }
+                    }
+
+                    if (intColumnCnt > 1)
+                    {
+                        // 行閾値を設定する
+                        intLineThresholdb1 = intTopPointB_XMin;
+                        intLineThresholdb2 = intTopPointB_XMax;
+
+                        // 次列の情報をチェックする
+                        if (intTopPointC_YMin != 0)
+                        {
+                            // 列閾値を算出し設定する
+                            intColumnThreshold02 = NulltoInt(Math.Round(intTopPointB_YMax + (intTopPointC_YMin - intTopPointB_YMax) / 2m));
+                        }
+                        else
+                        {
+                            // 次列の情報が無い場合、B列Y座標の最大値を設定する
+                            intColumnThreshold02 = intTopPointB_YMax;
+                        }
+                    }
+
+                    if (intColumnCnt > 2)
+                    {
+                        // 行閾値を設定する
+                        intLineThresholdc1 = intTopPointC_XMin;
+                        intLineThresholdc2 = intTopPointC_XMax;
+
+                        // 次列の情報をチェックする
+                        if (intTopPointD_YMin != 0)
+                        {
+                            // 列閾値を算出し設定する
+                            intColumnThreshold03 = NulltoInt(Math.Round(intTopPointC_YMax + (intTopPointD_YMin - intTopPointC_YMax) / 2m));
+                        }
+                        else
+                        {
+                            // 次列の情報が無い場合、C列Y座標の最大値を設定する
+                            intColumnThreshold03 = intTopPointC_YMax;
+                        }
+                    }
+
+                    if (intColumnCnt > 3)
+                    {
+                        // 行閾値を設定する
+                        intLineThresholdd1 = intTopPointD_XMin;
+                        intLineThresholdd2 = intTopPointD_XMax;
+
+                        // 次列の情報をチェックする
+                        if (intTopPointE_YMin != 0)
+                        {
+                            // 列閾値を算出し設定する
+                            intColumnThreshold04 = NulltoInt(Math.Round(intTopPointD_YMax + (intTopPointE_YMin - intTopPointD_YMax) / 2m));
+                        }
+                        else
+                        {
+                            // 次列の情報が無い場合、D列Y座標の最大値を設定する
+                            intColumnThreshold04 = intTopPointD_YMax;
+                        }
+                    }
+
+                    if (intColumnCnt > 4)
+                    {
+                        // 行閾値を設定する
+                        intLineThresholde1 = intTopPointE_XMin;
+                        intLineThresholde2 = intTopPointE_XMax;
                     }
                 }
+                catch (Exception ex)
+                {
+                    OutPutImportLog(string.Format("{0}{1}{2}[{3}]", g_clsMessageInfo.strMsgE0026, Environment.NewLine, ex.Message, strProductName));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}[{3}]", g_clsMessageInfo.strMsgE0026, Environment.NewLine, ex.Message, strProductName));
+                    m_intErrorThresholdReg++;
+                    continue;
+                }
+                #endregion
+
+                #region 品番情報更新
+                try
+                {
+                    // SQL文を設定する
+                    string strUpdateSql = g_CON_UPDATE_MST_PRODUCT_INFO_THRESHOLD;
+
+                    // SQLコマンドに各パラメータを設定する
+                    lstNpgsqlCommand.Clear();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intTakingCameraCnt", DbType = DbType.Int32, Value = intTakingCameraCnt });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold01", DbType = DbType.Int32, Value = intColumnThreshold01 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold02", DbType = DbType.Int32, Value = intColumnThreshold02 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold03", DbType = DbType.Int32, Value = intColumnThreshold03 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold04", DbType = DbType.Int32, Value = intColumnThreshold04 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholda1", DbType = DbType.Int32, Value = intLineThresholda1 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholda2", DbType = DbType.Int32, Value = intLineThresholda2 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdb1", DbType = DbType.Int32, Value = intLineThresholdb1 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdb2", DbType = DbType.Int32, Value = intLineThresholdb2 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdc1", DbType = DbType.Int32, Value = intLineThresholdc1 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdc2", DbType = DbType.Int32, Value = intLineThresholdc2 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdd1", DbType = DbType.Int32, Value = intLineThresholdd1 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdd2", DbType = DbType.Int32, Value = intLineThresholdd2 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde1", DbType = DbType.Int32, Value = intLineThresholde1 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde2", DbType = DbType.Int32, Value = intLineThresholde2 });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strProductName", DbType = DbType.String, Value = strProductName });
+
+                    // SQL文を実行する
+                    if (g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand) != 1)
+                    {
+                        strErrorMessage = "更新対象のレコードが存在しません。[{0}]";
+                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strProductName)));
+                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strProductName)));
+                        m_intErrorThresholdReg++;
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    strErrorMessage = "{0},[{1}]";
+                    OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, ex.Message, strProductName)));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
+                    m_intErrorThresholdReg++;
+                    continue;
+                }
+
+                m_intSuccesThresholdReg++;
+                #endregion
+            }
+
+            #region DB反映、ログ出力
+            // 閾値算出が成功している場合、コミットする
+            if (m_intSuccesThresholdReg > 0)
+            {
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
             }
 
             m_strErrorOutFileName = string.Empty;
+
             // ログファイル結果出力を行う
             string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0008,
                                                     (m_intSuccesThresholdReg + m_intErrorThresholdReg),
                                                     m_intSuccesThresholdReg,
                                                     m_intErrorThresholdReg) + "\"";
             OutPutImportLog(strOutMsg);
-        }
-
-        /// <summary>
-        /// 閾値情報取り込み
-        /// </summary>
-        /// <param name="strInputfilePath">読み込みファイル情報</param>
-        /// <returns></returns>
-        private static List<ThresholdCsvInfo> ImportThresholdCsvData(string strInputfilePath)
-        {
-            List<ThresholdCsvInfo> lstThresholdCsvInfo = new List<ThresholdCsvInfo>();
-            // 読み込みデータ
-            ThresholdCsvInfo tciCurrentData = new ThresholdCsvInfo();
-
-            int intRowCount = 0;
-
-            // ファイル読み込み処理を行う
-            using (StreamReader sr = new StreamReader(strInputfilePath
-                                                    , Encoding.GetEncoding("Shift_JIS")))
-            {
-                string strFileTextLine = string.Empty;
-                // ストリームの末尾まで繰り返す
-                while (!sr.EndOfStream)
-                {
-                    // 閾値情報ファイルを１行読み込む
-                    strFileTextLine = sr.ReadLine();
-                    intRowCount = intRowCount + 1;
-                    if (string.IsNullOrEmpty(strFileTextLine) || intRowCount == 1)
-                    {
-                        // 空行（最終行）またはヘッダ行の場合読み飛ばす
-                        continue;
-                    }
-
-                    // CSVファイル読み込み＆入力データチェックを行う
-                    if (ReadThresholdCsvData(strFileTextLine
-                                           , intRowCount
-                                           , Path.GetFileName(strInputfilePath)
-                                           , out tciCurrentData) == false)
-                    {
-                        m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
-                        continue;
-                    }
-
-                    // csvのリストに現在行を追加
-                    lstThresholdCsvInfo.Add(tciCurrentData);
-                }
-
-                return lstThresholdCsvInfo;
-            }
-        }
-
-        /// <summary>
-        /// 閾値CSVファイル読み込み
-        /// </summary>
-        /// <param name="strFileTextLine">CSVファイル行テキスト</param>
-        /// <param name="lstUserData">CSVファイルデータ</param>
-        /// <returns></returns>
-        private static Boolean ReadThresholdCsvData(string strFileTextLine
-                                                  , int intRowCount
-                                                  , string strFileName
-                                                  , out ThresholdCsvInfo tciCurrentData)
-        {
-            tciCurrentData = new ThresholdCsvInfo();
-
-            // CSVを読み込む
-            if (SetThresholdInfoCsv(strFileTextLine, out tciCurrentData, intRowCount) == false)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// 閾値入力チェック
-        /// </summary>
-        /// <param name="tciCheckData">読み込み閾値情報リスト</param>
-        /// <param name="intRowCount">対象行番号</param>
-        /// <returns></returns>
-        private static Boolean InputDataCheckThreshold(string[] stArrayData
-                                                     , int intRowCount
-                                                     , string strFileReadLine)
-        {
-            // 各項目のチェックを行う
-            // 列数チェック
-            if (stArrayData.Length <= m_CON_COL_AI_MODEL_NAME)
-            {
-                // ログファイルにエラー出力を行う
-                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0010, intRowCount) + ",\"" + strFileReadLine + "\"");
-                return false;
-            }
-
-            // 必須入力チェック
-            if (CheckRequiredInput(stArrayData[m_CON_COL_PRODUCT_NAME_THRESHOLD], "品名", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A1], "行閾値A1", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A2], "行閾値A2", intRowCount, strFileReadLine) == false ||
-                CheckRequiredInput(stArrayData[m_CON_COL_AI_MODEL_NAME], "AIモデル名", intRowCount, strFileReadLine) == false)
-            {
-                return false;
-            }
-
-            // 桁数入力チェック
-            if (CheckLengthInput(stArrayData[m_CON_COL_PRODUCT_NAME_THRESHOLD], "品名", intRowCount, 1, 16, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 2, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04], "列閾値04", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A1], "行閾値A1", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A2], "行閾値A2", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B1], "行閾値B1", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B2], "行閾値B2", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C1], "行閾値C1", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C2], "行閾値C2", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D1], "行閾値D1", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D2], "行閾値D2", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E1], "行閾値E1", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E2], "行閾値E2", intRowCount, 1, 3, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_AI_MODEL_NAME], "AIモデル名", intRowCount, 1, 256, strFileReadLine) == false)
-            {
-                return false;
-            }
-
-            // 最大範囲入力チェック
-            if (CheckRangeInput(stArrayData[m_CON_COL_TAKING_CAMERA_CNT], "撮像カメラ数", intRowCount, 1, 54, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01], "列閾値01", intRowCount, 1, 480, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02], "列閾値02", intRowCount, 1, 480, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03], "列閾値03", intRowCount, 1, 480, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04], "列閾値04", intRowCount, 1, 480, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A1], "行閾値A1", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_A2], "行閾値A2", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B1], "行閾値B1", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_B2], "行閾値B2", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C1], "行閾値C1", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_C2], "行閾値C2", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D1], "行閾値D1", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_D2], "行閾値D2", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E1], "行閾値E1", intRowCount, 1, 640, strFileReadLine) == false ||
-                CheckRangeInput(stArrayData[m_CON_COL_LINE_THRESHOLD_E2], "行閾値E2", intRowCount, 1, 640, strFileReadLine) == false)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// ＣＳＶ→構造体格納（閾値情報CSV）
-        /// </summary>
-        /// <param name="strFileReadLine">読み込みＣＳＶ情報</param>
-        /// <returns></returns>
-        private static Boolean SetThresholdInfoCsv(string strFileReadLine
-                                                 , out ThresholdCsvInfo tciData
-                                                 , int intRowCount)
-        {
-            string[] stArrayData;
-
-            tciData = new ThresholdCsvInfo();
-
-            // 半角スペース区切りで分割して配列に格納する
-            stArrayData = strFileReadLine.Split(',');
-
-            // 入力チェック
-            if (InputDataCheckThreshold(stArrayData, intRowCount, strFileReadLine) == false)
-            {
-                return false;
-            }
-
-            // CSVの各項目を構造体へ格納する
-            tciData.strProductName = stArrayData[m_CON_COL_PRODUCT_NAME_THRESHOLD];
-            tciData.intTakingCameraCnt = NulltoInt(stArrayData[m_CON_COL_TAKING_CAMERA_CNT]);
-            tciData.intColumnThreshold01 = NulltoInt(stArrayData[m_CON_COL_COLUMN_THRESHOLD_01]);
-            tciData.intColumnThreshold02 = NulltoInt(stArrayData[m_CON_COL_COLUMN_THRESHOLD_02]);
-            tciData.intColumnThreshold03 = NulltoInt(stArrayData[m_CON_COL_COLUMN_THRESHOLD_03]);
-            tciData.intColumnThreshold04 = NulltoInt(stArrayData[m_CON_COL_COLUMN_THRESHOLD_04]);
-            tciData.intLineThresholda1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_A1]);
-            tciData.intLineThresholda2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_A2]);
-            tciData.intLineThresholdb1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_B1]);
-            tciData.intLineThresholdb2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_B2]);
-            tciData.intLineThresholdc1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_C1]);
-            tciData.intLineThresholdc2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_C2]);
-            tciData.intLineThresholdd1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_D1]);
-            tciData.intLineThresholdd2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_D2]);
-            tciData.intLineThresholde1 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_E1]);
-            tciData.intLineThresholde2 = NulltoInt(stArrayData[m_CON_COL_LINE_THRESHOLD_E2]);
-            tciData.strAiModelName = stArrayData[m_CON_COL_AI_MODEL_NAME];
-
-            return true;
-        }
-
-        /// <summary>
-        /// 閾値情報テーブル登録処理
-        /// </summary>
-        /// <param name="lstDataPTCToDB"></param>
-        /// <returns></returns>
-        private static void UPDMstProductInfoInThreshold(List<ThresholdCsvInfo> lstThresholdCsvToDB)
-        {
-            foreach (ThresholdCsvInfo tciCurrentData in lstThresholdCsvToDB)
-            {
-                // 登録処理実施
-                if (ExecRegProductInfoThreshold(tciCurrentData) == true)
-                {
-                    m_intSuccesThresholdReg = m_intSuccesThresholdReg + 1;
-                }
-                else
-                {
-                    m_intErrorThresholdReg = m_intErrorThresholdReg + 1;
-                }
-            }
-
-            if (m_intSuccesThresholdReg > 0)
-            {
-                // トランザクションコミット
-                g_clsConnectionNpgsql.DbCommit();
-                g_clsConnectionNpgsql.DbClose();
-            }
-        }
-
-        /// <summary>
-        /// 閾値更新SQL処理
-        /// </summary>
-        /// <param name="lstUserData">読み込みデータ一覧</param>
-        /// <returns></returns>
-        private static Boolean ExecRegProductInfoThreshold(ThresholdCsvInfo tciCurrentData)
-        {
-            string strData =
-                string.Join(
-                    ",",
-                    tciCurrentData.strProductName,
-                    tciCurrentData.intTakingCameraCnt.ToString(),
-                    tciCurrentData.intColumnThreshold01.ToString(),
-                    tciCurrentData.intColumnThreshold02.ToString(),
-                    tciCurrentData.intColumnThreshold03.ToString(),
-                    tciCurrentData.intColumnThreshold04.ToString(),
-                    tciCurrentData.intLineThresholda1.ToString(),
-                    tciCurrentData.intLineThresholda2.ToString(),
-                    tciCurrentData.intLineThresholdb1.ToString(),
-                    tciCurrentData.intLineThresholdb2.ToString(),
-                    tciCurrentData.intLineThresholdc1.ToString(),
-                    tciCurrentData.intLineThresholdc2.ToString(),
-                    tciCurrentData.intLineThresholdd1.ToString(),
-                    tciCurrentData.intLineThresholdd2.ToString(),
-                    tciCurrentData.intLineThresholde1.ToString(),
-                    tciCurrentData.intLineThresholde2.ToString(),
-                    tciCurrentData.strAiModelName);
-
-            string strErrorMessage = string.Empty;
-
-            try
-            {
-                // SQL文を作成する
-                string strCreateSql = g_CON_UPDATE_MST_PRODUCT_INFO_THRESHOLD;
-
-                // SQLコマンドに各パラメータを設定する
-                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-
-                // 各項目の値を取得する
-                // FieldInfoを取得する
-                Type typeOfMyStruct = typeof(ThresholdCsvInfo);
-                System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
-
-                // Iniファイルから各値を読み込む
-                foreach (var fieldInfo in fieldInfos)
-                {
-                    if (fieldInfo.FieldType == typeof(int))
-                    {
-                        if (NulltoInt(fieldInfo.GetValue(tciCurrentData)) == 0)
-                        {
-                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = DBNull.Value });
-                        }
-                        else
-                        {
-                            lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(tciCurrentData)) });
-                        }
-                    }
-                    else
-                    {
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(tciCurrentData)) });
-                    }
-                }
-
-                // sqlを実行する
-                if (g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand) > 0)
-                {
-                    return true;
-                }
-
-                strErrorMessage = "更新対象のレコードが存在しません。[{0}]";
-                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0026, (m_intSuccesThresholdReg + m_intErrorThresholdReg) + 1) + Environment.NewLine + string.Format(strErrorMessage, strData));
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2},{3}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strData), m_strErrorOutFileName));
-                return false;
-            }
-            catch (Exception ex)
-            {
-                strErrorMessage = "{0},[{1}]";
-                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0026, (m_intSuccesThresholdReg + m_intErrorThresholdReg) + 1) + Environment.NewLine + string.Format(strErrorMessage, ex.Message, strData));
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
-                return false;
-            }
+            #endregion
         }
         #endregion
 
@@ -2266,7 +2371,7 @@ namespace ProductMstMaintenance
                 // ストリームの末尾まで繰り返す
                 while (!sr.EndOfStream)
                 {
-                    // 閾値情報ファイルを１行読み込む
+                    // 判定理由情報ファイルを１行読み込む
                     strFileTextLine = sr.ReadLine();
                     intRowCount = intRowCount + 1;
                     if (string.IsNullOrEmpty(strFileTextLine) || intRowCount == 1)
@@ -2326,7 +2431,7 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 判定理由入力チェック
         /// </summary>
-        /// <param name="tciCheckData">読み込み閾値情報リスト</param>
+        /// <param name="tciCheckData">読み込み判定理由情報リスト</param>
         /// <param name="intRowCount">対象行番号</param>
         /// <returns></returns>
         private static Boolean InputDataCheckDecisionReason(string[] stArrayData
@@ -2367,7 +2472,7 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
-        /// INI→構造体格納（閾値情報CSV）
+        /// INI→構造体格納（判定理由情報CSV）
         /// </summary>
         /// <param name="strFileReadLine">読み込みINI情報</param>
         /// <returns></returns>
