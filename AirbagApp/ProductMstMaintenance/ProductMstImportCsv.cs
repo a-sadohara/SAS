@@ -867,13 +867,7 @@ namespace ProductMstMaintenance
                 {
                     // SQL(UPDATE)を実行し、既存レコードの品名を「品名_ファイルNo」に更新する
                     g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
-
-                    // 退避していた品名もあわせて更新する
-                    strProductName = string.Format("{0}_{1}", strProductName, strFileNum);
                 }
-
-                // 品名のパラメータを再設定する
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strProductName", DbType = DbType.String, Value = strProductName });
 
                 // SQL(UPSERT)を実行し、新規レコードを追加する
                 g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
