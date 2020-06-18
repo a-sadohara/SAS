@@ -2165,6 +2165,25 @@ namespace ProductMstMaintenance
                         intLineThresholdb2 = intTopPointB_XMax;
 
                         // 次列の情報をチェックする
+                        if (intTopPointB_YMin != 0)
+                        {
+                            // 列閾値を算出し設定する
+                            intColumnThreshold01 = NulltoInt(Math.Round(intTopPointA_YMax + (intTopPointB_YMin - intTopPointA_YMax) / 2m));
+                        }
+                        else
+                        {
+                            // 次列の情報が無い場合、A列Y座標の最大値を設定する
+                            intColumnThreshold01 = intTopPointA_YMax;
+                        }
+                    }
+
+                    if (intColumnCnt > 2)
+                    {
+                        // 行閾値を設定する
+                        intLineThresholdc1 = intTopPointC_XMin;
+                        intLineThresholdc2 = intTopPointC_XMax;
+
+                        // 次列の情報をチェックする
                         if (intTopPointC_YMin != 0)
                         {
                             // 列閾値を算出し設定する
@@ -2177,11 +2196,11 @@ namespace ProductMstMaintenance
                         }
                     }
 
-                    if (intColumnCnt > 2)
+                    if (intColumnCnt > 3)
                     {
                         // 行閾値を設定する
-                        intLineThresholdc1 = intTopPointC_XMin;
-                        intLineThresholdc2 = intTopPointC_XMax;
+                        intLineThresholdd1 = intTopPointD_XMin;
+                        intLineThresholdd2 = intTopPointD_XMax;
 
                         // 次列の情報をチェックする
                         if (intTopPointD_YMin != 0)
@@ -2196,11 +2215,11 @@ namespace ProductMstMaintenance
                         }
                     }
 
-                    if (intColumnCnt > 3)
+                    if (intColumnCnt > 4)
                     {
                         // 行閾値を設定する
-                        intLineThresholdd1 = intTopPointD_XMin;
-                        intLineThresholdd2 = intTopPointD_XMax;
+                        intLineThresholde1 = intTopPointE_XMin;
+                        intLineThresholde2 = intTopPointE_XMax;
 
                         // 次列の情報をチェックする
                         if (intTopPointE_YMin != 0)
@@ -2213,13 +2232,6 @@ namespace ProductMstMaintenance
                             // 次列の情報が無い場合、D列Y座標の最大値を設定する
                             intColumnThreshold04 = intTopPointD_YMax;
                         }
-                    }
-
-                    if (intColumnCnt > 4)
-                    {
-                        // 行閾値を設定する
-                        intLineThresholde1 = intTopPointE_XMin;
-                        intLineThresholde2 = intTopPointE_XMax;
                     }
                 }
                 catch (Exception ex)
@@ -2239,20 +2251,132 @@ namespace ProductMstMaintenance
 
                     // SQLコマンドに各パラメータを設定する
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intTakingCameraCnt", DbType = DbType.Int32, Value = intTakingCameraCnt });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold01", DbType = DbType.Int32, Value = intColumnThreshold01 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold02", DbType = DbType.Int32, Value = intColumnThreshold02 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold03", DbType = DbType.Int32, Value = intColumnThreshold03 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold04", DbType = DbType.Int32, Value = intColumnThreshold04 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholda1", DbType = DbType.Int32, Value = intLineThresholda1 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholda2", DbType = DbType.Int32, Value = intLineThresholda2 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdb1", DbType = DbType.Int32, Value = intLineThresholdb1 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdb2", DbType = DbType.Int32, Value = intLineThresholdb2 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdc1", DbType = DbType.Int32, Value = intLineThresholdc1 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdc2", DbType = DbType.Int32, Value = intLineThresholdc2 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdd1", DbType = DbType.Int32, Value = intLineThresholdd1 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdd2", DbType = DbType.Int32, Value = intLineThresholdd2 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde1", DbType = DbType.Int32, Value = intLineThresholde1 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde2", DbType = DbType.Int32, Value = intLineThresholde2 });
+
+                    if (intColumnThreshold01 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold01", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold01", DbType = DbType.Int32, Value = intColumnThreshold01 });
+                    }
+
+                    if (intColumnThreshold02 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold02", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold02", DbType = DbType.Int32, Value = intColumnThreshold02 });
+                    }
+
+                    if (intColumnThreshold03 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold03", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold03", DbType = DbType.Int32, Value = intColumnThreshold03 });
+                    }
+
+                    if (intColumnThreshold04 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold04", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold04", DbType = DbType.Int32, Value = intColumnThreshold04 });
+                    }
+
+                    if (intLineThresholda1 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholda1", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholda1", DbType = DbType.Int32, Value = intLineThresholda1 });
+                    }
+
+                    if (intLineThresholda2 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholda2", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholda2", DbType = DbType.Int32, Value = intLineThresholda2 });
+                    }
+
+                    if (intLineThresholdb1 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdb1", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdb1", DbType = DbType.Int32, Value = intLineThresholdb1 });
+                    }
+
+                    if (intLineThresholdb2 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdb2", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdb2", DbType = DbType.Int32, Value = intLineThresholdb2 });
+                    }
+
+                    if (intLineThresholdc1 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdc1", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdc1", DbType = DbType.Int32, Value = intLineThresholdc1 });
+                    }
+
+                    if (intLineThresholdc2 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdc2", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdc2", DbType = DbType.Int32, Value = intLineThresholdc2 });
+                    }
+
+                    if (intLineThresholdd1 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdd1", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdd1", DbType = DbType.Int32, Value = intLineThresholdd1 });
+                    }
+
+                    if (intLineThresholdd2 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdd2", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdd2", DbType = DbType.Int32, Value = intLineThresholdd2 });
+                    }
+
+                    if (intLineThresholde1 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde1", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde1", DbType = DbType.Int32, Value = intLineThresholde1 });
+                    }
+
+                    if (intLineThresholde2 == 0)
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde2", DbType = DbType.Int32, Value = DBNull.Value });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde2", DbType = DbType.Int32, Value = intLineThresholde2 });
+                    }
 
                     // SQL文を実行する
                     if (g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand) != 1)
