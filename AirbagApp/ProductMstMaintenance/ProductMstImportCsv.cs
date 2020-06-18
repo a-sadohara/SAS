@@ -2280,17 +2280,12 @@ namespace ProductMstMaintenance
                 }
 
                 m_intSuccesThresholdReg++;
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
                 #endregion
             }
 
-            #region DB反映、ログ出力
-            // 閾値算出が成功している場合、コミットする
-            if (m_intSuccesThresholdReg > 0)
-            {
-                g_clsConnectionNpgsql.DbCommit();
-                g_clsConnectionNpgsql.DbClose();
-            }
-
+            #region ログ出力
             m_strErrorOutFileName = string.Empty;
 
             // ログファイル結果出力を行う
