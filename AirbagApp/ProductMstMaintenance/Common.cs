@@ -344,7 +344,7 @@ namespace ProductMstMaintenance
                                             :file_num
                                           , :RegistFlg
                                           , :SelectFlg
-                                          , :Name
+                                          , :strProductName
                                           , :ParamNo
                                           , :ImageFile
                                           , :Length
@@ -398,7 +398,7 @@ namespace ProductMstMaintenance
                                          ) ON CONFLICT (file_num)
                                            DO UPDATE SET register_flg = :RegistFlg
                                                        , selection_flg = :SelectFlg
-                                                       , product_name = :Name
+                                                       , product_name = :strProductName
                                                        , inspection_param_num = :ParamNo
                                                        , airbag_imagepath = :ImageFile
                                                        , length = :Length
@@ -517,7 +517,7 @@ namespace ProductMstMaintenance
 
         // 頂点情報取得SQL
         public const string g_CON_SELECT_MST_PRODUCT_INFO_TOP_POINT =
-            @"SELECT product_name, column_cnt, top_point_a, top_point_b, top_point_c, top_point_d, top_point_e FROM mst_product_info WHERE file_num = :file_num ";
+            @"SELECT column_cnt, top_point_a, top_point_b, top_point_c, top_point_d, top_point_e FROM mst_product_info WHERE product_name = :strProductName ";
 
         // 品名更新SQL
         public const string g_CON_UPDATE_MST_PRODUCT_INFO_PRODUCT_NAME =

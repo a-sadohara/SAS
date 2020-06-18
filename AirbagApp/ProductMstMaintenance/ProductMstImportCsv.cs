@@ -109,7 +109,10 @@ namespace ProductMstMaintenance
         private static bool m_bolProcEnd = false;
 
         // ファイルNoリスト
-        private static List<string> m_strFileNumList = new List<string>();
+        private static List<string> m_lstImportFileNum = new List<string>();
+
+        // 品名リスト
+        private static List<string> m_lstImportProductName = new List<string>();
 
         /// <summary>
         /// 特殊対応ディクショナリ
@@ -344,7 +347,8 @@ namespace ProductMstMaintenance
 
             string[] strInputPng = Directory.GetFiles(txtFolder.Text, "*.bmp", SearchOption.TopDirectoryOnly);
 
-            m_strFileNumList.Clear();
+            m_lstImportFileNum.Clear();
+            m_lstImportProductName.Clear();
 
             ProgressForm frmProgress = new ProgressForm();
             frmProgress.StartPosition = FormStartPosition.CenterScreen;
@@ -551,50 +555,47 @@ namespace ProductMstMaintenance
         {
             List<IniDataRegister> lstDataRegistersToDB = new List<IniDataRegister>();
 
-            // フォルダ内のファイルの数だけループする
-            foreach (string InputfilePath in strInputIni)
+            // 取込対象の品番情報ファイルを特定する
+            foreach (string InputfilePath in strInputIni.Where(
+                x => Regex.IsMatch(Path.GetFileName(x), string.Format("^{0}[0-9][0-9].ini$", m_CON_FILE_NAME_REGISTER_INI_DATA), RegexOptions.IgnoreCase)))
             {
                 m_strErrorOutFileName = Path.GetFileName(InputfilePath);
 
-                // 品番情報ファイルを判定する
-                if (Regex.IsMatch(Path.GetFileName(InputfilePath), m_CON_FILE_NAME_REGISTER_INI_DATA + "[0-9][0-9]*.ini", RegexOptions.IgnoreCase) == true)
+                try
                 {
-                    try
+                    // 品番情報ファイルの場合、取り込みを行う
+                    lstDataRegistersToDB = ImportRegisterIniData(InputfilePath);
+                }
+                catch (Exception ex)
+                {
+                    // ログファイルにエラー出力を行う
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
+                    OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    if (m_bolProcEnd)
                     {
-                        // 品番情報ファイルの場合、取り込みを行う
-                        lstDataRegistersToDB = ImportRegisterIniData(InputfilePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        // ログファイルにエラー出力を行う
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        if (m_bolProcEnd)
-                        {
-                            return;
-                        }
-
-                        continue;
+                        return;
                     }
 
-                    // 読み込んだ値に対してチェック処理を行う
-                    if (CheckRegisterIniData(lstDataRegistersToDB
-                                           , Path.GetFileName(InputfilePath)) == false)
-                    {
-                        m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
-                        continue;
-                    }
+                    continue;
+                }
 
-                    // 読み込んだ値をDBに登録する
-                    InsertMstProductInfo(lstDataRegistersToDB);
+                // 読み込んだ値に対してチェック処理を行う
+                if (CheckRegisterIniData(lstDataRegistersToDB
+                                       , Path.GetFileName(InputfilePath)) == false)
+                {
+                    m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
+                    continue;
+                }
 
-                    // 登録成功している場合、マスタ画像が存在しているか確認する
-                    if (CheckMstImage() == false)
-                    {
-                        m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
-                        continue;
-                    }
+                // 読み込んだ値をDBに登録する
+                InsertMstProductInfo(lstDataRegistersToDB);
+
+                // 登録成功している場合、マスタ画像が存在しているか確認する
+                if (CheckMstImage() == false)
+                {
+                    m_intErrorRegProductInfo = m_intErrorRegProductInfo + 1;
+                    continue;
                 }
             }
 
@@ -634,13 +635,12 @@ namespace ProductMstMaintenance
                     }
 
                     // 品番情報ファイル内のセクションを取得する
-                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_REGISTER + "[0-9][0-9][0-9]]", RegexOptions.IgnoreCase) == true)
+                    if (Regex.IsMatch(strFileTextLine, string.Format(@"^\[{0}[0-9][0-9][0-9]\]$", m_CON_INI_SECTION_REGISTER), RegexOptions.IgnoreCase) == true)
                     {
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", string.Empty);
                         strFileTextLineReplace = strFileTextLineReplace.Replace("]", string.Empty);
                         lstRegisterIniSection.Add(strFileTextLineReplace);
-
                     }
                 }
 
@@ -816,8 +816,8 @@ namespace ProductMstMaintenance
         /// <returns></returns>
         private static Boolean ExecRegProductInfo(IniDataRegister idrCurrentData)
         {
-            int intListCount = m_strFileNumList.Count;
-            int intExecutionCount = 0;
+            string strFileNum = string.Empty;
+            string strProductName = string.Empty;
 
             try
             {
@@ -847,10 +847,15 @@ namespace ProductMstMaintenance
                     {
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(idrCurrentData)) });
 
-                        // 処理対象のファイルNoをリストに追加する
                         if (fieldInfo.Name.Equals(m_CON_COL_FILE_NUM))
                         {
-                            m_strFileNumList.Add(NulltoString(fieldInfo.GetValue(idrCurrentData)));
+                            // 処理対象のファイルNoを退避する
+                            strFileNum = NulltoString(fieldInfo.GetValue(idrCurrentData));
+                        }
+                        else if (fieldInfo.Name.Equals("Name"))
+                        {
+                            // 処理対象の品名を退避する
+                            strProductName = NulltoString(fieldInfo.GetValue(idrCurrentData));
                         }
                     }
                 }
@@ -862,10 +867,22 @@ namespace ProductMstMaintenance
                 {
                     // SQL(UPDATE)を実行し、既存レコードの品名を「品名_ファイルNo」に更新する
                     g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
+
+                    // 退避していた品名もあわせて更新する
+                    strProductName = string.Format("{0}_{1}", strProductName, strFileNum);
                 }
 
+                // 品名のパラメータを再設定する
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strProductName", DbType = DbType.String, Value = strProductName });
+
                 // SQL(UPSERT)を実行し、新規レコードを追加する
-                intExecutionCount = g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+
+                // 処理対象のファイルNoをリストに追加する
+                m_lstImportFileNum.Add(strFileNum);
+
+                // 処理対象の品名をリストに追加する
+                m_lstImportProductName.Add(strProductName);
 
                 return true;
             }
@@ -873,14 +890,6 @@ namespace ProductMstMaintenance
             {
                 OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
-
-                // ファイルNoリストから、取込失敗した情報を削除する
-                if (intExecutionCount != 1 &&
-                    intListCount != m_strFileNumList.Count)
-                {
-                    m_strFileNumList.RemoveAt(m_strFileNumList.Count - 1);
-                }
-
                 return false;
             }
         }
@@ -895,42 +904,38 @@ namespace ProductMstMaintenance
         {
             List<IniConfigPLC> lstPLCDataToDB = new List<IniConfigPLC>();
 
-            // フォルダ内のファイルの数だけループする
-            foreach (string InputfilePath in strInputIni)
+            // 取込対象のPLC設定ファイルを特定する
+            foreach (string InputfilePath in strInputIni.Where(
+                x => Regex.IsMatch(Path.GetFileName(x), string.Format("^{0}.ini$", m_CON_FILE_NAME_CONFIG_PLC), RegexOptions.IgnoreCase)))
             {
                 m_strErrorOutFileName = Path.GetFileName(InputfilePath);
 
-                // PLC設定ファイルを判定する
-                if (Regex.IsMatch(Path.GetFileName(InputfilePath), m_CON_FILE_NAME_CONFIG_PLC + ".ini", RegexOptions.IgnoreCase) == true)
+                try
                 {
-                    try
-                    {
-                        // PLC設定より、レジマーク間距離を取得し登録する。
-                        lstPLCDataToDB = ImportPLCIniData(InputfilePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        m_intErrorRegPTC = m_intErrorRegPTC + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        if (m_bolProcEnd)
-                        {
-                            return;
-                        }
-                        continue;
-                    }
-
-                    // 読み込んだ値に対してチェック処理を行う
-                    if (CheckPLCIniData(lstPLCDataToDB
-                                      , Path.GetFileName(InputfilePath)) == false)
-                    {
-                        m_intErrorRegPTC = m_intErrorRegPTC + 1;
-                        continue;
-                    }
-
-                    // 読み込んだ値をDBに登録する
-                    UPDMstProductInfoInPTC(lstPLCDataToDB);
+                    // PLC設定より、レジマーク間距離を取得し登録する。
+                    lstPLCDataToDB = ImportPLCIniData(InputfilePath);
                 }
+                catch (Exception ex)
+                {
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    m_intErrorRegPTC = m_intErrorRegPTC + 1;
+                    OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    if (m_bolProcEnd)
+                    {
+                        return;
+                    }
+                    continue;
+                }
+
+                // 読み込んだ値に対してチェック処理を行う
+                if (CheckPLCIniData(lstPLCDataToDB
+                                  , Path.GetFileName(InputfilePath)) == false)
+                {
+                    continue;
+                }
+
+                // 読み込んだ値をDBに登録する
+                UPDMstProductInfoInPTC(lstPLCDataToDB);
             }
 
             m_strErrorOutFileName = string.Empty;
@@ -969,13 +974,18 @@ namespace ProductMstMaintenance
                     }
 
                     // PLC情報ファイル内のセクションを取得する
-                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_KIND + "[0-9][0-9]]", RegexOptions.IgnoreCase) == true)
+                    if (Regex.IsMatch(strFileTextLine, string.Format(@"^\[{0}100\]$|^\[{0}[0-9][0-9]\]$", m_CON_INI_SECTION_KIND), RegexOptions.IgnoreCase) == true)
                     {
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", string.Empty);
                         strFileTextLineReplace = strFileTextLineReplace.Replace("]", string.Empty);
                         lstPLCIniSection.Add(strFileTextLineReplace);
                     }
+                }
+
+                if (lstPLCIniSection.Count == 0)
+                {
+                    return null;
                 }
 
                 // セクションの数だけループする
@@ -986,7 +996,11 @@ namespace ProductMstMaintenance
                     // Iniファイルの値をクラスへ格納する
                     icpCurrentData = DataPLCIniToDBClass(strInputfilePath, strRegister);
 
-                    lstDataPLCDB.Add(icpCurrentData);
+                    // 取込対象の情報かチェックする
+                    if (m_lstImportFileNum.Contains(icpCurrentData.KIND))
+                    {
+                        lstDataPLCDB.Add(icpCurrentData);
+                    }
                 }
 
                 return lstDataPLCDB;
@@ -1061,10 +1075,27 @@ namespace ProductMstMaintenance
                                              , string strFileName)
         {
             // 入力項目が0件の場合エラー
-            if (lstCurrentData.Count == 0)
+            if (lstCurrentData == null)
             {
                 OutPutImportLog("PLCファイルのデータが存在しません");
+                m_intErrorRegPTC++;
                 return false;
+            }
+            else
+            {
+                if (m_lstImportFileNum.Count != lstCurrentData.Count)
+                {
+                    foreach (string strFileNum in m_lstImportFileNum)
+                    {
+                        if (lstCurrentData.Select(x => x.KIND.Equals(strFileNum)).Count() == 0)
+                        {
+                            OutPutImportLog(string.Format("更新対象のデータが存在しません。[KIND{0:D2}]", NulltoInt(strFileNum) + 1));
+                            m_intErrorRegPTC++;
+                        }
+                    }
+
+                    return false;
+                }
             }
 
             return true;
@@ -1161,43 +1192,56 @@ namespace ProductMstMaintenance
         /// <param name="strInputIni">読み込みINIファイル全種類</param>
         private static void ProcessAirBagIni(string[] strInputIni)
         {
+            List<string> lstAirBagCoordFile = new List<string>();
             List<IniAirBagCoord> lstAirBagCoordToDB = new List<IniAirBagCoord>();
 
-            // フォルダ内のファイルの数だけループする
-            foreach (string InputfilePath in strInputIni)
+            // 取込対象のエアバック領域設定ファイルを特定する
+            foreach (string InputfilePath in strInputIni.Where(
+                x => Regex.IsMatch(Path.GetFileName(x), string.Format("^{0}[0-9][0-9].ini$", m_CON_FILE_NAME_AIRBAG_COORD), RegexOptions.IgnoreCase) &&
+                m_lstImportFileNum.Contains(SubstringRight(Path.GetFileNameWithoutExtension(x), 2))))
             {
                 m_strErrorOutFileName = Path.GetFileName(InputfilePath);
+                lstAirBagCoordFile.Add(Path.GetFileNameWithoutExtension(InputfilePath));
 
-                // エアバック領域設定ファイルを判定する
-                if (Regex.IsMatch(Path.GetFileName(InputfilePath), m_CON_FILE_NAME_AIRBAG_COORD + "[0-9][0-9]*.ini", RegexOptions.IgnoreCase) == true)
+                try
                 {
-                    try
+                    // エアバック領域設定より、列数を取得し登録する。
+                    lstAirBagCoordToDB = ImportAirBagCoordIniData(InputfilePath);
+                }
+                catch (Exception ex)
+                {
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
+                    OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    if (m_bolProcEnd)
                     {
-                        // エアバック領域設定より、列数を取得し登録する。
-                        lstAirBagCoordToDB = ImportAirBagCoordIniData(InputfilePath);
+                        return;
                     }
-                    catch (Exception ex)
-                    {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        if (m_bolProcEnd)
-                        {
-                            return;
-                        }
-                        continue;
-                    }
+                    continue;
+                }
 
-                    // 読み込んだ値に対してチェック処理を行う
-                    if (CheckAirbagIniData(lstAirBagCoordToDB
-                                         , Path.GetFileName(InputfilePath)) == false)
-                    {
-                        m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
-                        continue;
-                    }
+                // 読み込んだ値に対してチェック処理を行う
+                if (CheckAirbagIniData(lstAirBagCoordToDB
+                                     , Path.GetFileName(InputfilePath)) == false)
+                {
+                    m_intErrorRegAirBag = m_intErrorRegAirBag + 1;
+                    continue;
+                }
 
-                    // 読み込んだ値をDBに登録する
-                    UPDMstProductInfoInAirbag(lstAirBagCoordToDB);
+                // 読み込んだ値をDBに登録する
+                UPDMstProductInfoInAirbag(lstAirBagCoordToDB);
+            }
+
+            if (m_lstImportFileNum.Count != lstAirBagCoordFile.Count)
+            {
+                foreach (string strFileNum in m_lstImportFileNum)
+                {
+                    if (lstAirBagCoordFile.Select(x => x.Equals(strFileNum)).Count() == 0)
+                    {
+                        m_strErrorOutFileName = string.Format("{0}{1}.ini", m_CON_FILE_NAME_AIRBAG_COORD, strFileNum);
+                        OutPutImportLog("更新対象のデータが存在しません。");
+                        m_intErrorRegAirBag++;
+                    }
                 }
             }
 
@@ -1237,7 +1281,7 @@ namespace ProductMstMaintenance
                     }
 
                     // エアバッグ情報ファイル内のセクションを取得する
-                    if (Regex.IsMatch(strFileTextLine, "[" + m_CON_INI_SECTION_AIRBAG + "[0-9][0-9][0-9]]", RegexOptions.IgnoreCase) == true)
+                    if (Regex.IsMatch(strFileTextLine, string.Format(@"^\[{0}[0-9][0-9][0-9]\]$", m_CON_INI_SECTION_AIRBAG), RegexOptions.IgnoreCase) == true)
                     {
                         // セクションの場合はセクションリストに追加
                         string strFileTextLineReplace = strFileTextLine.Replace("[", string.Empty);
@@ -1496,37 +1540,34 @@ namespace ProductMstMaintenance
         {
             List<CameraCsvInfo> lstCamCsvInfo = new List<CameraCsvInfo>();
 
-            // フォルダ内のファイルの数だけループする
-            foreach (string InputfilePath in strInputCsv)
+            // 取込対象のカメラ情報ファイルを特定する
+            foreach (string InputfilePath in strInputCsv.Where(
+                x => Regex.IsMatch(Path.GetFileName(x), string.Format("^{0}.csv$", m_CON_FILE_NAME_CAMERA_INFO), RegexOptions.IgnoreCase)))
             {
                 m_strErrorOutFileName = Path.GetFileName(InputfilePath);
 
-                // カメラ情報を判定する
-                if (Regex.IsMatch(Path.GetFileName(InputfilePath), m_CON_FILE_NAME_CAMERA_INFO + ".csv", RegexOptions.IgnoreCase) == true)
+                try
                 {
-                    try
+                    // CSVファイルを取り込み、カメラ情報を取得し登録する。
+                    lstCamCsvInfo = ImportCameraCsvData(InputfilePath);
+                }
+                catch (Exception ex)
+                {
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    m_intErrorCameraReg = m_intErrorCameraReg + 1;
+                    OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    if (m_bolProcEnd)
                     {
-                        // CSVファイルを取り込み、カメラ情報を取得し登録する。
-                        lstCamCsvInfo = ImportCameraCsvData(InputfilePath);
+                        return;
                     }
-                    catch (Exception ex)
-                    {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        m_intErrorCameraReg = m_intErrorCameraReg + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        if (m_bolProcEnd)
-                        {
-                            return;
-                        }
-                        continue;
-                    }
+                    continue;
+                }
 
-                    // 読み込み行が存在する場合は登録を行う
-                    if (lstCamCsvInfo.Count > 0)
-                    {
-                        // 読み込んだ値をDBに登録する
-                        UPDMstProductInfoInCamera(lstCamCsvInfo);
-                    }
+                // 読み込み行が存在する場合は登録を行う
+                if (lstCamCsvInfo.Count > 0)
+                {
+                    // 読み込んだ値をDBに登録する
+                    UPDMstProductInfoInCamera(lstCamCsvInfo);
                 }
             }
 
@@ -1579,9 +1620,23 @@ namespace ProductMstMaintenance
                         continue;
                     }
 
-                    // csvのリストに現在行を追加
-                    lstCameraCsvInfo.Add(cciCurrentData);
+                    // 取込対象の情報かチェックする
+                    if (m_lstImportProductName.Contains(cciCurrentData.strProductName))
+                    {
+                        lstCameraCsvInfo.Add(cciCurrentData);
+                    }
+                }
 
+                if (m_lstImportProductName.Count != lstCameraCsvInfo.Count)
+                {
+                    foreach (string strProductName in m_lstImportProductName)
+                    {
+                        if (lstCameraCsvInfo.Select(x => x.strProductName.Equals(strProductName)).Count() == 0)
+                        {
+                            OutPutImportLog(string.Format("更新対象のデータが存在しません。品名[{0}]", strProductName));
+                            m_intErrorCameraReg++;
+                        }
+                    }
                 }
 
                 return lstCameraCsvInfo;
@@ -1839,14 +1894,13 @@ namespace ProductMstMaintenance
             string strReplacementCharacter = "),(";
             string strLeftBracket = "(";
             string strRightBracket = ")";
-            string strProductName = string.Empty;
             string strErrorMessage = string.Empty;
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             DataTable dtData = new DataTable();
             #endregion
 
             // 取込対象の品番に対して、閾値情報の算出を行う
-            foreach (string strFileNum in m_strFileNumList)
+            foreach (string strProductName in m_lstImportProductName)
             {
                 #region 変数初期化
                 intCommaPosition = 0;
@@ -1895,7 +1949,6 @@ namespace ProductMstMaintenance
                 intTopPointDList_Y.Clear();
                 intTopPointEList_X.Clear();
                 intTopPointEList_Y.Clear();
-                strProductName = string.Empty;
                 strErrorMessage = string.Empty;
                 lstNpgsqlCommand.Clear();
                 dtData.Clear();
@@ -1908,7 +1961,7 @@ namespace ProductMstMaintenance
                     string strSelectSql = g_CON_SELECT_MST_PRODUCT_INFO_TOP_POINT;
 
                     // SQLコマンドに各パラメータを設定する
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = m_CON_COL_FILE_NUM, DbType = DbType.String, Value = NulltoString(strFileNum) });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strProductName", DbType = DbType.String, Value = strProductName });
 
                     // SQL文を実行する
                     g_clsConnectionNpgsql.SelectSQL(ref dtData, strSelectSql, lstNpgsqlCommand);
@@ -1923,7 +1976,6 @@ namespace ProductMstMaintenance
 
                 if (dtData.Rows.Count == 0)
                 {
-                    m_intErrorThresholdReg++;
                     continue;
                 }
                 #endregion
@@ -1932,7 +1984,6 @@ namespace ProductMstMaintenance
                 try
                 {
                     intColumnCnt = NulltoInt(dtData.Rows[0]["column_cnt"].ToString());
-                    strProductName = NulltoString(dtData.Rows[0]["product_name"].ToString());
 
                     // 頂点座標Aの設定値より、X座標・Y座標を抽出する
                     foreach (string strTopPointA in
@@ -2193,7 +2244,6 @@ namespace ProductMstMaintenance
                     string strUpdateSql = g_CON_UPDATE_MST_PRODUCT_INFO_THRESHOLD;
 
                     // SQLコマンドに各パラメータを設定する
-                    lstNpgsqlCommand.Clear();
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intTakingCameraCnt", DbType = DbType.Int32, Value = intTakingCameraCnt });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold01", DbType = DbType.Int32, Value = intColumnThreshold01 });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intColumnThreshold02", DbType = DbType.Int32, Value = intColumnThreshold02 });
@@ -2209,7 +2259,6 @@ namespace ProductMstMaintenance
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholdd2", DbType = DbType.Int32, Value = intLineThresholdd2 });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde1", DbType = DbType.Int32, Value = intLineThresholde1 });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "intLineThresholde2", DbType = DbType.Int32, Value = intLineThresholde2 });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strProductName", DbType = DbType.String, Value = strProductName });
 
                     // SQL文を実行する
                     if (g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand) != 1)
@@ -2307,37 +2356,34 @@ namespace ProductMstMaintenance
         {
             List<IniDecisionReasonInfo> lstDecisionReasonCsvInfo = new List<IniDecisionReasonInfo>();
 
-            // フォルダ内のファイルの数だけループする
-            foreach (string InputfilePath in strInputIni)
+            // 取込対象の判定理由マスタファイルを特定する
+            foreach (string InputfilePath in strInputIni.Where(
+                x => Regex.IsMatch(Path.GetFileName(x), string.Format("^{0}.ini$", m_CON_FILE_NAME_REASON_JUDGMENT), RegexOptions.IgnoreCase)))
             {
                 m_strErrorOutFileName = Path.GetFileName(InputfilePath);
 
-                // 判定理由マスタを判定する。
-                if (Regex.IsMatch(Path.GetFileName(InputfilePath), m_CON_FILE_NAME_REASON_JUDGMENT + ".ini", RegexOptions.IgnoreCase) == true)
+                try
                 {
-                    try
+                    // Iniファイルを取り込み、判定理由マスタを登録する
+                    lstDecisionReasonCsvInfo = ImportDecisionReasonIniData(InputfilePath);
+                }
+                catch (Exception ex)
+                {
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
+                    OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+                    if (m_bolProcEnd)
                     {
-                        // Iniファイルを取り込み、判定理由マスタを登録する
-                        lstDecisionReasonCsvInfo = ImportDecisionReasonIniData(InputfilePath);
+                        return;
                     }
-                    catch (Exception ex)
-                    {
-                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        m_intErrorDecisionReasonReg = m_intErrorDecisionReasonReg + 1;
-                        OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
-                        if (m_bolProcEnd)
-                        {
-                            return;
-                        }
-                        continue;
-                    }
+                    continue;
+                }
 
-                    // 読み込み行が存在する場合は登録を行う
-                    if (lstDecisionReasonCsvInfo.Count > 0)
-                    {
-                        // 読み込んだ値をDBに登録する
-                        UPDMstProductInfoInDecisionReason(lstDecisionReasonCsvInfo);
-                    }
+                // 読み込み行が存在する場合は登録を行う
+                if (lstDecisionReasonCsvInfo.Count > 0)
+                {
+                    // 読み込んだ値をDBに登録する
+                    UPDMstProductInfoInDecisionReason(lstDecisionReasonCsvInfo);
                 }
             }
 
