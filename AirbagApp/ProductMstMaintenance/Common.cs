@@ -509,7 +509,7 @@ namespace ProductMstMaintenance
 
         // 品名取得SQL
         public const string g_CON_SELECT_MST_PRODUCT_INFO_PMS =
-            @"SELECT 'false',product_name FROM mst_product_info ORDER BY product_name";
+            @"SELECT FALSE, product_name FROM mst_product_info ORDER BY product_name";
 
         // AIモデル名取得SQL
         public const string g_CON_SELECT_MST_AI_MODEL =
