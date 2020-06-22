@@ -140,6 +140,7 @@
             this.dgvData.Location = new System.Drawing.Point(0, 0);
             this.dgvData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dgvData.Name = "dgvData";
+            this.dgvData.ReadOnly = true;
             this.dgvData.RowHeadersVisible = false;
             this.dgvData.RowHeadersWidth = 21;
             this.dgvData.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;

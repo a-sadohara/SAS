@@ -52,8 +52,7 @@ namespace ProductMstMaintenance
             this.dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             // 新規行を追加させない
             this.dgvData.AllowUserToAddRows = false;
-            // 読み取り専用
-            this.dgvData.ReadOnly = true;
+            // 複数選択させない
             this.dgvData.MultiSelect = false;
 
             dgvData.Rows.Clear();
@@ -94,24 +93,25 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
-        /// データグリッドビュー行エンター
+        /// データグリッドビューセルクリック
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DataGridView1_RowEnter(object sender, DataGridViewCellEventArgs e)
+        private void dgvData_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            // ヘッダクリックでソートする際、下記処理をスキップする
+            if (e.RowIndex == -1)
+            {
+                return;
+            }
+
+            // 選択行のみチェック状態とする
+            foreach (DataGridViewRow dgvRow in dgvData.Rows)
+            {
+                dgvRow.Cells[m_CON_COL_SELECT_BOX].Value = false;
+            }
 
             dgvData.Rows[e.RowIndex].Cells[m_CON_COL_SELECT_BOX].Value = true;
-            dgvData.Rows[e.RowIndex].Cells[m_CON_COL_SELECT_BOX].ReadOnly = true;
-
-            for (int rowIndex = 0; rowIndex < dgvData.Rows.Count; rowIndex++)
-            {
-                if (rowIndex != e.RowIndex)
-                {
-                    dgvData.Rows[rowIndex].Cells[m_CON_COL_SELECT_BOX].Value = false;
-                    dgvData.Rows[rowIndex].Cells[m_CON_COL_SELECT_BOX].ReadOnly = false;
-                }
-            }
         }
         #endregion
 

@@ -37,7 +37,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            // this.dgvData = new System.Windows.Forms.DataGridView();
             this.dgvData = new MyDataGridView();
             this.chkSelectReason = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.HinNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -51,9 +50,9 @@
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(571, 11);
+            this.panel1.Size = new System.Drawing.Size(761, 14);
             this.panel1.TabIndex = 0;
             // 
             // panel2
@@ -61,18 +60,18 @@
             this.panel2.BackColor = System.Drawing.SystemColors.Control;
             this.panel2.Controls.Add(this.btnOK);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 461);
-            this.panel2.Margin = new System.Windows.Forms.Padding(2);
+            this.panel2.Location = new System.Drawing.Point(0, 576);
+            this.panel2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(571, 70);
+            this.panel2.Size = new System.Drawing.Size(761, 88);
             this.panel2.TabIndex = 1;
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(202, 21);
-            this.btnOK.Margin = new System.Windows.Forms.Padding(2);
+            this.btnOK.Location = new System.Drawing.Point(269, 26);
+            this.btnOK.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(154, 31);
+            this.btnOK.Size = new System.Drawing.Size(205, 39);
             this.btnOK.TabIndex = 0;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -82,20 +81,20 @@
             // 
             this.panel3.BackColor = System.Drawing.SystemColors.Control;
             this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel3.Location = new System.Drawing.Point(0, 11);
-            this.panel3.Margin = new System.Windows.Forms.Padding(2);
+            this.panel3.Location = new System.Drawing.Point(0, 14);
+            this.panel3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(22, 450);
+            this.panel3.Size = new System.Drawing.Size(29, 562);
             this.panel3.TabIndex = 2;
             // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.SystemColors.Control;
             this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel4.Location = new System.Drawing.Point(549, 11);
-            this.panel4.Margin = new System.Windows.Forms.Padding(2);
+            this.panel4.Location = new System.Drawing.Point(732, 14);
+            this.panel4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(22, 450);
+            this.panel4.Size = new System.Drawing.Size(29, 562);
             this.panel4.TabIndex = 3;
             // 
             // panel5
@@ -103,10 +102,10 @@
             this.panel5.BackColor = System.Drawing.SystemColors.Control;
             this.panel5.Controls.Add(this.dgvData);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(22, 11);
-            this.panel5.Margin = new System.Windows.Forms.Padding(2);
+            this.panel5.Location = new System.Drawing.Point(29, 14);
+            this.panel5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(527, 450);
+            this.panel5.Size = new System.Drawing.Size(703, 562);
             this.panel5.TabIndex = 4;
             // 
             // dgvData
@@ -135,8 +134,9 @@
             this.dgvData.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvData.EnableHeadersVisualStyles = false;
             this.dgvData.Location = new System.Drawing.Point(0, 0);
-            this.dgvData.Margin = new System.Windows.Forms.Padding(2);
+            this.dgvData.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dgvData.Name = "dgvData";
+            this.dgvData.ReadOnly = true;
             this.dgvData.RowHeadersVisible = false;
             this.dgvData.RowHeadersWidth = 21;
             this.dgvData.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
@@ -144,16 +144,18 @@
             this.dgvData.RowTemplate.ReadOnly = true;
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvData.Size = new System.Drawing.Size(527, 450);
+            this.dgvData.Size = new System.Drawing.Size(703, 562);
             this.dgvData.TabIndex = 0;
-            this.dgvData.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_RowEnter);
+            this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvData_CellClick);
             // 
             // chkSelectReason
             // 
             this.chkSelectReason.HeaderText = "";
             this.chkSelectReason.MinimumWidth = 6;
             this.chkSelectReason.Name = "chkSelectReason";
-            this.chkSelectReason.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.chkSelectReason.ReadOnly = true;
+            this.chkSelectReason.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.chkSelectReason.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.chkSelectReason.Width = 40;
             // 
             // HinNo
@@ -162,20 +164,22 @@
             this.HinNo.HeaderText = "品名";
             this.HinNo.MinimumWidth = 6;
             this.HinNo.Name = "HinNo";
+            this.HinNo.ReadOnly = true;
+            this.HinNo.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // ProductMstSelection
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
-            this.ClientSize = new System.Drawing.Size(571, 531);
+            this.ClientSize = new System.Drawing.Size(761, 664);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "ProductMstSelection";
             this.Text = "品名選択";
             this.Load += new System.EventHandler(this.SelectErrorReason_Load);
@@ -194,7 +198,7 @@
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Button btnOK;
-        private System.Windows.Forms.DataGridView dgvData;
+        private MyDataGridView dgvData;
         private System.Windows.Forms.DataGridViewCheckBoxColumn chkSelectReason;
         private System.Windows.Forms.DataGridViewTextBoxColumn HinNo;
     }
