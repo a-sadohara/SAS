@@ -1,5 +1,6 @@
 ﻿using ImageChecker.DTO;
 using log4net;
+using Npgsql;
 using SevenZipNET;
 using System;
 using System.Collections.Generic;
@@ -442,13 +443,6 @@ namespace ImageChecker
                         g_clsMessageInfo.strMsgE0060,
                         Environment.NewLine, ex.Message));
 
-                // メッセージ出力
-                MessageBox.Show(
-                    g_clsMessageInfo.strMsgE0050,
-                    g_CON_MESSAGE_TITLE_ERROR,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
                 return false;
             }
 
@@ -475,9 +469,25 @@ namespace ImageChecker
 
             diFaultImage = new DirectoryInfo(strFaultImageDecompressionDirectory);
 
-            // 解凍した画像数と比較する
-            if (intTotalCount > diFaultImage.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0).Count())
+            try
             {
+                // 解凍した画像数と比較する
+                if (intTotalCount > diFaultImage.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0).Count())
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}",
+                        g_clsMessageInfo.strMsgE0040,
+                        Environment.NewLine,
+                        ex.Message));
+
                 return false;
             }
 
@@ -499,9 +509,22 @@ namespace ImageChecker
 
             try
             {
-                // zipファイルを解凍する(同名ファイルは上書きする)
                 SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
-                extractor.ExtractAll(strDecompressionDirectory, true);
+
+                for (int intProcessingTimes = 0; intProcessingTimes < 2; intProcessingTimes++)
+                {
+                    // zipファイルを解凍する(同名ファイルは上書きする)
+                    extractor.ExtractAll(strDecompressionDirectory, true);
+
+                    // 解凍サブディレクトリが存在する場合、処理を抜ける
+                    if (Directory.Exists(strDecompressionSubDirectory))
+                    {
+                        break;
+                    }
+
+                    // 解凍サブディレクトリを作成し、解凍処理をリトライする
+                    Directory.CreateDirectory(strDecompressionSubDirectory);
+                }
             }
             catch (Exception ex)
             {
@@ -545,6 +568,87 @@ namespace ImageChecker
                     prCmd.WaitForExit();
                 }
             }
+        }
+
+        /// <summary>
+        /// Rapidレコード件数チェック
+        /// </summary>
+        /// <param name="intInspectionNum">検査番号</param>
+        /// <param name="strFabricName">反番</param>
+        /// <param name="strInspectionDate">検査日付</param>
+        /// <param name="strUnitNum">号機</param>
+        /// <returns>存在フラグ</returns>
+        public static bool BolCheckRapidRecordCount(
+            int intInspectionNum,
+            string strFabricName,
+            string strInspectionDate,
+            string strUnitNum)
+        {
+            string strSQL = string.Empty;
+            string strRapidTableName = "rapid_" + strFabricName + "_" + intInspectionNum + "_" + strInspectionDate.Replace("/", string.Empty);
+            DataTable dtRapidData = new DataTable();
+
+            try
+            {
+                // レコード件数をチェックする
+                strSQL = @"SELECT COUNT(*) AS RecordCount
+                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @"""
+                           WHERE fabric_name = :fabric_name
+                           AND inspection_num = :inspection_num
+                           AND unit_num = :unit_num";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
+
+                // SQLを実行する
+                g_clsConnectionNpgsql.SelectSQL(ref dtRapidData, strSQL, lstNpgsqlCommand);
+
+                if (dtRapidData.Rows.Count == 0 ||
+                    int.Parse(dtRapidData.Rows[0]["RecordCount"].ToString()) == 0)
+                {
+                    return false;
+                }
+            }
+            catch (PostgresException pgex)
+            {
+                g_clsConnectionNpgsql.DbRollback();
+
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 反番:{5}, 取得対象テーブル:{6}, 処理ブロック:{7}{8}{9}",
+                        g_clsMessageInfo.strMsgE0001,
+                        Environment.NewLine,
+                        strInspectionDate,
+                        strUnitNum,
+                        intInspectionNum,
+                        strFabricName,
+                        strRapidTableName,
+                        "Rapidテーブル件数取得",
+                        Environment.NewLine,
+                        pgex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

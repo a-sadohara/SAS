@@ -577,6 +577,11 @@ namespace ImageChecker
             string strFabricName,
             string strFaultImageFileName)
         {
+            if (!BolCheckRapidRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum))
+            {
+                return false;
+            }
+
             if (!Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName)))
             {
                 ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
@@ -984,6 +989,7 @@ namespace ImageChecker
             int intCnt = 0;
             DataTable dtPublicHeaderData;
             DataTable dtImagecheckerHeaderData;
+            DataTable dtRapidDisabledData;
 
             // パラメータ
             string strInspectionDate = string.Empty;  // 検査日付(YYYY/MM/DD)
@@ -1206,10 +1212,17 @@ namespace ImageChecker
                                     await Task.Delay(random.Next(1, 6) * 1000);
                                 }
 
+                                int intInspectionNumInfo = intInspectionNum;
+                                string strFabricNameInfo = strFabricName;
+                                string strInspectionDateInfo = strInspectionDate;
                                 string strUnitNumInfo = strUnitNum;
                                 string strFaultImageFileNameInfo = strFaultImageFileName;
 
-                                lstTask.Add(Task<Boolean>.Run(() => BolInputFaultImage(strUnitNumInfo, strFaultImageFileNameInfo)));
+                                // Rapidテーブルにレコード件数が存在する場合、欠点画像取込を行う
+                                if (BolCheckRapidRecordCount(intInspectionNumInfo, strFabricNameInfo, strInspectionDateInfo, strUnitNumInfo))
+                                {
+                                    lstTask.Add(Task<Boolean>.Run(() => BolInputFaultImage(strUnitNumInfo, strFaultImageFileNameInfo)));
+                                }
                             }
 
                             if (intCnt >= 1)
@@ -1466,13 +1479,16 @@ namespace ImageChecker
 
                             if (intExecutionCount == 0)
                             {
-                                dtImagecheckerHeaderData = new DataTable();
+                                dtRapidDisabledData = new DataTable();
                                 DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+                                bool RapidRecordExistFlg = BolCheckRapidRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum);
 
-                                try
+                                if (RapidRecordExistFlg)
                                 {
-                                    // NGデータが存在しない場合、検査無効データをチェックする
-                                    strSQL = @"SELECT fabric_name
+                                    try
+                                    {
+                                        // NGデータが存在しない場合、検査無効データをチェックする
+                                        strSQL = @"SELECT fabric_name
                                            FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" rpd
                                            WHERE fabric_name = :fabric_name
                                            AND inspection_num = :inspection_num 
@@ -1481,52 +1497,53 @@ namespace ImageChecker
                                            AND edge_result = :edge_result
                                            AND masking_result = :masking_result";
 
-                                    // SQLコマンドに各パラメータを設定する
-                                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
-                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
-                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
-                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultDis });
-                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultDis });
-                                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultDis });
+                                        // SQLコマンドに各パラメータを設定する
+                                        lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
+                                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultDis });
+                                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultDis });
+                                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultDis });
 
-                                    // SQLを実行する
-                                    g_clsConnectionNpgsql.SelectSQL(ref dtImagecheckerHeaderData, strSQL, lstNpgsqlCommand);
-                                }
-                                catch (PostgresException pgex)
-                                {
-                                    g_clsConnectionNpgsql.DbRollback();
+                                        // SQLを実行する
+                                        g_clsConnectionNpgsql.SelectSQL(ref dtRapidDisabledData, strSQL, lstNpgsqlCommand);
+                                    }
+                                    catch (PostgresException pgex)
+                                    {
+                                        g_clsConnectionNpgsql.DbRollback();
 
-                                    // ログ出力
-                                    WriteEventLog(
-                                        g_CON_LEVEL_ERROR,
-                                        string.Format(
-                                            "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 取得対象テーブル:{7}, 処理ブロック:{8}{9}{10}",
-                                            g_clsMessageInfo.strMsgE0001,
-                                            Environment.NewLine,
-                                            strInspectionDate,
-                                            strUnitNum,
-                                            intInspectionNum,
-                                            strProductName,
-                                            strFabricName,
-                                            strRapidTableName,
-                                            "検査無効情報取得",
-                                            Environment.NewLine,
-                                            pgex.Message));
+                                        // ログ出力
+                                        WriteEventLog(
+                                            g_CON_LEVEL_ERROR,
+                                            string.Format(
+                                                "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 品名:{5}, 反番:{6}, 取得対象テーブル:{7}, 処理ブロック:{8}{9}{10}",
+                                                g_clsMessageInfo.strMsgE0001,
+                                                Environment.NewLine,
+                                                strInspectionDate,
+                                                strUnitNum,
+                                                intInspectionNum,
+                                                strProductName,
+                                                strFabricName,
+                                                strRapidTableName,
+                                                "検査無効情報取得",
+                                                Environment.NewLine,
+                                                pgex.Message));
 
-                                    // メッセージ出力
-                                    MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        // メッセージ出力
+                                        MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                    continue;
-                                }
-                                catch (Exception ex)
-                                {
-                                    // ログ出力
-                                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
-                                    // メッセージ出力
-                                    MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        continue;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        // ログ出力
+                                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                                        // メッセージ出力
+                                        MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                                    continue;
+                                        continue;
+                                    }
                                 }
 
                                 try
@@ -1551,7 +1568,8 @@ namespace ImageChecker
                                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "current_timestamp", DbType = DbType.DateTime2, Value = date });
                                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
 
-                                    if (dtImagecheckerHeaderData.Rows.Count == 0)
+                                    if (RapidRecordExistFlg &&
+                                        dtRapidDisabledData.Rows.Count == 0)
                                     {
                                         // 検査無効データが存在しない場合、検査情報ヘッダを「検査有効(NGなし)」の状態に更新する
                                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptStatusEnd });
@@ -1559,7 +1577,7 @@ namespace ImageChecker
                                     }
                                     else
                                     {
-                                        // 検査無効データが存在する場合、検査情報ヘッダを「検査対象外」検査対象外として更新する
+                                        // Rapidレコード件数が0件の場合、または 検査無効データが存在する場合、検査情報ヘッダを「検査対象外」として更新する
                                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptStatusExc });
                                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckStatusExc });
                                     }

@@ -506,6 +506,11 @@ namespace ImageChecker
             string strFabricName,
             string strFaultImageFileName)
         {
+            if (!BolCheckRapidRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum))
+            {
+                return false;
+            }
+
             if (!Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName)))
             {
                 ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
