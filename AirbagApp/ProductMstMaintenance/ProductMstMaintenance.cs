@@ -211,7 +211,7 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void txtProductName_Click(object sender, EventArgs e)
         {
-            ProductMstSelection frmProductMstSelection = new ProductMstSelection();
+            ProductMstSelection frmProductMstSelection = new ProductMstSelection(txtProductName.Text);
             frmProductMstSelection.ShowDialog(this);
             if (!string.IsNullOrEmpty(frmProductMstSelection.strHinNm))
             {
@@ -245,7 +245,12 @@ namespace ProductMstMaintenance
         private void txtAiModelName_Click(object sender, EventArgs e)
         {
             // AIモデル名選択子画面を起動する
-            AIModelMstSelection frmAIModelMstSelection = new AIModelMstSelection(txtProductName.Text, false);
+            AIModelMstSelection frmAIModelMstSelection =
+                new AIModelMstSelection(
+                    txtProductName.Text,
+                    txtAiModelName.Text,
+                    false);
+
             frmAIModelMstSelection.ShowDialog(this);
 
             // 子画面で選択したAIモデル名を設定する
@@ -404,7 +409,12 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void btnMstAIModel_Click(object sender, EventArgs e)
         {
-            AIModelMstSelection frmAIModelMstSelection = new AIModelMstSelection(string.Empty, true);
+            AIModelMstSelection frmAIModelMstSelection =
+                new AIModelMstSelection(
+                    string.Empty,
+                    string.Empty,
+                    true);
+
             frmAIModelMstSelection.ShowDialog(this);
         }
 

@@ -18,8 +18,8 @@ namespace ProductMstMaintenance
         private const int m_CON_UPDATE_THRESHOLD_VALUE = 10;
 
         private string m_strProductName = string.Empty;
+        private string m_strAIModelName = string.Empty;
         private bool m_bolEditModeFlg = false;
-        private bool m_bolSubScreenFocusFlg = false;
 
         private DataTable m_dtData;
 
@@ -32,12 +32,15 @@ namespace ProductMstMaintenance
         /// 画面初期表示
         /// </summary>
         /// <param name="strProductName">品名</param>
+        /// <param name="strAIModelName">AIモデル名</param>
         /// <param name="bolEditModeFlg">編集モードフラグ</param>
         public AIModelMstSelection(
             string strProductName,
+            string strAIModelName,
             bool bolEditModeFlg)
         {
             m_strProductName = strProductName;
+            m_strAIModelName = strAIModelName;
             m_bolEditModeFlg = bolEditModeFlg;
 
             InitializeComponent();
@@ -90,7 +93,6 @@ namespace ProductMstMaintenance
         /// <param name="e"></param>
         private void BtnOK_Click(object sender, EventArgs e)
         {
-            m_bolSubScreenFocusFlg = false;
             strAIModelName = string.Empty;
 
             // 編集モードの場合、表示フラグの情報をDBに反映させる
@@ -123,7 +125,7 @@ namespace ProductMstMaintenance
                             dgvRow,
                             false,
                             sbAIModelNameInfo,
-                            "▼表示→非表示");
+                            "▼表示⇒非表示");
                     }
 
                     // 非表示→表示へ変更される情報を抽出する
@@ -133,7 +135,7 @@ namespace ProductMstMaintenance
                             dgvRow,
                             true,
                             sbAIModelNameInfo,
-                            "▼非表示→表示");
+                            "▼非表示⇒表示");
                     }
 
                     if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0014, sbAIModelNameInfo.ToString()), "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
@@ -159,17 +161,15 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
-        /// データグリッドビュー行エンター
+        /// データグリッドビューセルクリック
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DataGridView1_RowEnter(object sender, DataGridViewCellEventArgs e)
+        private void dgvData_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            // 画面フォーカス時に発生するイベントは無視する
-            if (!m_bolSubScreenFocusFlg)
+            // ヘッダクリックでソートする際、下記処理をスキップする
+            if (e.RowIndex == -1)
             {
-                m_bolSubScreenFocusFlg = true;
-
                 return;
             }
 
@@ -247,15 +247,31 @@ namespace ProductMstMaintenance
                 return false;
             }
 
+            // 行選択はさせない
             dgvData.CurrentCell = null;
 
             if (!m_bolEditModeFlg &&
                 dgvData.Rows.Count > 0)
             {
-                // 明細にデータが存在してる場合、1行目を選択状態にする
-                dgvData.Rows[m_CON_COL_CHK_SELECT].Selected = true;
-                dgvData.FirstDisplayedScrollingRowIndex = 0;
-                dgvData.Rows[0].Cells[m_CON_COL_CHK_SELECT].Value = true;
+                // 現在設定されているAIモデル名に紐付く情報を抽出する
+                DataGridViewRow dgvRow =
+                    dgvData.Rows.Cast<DataGridViewRow>().Where(
+                        x => x.Cells[m_CON_COL_AI_MODEL_NAME].Value.Equals(m_strAIModelName)).FirstOrDefault();
+
+                if (dgvRow != null)
+                {
+                    // 現在設定されているAIモデル名を選択状態にする
+                    dgvRow.Selected = true;
+                    dgvData.FirstDisplayedScrollingRowIndex = dgvRow.Index;
+                    dgvRow.Cells[m_CON_COL_CHK_SELECT].Value = true;
+                }
+                else
+                {
+                    // 1行目を選択状態にする
+                    dgvData.Rows[0].Selected = true;
+                    dgvData.FirstDisplayedScrollingRowIndex = 0;
+                    dgvData.Rows[0].Cells[m_CON_COL_CHK_SELECT].Value = true;
+                }
             }
 
             return true;

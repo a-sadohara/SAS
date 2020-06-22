@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 using static ProductMstMaintenance.Common;
 
@@ -16,7 +17,7 @@ namespace ProductMstMaintenance
         private const Int32 m_CON_COL_PRODUCT_NAME = 1;
 
         private DataTable m_dtData;
-
+        private string m_strProductName = string.Empty;
 
         #endregion
 
@@ -24,8 +25,11 @@ namespace ProductMstMaintenance
         /// <summary>
         /// 画面初期表示
         /// </summary>
-        public ProductMstSelection()
+        /// <param name="strProductName">品名</param>
+        public ProductMstSelection(string strProductName)
         {
+            m_strProductName = strProductName;
+
             InitializeComponent();
 
             // フォームの表示位置調整
@@ -143,12 +147,27 @@ namespace ProductMstMaintenance
 
             dgvData.CurrentCell = null;
 
-            // 明細にデータが存在してる場合、１行目を選択状態にする
             if (dgvData.Rows.Count > 0)
             {
-                // 0行目表示
-                dgvData.Rows[0].Selected = true;
-                dgvData.FirstDisplayedScrollingRowIndex = 0;
+                // 現在設定されている品名に紐付く情報を抽出する
+                DataGridViewRow dgvRow =
+                    dgvData.Rows.Cast<DataGridViewRow>().Where(
+                        x => x.Cells[m_CON_COL_PRODUCT_NAME].Value.Equals(m_strProductName)).FirstOrDefault();
+
+                if (dgvRow != null)
+                {
+                    // 現在設定されている品名を選択状態にする
+                    dgvRow.Selected = true;
+                    dgvData.FirstDisplayedScrollingRowIndex = dgvRow.Index;
+                    dgvRow.Cells[m_CON_COL_SELECT_BOX].Value = true;
+                }
+                else
+                {
+                    // 1行目を選択状態にする
+                    dgvData.Rows[0].Selected = true;
+                    dgvData.FirstDisplayedScrollingRowIndex = 0;
+                    dgvData.Rows[0].Cells[m_CON_COL_SELECT_BOX].Value = true;
+                }
             }
 
             return true;
