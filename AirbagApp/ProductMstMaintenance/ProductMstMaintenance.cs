@@ -238,6 +238,27 @@ namespace ProductMstMaintenance
         }
 
         /// <summary>
+        /// AIモデル名テキストボックスクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtAiModelName_Click(object sender, EventArgs e)
+        {
+            // AIモデル名選択子画面を起動する
+            AIModelMstSelection frmAIModelMstSelection = new AIModelMstSelection(txtProductName.Text, false);
+            frmAIModelMstSelection.ShowDialog(this);
+
+            // 子画面で選択したAIモデル名を設定する
+            if (!string.IsNullOrEmpty(frmAIModelMstSelection.strAIModelName))
+            {
+                txtAiModelName.Text = frmAIModelMstSelection.strAIModelName;
+            }
+
+            // AIモデル名にフォーカスを合わせる
+            txtAiModelName.Focus();
+        }
+
+        /// <summary>
         /// 境界線テキストボックス値変更
         /// </summary>
         /// <param name="sender"></param>
@@ -374,6 +395,17 @@ namespace ProductMstMaintenance
         {
             SelectErrorReason frmSelectErrorReason = new SelectErrorReason();
             frmSelectErrorReason.ShowDialog(this);
+        }
+
+        /// <summary>
+        /// AIモデルマスタボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnMstAIModel_Click(object sender, EventArgs e)
+        {
+            AIModelMstSelection frmAIModelMstSelection = new AIModelMstSelection(string.Empty, true);
+            frmAIModelMstSelection.ShowDialog(this);
         }
 
         /// <summary>

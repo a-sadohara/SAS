@@ -39,6 +39,8 @@ namespace ProductMstMaintenance.DTO
         public readonly string strMsgE0053;
         public readonly string strMsgE0055;
         public readonly string strMsgE0056;
+        public readonly string strMsgE0066;
+        public readonly string strMsgE0067;
         public readonly string strMsgI0003;
         public readonly string strMsgI0004;
         public readonly string strMsgI0005;
@@ -50,10 +52,12 @@ namespace ProductMstMaintenance.DTO
         public readonly string strMsgI0011;
         public readonly string strMsgQ0005;
         public readonly string strMsgQ0006;
+        public readonly string strMsgQ0014;
         public readonly string strMsgW0002;
         public readonly string strMsgW0004;
         public readonly string strMsgW0009;
         public readonly string strMsgW0010;
+        public readonly string strMsgW0011;
 
         /// <summary>
         /// コンストラクタ
@@ -84,6 +88,8 @@ namespace ProductMstMaintenance.DTO
                 GetMessageContent("E0053", ref strMsgE0053);
                 GetMessageContent("E0055", ref strMsgE0055);
                 GetMessageContent("E0056", ref strMsgE0056);
+                GetMessageContent("E0066", ref strMsgE0066);
+                GetMessageContent("E0067", ref strMsgE0067);
                 GetMessageContent("I0003", ref strMsgI0003);
                 GetMessageContent("I0004", ref strMsgI0004);
                 GetMessageContent("I0005", ref strMsgI0005);
@@ -95,10 +101,12 @@ namespace ProductMstMaintenance.DTO
                 GetMessageContent("I0011", ref strMsgI0011);
                 GetMessageContent("Q0005", ref strMsgQ0005);
                 GetMessageContent("Q0006", ref strMsgQ0006);
+                GetMessageContent("Q0014", ref strMsgQ0014);
                 GetMessageContent("W0002", ref strMsgW0002);
                 GetMessageContent("W0004", ref strMsgW0004);
                 GetMessageContent("W0009", ref strMsgW0009);
                 GetMessageContent("W0010", ref strMsgW0010);
+                GetMessageContent("W0011", ref strMsgW0011);
 
                 if (m_sbErrMessage.Length > 0)
                     throw new Exception(m_sbErrMessage.ToString());

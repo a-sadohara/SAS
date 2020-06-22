@@ -511,6 +511,18 @@ namespace ProductMstMaintenance
         public const string g_CON_SELECT_MST_PRODUCT_INFO_PMS =
             @"SELECT 'false',product_name FROM mst_product_info ORDER BY product_name";
 
+        // AIモデル名取得SQL
+        public const string g_CON_SELECT_MST_AI_MODEL =
+            @"SELECT FALSE, FALSE, product_name, ai_model_name FROM mst_ai_model WHERE product_name = :product_name AND display_flg = 0 ORDER BY ai_model_name";
+
+        // AIモデル名取得SQL(編集モード)
+        public const string g_CON_SELECT_MST_AI_MODEL_EDITMODE =
+            @"SELECT CASE display_flg WHEN 0 THEN TRUE ELSE FALSE END AS display_flg, CASE display_flg WHEN 0 THEN TRUE ELSE FALSE END AS display_flg_initial_value, product_name, ai_model_name FROM mst_ai_model ORDER BY product_name, ai_model_name";
+
+        // 表示フラグ更新SQL
+        public const string g_CON_UPDATE_MST_AI_MODEL_DISPLAY_FLG =
+            @"UPDATE mst_ai_model SET display_flg = :display_flg  WHERE product_name = :product_name AND ai_model_name = :ai_model_name ";
+
         // ファイルNo取得SQL
         public const string g_CON_SELECT_MST_PRODUCT_INFO_FILE_NUM =
             @"SELECT file_num FROM mst_product_info WHERE product_name = :Name AND file_num <> :file_num ";
