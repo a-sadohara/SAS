@@ -509,21 +509,14 @@ namespace ImageChecker
 
             try
             {
+                // zipファイルを解凍する(同名ファイルは上書きする)
                 SevenZipExtractor extractor = new SevenZipExtractor(strZipFilePath);
+                extractor.ExtractAll(strDecompressionDirectory, true);
 
-                for (int intProcessingTimes = 0; intProcessingTimes < 2; intProcessingTimes++)
+                // 解凍サブディレクトリが存在しない場合、エラーとする
+                if (!Directory.Exists(strDecompressionSubDirectory))
                 {
-                    // zipファイルを解凍する(同名ファイルは上書きする)
-                    extractor.ExtractAll(strDecompressionDirectory, true);
-
-                    // 解凍サブディレクトリが存在する場合、処理を抜ける
-                    if (Directory.Exists(strDecompressionSubDirectory))
-                    {
-                        break;
-                    }
-
-                    // 解凍サブディレクトリを作成し、解凍処理をリトライする
-                    Directory.CreateDirectory(strDecompressionSubDirectory);
+                    return false;
                 }
             }
             catch (Exception ex)
@@ -571,22 +564,26 @@ namespace ImageChecker
         }
 
         /// <summary>
-        /// Rapidレコード件数チェック
+        /// NGレコード件数チェック
         /// </summary>
         /// <param name="intInspectionNum">検査番号</param>
         /// <param name="strFabricName">反番</param>
         /// <param name="strInspectionDate">検査日付</param>
         /// <param name="strUnitNum">号機</param>
+        /// <param name="DecisionResultCheckFlg">合否判定結果チェックフラグ</param>
         /// <returns>存在フラグ</returns>
-        public static bool BolCheckRapidRecordCount(
+        public static bool BolCheckNGRecordCount(
             int intInspectionNum,
             string strFabricName,
             string strInspectionDate,
-            string strUnitNum)
+            string strUnitNum,
+            bool DecisionResultCheckFlg)
         {
             string strSQL = string.Empty;
             string strRapidTableName = "rapid_" + strFabricName + "_" + intInspectionNum + "_" + strInspectionDate.Replace("/", string.Empty);
             DataTable dtRapidData = new DataTable();
+            DataTable dtDecisionResultData = new DataTable();
+            List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
             try
             {
@@ -598,7 +595,6 @@ namespace ImageChecker
                            AND unit_num = :unit_num";
 
                 // SQLコマンドに各パラメータを設定する
-                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
@@ -629,6 +625,69 @@ namespace ImageChecker
                         strFabricName,
                         strRapidTableName,
                         "Rapidテーブル件数取得",
+                        Environment.NewLine,
+                        pgex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+
+            if (!DecisionResultCheckFlg)
+            {
+                return true;
+            }
+
+            try
+            {
+                // レコード件数をチェックする
+                strSQL = @"SELECT COUNT(*) AS RecordCount
+                           FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                           WHERE fabric_name = :fabric_name
+                           AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                           AND   inspection_num = :inspection_num
+                           AND   unit_num = :unit_num";
+
+                // SQLコマンドに各パラメータを設定する
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = strInspectionDate });
+
+                // SQLを実行する
+                g_clsConnectionNpgsql.SelectSQL(ref dtDecisionResultData, strSQL, lstNpgsqlCommand);
+
+                if (dtDecisionResultData.Rows.Count == 0 ||
+                    int.Parse(dtDecisionResultData.Rows[0]["RecordCount"].ToString()) == 0)
+                {
+                    return false;
+                }
+            }
+            catch (PostgresException pgex)
+            {
+                g_clsConnectionNpgsql.DbRollback();
+
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 反番:{5}, 取得対象テーブル:{6}, 処理ブロック:{7}{8}{9}",
+                        g_clsMessageInfo.strMsgE0001,
+                        Environment.NewLine,
+                        strInspectionDate,
+                        strUnitNum,
+                        intInspectionNum,
+                        strFabricName,
+                        strRapidTableName,
+                        "合否判定結果テーブル件数取得",
                         Environment.NewLine,
                         pgex.Message));
 

@@ -577,13 +577,17 @@ namespace ImageChecker
             string strFabricName,
             string strFaultImageFileName)
         {
-            if (!BolCheckRapidRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum))
-            {
-                return false;
-            }
+            string strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
 
-            if (!Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName)))
+            if (!Directory.Exists(strFaultImageFileDirectory))
             {
+                if (!BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, true))
+                {
+                    // NGレコードが存在しない場合、フォルダ作成のみ実施する
+                    Directory.CreateDirectory(strFaultImageFileDirectory);
+                    return false;
+                }
+
                 ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
                 frmProgress.StartPosition = FormStartPosition.CenterScreen;
                 frmProgress.Size = this.Size;
@@ -998,6 +1002,7 @@ namespace ImageChecker
             int intInspectionNum = 0;       // 検査番号
             string strNgImageCooperationDirectory = string.Empty;
             string strFaultImageFileName = string.Empty;
+            string strFaultImageFileDirectory = string.Empty;
             string strRapidTableName = string.Empty;
             string strUnitNum = string.Empty;
             int intExecutionCount = 0;
@@ -1036,6 +1041,7 @@ namespace ImageChecker
                         intInspectionNum = 0;
                         strNgImageCooperationDirectory = string.Empty;
                         strFaultImageFileName = string.Empty;
+                        strFaultImageFileDirectory = string.Empty;
                         strRapidTableName = string.Empty;
                         strUnitNum = string.Empty;
                         lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -1202,8 +1208,10 @@ namespace ImageChecker
                                 continue;
                             }
 
+                            strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
+
                             // 直近2日に行われた検査情報の欠点画像を取得する
-                            if (!Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName)) &&
+                            if (!Directory.Exists(strFaultImageFileDirectory) &&
                                 dateSyncTargetDate < DateTime.Parse(strInspectionDate))
                             {
                                 if (lstTask.Count != 0)
@@ -1218,10 +1226,15 @@ namespace ImageChecker
                                 string strUnitNumInfo = strUnitNum;
                                 string strFaultImageFileNameInfo = strFaultImageFileName;
 
-                                // Rapidテーブルにレコード件数が存在する場合、欠点画像取込を行う
-                                if (BolCheckRapidRecordCount(intInspectionNumInfo, strFabricNameInfo, strInspectionDateInfo, strUnitNumInfo))
+                                // NGレコードが存在する場合、欠点画像取込を行う
+                                if (BolCheckNGRecordCount(intInspectionNumInfo, strFabricNameInfo, strInspectionDateInfo, strUnitNumInfo, true))
                                 {
                                     lstTask.Add(Task<Boolean>.Run(() => BolInputFaultImage(strUnitNumInfo, strFaultImageFileNameInfo)));
+                                }
+                                else
+                                {
+                                    // NGレコードが存在しない場合、フォルダ作成のみ実施する
+                                    Directory.CreateDirectory(strFaultImageFileDirectory);
                                 }
                             }
 
@@ -1481,7 +1494,7 @@ namespace ImageChecker
                             {
                                 dtRapidDisabledData = new DataTable();
                                 DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-                                bool RapidRecordExistFlg = BolCheckRapidRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum);
+                                bool RapidRecordExistFlg = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, false);
 
                                 if (RapidRecordExistFlg)
                                 {

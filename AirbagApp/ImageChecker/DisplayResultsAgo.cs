@@ -506,13 +506,17 @@ namespace ImageChecker
             string strFabricName,
             string strFaultImageFileName)
         {
-            if (!BolCheckRapidRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum))
-            {
-                return false;
-            }
+            string strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
 
-            if (!Directory.Exists(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName)))
+            if (!Directory.Exists(strFaultImageFileDirectory))
             {
+                if (!BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, true))
+                {
+                    // NGレコードが存在しない場合、フォルダ作成のみ実施する
+                    Directory.CreateDirectory(strFaultImageFileDirectory);
+                    return false;
+                }
+
                 ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
                 frmProgress.StartPosition = FormStartPosition.CenterScreen;
                 frmProgress.Size = this.Size;
