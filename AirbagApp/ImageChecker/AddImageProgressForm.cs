@@ -537,10 +537,30 @@ namespace ImageChecker
                 return false;
             }
 
-            // 未検知画像の取込を行う
             DirectoryInfo diFaultImage = new DirectoryInfo(m_strFaultImageSubDirPath);
-            Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(m_clsHeaderData.strUnitNum, m_strFileName, true, diFaultImage.Name));
-            return await taskInputFaultImage;
+
+            string strLogMessage =
+                string.Format(
+                    g_CON_LOG_MESSAGE_FOMAT,
+                    m_clsHeaderData.strUnitNum,
+                    m_clsHeaderData.strInspectionDate,
+                    m_clsHeaderData.intInspectionNum,
+                    m_clsHeaderData.strProductName,
+                    m_clsHeaderData.strFabricName);
+
+            // 未検知画像の取込を行う
+            Task<Boolean> taskCheckFaultImage =
+                Task<Boolean>.Run(() => BolGetFaultImage(
+                    m_clsHeaderData.intInspectionNum,
+                    m_clsHeaderData.strInspectionDate,
+                    m_clsHeaderData.strUnitNum,
+                    m_clsHeaderData.strFabricName,
+                    m_strFileName,
+                    strLogMessage,
+                    true,
+                    diFaultImage.Name));
+
+            return await taskCheckFaultImage;
         }
         #endregion
 

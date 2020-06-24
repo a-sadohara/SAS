@@ -570,50 +570,53 @@ namespace ImageChecker
         /// <param name="strUnitNum">号機</param>
         /// <param name="strFabricName">反番</param>
         /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
+        /// <param name="strLogMessage">ログメッセージ</param>
         private async Task<Boolean> BolCheckFaultImage(
             int intInspectionNum,
             string strInspectionDate,
             string strUnitNum,
             string strFabricName,
-            string strFaultImageFileName)
+            string strFaultImageFileName,
+            string strLogMessage)
         {
             string strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
 
+            // 画像ディレクトリが存在しない場合、フォルダを作成する
             if (!Directory.Exists(strFaultImageFileDirectory))
             {
-                if (!BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, true))
-                {
-                    // NGレコードが存在しない場合、フォルダ作成のみ実施する
-                    Directory.CreateDirectory(strFaultImageFileDirectory);
-                    return false;
-                }
-
-                ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
-                frmProgress.StartPosition = FormStartPosition.CenterScreen;
-                frmProgress.Size = this.Size;
-                frmProgress.Show(this);
-
-                try
-                {
-                    return await BolReInputFaultImage(
-                        intInspectionNum,
-                        strInspectionDate,
-                        strUnitNum,
-                        strFabricName,
-                        strFaultImageFileName);
-                }
-                finally
-                {
-                    frmProgress.Close();
-                }
+                Directory.CreateDirectory(strFaultImageFileDirectory);
             }
 
-            return true;
+            // NGレコードが存在しない場合、処理を終了する
+            if (!BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, true))
+            {
+                return true;
+            }
+
+            ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
+            frmProgress.StartPosition = FormStartPosition.CenterScreen;
+            frmProgress.Size = this.Size;
+            frmProgress.Show(this);
+
+            try
+            {
+                // 欠点画像数チェック・再取込を実施する
+                return await BolReInputFaultImage(
+                    intInspectionNum,
+                    strInspectionDate,
+                    strUnitNum,
+                    strFabricName,
+                    strFaultImageFileName,
+                    strLogMessage);
+            }
+            finally
+            {
+                frmProgress.Close();
+            }
         }
         #endregion
 
         #region イベント
-
         /// <summary>
         /// フォームロード
         /// </summary>
@@ -658,6 +661,7 @@ namespace ImageChecker
                 HeaderData clsHeaderData = new HeaderData();
                 DecisionResult clsDecisionResult = new DecisionResult();
                 string strFaultImageSubDirectory = string.Empty;
+                string strLogMessage = string.Empty;
 
                 // ボタン行以外はイベント終了
                 if (e.ColumnIndex < m_CON_COL_IDX_OVERDETECTIONEXCEPT)
@@ -712,6 +716,15 @@ namespace ImageChecker
                                                              clsHeaderData.strFabricName,
                                                              clsHeaderData.intInspectionNum);
 
+                strLogMessage =
+                    string.Format(
+                        g_CON_LOG_MESSAGE_FOMAT,
+                        clsHeaderData.strUnitNum,
+                        clsHeaderData.strInspectionDate,
+                        clsHeaderData.intInspectionNum,
+                        clsHeaderData.strProductName,
+                        clsHeaderData.strFabricName);
+
                 // ディレクトリ存在チェック
                 bool tskRet =
                     await BolCheckFaultImage(
@@ -719,12 +732,23 @@ namespace ImageChecker
                         clsHeaderData.strInspectionDate,
                         clsHeaderData.strUnitNum,
                         clsHeaderData.strFabricName,
-                        strFaultImageSubDirectory);
+                        strFaultImageSubDirectory,
+                        strLogMessage);
 
                 if (!tskRet)
                 {
-                    MessageBox.Show(g_clsMessageInfo.strMsgW0006, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    DirectoryInfo diFaultImage = new DirectoryInfo(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, clsHeaderData.strUnitNum, strFaultImageSubDirectory));
+
+                    if (!diFaultImage.Exists ||
+                        diFaultImage.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0).Count() == 0)
+                    {
+                        MessageBox.Show(g_clsMessageInfo.strMsgE0068, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show(g_clsMessageInfo.strMsgW0006, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
 
                 Overdetectionexclusion frmOverDetectionExcept;
@@ -1006,7 +1030,7 @@ namespace ImageChecker
             string strRapidTableName = string.Empty;
             string strUnitNum = string.Empty;
             int intExecutionCount = 0;
-            DateTime dateSyncTargetDate = DateTime.Now.Date.AddDays(-2);
+            DateTime dateSyncTargetDate = DateTime.Now.Date.AddDays(-200);
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
@@ -1206,36 +1230,6 @@ namespace ImageChecker
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                                 continue;
-                            }
-
-                            strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
-
-                            // 直近2日に行われた検査情報の欠点画像を取得する
-                            if (!Directory.Exists(strFaultImageFileDirectory) &&
-                                dateSyncTargetDate < DateTime.Parse(strInspectionDate))
-                            {
-                                if (lstTask.Count != 0)
-                                {
-                                    // 複数取込の場合、ランダムで1秒以上6秒未満の待ち時間を挟む
-                                    await Task.Delay(random.Next(1, 6) * 1000);
-                                }
-
-                                int intInspectionNumInfo = intInspectionNum;
-                                string strFabricNameInfo = strFabricName;
-                                string strInspectionDateInfo = strInspectionDate;
-                                string strUnitNumInfo = strUnitNum;
-                                string strFaultImageFileNameInfo = strFaultImageFileName;
-
-                                // NGレコードが存在する場合、欠点画像取込を行う
-                                if (BolCheckNGRecordCount(intInspectionNumInfo, strFabricNameInfo, strInspectionDateInfo, strUnitNumInfo, true))
-                                {
-                                    lstTask.Add(Task<Boolean>.Run(() => BolInputFaultImage(strUnitNumInfo, strFaultImageFileNameInfo)));
-                                }
-                                else
-                                {
-                                    // NGレコードが存在しない場合、フォルダ作成のみ実施する
-                                    Directory.CreateDirectory(strFaultImageFileDirectory);
-                                }
                             }
 
                             if (intCnt >= 1)
@@ -1488,6 +1482,63 @@ namespace ImageChecker
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                                 continue;
+                            }
+
+                            strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
+
+                            // 直近2日に行われた検査情報の欠点画像を取得する
+                            if (!Directory.Exists(strFaultImageFileDirectory) &&
+                                dateSyncTargetDate < DateTime.Parse(strInspectionDate))
+                            {
+                                if (lstTask.Count != 0)
+                                {
+                                    // 複数取込の場合、ランダムで1秒以上6秒未満の待ち時間を挟む
+                                    await Task.Delay(random.Next(1, 6) * 1000);
+                                }
+
+                                // 非同期処理実行のため、必要な情報を別の変数に退避させる
+                                int intInspectionNumInfo = intInspectionNum;
+                                string strFabricNameInfo = strFabricName;
+                                string strInspectionDateInfo = strInspectionDate;
+                                string strUnitNumInfo = strUnitNum;
+                                string strProductNameInfo = strProductName;
+                                string strFaultImageFileNameInfo = strFaultImageFileName;
+                                string strLogMessage =
+                                    string.Format(
+                                        g_CON_LOG_MESSAGE_FOMAT,
+                                            strUnitNumInfo,
+                                            strInspectionDateInfo,
+                                            intInspectionNumInfo,
+                                            strProductNameInfo,
+                                            strFabricNameInfo);
+
+                                // NGレコードが存在する場合、欠点画像取込を行う
+                                if (BolCheckNGRecordCount(intInspectionNumInfo, strFabricNameInfo, strInspectionDateInfo, strUnitNumInfo, true))
+                                {
+                                    lstTask.Add(Task<Boolean>.Run(() => BolGetFaultImage(
+                                        intInspectionNumInfo,
+                                        strInspectionDateInfo,
+                                        strUnitNumInfo,
+                                        strFabricNameInfo,
+                                        strFaultImageFileNameInfo,
+                                        strLogMessage)));
+                                }
+                                else
+                                {
+                                    // ログ出力
+                                    WriteEventLog(
+                                        g_CON_LEVEL_INFO,
+                                        string.Format(
+                                            "{0}{1}{2}{3}パス:{4}",
+                                            "▼NGレコードが存在しません。完了通知取込をスキップし、空フォルダを作成します。",
+                                            Environment.NewLine,
+                                            strLogMessage,
+                                            Environment.NewLine,
+                                            strFaultImageFileDirectory));
+
+                                    // NGレコードが存在しない場合、フォルダ作成のみ実施する
+                                    Directory.CreateDirectory(strFaultImageFileDirectory);
+                                }
                             }
 
                             if (intExecutionCount == 0)

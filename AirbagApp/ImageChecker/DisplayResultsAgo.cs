@@ -499,45 +499,49 @@ namespace ImageChecker
         /// <param name="strUnitNum">号機</param>
         /// <param name="strFabricName">反番</param>
         /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
+        /// <param name="strLogMessage">ログメッセージ</param>
         private async Task<Boolean> BolCheckFaultImage(
             int intInspectionNum,
             string strInspectionDate,
             string strUnitNum,
             string strFabricName,
-            string strFaultImageFileName)
+            string strFaultImageFileName,
+            string strLogMessage)
         {
             string strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
 
+            // 画像ディレクトリが存在しない場合、フォルダを作成する
             if (!Directory.Exists(strFaultImageFileDirectory))
             {
-                if (!BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, true))
-                {
-                    // NGレコードが存在しない場合、フォルダ作成のみ実施する
-                    Directory.CreateDirectory(strFaultImageFileDirectory);
-                    return false;
-                }
-
-                ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
-                frmProgress.StartPosition = FormStartPosition.CenterScreen;
-                frmProgress.Size = this.Size;
-                frmProgress.Show(this);
-
-                try
-                {
-                    return await BolReInputFaultImage(
-                        intInspectionNum,
-                        strInspectionDate,
-                        strUnitNum,
-                        strFabricName,
-                        strFaultImageFileName);
-                }
-                finally
-                {
-                    frmProgress.Close();
-                }
+                Directory.CreateDirectory(strFaultImageFileDirectory);
             }
 
-            return true;
+            // NGレコードが存在しない場合、処理を終了する
+            if (!BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, true))
+            {
+                return true;
+            }
+
+            ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
+            frmProgress.StartPosition = FormStartPosition.CenterScreen;
+            frmProgress.Size = this.Size;
+            frmProgress.Show(this);
+
+            try
+            {
+                // 欠点画像数チェック・再取込を実施する
+                return await BolReInputFaultImage(
+                    intInspectionNum,
+                    strInspectionDate,
+                    strUnitNum,
+                    strFabricName,
+                    strFaultImageFileName,
+                    strLogMessage);
+            }
+            finally
+            {
+                frmProgress.Close();
+            }
         }
         #endregion
 
@@ -616,6 +620,7 @@ namespace ImageChecker
         {
             int intSelIdx = -1;
             string strFaultImageSubDirectory = string.Empty;
+            string strLogMessage = string.Empty;
 
             // 選択行インデックスの取得
             foreach (DataGridViewRow dgvRow in this.dgvCheckInspectionHistory.SelectedRows)
@@ -636,6 +641,15 @@ namespace ImageChecker
                                                          m_dtData.Rows[intSelIdx]["fabric_name"],
                                                          m_dtData.Rows[intSelIdx]["inspection_num"]);
 
+            strLogMessage =
+                string.Format(
+                    g_CON_LOG_MESSAGE_FOMAT,
+                    m_dtData.Rows[intSelIdx]["unit_num"].ToString(),
+                    m_dtData.Rows[intSelIdx]["inspection_date"].ToString().Replace("/", ""),
+                    m_dtData.Rows[intSelIdx]["inspection_num"].ToString(),
+                    m_dtData.Rows[intSelIdx]["product_name"].ToString(),
+                    m_dtData.Rows[intSelIdx]["fabric_name"].ToString());
+
             // ディレクトリ存在チェック
             Boolean tskRet =
                 await BolCheckFaultImage(
@@ -643,7 +657,8 @@ namespace ImageChecker
                     m_dtData.Rows[intSelIdx]["inspection_date"].ToString(),
                     m_dtData.Rows[intSelIdx]["unit_num"].ToString(),
                     m_dtData.Rows[intSelIdx]["fabric_name"].ToString(),
-                    strFaultImageSubDirectory);
+                    strFaultImageSubDirectory,
+                    strLogMessage);
 
             if (!tskRet)
             {
@@ -899,6 +914,14 @@ namespace ImageChecker
                                                                 m_dtData.Rows[e.RowIndex]["fabric_name"],
                                                                 m_dtData.Rows[e.RowIndex]["inspection_num"]);
 
+            string strLogMessage =
+                string.Format(
+                    g_CON_LOG_MESSAGE_FOMAT,
+                    m_dtData.Rows[e.RowIndex]["unit_num"].ToString(),
+                    m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", ""),
+                    m_dtData.Rows[e.RowIndex]["inspection_num"].ToString(),
+                    m_dtData.Rows[e.RowIndex]["product_name"].ToString(),
+                    m_dtData.Rows[e.RowIndex]["fabric_name"].ToString());
 
             // ディレクトリ存在チェック
             Boolean tskRet =
@@ -907,7 +930,8 @@ namespace ImageChecker
                     m_dtData.Rows[e.RowIndex]["inspection_date"].ToString(),
                     m_dtData.Rows[e.RowIndex]["unit_num"].ToString(),
                     m_dtData.Rows[e.RowIndex]["fabric_name"].ToString(),
-                    strFaultImageSubDirectory);
+                    strFaultImageSubDirectory,
+                    strLogMessage);
 
             if (!tskRet)
             {

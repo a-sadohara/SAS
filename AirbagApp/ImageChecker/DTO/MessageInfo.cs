@@ -50,6 +50,7 @@ namespace ImageChecker.DTO
         public readonly string strMsgE0062;
         public readonly string strMsgE0063;
         public readonly string strMsgE0064;
+        public readonly string strMsgE0068;
         public readonly string strMsgQ0009;
         public readonly string strMsgQ0010;
         public readonly string strMsgQ0011;
@@ -102,6 +103,7 @@ namespace ImageChecker.DTO
                 GetMessageContent("E0062", ref strMsgE0062);
                 GetMessageContent("E0063", ref strMsgE0063);
                 GetMessageContent("E0064", ref strMsgE0064);
+                GetMessageContent("E0068", ref strMsgE0068);
                 GetMessageContent("Q0009", ref strMsgQ0009);
                 GetMessageContent("Q0010", ref strMsgQ0010);
                 GetMessageContent("Q0011", ref strMsgQ0011);
