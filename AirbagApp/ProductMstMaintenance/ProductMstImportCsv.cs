@@ -22,6 +22,7 @@ namespace ProductMstMaintenance
         private const string m_CON_FILE_NAME_AIRBAG_COORD = "AirBagCoord";
         private const string m_CON_FILE_NAME_CAMERA_INFO = "カメラ情報";
         private const string m_CON_FILE_NAME_REASON_JUDGMENT = "ScratchName";
+        private const string m_CON_FILE_NAME_AI_MODEL_NAME_INFO = "AIモデルマスタ情報";
 
         // INIファイルのセクション
         private const string m_CON_INI_SECTION_REGISTER = "REGISTER";
@@ -53,6 +54,11 @@ namespace ProductMstMaintenance
         private const int m_CON_COL_ILLUMINATION_INFORMATION = 1;
         private const int m_CON_COL_START_REGIMARK_CAMERA_NUM = 2;
         private const int m_CON_COL_END_REGIMARK_CAMERA_NUM = 3;
+
+        // AIモデルマスタCSVファイル配置情報
+        private const int m_CON_COL_MST_AI_MODEL_COLUMN_NUM = 2;
+        private const int m_CON_COL_PRODUCT_NAME_MST_AI_MODEL = 0;
+        private const int m_CON_COL_AI_MODEL_NAME = 1;
 
         // 判定理由CSVファイル配置情報
         private const int m_CON_COL_REASON_CODE = 0;
@@ -95,6 +101,10 @@ namespace ProductMstMaintenance
         // 判定理由情報登録の成功・失敗件数
         private static int m_intSuccesDecisionReasonReg = 0;
         private static int m_intErrorDecisionReasonReg = 0;
+
+        // AIモデルマスタ情報登録の成功・失敗件数
+        private static int m_intSuccesAIModelNameReg = 0;
+        private static int m_intErrorAIModelNameReg = 0;
 
         // エラー出力用ファイル名
         private static string m_strErrorOutFileName = string.Empty;
@@ -286,6 +296,15 @@ namespace ProductMstMaintenance
             public int intReasonCode;
             public string strDecisionReason;
         }
+
+        /// <summary>
+        /// AIモデルマスタ情報CSVファイル
+        /// </summary>
+        private struct AIModelNameCsvInfo
+        {
+            public string strProductName;
+            public string strAIModelName;
+        }
         #endregion
 
         #region イベント
@@ -311,6 +330,8 @@ namespace ProductMstMaintenance
             m_intErrorMasterImg = 0;
             m_intSuccesDecisionReasonReg = 0;
             m_intErrorDecisionReasonReg = 0;
+            m_intSuccesAIModelNameReg = 0;
+            m_intErrorAIModelNameReg = 0;
             m_strErrorOutFileName = string.Empty;
             m_strCheckMstFile = string.Empty;
 
@@ -415,6 +436,14 @@ namespace ProductMstMaintenance
                     return;
                 }
 
+                // AIモデルマスタ取り込み
+                ProcessAIModelNameCsv(strInputCsv);
+
+                if (m_bolProcEnd)
+                {
+                    return;
+                }
+
             });
 
             frmProgress.Close();
@@ -437,16 +466,17 @@ namespace ProductMstMaintenance
                 m_intErrorCameraReg > 0 ||
                 m_intErrorThresholdReg > 0 ||
                 m_intErrorMasterImg > 0 ||
-                m_intErrorDecisionReasonReg > 0)
+                m_intErrorDecisionReasonReg > 0 ||
+                m_intErrorAIModelNameReg > 0)
             {
                 MessageBox.Show(string.Format(g_clsMessageInfo.strMsgW0002,
                                               (m_intSuccesRegProductInfo + m_intErrorRegProductInfo), m_intSuccesRegProductInfo, m_intErrorRegProductInfo,
                                               (m_intSuccesRegPTC + m_intErrorRegPTC), m_intSuccesRegPTC, m_intErrorRegPTC,
                                               (m_intSuccesRegAirBag + m_intErrorRegAirBag), m_intSuccesRegAirBag, m_intErrorRegAirBag,
                                               (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
-                                              (m_intSuccesThresholdReg + m_intErrorThresholdReg), m_intSuccesThresholdReg, m_intErrorThresholdReg,
                                               (m_intSuccesMasterImg + m_intErrorMasterImg), m_intSuccesMasterImg, m_intErrorMasterImg,
-                                              (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg), m_intSuccesDecisionReasonReg, m_intErrorDecisionReasonReg) + Environment.NewLine +
+                                              (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg), m_intSuccesDecisionReasonReg, m_intErrorDecisionReasonReg,
+                                              (m_intSuccesAIModelNameReg + m_intErrorAIModelNameReg), m_intSuccesAIModelNameReg, m_intErrorAIModelNameReg) + Environment.NewLine +
                                 string.Format(g_clsMessageInfo.strMsgI0004, strOutPutFilePath),
                                 "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -457,9 +487,9 @@ namespace ProductMstMaintenance
                                               (m_intSuccesRegPTC + m_intErrorRegPTC), m_intSuccesRegPTC, m_intErrorRegPTC,
                                               (m_intSuccesRegAirBag + m_intErrorRegAirBag), m_intSuccesRegAirBag, m_intErrorRegAirBag,
                                               (m_intSuccesCameraReg + m_intErrorCameraReg), m_intSuccesCameraReg, m_intErrorCameraReg,
-                                              (m_intSuccesThresholdReg + m_intErrorThresholdReg), m_intSuccesThresholdReg, m_intErrorThresholdReg,
                                               (m_intSuccesMasterImg + m_intErrorMasterImg), m_intSuccesMasterImg, m_intErrorMasterImg,
-                                              (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg), m_intSuccesDecisionReasonReg, m_intErrorDecisionReasonReg) + Environment.NewLine +
+                                              (m_intSuccesDecisionReasonReg + m_intErrorDecisionReasonReg), m_intSuccesDecisionReasonReg, m_intErrorDecisionReasonReg,
+                                              (m_intSuccesAIModelNameReg + m_intErrorAIModelNameReg), m_intSuccesAIModelNameReg, m_intErrorAIModelNameReg) + Environment.NewLine +
                                 string.Format(g_clsMessageInfo.strMsgI0004, strOutPutFilePath),
                                 "取り込み結果", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1965,11 +1995,10 @@ namespace ProductMstMaintenance
                     OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0021, Environment.NewLine, ex.Message));
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0021, Environment.NewLine, ex.Message));
                     m_intErrorThresholdReg++;
-                    continue;
-                }
 
-                if (dtData.Rows.Count == 0)
-                {
+                    // 閾値算出エラー時、品番情報取込の成功・失敗件数を補正する
+                    m_intSuccesRegProductInfo--;
+                    m_intErrorRegProductInfo++;
                     continue;
                 }
                 #endregion
@@ -2239,6 +2268,10 @@ namespace ProductMstMaintenance
                     OutPutImportLog(string.Format("{0}{1}{2}[{3}]", g_clsMessageInfo.strMsgE0026, Environment.NewLine, ex.Message, strProductName));
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}[{3}]", g_clsMessageInfo.strMsgE0026, Environment.NewLine, ex.Message, strProductName));
                     m_intErrorThresholdReg++;
+
+                    // 閾値算出エラー時、品番情報取込の成功・失敗件数を補正する
+                    m_intSuccesRegProductInfo--;
+                    m_intErrorRegProductInfo++;
                     continue;
                 }
                 #endregion
@@ -2385,6 +2418,10 @@ namespace ProductMstMaintenance
                         OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strProductName)));
                         WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, strProductName)));
                         m_intErrorThresholdReg++;
+
+                        // 閾値算出エラー時、品番情報取込の成功・失敗件数を補正する
+                        m_intSuccesRegProductInfo--;
+                        m_intErrorRegProductInfo++;
                         continue;
                     }
                 }
@@ -2394,6 +2431,10 @@ namespace ProductMstMaintenance
                     OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, string.Format(strErrorMessage, ex.Message, strProductName)));
                     WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
                     m_intErrorThresholdReg++;
+
+                    // 閾値算出エラー時、品番情報取込の成功・失敗件数を補正する
+                    m_intSuccesRegProductInfo--;
+                    m_intErrorRegProductInfo++;
                     continue;
                 }
 
@@ -2413,6 +2454,284 @@ namespace ProductMstMaintenance
                                                     m_intErrorThresholdReg) + "\"";
             OutPutImportLog(strOutMsg);
             #endregion
+        }
+        #endregion
+
+        #region AIモデルマスタ情報CSV取り込み
+        /// <summary>
+        /// AIモデルマスタ情報取り込み
+        /// </summary>
+        /// <param name="strInputCsv">読み込みcsvファイル全種類</param>
+        private static void ProcessAIModelNameCsv(string[] strInputCsv)
+        {
+            List<AIModelNameCsvInfo> lstAImCsvInfo = new List<AIModelNameCsvInfo>();
+
+            // 取込対象のAIモデルマスタ情報ファイルを特定する
+            foreach (string InputfilePath in strInputCsv.Where(
+                x => Regex.IsMatch(Path.GetFileName(x), string.Format("^{0}.csv$", m_CON_FILE_NAME_AI_MODEL_NAME_INFO), RegexOptions.IgnoreCase)))
+            {
+                m_strErrorOutFileName = Path.GetFileName(InputfilePath);
+
+                try
+                {
+                    // CSVファイルを取り込み、AIモデルマスタ情報を取得し登録する。
+                    lstAImCsvInfo = ImportAIModelNameCsvData(InputfilePath);
+                }
+                catch (Exception ex)
+                {
+                    m_intErrorAIModelNameReg++;
+
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+
+                    OutPutImportLog(string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0015, Environment.NewLine, ex.Message));
+
+                    if (m_bolProcEnd)
+                    {
+                        return;
+                    }
+
+                    continue;
+                }
+
+                // 読み込み行が存在する場合は登録を行う
+                if (lstAImCsvInfo.Count > 0)
+                {
+                    // 読み込んだ値をDBに登録する
+                    UPDMstProductInfoInAIModelName(lstAImCsvInfo);
+                }
+            }
+
+            m_strErrorOutFileName = string.Empty;
+
+            // ログファイル結果出力を行う
+            string strOutMsg = "\"" + string.Format(g_clsMessageInfo.strMsgI0013,
+                                                    (m_intSuccesAIModelNameReg + m_intErrorAIModelNameReg),
+                                                    m_intSuccesAIModelNameReg,
+                                                    m_intErrorAIModelNameReg) + "\"";
+            OutPutImportLog(strOutMsg);
+        }
+
+        /// <summary>
+        /// AIモデルマスタ情報取り込み
+        /// </summary>
+        /// <param name="strInputfilePath">読み込みファイル情報</param>
+        /// <returns></returns>
+        private static List<AIModelNameCsvInfo> ImportAIModelNameCsvData(string strInputfilePath)
+        {
+            List<AIModelNameCsvInfo> lstAIModelNameCsvInfo = new List<AIModelNameCsvInfo>();
+
+            // 読み込みデータ
+            AIModelNameCsvInfo cciCurrentData = new AIModelNameCsvInfo();
+
+            int intRowCount = 0;
+
+            // ファイル読み込み処理を行う
+            using (StreamReader sr = new StreamReader(strInputfilePath, Encoding.GetEncoding("Shift_JIS")))
+            {
+                string strFileTextLine = string.Empty;
+
+                // ストリームの末尾まで繰り返す
+                while (!sr.EndOfStream)
+                {
+                    // AIモデルマスタ情報ファイルを１行読み込む
+                    strFileTextLine = sr.ReadLine();
+                    intRowCount++;
+
+                    if (string.IsNullOrEmpty(strFileTextLine) || intRowCount == 1)
+                    {
+                        // 空行(最終行)またはヘッダ行の場合読み飛ばす
+                        continue;
+                    }
+
+                    // CSVファイル読み込み＆入力データチェックを行う
+                    if (!ReadAIModelNameCsvData(
+                            strFileTextLine,
+                            intRowCount,
+                            Path.GetFileName(strInputfilePath),
+                            out cciCurrentData))
+                    {
+                        m_intErrorAIModelNameReg++;
+                        continue;
+                    }
+
+                    lstAIModelNameCsvInfo.Add(cciCurrentData);
+                }
+
+                return lstAIModelNameCsvInfo;
+            }
+        }
+
+        /// <summary>
+        /// AIモデルマスタCSVファイル読み込み
+        /// </summary>
+        /// <param name="strFileTextLine">CSVファイル行テキスト</param>
+        /// <param name="lstUserData">CSVファイルデータ</param>
+        /// <returns></returns>
+        private static bool ReadAIModelNameCsvData(
+            string strFileTextLine,
+            int intRowCount,
+            string strFileName,
+            out AIModelNameCsvInfo cciCurrentData)
+        {
+            cciCurrentData = new AIModelNameCsvInfo();
+
+            // データチェック＆CSVを読み込む
+            if (!SetAIModelNameInfoCsv(strFileTextLine, out cciCurrentData, intRowCount))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// CSV→構造体格納(AIモデルマスタ情報CSV)
+        /// </summary>
+        /// <param name="strFileReadLine">読み込みCSV情報</param>
+        /// <returns></returns>
+        private static bool SetAIModelNameInfoCsv(
+            string strFileReadLine,
+            out AIModelNameCsvInfo cciData,
+            int intRowCount)
+        {
+            string[] stArrayData;
+
+            cciData = new AIModelNameCsvInfo();
+
+            // 半角スペース区切りで分割して配列に格納する
+            stArrayData = strFileReadLine.Split(',');
+
+            if (!InputDataCheckAIModelName(stArrayData, intRowCount, strFileReadLine))
+            {
+                return false;
+            }
+
+            // データに問題がない場合、CSVの各項目を構造体へ格納する
+            cciData.strProductName = stArrayData[m_CON_COL_PRODUCT_NAME_MST_AI_MODEL];
+            cciData.strAIModelName = stArrayData[m_CON_COL_AI_MODEL_NAME];
+
+            return true;
+        }
+
+        /// <summary>
+        /// AIモデルマスタ入力チェック
+        /// </summary>
+        /// <param name="cciCheckData">読み込みユーザ情報リスト</param>
+        /// <param name="intRowCount">対象行番号</param>
+        /// <returns></returns>
+        private static bool InputDataCheckAIModelName(
+            string[] stArrayData,
+            int intRowCount,
+            string strFileReadLine)
+        {
+            // 各項目のチェックを行う
+            // 列数チェック
+            if (stArrayData.Length < m_CON_COL_MST_AI_MODEL_COLUMN_NUM)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(string.Format("{0},\"{1} \"", string.Format(g_clsMessageInfo.strMsgE0010, intRowCount), strFileReadLine));
+                return false;
+            }
+
+            // 文字列項目
+            // 必須入力チェック
+            if (!CheckRequiredInput(stArrayData[m_CON_COL_PRODUCT_NAME_MST_AI_MODEL], "品名", intRowCount, strFileReadLine) ||
+                !CheckRequiredInput(stArrayData[m_CON_COL_AI_MODEL_NAME], "AIモデル名", intRowCount, strFileReadLine))
+            {
+                return false;
+            }
+
+            // 桁数入力チェック
+            if (!CheckLengthInput(stArrayData[m_CON_COL_PRODUCT_NAME_MST_AI_MODEL], "品名", intRowCount, 1, 16, strFileReadLine) ||
+                !CheckLengthInput(stArrayData[m_CON_COL_AI_MODEL_NAME], "AIモデル名", intRowCount, 1, 259, strFileReadLine))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// AIモデルマスタ情報テーブル登録処理
+        /// </summary>
+        /// <param name="lstDataPTCToDB"></param>
+        /// <returns></returns>
+        private static void UPDMstProductInfoInAIModelName(List<AIModelNameCsvInfo> lstAIModelNameCsvToDB)
+        {
+            foreach (AIModelNameCsvInfo cciCurrentData in lstAIModelNameCsvToDB)
+            {
+                // 登録処理実施
+                if (ExecRegProductInfoAIModelName(cciCurrentData))
+                {
+                    m_intSuccesAIModelNameReg++;
+                }
+                else
+                {
+                    m_intErrorAIModelNameReg++;
+                }
+            }
+
+            if (m_intSuccesAIModelNameReg > 0)
+            {
+                // トランザクションコミット
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
+            }
+        }
+
+        /// <summary>
+        /// AIモデルマスタ更新SQL処理
+        /// </summary>
+        /// <param name="lstUserData">読み込みデータ一覧</param>
+        /// <returns></returns>
+        private static bool ExecRegProductInfoAIModelName(AIModelNameCsvInfo cciCurrentData)
+        {
+            string strData =
+                string.Join(
+                    ",",
+                    cciCurrentData.strProductName,
+                    cciCurrentData.strAIModelName);
+
+            string strErrorMessage = string.Empty;
+
+            try
+            {
+                // SQL文を作成する
+                string strCreateSql = g_CON_UPSERT_MST_AI_MODEL;
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+
+                // 各項目の値を取得する
+                // FieldInfoを取得する
+                Type typeOfMyStruct = typeof(AIModelNameCsvInfo);
+                System.Reflection.FieldInfo[] fieldInfos = typeOfMyStruct.GetFields();
+
+                // CSVファイルから各値を読み込む
+                foreach (var fieldInfo in fieldInfos)
+                {
+                    if (fieldInfo.FieldType == typeof(int))
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(cciCurrentData)) });
+                    }
+                    else
+                    {
+                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(cciCurrentData)) });
+                    }
+                }
+
+                // SQLを実行する(マスタに存在しないデータのみ登録される)
+                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                strErrorMessage = "{0},[{1}]";
+                OutPutImportLog(string.Format(g_clsMessageInfo.strMsgE0025, (m_intSuccesAIModelNameReg + m_intErrorAIModelNameReg) + 1) + Environment.NewLine + string.Format(strErrorMessage, ex.Message, strData));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0053, Environment.NewLine, ex.Message));
+                return false;
+            }
         }
         #endregion
 
@@ -2839,7 +3158,7 @@ namespace ProductMstMaintenance
                 OutPutImportLog(intRowCount + "行目　"
                                             + strItemName + "の桁数が不正です。"
                                             + intMinLength.ToString() + "～" + intMaxLength.ToString()
-                                            + "の範囲で設定してください "
+                                            + "の範囲で設定してください。 "
                                             + strTextLine);
                 return false;
             }
@@ -2870,7 +3189,21 @@ namespace ProductMstMaintenance
                 return true;
             }
 
-            int intCheckData = NulltoInt(strCheckData);
+            int intCheckData = 0;
+
+            try
+            {
+                intCheckData = NulltoInt(strCheckData);
+            }
+            catch (Exception ex)
+            {
+                // ログファイルにエラー出力を行う
+                OutPutImportLog(intRowCount + "行目　"
+                                            + strItemName + "の値が不正です。"
+                                            + "数値を設定してください。 "
+                                            + strTextLine);
+                return false;
+            }
 
             // 桁数チェック
             if (intCheckData < intMinRange || intCheckData > intMaxRange)
@@ -2879,7 +3212,7 @@ namespace ProductMstMaintenance
                 OutPutImportLog(intRowCount + "行目　"
                                             + strItemName + "の値が不正です。"
                                             + intMinRange.ToString() + "～" + intMaxRange.ToString()
-                                            + "の範囲で設定してください "
+                                            + "の範囲で設定してください。 "
                                             + strTextLine);
                 return false;
             }

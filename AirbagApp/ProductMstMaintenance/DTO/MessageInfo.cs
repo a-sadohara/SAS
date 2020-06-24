@@ -50,6 +50,7 @@ namespace ProductMstMaintenance.DTO
         public readonly string strMsgI0009;
         public readonly string strMsgI0010;
         public readonly string strMsgI0011;
+        public readonly string strMsgI0013;
         public readonly string strMsgQ0005;
         public readonly string strMsgQ0006;
         public readonly string strMsgQ0014;
@@ -99,6 +100,7 @@ namespace ProductMstMaintenance.DTO
                 GetMessageContent("I0009", ref strMsgI0009);
                 GetMessageContent("I0010", ref strMsgI0010);
                 GetMessageContent("I0011", ref strMsgI0011);
+                GetMessageContent("I0013", ref strMsgI0013);
                 GetMessageContent("Q0005", ref strMsgQ0005);
                 GetMessageContent("Q0006", ref strMsgQ0006);
                 GetMessageContent("Q0014", ref strMsgQ0014);

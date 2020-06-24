@@ -507,6 +507,21 @@ namespace ProductMstMaintenance
         public const string g_CON_DELETE_MST_PRODUCT_INFO_DECISION_REASON =
             @"DELETE FROM mst_decision_reason";
 
+        // AIモデル名更新SQL
+        public const string g_CON_UPSERT_MST_AI_MODEL = @"
+              INSERT INTO public.mst_ai_model
+              (
+                  product_name,
+                  ai_model_name
+              )
+              VALUES
+              (
+                  :strProductName,
+                  :strAIModelName
+              )
+              ON CONFLICT
+              DO NOTHING ";
+
         // 品名取得SQL
         public const string g_CON_SELECT_MST_PRODUCT_INFO_PMS =
             @"SELECT FALSE, product_name FROM mst_product_info ORDER BY product_name";
