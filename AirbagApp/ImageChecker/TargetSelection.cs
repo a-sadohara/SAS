@@ -1030,7 +1030,7 @@ namespace ImageChecker
             string strRapidTableName = string.Empty;
             string strUnitNum = string.Empty;
             int intExecutionCount = 0;
-            DateTime dateSyncTargetDate = DateTime.Now.Date.AddDays(-200);
+            DateTime dateSyncTargetDate = DateTime.Now.Date.AddDays(-2);
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
