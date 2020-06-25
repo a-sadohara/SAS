@@ -44,17 +44,27 @@ REM    :: “ü—Í‚³‚ê‚È‚©‚Á‚½i–¢“ü—ÍA‚à‚µ‚­‚ÍAƒLƒƒƒ“ƒZƒ‹jê‡‚ÍI—¹‚·‚é
 REM    exit /b
 REM )
 ECHO ¡ƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹‚ð”z•z‚µ‚Ü‚· ----------------------„
+ECHO -„ y%HOST_1%z‚É”z•z‚µ‚Ü‚·
 xcopy "%model_file_path%" \\%HOST_1%\%rapid_model_path% /s/e/i
+ECHO -„ y%HOST_2%z‚É”z•z‚µ‚Ü‚·
 xcopy "%model_file_path%" \\%HOST_2%\%rapid_model_path% /s/e/i
+ECHO -„ y%HOST_3%z‚É”z•z‚µ‚Ü‚·
 xcopy "%model_file_path%" \\%HOST_3%\%rapid_model_path% /s/e/i
+ECHO -„ y%HOST_4%z‚É”z•z‚µ‚Ü‚·
 xcopy "%model_file_path%" \\%HOST_4%\%rapid_model_path% /s/e/i
+ECHO -„ y%HOST_5%z‚É”z•z‚µ‚Ü‚·
 xcopy "%model_file_path%" \\%HOST_5%\%rapid_model_path% /s/e/i
 
 ECHO ¡AIƒ‚ƒfƒ‹‚ð“o˜^‚µ‚Ü‚·       ----------------------„
+ECHO -„ y%HOST_1%z‚É”z•z‚µ‚Ü‚·
 echo WMIC /NODE:192.168.164.128 /user:sas_admin /password:p@ssw0rdnec12345 process call create "rapid /S IMA/manage_data.rpd model-import -g "GUI" -path "%DB_1%" -m {%model_name%,\\%HOST_1%\%rapid_model_path%\%model_file%}"
+ECHO -„ y%HOST_2%z‚É”z•z‚µ‚Ü‚·
 echo WMIC /NODE:192.168.164.129 /user:sas_admin /password:p@ssw0rdnec12345 process call create "rapid /S IMA/manage_data.rpd model-import -g "GUI" -path "%DB_2%" -m {%model_name%,\\%HOST_2%\%rapid_model_path%\%model_file%}"
+ECHO -„ y%HOST_3%z‚É”z•z‚µ‚Ü‚·
 echo WMIC /NODE:192.168.164.130 /user:sas_admin /password:p@ssw0rdnec12345 process call create "rapid /S IMA/manage_data.rpd model-import -g "GUI" -path "%DB_3%" -m {%model_name%,\\%HOST_3%\%rapid_model_path%\%model_file%}"
+ECHO -„ y%HOST_4%z‚É”z•z‚µ‚Ü‚·
 echo WMIC /NODE:192.168.164.131 /user:sas_admin /password:p@ssw0rdnec12345 process call create "rapid /S IMA/manage_data.rpd model-import -g "GUI" -path "%DB_4%" -m {%model_name%,\\%HOST_4%\%rapid_model_path%\%model_file%}"
+ECHO -„ y%HOST_5%z‚É”z•z‚µ‚Ü‚·
 echo WMIC /NODE:192.168.164.132 /user:sas_admin /password:p@ssw0rdnec12345 process call create "rapid /S IMA/manage_data.rpd model-import -g "GUI" -path "%DB_5%" -m {%model_name%,\\%HOST_5%\%rapid_model_path%\%model_file%}"
 
 REM echo Input = MsgBox("RAPIDƒ‚ƒfƒ‹ƒCƒ“ƒ|[ƒg‚ªŠ®—¹‚µ‚Ü‚µ‚½B" , vbOK + vbInformation, "î•ñ") > %TEMP%\msgbox.vbs
