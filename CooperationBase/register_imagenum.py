@@ -258,6 +258,39 @@ def close_connection(conn, cur):
 
     return result
 
+# ------------------------------------------------------------------------------------
+# 処理名             ：前検査情報取得
+#
+# 処理概要           ：1.検査情報テーブルから前検査情報を取得する
+#
+# 引数               ：コネクションオブジェクト
+#                      カーソルオブジェクト
+#
+# 戻り値             ：検査情報
+#                      コネクションオブジェクト
+#                      カーソルオブジェクト
+#                      処理結果（True:成功、False:失敗）
+# ------------------------------------------------------------------------------------
+def select_before_inspection_data(conn, cur, inspection_num, inspection_date, unit_num):
+    inspection_date = inspection_date[0:4] + '/' + inspection_date[4:6] + '/' + inspection_date[6:8]
+    # 検査番号が1の場合、現在日の検査番号-1の情報
+    # 検査番号の場合、現在日-1の最新検査の情報
+    ### クエリを作成する
+    if inspection_num == '1': 
+        sql = 'select product_name, fabric_name, inspection_num, imaging_endtime, imaging_starttime from fabric_info where unit_num = \'%s\' ' \
+              'and cast(imaging_starttime as date) < \'%s\' order by imaging_starttime desc ' % (unit_num, inspection_date)
+        
+    else:
+        sql = 'select product_name, fabric_name, inspection_num, imaging_endtime, imaging_starttime from fabric_info where unit_num = \'%s\' ' \
+              'and cast(imaging_starttime as date)  = \'%s\' and inspection_num = %s ' % (unit_num, inspection_date, int(inspection_num) - 1)
+        
+
+    logger.debug('[%s:%s] 前検査情報取得SQL %s' % (app_id, app_name, sql))
+
+    ### 検査情報テーブルからデータ取得
+    result, select_result, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    return result, select_result, conn, cur
+
 
 # ------------------------------------------------------------------------------------
 # 処理名             ：メイン処理
@@ -332,6 +365,15 @@ def main():
             logger.debug('[%s:%s] 撮像完了通知ファイルを発見しました。:撮像完了通知ファイル名[%s]',
                          app_id, app_name, sorted_files)
 
+            sp_sorted_files = []
+            for sp_file in sorted_files:
+                sp_sorted_files.append(re.split('[_.]', sp_file.split('\\')[-1]))
+
+            min_date = min([int(x[:][4]) for x in sp_sorted_files])
+            min_inspection_num = min([int(x[:][3]) for x in sp_sorted_files])
+
+            sorted_files = [x for x in sorted_files if '_' + str(min_inspection_num) + '_' in x and '_' + str(min_date) + '.CSV']
+
             # DB共通処理を呼び出して、DB接続を行う
             logger.debug('[%s:%s] DB接続を開始します。', app_id, app_name)
             result, conn, cur = create_connection()
@@ -348,8 +390,30 @@ def main():
                 product_name = file_name[1]
                 fabric_name = file_name[2]
                 inspection_num = file_name[3]
+                inspection_date = file_name[4]
                 logger.info('[%s:%s] %s処理を開始します。 [反番, 検査番号]=[%s, %s]', app_id, app_name, app_name, fabric_name,
                             inspection_num)
+
+                logger.debug('[%s:%s] 前検査情報取得を開始します。' % (app_id, app_name))
+                # 検査情報テーブルから前検査情報を取得する
+                result, before_inspection_info, conn, cur = select_before_inspection_data(conn, cur, inspection_num, inspection_date, unit_num)
+
+                if result:
+                    logger.debug('[%s:%s] 前検査情報取得が終了しました。' % (app_id, app_name))
+                    before_product_name = before_inspection_info[0]
+                    before_fabric_name = before_inspection_info[1]
+                    before_inspection_num = before_inspection_info[2]
+                    before_starttime = before_inspection_info[4]
+                    before_inspection_date = str(before_starttime.strftime('%Y%m%d'))
+                                                                
+                    logger.debug('[%s:%s] 前検査情報 [品番=%s] [反番=%s] [検査番号=%s]' % (app_id, app_name, before_product_name, before_fabric_name, before_inspection_num))
+                    if before_inspection_info[3] != None:
+                        pass
+                    else:
+                        logger.info('[%s:%s] 前検査の検査完了時刻が存在しません。撮像完了通知取り込みを中止します。' % (app_id, app_name))
+                        logger.info('[%s:%s] 前検査情報 [反番, 検査番号, 検査日付]=[%s, %s, %s]' % (app_id, app_name, before_fabric_name, before_inspection_num, before_inspection_date))
+                        time.sleep(sleep_time)
+                        break
 
                 # 撮像完了通知ファイルを読込む
                 logger.debug('[%s:%s] 撮像完了通知ファイルの読込を開始します。', app_id, app_name)
@@ -371,10 +435,38 @@ def main():
                 logger.debug('[%s:%s] 撮像開始日時の取得を開始します。',
                              app_id, app_name)
                 result, fabric_info, conn, cur = select_fabric_info(conn, cur, fabric_name, inspection_num, unit_num, inspection_date)
-
+                    
                 if result:
                     logger.debug('[%s:%s] 撮像開始日時の取得が終了しました。',
                                  app_id, app_name)
+                    if fabric_info is None:
+                        logger.info('[%s:%s] 既に撮像完了時刻を登録しています。',
+                                 app_id, app_name)
+                        logger.debug('[%s:%s] 撮像完了通知ファイルを退避するフォルダ存在チェックを開始します。', app_id, app_name)
+                        result = exists_dir(backup_path)
+
+                        if result:
+                            logger.debug('[%s:%s] 撮像完了通知ファイルを退避するフォルダ存在チェックが終了しました。', app_id, app_name)
+                        else:
+                            logger.error('[%s:%s] 撮像完了通知ファイルを退避するフォルダ存在チェックに失敗しました。:退避先フォルダ名[%s]',
+                                     app_id, app_name, backup_path)
+                            sys.exit()
+
+                        # 撮像完了通知ファイルを、退避フォルダに移動させる。
+                        logger.debug('[%s:%s] 撮像完了通知ファイル移動を開始します。:撮像完了通知ファイル名[%s]',
+                                     app_id, app_name, sorted_files[i])
+                        result = move_file(sorted_files[i], backup_path)
+                   
+                        if result:
+                            logger.debug('[%s:%s] 撮像完了通知ファイル移動が終了しました。:退避先フォルダ[%s], 撮像完了通知ファイル名[%s]',
+                                     app_id, app_name, backup_path, sorted_files[i])
+                            break
+                        else:
+                            logger.error('[%s:%s] 撮像完了通知ファイルの退避に失敗しました。:撮像完了通知ファイル名[%s]',
+                                     app_id, app_name, sorted_files[i])
+                            sys.exit()
+                    else:
+                        pass
                 else:
                     logger.error('[%s:%s] 撮像開始日時の取得が失敗しました。',
                                  app_id, app_name)
@@ -429,12 +521,12 @@ def main():
 
                 logger.info("[%s:%s] %s処理は正常に終了しました。", app_id, app_name, app_name)
 
-                logger.debug("[%s:%s] レジマーク情報登録機能呼出を開始します。", app_id, app_name)
+                logger.debug("[%s:%s] レジマーク情報登録機能呼出を開始します。", app_id, app_name, app_name)
                 result = register_regimark_info.main(product_name, fabric_name, inspection_num, imaging_starttime)
                 if result:
-                    logger.debug("[%s:%s] レジマーク情報登録機能が終了しました。", app_id, app_nam)
+                    logger.debug("[%s:%s] レジマーク情報登録機能が終了しました。", app_id, app_name, app_name)
                 else:
-                    logger.error("[%s:%s] レジマーク情報登録機能が失敗しました。", app_id, app_name)
+                    logger.error("[%s:%s] レジマーク情報登録機能が失敗しました。", app_id, app_name, app_name)
                     sys.exit()
 
         # DB接続を切断

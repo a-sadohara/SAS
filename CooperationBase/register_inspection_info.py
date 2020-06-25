@@ -7,9 +7,13 @@ import logging.config
 import sys
 import time
 import traceback
+from pathlib import Path
+import codecs
 
 import db_util
 import error_util
+import file_util
+import error_detail
 
 # ログ設定
 logging.config.fileConfig("D:/CI/programs/config/logging_register_inspection_info.conf")
@@ -42,6 +46,25 @@ def create_connection():
     result, conn, cur = db_util.create_connection(logger, app_id, app_name)
     return result, conn, cur
 
+# ------------------------------------------------------------------------------------
+# 処理名             ：RAPID解析情報テーブル作成
+#
+# 処理概要           ：1.RAPID解析情報テーブルを作成する。
+#
+# 引数               ：コネクションオブジェクト
+#                      カーソルオブジェクト
+#                      反番
+#                      検査番号
+#
+# 戻り値             ：処理結果（True:成功、False:失敗）
+#                      コネクションオブジェクト
+#                      カーソルオブジェクト
+# ------------------------------------------------------------------------------------
+def create_rapid_table(conn, cur, fabric_name, inspection_num, inspection_date):
+    # RAPID解析情報テーブルを作成する。
+    result, conn, cur = db_util.create_table(conn, cur, fabric_name, inspection_num, inspection_date,
+                                             logger, app_id, app_name)
+    return result, conn, cur
 
 # ------------------------------------------------------------------------------------
 # 処理名             ：検査情報取得
@@ -65,13 +88,37 @@ def select_inspection_data(conn, cur, unit_num):
           '(inspection_info_header.fabric_name = fabric_info.fabric_name and ' \
           'inspection_info_header.inspection_num = fabric_info.inspection_num and ' \
           'inspection_info_header.start_datetime = fabric_info.imaging_starttime) where ' \
-          'inspection_info_header.unit_num = \'%s\' and fabric_info.fabric_name is null ' \
+          'inspection_info_header.unit_num = \'%s\' and fabric_info.fabric_name is null and inspection_info_header.branch_num = 1 ' \
           'order by start_datetime asc' % unit_num
 
     logger.debug('[%s:%s] 検査情報取得SQL %s' % (app_id, app_name, sql))
 
     ### 検査情報テーブルからデータ取得
     result, select_result, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+    return result, select_result, conn, cur
+
+# ------------------------------------------------------------------------------------
+# 処理名             ：前検査情報取得
+#
+# 処理概要           ：1.検査情報テーブルから前検査情報を取得する
+#
+# 引数               ：コネクションオブジェクト
+#                      カーソルオブジェクト
+#
+# 戻り値             ：検査情報
+#                      コネクションオブジェクト
+#                      カーソルオブジェクト
+#                      処理結果（True:成功、False:失敗）
+# ------------------------------------------------------------------------------------
+def select_before_inspection_data(conn, cur, starttime, unit_num):
+    ### クエリを作成する
+    sql = 'select product_name, fabric_name, inspection_num, imaging_endtime,imaging_starttime from fabric_info where unit_num = \'%s\' ' \
+          'and imaging_starttime < \'%s\' order by imaging_starttime desc' % (unit_num, starttime)
+
+    logger.debug('[%s:%s] 前検査情報取得SQL %s' % (app_id, app_name, sql))
+
+    ### 検査情報テーブルからデータ取得
+    result, select_result, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
     return result, select_result, conn, cur
 
 
@@ -102,6 +149,72 @@ def insert_fabric_info(conn, cur, product_name, fabric_name, inspection_num, sta
     ### 反物情報テーブルへデータ登録
     result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
     return result, conn, cur
+
+# ------------------------------------------------------------------------------------
+# 処理名             ：出力先フォルダ存在チェック
+#
+# 処理概要           ：1.撮像完了通知(ダミー)、レジマーク読み取り結果(ダミー)を出力するフォルダが存在するかチェックする。
+#                      2.フォルダが存在しない場合は作成する。
+#
+# 引数               ：出力先フォルダ
+#
+# 戻り値             ：処理結果（True:成功、False:失敗）
+#
+# ------------------------------------------------------------------------------------
+def exists_dir(target_path):
+    result = file_util.make_directory(target_path, logger, app_id, app_name)
+
+    return result
+
+# ------------------------------------------------------------------------------------
+# 関数名             ：インプットファイル出力
+#
+# 処理概要           ：1.撮像完了通知(ダミー)、レジマーク読み取り結果(ダミー)を出力する。
+#
+# 引数               ：品番
+#                      反番
+#                      検査番号
+#                      検査日
+#
+# 戻り値             ：処理結果（True:成功、False:失敗）
+#
+# ------------------------------------------------------------------------------------
+def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date):
+    result = False
+    output_file_path = common_inifile.get('FILE_PATH', 'input_path')
+    file_extension = inifile.get('PATH', 'file_extension')
+
+    try:
+        scaninfo_path = inifile.get('PATH', 'scaninfo_path')
+        scaninfo_prefix = inifile.get('PATH', 'scaninfo_prefix')
+        regimark_path = inifile.get('PATH', 'regimark_path')
+        regimark_prefix = inifile.get('PATH', 'regimark_prefix')
+    
+        scaninfo_file_name = scaninfo_prefix +  "_" + product_name + "_" + fabric_name + "_" + str(inspection_num) + "_" + inspection_date + file_extension
+        regimark_file_name = regimark_prefix +  "_" + product_name + "_" + fabric_name + "_" + str(inspection_num) + "_" + inspection_date + "_"
+
+        for i in range(0,2):
+            for j in range(0,2):
+                csv_file = output_file_path + "\\" + regimark_path + "\\" + regimark_file_name + str(i + 1) + "_" + str(j + 1) + file_extension
+                with codecs.open(csv_file, "w", "SJIS") as f:
+                    f.write("撮像ファイル名,種別,座標幅,座標高")
+                    f.write("\r\n")
+    
+        csv_file = output_file_path + "\\" + scaninfo_path + "\\" + scaninfo_file_name
+        with codecs.open(csv_file, "w", "SJIS") as f:
+            f.write("カメラ台数,カメラ1台の撮像枚数,総撮像枚数")
+            f.write("\r\n")
+            f.write("54,0,0")
+            f.write("\r\n")
+
+        result = True
+
+    except Exception as e:
+        # 失敗時は共通例外関数でエラー詳細をログ出力する
+        error_detail.exception(e, logger, app_id, app_name)
+
+    return result
+
 
 
 # ------------------------------------------------------------------------------------
@@ -185,7 +298,53 @@ def main():
                         fabric_name = inspection_info[i][1]
                         inspection_num = inspection_info[i][2]
                         starttime = inspection_info[i][3]
+                        inspection_date = str(starttime.strftime('%Y%m%d'))
                         unit_no = inspection_info[i][4]
+
+                        for i in range(5):
+                            logger.debug('[%s:%s] 前検査情報取得を開始します。' % (app_id, app_name))
+                            # 検査情報テーブルから前検査情報を取得する
+                            result, before_inspection_info, conn, cur = select_before_inspection_data(conn, cur, starttime, unit_num)
+
+                            if result:
+                                logger.debug('[%s:%s] 前検査情報取得が終了しました。' % (app_id, app_name))
+                                before_product_name = before_inspection_info[0]
+                                before_fabric_name = before_inspection_info[1]
+                                before_inspection_num = before_inspection_info[2]
+                                before_starttime = before_inspection_info[4]
+                                before_inspection_date = str(before_starttime.strftime('%Y%m%d'))
+                                                                
+                                logger.debug('[%s:%s] 前検査情報 [品番=%s] [反番=%s] [検査番号=%s]' % (app_id, app_name, before_product_name, before_fabric_name, before_inspection_num))
+                                if before_inspection_info[3] != None:
+                                    break
+                                else:
+                                    logger.info('[%s:%s] 前検査の検査完了時刻が存在しません。再確認します。' % (app_id, app_name))
+                                    time.sleep(sleep_time)
+                                    continue
+                            else:
+                                logger.error('[%s:%s] 前検査情報取得が失敗しました。' % (app_id, app_name))
+                                conn.rollback()
+                                sys.exit()
+                            
+                        if before_inspection_info[3] == None:
+                            logger.error('[%s:%s] 前検査が完了していません。前検査情報 [品番=%s] [反番=%s] [検査番号=%s]' % (app_id, app_name, before_product_name, before_fabric_name, before_inspection_num))
+
+                            error_file_path = common_inifile.get('ERROR_FILE', 'path')
+                            Path(error_file_path + '\\' +  error_file_name).touch()
+
+                            logger.info('[%s:%s] リカバリ（ダミーファイル出力）を開始します。 [品番, 反番, 検査番号, 検査日付]=[%s, %s, %s, %s]'
+                                        % (app_id, app_name, before_product_name, before_fabric_name, before_inspection_num, before_inspection_date))
+                            tmp_result = output_dummy_file(before_product_name, before_fabric_name, before_inspection_num, before_inspection_date)
+                            if tmp_result:
+                                logger.info('[%s:%s] リカバリ（ダミーファイル出力）が終了しました。 [品番, 反番, 検査番号, 検査日付]=[%s, %s, %s, %s]'
+                                        % (app_id, app_name, before_product_name, before_fabric_name, before_inspection_num, before_inspection_date))
+                                time.sleep(sleep_time * 2)
+                                break
+                            else:
+                                logger.error('[%s:%s] リカバリ（ダミーファイル出力）に失敗しました。 ' % (app_id, app_name))
+                                sys.exit()
+                        else:
+                            pass
 
                         inspection_date = str(starttime.strftime('%Y%m%d'))
 
@@ -194,6 +353,8 @@ def main():
 
                         logger.debug('[%s:%s] %s処理を開始します。 [反番, 検査番号]=[%s, %s]' %
                                      (app_id, app_name, app_name, fabric_name, inspection_num))
+
+                        
 
                         # 検査情報を反物情報テーブルに登録する
                         result, conn, cur = insert_fabric_info(conn, cur, product_name, fabric_name, inspection_num,
@@ -205,6 +366,19 @@ def main():
 
                         else:
                             logger.error('[%s:%s] 検査情報登録に失敗しました。 ' % (app_id, app_name))
+                            conn.rollback()
+                            sys.exit()
+
+                        # RAPID解析情報テーブルを作成する
+                        logger.debug('[%s:%s] RAPID解析情報テーブル作成を開始します。' % (app_id, app_name))
+                        result, conn, cur = create_rapid_table(conn, cur, fabric_name, inspection_num, inspection_date)
+                        if result:
+                            logger.debug('[%s:%s] RAPID解析情報テーブル作成が終了しました。' % (app_id, app_name))
+                            conn.commit()
+                        else:
+                            logger.error('[%s:%s] RAPID解析情報テーブル作成が失敗しました。 '
+                                     '[反番, 検査番号, 検査日付]=[%s, %s, %s]'
+                                     % (app_id, app_name, fabric_name, inspection_num, inspection_date))
                             conn.rollback()
                             sys.exit()
 

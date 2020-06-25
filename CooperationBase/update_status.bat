@@ -67,3 +67,8 @@ if !ERRORLEVEL! == 0 (
 )
 cd /d %current_dir%
 
+set input_path=\\192.168.164.10\if_files\CI
+set temp_path=D:\CI\temp\backup
+
+move %input_path%\ScanInfomation\* %temp_path%\ScanInfomation\
+move %input_path%\RegistrationMarkFiles\* %temp_path%\RegistrationMarkFiles\

@@ -240,6 +240,8 @@ def separate_image(file_list, output_path, file_num, rapid_host_name, logger, fa
         ng_image_list = []
         # TODO 無限ループにならないよう、失敗リストを保持し、それを超過したらエラーとする（ここまで）
 
+        logger.info('[%s:%s] 処理対象撮像画像 [撮像画像名] = [%s]' % (app_id, app_name, image_file))
+
         # ファイル分割閾値の数だけwhileループ内の処理を実行す
         while i < file_num:
             #  分割フォルダを作成する。

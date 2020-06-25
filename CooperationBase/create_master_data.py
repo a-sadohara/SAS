@@ -16,7 +16,7 @@ import error_util
 
 # ログ設定
 logging.config.fileConfig("D:/CI/programs/config/logging_create_master_data.conf", disable_existing_loggers=False)
-logger = logging.getLogger("create_master_data")
+logger = logging.getLogger("root")
 
 # 設定ファイル読み込み（共通設定）
 inifile = configparser.ConfigParser()
@@ -224,11 +224,9 @@ def get_y_coordinate(coord_list, colum_num):
             y_th = round(int(y_list[n][1]) + (int(y_list[n + 1][0]) - int(y_list[n][1])) / 2)
             y_threshold_list.append(y_th)
 
-        print(5 - int(colum_num))
         no_th = ''
         if 5 - int(colum_num) > 0:
             for m in range(5 - int(colum_num)):
-                print(m)
                 y_threshold_list.append(no_th)
         result = True
 
@@ -422,8 +420,6 @@ if __name__ == "__main__":
     output_file_path = None
 
     args = sys.argv
-    logger.info(args)
-    logger.info(len(args))
 
     if len(args) > 3:
         ini_file_path = args[1]

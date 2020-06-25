@@ -89,7 +89,7 @@ def close_connection(conn, cur):
 # ------------------------------------------------------------------------------------
 def select_fabric_info_db_polling(conn, cur, fabric_info_status_ng_ziptrans_start, unit_num):
     ### クエリを作成する
-    sql = 'select product_name, fabric_name, inspection_num, imaging_starttime from fabric_info ' \
+    sql = 'select product_name, fabric_name, inspection_num, imaging_starttime, processed_num from fabric_info ' \
           'where status = %s and unit_num = \'%s\' order by ng_endtime asc, imaging_starttime asc' \
           % (fabric_info_status_ng_ziptrans_start, unit_num)
 
@@ -476,6 +476,7 @@ def main():
                 fabric_name = target_record[1]
                 inspection_num = target_record[2]
                 imaging_starttime = target_record[3]
+                processed_num = int(target_record[4])
                 now_datetime = datetime.datetime.now()
                 date = imaging_starttime.strftime('%Y%m%d')
 
@@ -496,35 +497,38 @@ def main():
 
                 # コミットする
                 conn.commit()
-
-                ### 撮像画像整理
-                logger.debug('[%s:%s] 撮像画像整理を開始します。', app_id, app_name)
-                result_list=[]
-                error_list=[]
-                with ThreadPoolExecutor() as executor:
-                    func_list = []
-                    for rapid_hostname in rapid_hostname_list:
-                        target_path = '\\\\' + rapid_hostname + '\\' + image_path + '\\'
-                        # スレッド実行
-                        func_list.append(
-                            executor.submit(
-                                image_organize,
-                                target_path, date, product_name, fabric_name, inspection_num))
-                    for i in range(len(rapid_hostname_list)):
-                        # スレッド戻り値を取得
-                        result_list.append(func_list[i].result())
-
-                for i, multi_result in enumerate(result_list):
-                    if multi_result is True:
-                        logger.debug('[%s:%s] 撮像画像整理が完了しました。', app_id, app_name)
-                    else:
-                        logger.error('[%s:%s] 撮像画像整理に失敗しました。', app_id, app_name)
-                        error_list.append(multi_result)
-
-                if len(error_list) > 0:
-                    sys.exit()
-                else:
+                
+                if processed_num == 0:
                     pass
+                else:
+                    ### 撮像画像整理
+                    logger.debug('[%s:%s] 撮像画像整理を開始します。', app_id, app_name)
+                    result_list=[]
+                    error_list=[]
+                    with ThreadPoolExecutor() as executor:
+                        func_list = []
+                        for rapid_hostname in rapid_hostname_list:
+                            target_path = '\\\\' + rapid_hostname + '\\' + image_path + '\\'
+                            # スレッド実行
+                            func_list.append(
+                                executor.submit(
+                                    image_organize,
+                                    target_path, date, product_name, fabric_name, inspection_num))
+                        for i in range(len(rapid_hostname_list)):
+                            # スレッド戻り値を取得
+                            result_list.append(func_list[i].result())
+
+                    for i, multi_result in enumerate(result_list):
+                        if multi_result is True:
+                            logger.debug('[%s:%s] 撮像画像整理が完了しました。', app_id, app_name)
+                        else:
+                            logger.error('[%s:%s] 撮像画像整理に失敗しました。', app_id, app_name)
+                            error_list.append(multi_result)
+
+                    if len(error_list) > 0:
+                        sys.exit()
+                    else:
+                        pass
 
                 ### NG画像圧縮、検査完了通知作成、ファイル転送
 
