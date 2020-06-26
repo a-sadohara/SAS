@@ -869,6 +869,63 @@ def output_regimark_between_length_file(confirmed_regimark, regimark_between_len
     return result, csv_file
 
 
+# ADD 20200626 KQRM 下吉 START
+# ------------------------------------------------------------------------------------
+# 関数名             ：インプットファイル出力
+#
+# 処理概要           ：1.撮像完了通知(ダミー)、レジマーク読み取り結果(ダミー)を出力する。
+#
+# 引数               ：品番
+#                      反番
+#                      検査番号
+#                      検査日
+#
+# 戻り値             ：処理結果（True:成功、False:失敗）
+#
+# ------------------------------------------------------------------------------------
+def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date):
+    result = False
+    output_file_path = common_inifile.get('FILE_PATH', 'input_path')
+    file_extension = inifile.get('PATH', 'file_extension')
+
+    try:
+        scaninfo_path = inifile.get('PATH', 'scaninfo_path')
+        scaninfo_prefix = inifile.get('PATH', 'scaninfo_prefix')
+        regimark_path = inifile.get('PATH', 'regimark_path')
+        regimark_prefix = inifile.get('PATH', 'regimark_prefix')
+
+        scaninfo_file_name = scaninfo_prefix + "_" + product_name + "_" + fabric_name + "_" + str(
+            inspection_num) + "_" + inspection_date + file_extension
+        regimark_file_name = regimark_prefix + "_" + product_name + "_" + fabric_name + "_" + str(
+            inspection_num) + "_" + inspection_date + "_"
+
+        for i in range(0, 2):
+            for j in range(0, 2):
+                csv_file = output_file_path + "\\" + regimark_path + "\\" + regimark_file_name + str(i + 1) + "_" + str(
+                    j + 1) + file_extension
+                with codecs.open(csv_file, "w", "SJIS") as f:
+                    f.write("撮像ファイル名,種別,座標幅,座標高")
+                    f.write("\r\n")
+
+        # DEL 20200626 KQRM 下吉 START
+        # csv_file = output_file_path + "\\" + scaninfo_path + "\\" + scaninfo_file_name
+        # with codecs.open(csv_file, "w", "SJIS") as f:
+        #     f.write("カメラ台数,カメラ1台の撮像枚数,総撮像枚数")
+        #     f.write("\r\n")
+        #     f.write("54,0,0")
+        #     f.write("\r\n")
+        # DEL 20200626 KQRM 下吉 END
+
+        result = True
+
+    except Exception as e:
+        # 失敗時は共通例外関数でエラー詳細をログ出力する
+        error_detail.exception(e, logger, app_id, app_name)
+
+    return result
+
+# ADD 20200626 KQRM 下吉 END
+
 # ------------------------------------------------------------------------------------
 # 関数名             ：メイン処理
 #
@@ -957,289 +1014,372 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
             logger.error('[%s:%s] レジマーク読取結果ファイルの確認に失敗しました。', app_id, app_name)
             sys.exit()
 
-        # 撮像完了通知ファイルがない場合は一定期間sleepして再取得
-        if len(sorted_files) != 4:
+        # UPD 20200626 KQRM 下吉 START
+        # # 撮像完了通知ファイルがない場合は一定期間sleepして再取得
+        # if len(sorted_files) != 4:
+        #     logger.error('[%s:%s] レジマーク読取結果ファイルが欠損しています。', app_id, app_name)
+        #     sys.exit()
+
+        # 各ファイルの行数を取得する。
+        file_lines_list = [0] * 4
+        for i in range(len(sorted_files)):
+            file_lines_list[i] = sum([1 for _ in open(sorted_files[i])])
+
+        # ファイル数、行数をチェックする
+        if (len(sorted_files) != 4 or
+            not (file_lines_list[0] ==
+                 file_lines_list[1] ==
+                 file_lines_list[2] ==
+                 file_lines_list[3])):
             logger.error('[%s:%s] レジマーク読取結果ファイルが欠損しています。', app_id, app_name)
-            sys.exit()
-        else:
-            logger.info('[%s:%s] レジマーク読取結果ファイルを発見しました。:レジマーク読取結果ファイル名[%s]',
-                        app_id, app_name, sorted_files)
+        # UPD 20200626 KQRM 下吉 END
+            # ADD 20200626 KQRM 下吉 END
+            if len(sorted_files) != 0:
+                # レジマーク読取結果ファイルを退避するフォルダの存在を確認する
+                logger.debug('[%s:%s] レジマーク読取結果ファイルを退避するフォルダ存在チェックを開始します。', app_id, app_name)
+                result = exists_dir(backup_file_path)
 
-            # DB共通処理を呼び出して、DB接続を行う
-            logger.debug('[%s:%s] DB接続を開始します。', app_id, app_name)
-            result, conn, cur = create_connection()
-
-            if result:
-                logger.debug('[%s:%s] DB接続が終了しました。', app_id, app_name)
-            else:
-                logger.error('[%s:%s] DB接続時にエラーが発生しました。', app_id, app_name)
-                sys.exit()
-
-            while len(sorted_files) > 0:
-                file_timestamp = datetime.datetime.fromtimestamp(os.path.getctime(sorted_files[0])).strftime(
-                    "%Y-%m-%d %H:%M:%S")
-
-                logger.info('[%s:%s] %s処理を開始します。　[反番,　検査番号, 検査日付]=[%s, %s, %s]', app_id, app_name, 
-                            app_name, fabric_name, inspection_num, inspection_date)
-
-                files = [x for x in sorted_files if
-                         (fabric_name + "_" + inspection_num in x)]
-
-                if len(files) == 0:
-                    break
+                if result:
+                    logger.debug('[%s:%s] レジマーク読取結果ファイルを退避するフォルダ存在チェックが終了しました。', app_id, app_name)
                 else:
-                    pass
+                    logger.error('[%s:%s] レジマーク読取結果ファイルを退避するフォルダ存在チェックに失敗しました。:退避先フォルダ名[%s]',
+                                 app_id, app_name, output_file_path)
+                    sys.exit()
 
-                # 撮像完了通知ファイルを読込む
-                logger.debug('[%s:%s] レジマーク読取結果ファイルの読込を開始します。', app_id, app_name)
+                # 欠損しているレジマーク読取結果ファイルを退避フォルダに移動させる。
+                retry_count = 0
+                file = sorted_files
+                while len(file) > 0:
+                    logger.debug('[%s:%s] 不備のあるレジマーク読取結果ファイルの退避を開始します。:レジマーク読取結果ファイル名[%s]',
+                                 app_id, app_name, file)
+                    result = move_file(file[0], backup_file_path)
 
-                for file in sorted(files):
-                    regimark_list = []
-                    regimark_face = re.split('_', (file.split('\\'))[-1])[5]
-                    regimark_type = re.split('_', (file.split('\\'))[-1])[6]
-                    result, regimark_info = read_regimark_file(file)
-
-                    if result:
-                        logger.debug('[%s:%s] レジマーク読取結果ファイルの読込が終了しました。:レジマーク読取結果ファイルファイル名[%s]',
-                                     app_id, app_name, file)
-                        logger.debug('[%s:%s] レジマーク情報 : %s', app_id, app_name, regimark_info)
+                    if result == permission_error:
+                        if retry_count == file_bk_retry_count:
+                            logger.error('[%s:%s] 不備のあるレジマーク読取結果ファイルの退避に失敗しました。:レジマーク読取結果ファイル名[%s]',
+                                         app_id, app_name, file[0])
+                            sys.exit()
+                        else:
+                            logger.debug('[%s:%s] 不備のあるレジマーク読取結果ファイルの退避を再実行します。', app_id, app_name, app_name)
+                            file.append(file[0])
+                            del file[0]
+                            time.sleep(file_bk_sleep_time)
+                            retry_count += 1
+                    elif result:
+                        logger.debug('[%s:%s] 不備のあるレジマーク読取結果ファイルの退避が終了しました。:退避先フォルダ[%s], レジマーク読取結果ファイル名[%s]',
+                                     app_id, app_name, output_file_path, file[0])
+                        # sorted_files.remove(file[0])
+                        file.remove(file[0])
                     else:
-                        logger.error('[%s:%s] レジマーク読取結果ファイルの読込に失敗しました。:レジマーク読取結果ファイルファイル名[%s]',
-                                     app_id, app_name, file)
+                        logger.error('[%s:%s] 不備のあるレジマーク読取結果ファイルの退避に失敗しました。:レジマーク読取結果ファイル名[%s]',
+                                     app_id, app_name, file[0])
                         sys.exit()
 
-                    if len(regimark_info) == 0:
-                        logger.info('[%s:%s] レジマーク読取結果ファイルが空です。:レジマーク読取結果ファイルファイル名[%s]',
-                                    app_id, app_name, file)
-                        message = 'レジマーク読取結果ファイルが空です。:レジマーク読取結果ファイルファイル名[%s]' % file
-                        empty_file = True
-                        error_util.write_eventlog_warning(app_name, message)
+            # レジマーク読取結果ファイルのダミーファイルを作成する。
+            logger.info('[%s:%s] リカバリ（ダミーファイル出力）を開始します。[品番, 反番, 検査番号, 検査日付]=[%s, %s, %s, %s]'
+                        % (app_id, app_name, product_name, fabric_name, inspection_num,
+                           inspection_date))
+            result = output_dummy_file(product_name, fabric_name, inspection_num,
+                                           inspection_date)
+            if result:
+                logger.info('[%s:%s] リカバリ（ダミーファイル出力）が終了しました。[品番, 反番, 検査番号, 検査日付]=[%s, %s, %s, %s]'
+                            % (app_id, app_name, product_name, fabric_name, inspection_num,
+                               inspection_date))
 
+                logger.debug('[%s:%s] レジマーク読取結果ファイルの再確認を開始します。', app_id, app_name)
+                result, sorted_files = get_regimark_file(file_path, file_pattern)
+
+                if result:
+                    pass
+                else:
+                    logger.error('[%s:%s] レジマーク読取結果ファイルの再確認に失敗しました。', app_id, app_name)
+                    sys.exit()
+            else:
+                logger.error('[%s:%s] リカバリ（ダミーファイル出力）に失敗しました。' % (app_id, app_name))
+                sys.exit()
+            # ADD 20200626 KQRM 下吉 END
+
+        # DEL 20200626 KQRM 下吉 START
+        # else:
+        # DEL 20200626 KQRM 下吉 END
+        logger.info('[%s:%s] レジマーク読取結果ファイルを発見しました。:レジマーク読取結果ファイル名[%s]',
+                    app_id, app_name, sorted_files)
+
+        # DB共通処理を呼び出して、DB接続を行う
+        logger.debug('[%s:%s] DB接続を開始します。', app_id, app_name)
+        result, conn, cur = create_connection()
+
+        if result:
+            logger.debug('[%s:%s] DB接続が終了しました。', app_id, app_name)
+        else:
+            logger.error('[%s:%s] DB接続時にエラーが発生しました。', app_id, app_name)
+            sys.exit()
+
+        while len(sorted_files) > 0:
+            file_timestamp = datetime.datetime.fromtimestamp(os.path.getctime(sorted_files[0])).strftime(
+                "%Y-%m-%d %H:%M:%S")
+
+            logger.info('[%s:%s] %s処理を開始します。　[反番,　検査番号, 検査日付]=[%s, %s, %s]', app_id, app_name,
+                        app_name, fabric_name, inspection_num, inspection_date)
+
+            files = [x for x in sorted_files if
+                     (fabric_name + "_" + inspection_num in x)]
+
+            if len(files) == 0:
+                break
+            else:
+                pass
+
+            # 撮像完了通知ファイルを読込む
+            logger.debug('[%s:%s] レジマーク読取結果ファイルの読込を開始します。', app_id, app_name)
+
+            for file in sorted(files):
+                regimark_list = []
+                regimark_face = re.split('_', (file.split('\\'))[-1])[5]
+                regimark_type = re.split('_', (file.split('\\'))[-1])[6]
+                result, regimark_info = read_regimark_file(file)
+
+                if result:
+                    logger.debug('[%s:%s] レジマーク読取結果ファイルの読込が終了しました。:レジマーク読取結果ファイルファイル名[%s]',
+                                 app_id, app_name, file)
+                    logger.debug('[%s:%s] レジマーク情報 : %s', app_id, app_name, regimark_info)
+                else:
+                    logger.error('[%s:%s] レジマーク読取結果ファイルの読込に失敗しました。:レジマーク読取結果ファイルファイル名[%s]',
+                                 app_id, app_name, file)
+                    sys.exit()
+
+                if len(regimark_info) == 0:
+                    logger.info('[%s:%s] レジマーク読取結果ファイルが空です。:レジマーク読取結果ファイルファイル名[%s]',
+                                app_id, app_name, file)
+                    message = 'レジマーク読取結果ファイルが空です。:レジマーク読取結果ファイルファイル名[%s]' % file
+                    empty_file = True
+                    error_util.write_eventlog_warning(app_name, message)
+
+                else:
+                    regimark_list.append(regimark_info)
+                    # 検査開始行数を取得する。
+                    logger.debug('[%s:%s] 検査情報取得を開始します。', app_id, app_name)
+                    result, inspection_info, conn, cur = select_inspection_info(conn, cur, product_name,
+                                                                                fabric_name, inspection_num,
+                                                                                imaging_starttime, unit_num)
+
+                    if result:
+                        logger.debug('[%s:%s] 検査情報取得が終了しました。' % (app_id, app_name))
+                        logger.debug('[%s:%s] [反番, 検査番号]=[%s, %s] [検査開始行数, 最終行番, 検査方向] =[%s, %s, %s]。' % (
+                            app_id, app_name, fabric_name, inspection_num, inspection_info[0], inspection_info[1],
+                            inspection_info[2]))
+                        pass
                     else:
-                        regimark_list.append(regimark_info)
-                        # 検査開始行数を取得する。
-                        logger.debug('[%s:%s] 検査情報取得を開始します。', app_id, app_name)
-                        result, inspection_info, conn, cur = select_inspection_info(conn, cur, product_name,
-                                                                                    fabric_name, inspection_num,
-                                                                                    imaging_starttime, unit_num)
+                        logger.error('[%s:%s] 検査情報取得に失敗しました。' % (app_id, app_name))
+                        conn.rollback()
+                        sys.exit()
+
+                    # レジマーク検知画像の重複確認を行う。
+                    logger.debug('[%s:%s] レジマーク検知画像の重複確認を開始します。', app_id, app_name)
+                    result, confirmed_regimark = confirm_duplicate_registremark(regimark_list, fabric_name,
+                                                                                inspection_num, inspection_info,
+                                                                                image_height, image_width)
+                    if result:
+                        logger.debug('[%s:%s] レジマーク検知画像の重複確認が終了しました。' % (app_id, app_name))
+                        logger.debug('[%s:%s] レジマークリスト %s' % (app_id, app_name, confirmed_regimark))
+                        pass
+                    else:
+                        logger.error('[%s:%s] レジマーク検知画像の重複確認に失敗しました。' % (app_id, app_name))
+                        sys.exit()
+
+                    inspection_direction = inspection_info[2]
+
+                    regimark_between_length_list = None
+
+                    if (inspection_direction == 'S' and re.split('\.', regimark_type)[0] == '1') or \
+                            (inspection_direction == 'X' and re.split('\.', regimark_type)[0] == '1') or \
+                            (inspection_direction == 'Y' and re.split('\.', regimark_type)[0] == '2') or \
+                            (inspection_direction == 'R' and re.split('\.', regimark_type)[0] == '2'):
+
+                        # 設定レジマーク間長さ、領域伸び率X/Yを取得する。
+                        logger.debug('[%s:%s] レジマークマスター情報取得を開始します。', app_id, app_name)
+                        result, regimark_master, conn, cur = select_master_data(conn, cur, product_name)
 
                         if result:
-                            logger.debug('[%s:%s] 検査情報取得が終了しました。' % (app_id, app_name))
-                            logger.debug('[%s:%s] [反番, 検査番号]=[%s, %s] [検査開始行数, 最終行番, 検査方向] =[%s, %s, %s]。' % (
-                                app_id, app_name, fabric_name, inspection_num, inspection_info[0], inspection_info[1],
-                                inspection_info[2]))
+                            logger.debug('[%s:%s] レジマークマスター情報取得が終了しました。' % (app_id, app_name))
+                            logger.debug('[%s:%s] レジマークマスター情報 %s' % (app_id, app_name, regimark_master))
                             pass
                         else:
-                            logger.error('[%s:%s] 検査情報取得に失敗しました。' % (app_id, app_name))
+                            logger.error('[%s:%s] レジマークマスター情報取得に失敗しました。' % (app_id, app_name))
                             conn.rollback()
                             sys.exit()
 
-                        # レジマーク検知画像の重複確認を行う。
-                        logger.debug('[%s:%s] レジマーク検知画像の重複確認を開始します。', app_id, app_name)
-                        result, confirmed_regimark = confirm_duplicate_registremark(regimark_list, fabric_name,
-                                                                                    inspection_num, inspection_info,
-                                                                                    image_height, image_width)
+                        # 長さ伸縮率、幅伸縮率を算出する。
+                        conf_regimark_between_length = int(regimark_master[0][0])
+
+                        # AIモデル未検査フラグ
+                        ai_model_flag = regimark_master[0][3]
+
+                        ### 実測レジマーク間長さの算出を行う。
+                        logger.debug('[%s:%s] 実測レジマーク間長さの算出を開始します。', app_id, app_name)
+                        result, regimark_between_length_list = \
+                            calc_actual_regimark_between_length(confirmed_regimark, nonoverlap_image_length,
+                                                                actual_image_overlap, conf_regimark_between_length,
+                                                                actual_image_height, one_pix_length)
                         if result:
-                            logger.debug('[%s:%s] レジマーク検知画像の重複確認が終了しました。' % (app_id, app_name))
-                            logger.debug('[%s:%s] レジマークリスト %s' % (app_id, app_name, confirmed_regimark))
+                            logger.debug('[%s:%s] 実測レジマーク間長さの算出が終了しました。' % (app_id, app_name))
+                            logger.debug(
+                                '[%s:%s] 実測レジマーク間長さリスト %s' % (app_id, app_name, regimark_between_length_list))
                             pass
                         else:
-                            logger.error('[%s:%s] レジマーク検知画像の重複確認に失敗しました。' % (app_id, app_name))
+                            logger.error('[%s:%s] 実測レジマーク間長さの算出に失敗しました。' % (app_id, app_name))
                             sys.exit()
 
-                        inspection_direction = inspection_info[2]
+                        stretch_rate_x = float(regimark_master[0][1])
+                        stretch_rate_y = float(regimark_master[0][2])
 
-                        regimark_between_length_list = None
-
-                        if (inspection_direction == 'S' and re.split('\.', regimark_type)[0] == '1') or \
-                                (inspection_direction == 'X' and re.split('\.', regimark_type)[0] == '1') or \
-                                (inspection_direction == 'Y' and re.split('\.', regimark_type)[0] == '2') or \
-                                (inspection_direction == 'R' and re.split('\.', regimark_type)[0] == '2'):
-
-                            # 設定レジマーク間長さ、領域伸び率X/Yを取得する。
-                            logger.debug('[%s:%s] レジマークマスター情報取得を開始します。', app_id, app_name)
-                            result, regimark_master, conn, cur = select_master_data(conn, cur, product_name)
-
-                            if result:
-                                logger.debug('[%s:%s] レジマークマスター情報取得が終了しました。' % (app_id, app_name))
-                                logger.debug('[%s:%s] レジマークマスター情報 %s' % (app_id, app_name, regimark_master))
-                                pass
-                            else:
-                                logger.error('[%s:%s] レジマークマスター情報取得に失敗しました。' % (app_id, app_name))
-                                conn.rollback()
-                                sys.exit()
-
-                            # 長さ伸縮率、幅伸縮率を算出する。
-                            conf_regimark_between_length = int(regimark_master[0][0])
-
-                            # AIモデル未検査フラグ
-                            ai_model_flag = regimark_master[0][3]
-
-                            ### 実測レジマーク間長さの算出を行う。
-                            logger.debug('[%s:%s] 実測レジマーク間長さの算出を開始します。', app_id, app_name)
-                            result, regimark_between_length_list = \
-                                calc_actual_regimark_between_length(confirmed_regimark, nonoverlap_image_length,
-                                                                    actual_image_overlap, conf_regimark_between_length,
-                                                                    actual_image_height, one_pix_length)
-                            if result:
-                                logger.debug('[%s:%s] 実測レジマーク間長さの算出が終了しました。' % (app_id, app_name))
-                                logger.debug(
-                                    '[%s:%s] 実測レジマーク間長さリスト %s' % (app_id, app_name, regimark_between_length_list))
-                                pass
-                            else:
-                                logger.error('[%s:%s] 実測レジマーク間長さの算出に失敗しました。' % (app_id, app_name))
-                                sys.exit()
-
-                            stretch_rate_x = float(regimark_master[0][1])
-                            stretch_rate_y = float(regimark_master[0][2])
-
-                            logger.debug('[%s:%s] 長さ伸縮率、幅伸縮率の算出を開始します。', app_id, app_name)
-                            result, strech_ratio_list = calc_stretch_ratio(regimark_between_length_list,
-                                                                           conf_regimark_between_length,
-                                                                           stretch_rate_x, stretch_rate_y)
-                            if result:
-                                logger.debug('[%s:%s] 長さ伸縮率、幅伸縮率の算出が終了しました。' % (app_id, app_name))
-                                logger.debug('[%s:%s] 長さ伸縮率、幅伸縮率リスト %s' % (app_id, app_name, strech_ratio_list))
-                                pass
-                            else:
-                                logger.error('[%s:%s] 長さ伸縮率、幅伸縮率の算出に失敗しました。' % (app_id, app_name))
-                                sys.exit()
-
-                            if regimark_face == '2':
-                                pass
-                            else:
-                                # レジマーク間距離CSVファイルを出力するフォルダの存在を確認する
-                                logger.debug('[%s:%s] レジマーク間距離CSVファイルを出力するフォルダ存在チェックを開始します。', app_id, app_name)
-                                result = exists_dir(output_file_path)
-
-                                if result:
-                                    logger.debug('[%s:%s] レジマーク間距離CSVファイルを出力するフォルダ存在チェックが終了しました。', app_id, app_name)
-                                else:
-                                    logger.error('[%s:%s] レジマーク間距離CSVファイルを出力するフォルダ存在チェックに失敗しました。:退避先フォルダ名[%s]',
-                                                 app_id, app_name, output_file_path)
-                                    sys.exit()
-
-                                # レジマーク間距離csvを出力する。
-                                conf_regimark_len = '{:.6f}'.format(float(conf_regimark_between_length))
-                                logger.debug('[%s:%s] レジマーク間距離CSVの出力を開始します。', app_id, app_name)
-
-                                result, csv_file = output_regimark_between_length_file(confirmed_regimark,
-                                                                                       regimark_between_length_list,
-                                                                                       strech_ratio_list,
-                                                                                       conf_regimark_len,
-                                                                                       output_file_path, fabric_name,
-                                                                                       inspection_num)
-
-                                if result:
-                                    logger.debug('[%s:%s] レジマーク間距離CSVの出力が終了しました。' % (app_id, app_name))
-                                    pass
-                                else:
-                                    logger.error('[%s:%s] レジマーク間距離csvの出力に失敗しました。' % (app_id, app_name))
-                                    sys.exit()
-
-                                # レジマーク間距離CSVを移動する
-                                logger.debug('[%s:%s] レジマーク間距離CSVの移動を開始します。:レジマーク読取結果ファイル名[%s]',
-                                             app_id, app_name, file)
-                                result = move_file(csv_file, csv_file_path)
-
-                                if result:
-                                    logger.debug('[%s:%s] レジマーク間距離CSVの移動が終了しました。', app_id, app_name)
-                                else:
-                                    logger.warning('[%s:%s] レジマーク間距離CSVの移動に失敗しました。:退避先フォルダ名[%s]',
-                                                   app_id, app_name, csv_file_path)
-
-                    if empty_file:
-                        pass
-                    else:
-                        # レジマーク情報をレジマーク情報テーブルに登録する
-                        logger.debug('[%s:%s] レジマーク情報の登録を開始します。', app_id, app_name)
-                        result, conn, cur = insert_regimark_info(conn, cur, confirmed_regimark,
-                                                                 regimark_between_length_list,
-                                                                 strech_ratio_list, product_name, fabric_name,
-                                                                 inspection_num,
-                                                                 conf_regimark_len, image_height, image_width,
-                                                                 regimark_type, regimark_face, imaging_starttime,
-                                                                 unit_num)
-
+                        logger.debug('[%s:%s] 長さ伸縮率、幅伸縮率の算出を開始します。', app_id, app_name)
+                        result, strech_ratio_list = calc_stretch_ratio(regimark_between_length_list,
+                                                                       conf_regimark_between_length,
+                                                                       stretch_rate_x, stretch_rate_y)
                         if result:
+                            logger.debug('[%s:%s] 長さ伸縮率、幅伸縮率の算出が終了しました。' % (app_id, app_name))
+                            logger.debug('[%s:%s] 長さ伸縮率、幅伸縮率リスト %s' % (app_id, app_name, strech_ratio_list))
                             pass
                         else:
-                            logger.error('[%s:%s] レジマーク情報の登録に失敗しました。:[反番,検査番号]=[%s, %s]',
-                                         app_id, app_name, fabric_name, inspection_num)
+                            logger.error('[%s:%s] 長さ伸縮率、幅伸縮率の算出に失敗しました。' % (app_id, app_name))
                             sys.exit()
 
-                        logger.info('[%s:%s] レジマーク情報の登録が終了しました。 [反番,　検査番号, 検査日付]=[%s, %s, %s]',
-                                     app_id, app_name, fabric_name, inspection_num, inspection_date)
-                        # コミットする
-                        conn.commit()
+                        if regimark_face == '2':
+                            pass
+                        else:
+                            # レジマーク間距離CSVファイルを出力するフォルダの存在を確認する
+                            logger.debug('[%s:%s] レジマーク間距離CSVファイルを出力するフォルダ存在チェックを開始します。', app_id, app_name)
+                            result = exists_dir(output_file_path)
 
-                    # レジマーク読取結果ファイルを退避するフォルダの存在を確認する
-                    logger.debug('[%s:%s] レジマーク読取結果ファイルを退避するフォルダ存在チェックを開始します。', app_id, app_name)
-                    result = exists_dir(backup_file_path)
+                            if result:
+                                logger.debug('[%s:%s] レジマーク間距離CSVファイルを出力するフォルダ存在チェックが終了しました。', app_id, app_name)
+                            else:
+                                logger.error('[%s:%s] レジマーク間距離CSVファイルを出力するフォルダ存在チェックに失敗しました。:退避先フォルダ名[%s]',
+                                             app_id, app_name, output_file_path)
+                                sys.exit()
+
+                            # レジマーク間距離csvを出力する。
+                            conf_regimark_len = '{:.6f}'.format(float(conf_regimark_between_length))
+                            logger.debug('[%s:%s] レジマーク間距離CSVの出力を開始します。', app_id, app_name)
+
+                            result, csv_file = output_regimark_between_length_file(confirmed_regimark,
+                                                                                   regimark_between_length_list,
+                                                                                   strech_ratio_list,
+                                                                                   conf_regimark_len,
+                                                                                   output_file_path, fabric_name,
+                                                                                   inspection_num)
+
+                            if result:
+                                logger.debug('[%s:%s] レジマーク間距離CSVの出力が終了しました。' % (app_id, app_name))
+                                pass
+                            else:
+                                logger.error('[%s:%s] レジマーク間距離csvの出力に失敗しました。' % (app_id, app_name))
+                                sys.exit()
+
+                            # レジマーク間距離CSVを移動する
+                            logger.debug('[%s:%s] レジマーク間距離CSVの移動を開始します。:レジマーク読取結果ファイル名[%s]',
+                                         app_id, app_name, file)
+                            result = move_file(csv_file, csv_file_path)
+
+                            if result:
+                                logger.debug('[%s:%s] レジマーク間距離CSVの移動が終了しました。', app_id, app_name)
+                            else:
+                                logger.warning('[%s:%s] レジマーク間距離CSVの移動に失敗しました。:退避先フォルダ名[%s]',
+                                               app_id, app_name, csv_file_path)
+
+                if empty_file:
+                    pass
+                else:
+                    # レジマーク情報をレジマーク情報テーブルに登録する
+                    logger.debug('[%s:%s] レジマーク情報の登録を開始します。', app_id, app_name)
+                    result, conn, cur = insert_regimark_info(conn, cur, confirmed_regimark,
+                                                             regimark_between_length_list,
+                                                             strech_ratio_list, product_name, fabric_name,
+                                                             inspection_num,
+                                                             conf_regimark_len, image_height, image_width,
+                                                             regimark_type, regimark_face, imaging_starttime,
+                                                             unit_num)
 
                     if result:
-                        logger.debug('[%s:%s] レジマーク読取結果ファイルを退避するフォルダ存在チェックが終了しました。', app_id, app_name)
+                        pass
                     else:
-                        logger.error('[%s:%s] レジマーク読取結果ファイルを退避するフォルダ存在チェックに失敗しました。:退避先フォルダ名[%s]',
-                                     app_id, app_name, output_file_path)
+                        logger.error('[%s:%s] レジマーク情報の登録に失敗しました。:[反番,検査番号]=[%s, %s]',
+                                     app_id, app_name, fabric_name, inspection_num)
                         sys.exit()
 
-                    # レジマーク読取結果ファイルを退避フォルダに移動させる。
+                    logger.info('[%s:%s] レジマーク情報の登録が終了しました。 [反番,　検査番号, 検査日付]=[%s, %s, %s]',
+                                 app_id, app_name, fabric_name, inspection_num, inspection_date)
+                    # コミットする
+                    conn.commit()
 
-                    retry_count = 0
-                    file = [file]
-                    while len(file) > 0:
-                        logger.debug('[%s:%s] レジマーク読取結果ファイルの退避を開始します。:レジマーク読取結果ファイル名[%s]',
-                                     app_id, app_name, file)
-                        result = move_file(file[0], backup_file_path)
+                # レジマーク読取結果ファイルを退避するフォルダの存在を確認する
+                logger.debug('[%s:%s] レジマーク読取結果ファイルを退避するフォルダ存在チェックを開始します。', app_id, app_name)
+                result = exists_dir(backup_file_path)
 
-                        if result == permission_error:
-                            if retry_count == file_bk_retry_count:
-                                logger.error('[%s:%s] レジマーク読取結果ファイルの退避に失敗しました。:レジマーク読取結果ファイル名[%s]',
-                                             app_id, app_name, file[0])
-                                sys.exit()
-                            else:
-                                logger.debug('[%s:%s] レジマーク読取結果ファイルの退避を再実行します。', app_id, app_name, app_name)
-                                file.append(file[0])
-                                del file[0]
-                                time.sleep(file_bk_sleep_time)
-                                retry_count += 1
-                        elif result:
-                            logger.debug('[%s:%s] レジマーク読取結果ファイルの退避が終了しました。:退避先フォルダ[%s], レジマーク読取結果ファイル名[%s]',
-                                         app_id, app_name, output_file_path, file[0])
-                            sorted_files.remove(file[0])
-                            file.remove(file[0])
-                        else:
+                if result:
+                    logger.debug('[%s:%s] レジマーク読取結果ファイルを退避するフォルダ存在チェックが終了しました。', app_id, app_name)
+                else:
+                    logger.error('[%s:%s] レジマーク読取結果ファイルを退避するフォルダ存在チェックに失敗しました。:退避先フォルダ名[%s]',
+                                 app_id, app_name, output_file_path)
+                    sys.exit()
+
+                # レジマーク読取結果ファイルを退避フォルダに移動させる。
+
+                retry_count = 0
+                file = [file]
+                while len(file) > 0:
+                    logger.debug('[%s:%s] レジマーク読取結果ファイルの退避を開始します。:レジマーク読取結果ファイル名[%s]',
+                                 app_id, app_name, file)
+                    result = move_file(file[0], backup_file_path)
+
+                    if result == permission_error:
+                        if retry_count == file_bk_retry_count:
                             logger.error('[%s:%s] レジマーク読取結果ファイルの退避に失敗しました。:レジマーク読取結果ファイル名[%s]',
                                          app_id, app_name, file[0])
                             sys.exit()
+                        else:
+                            logger.debug('[%s:%s] レジマーク読取結果ファイルの退避を再実行します。', app_id, app_name, app_name)
+                            file.append(file[0])
+                            del file[0]
+                            time.sleep(file_bk_sleep_time)
+                            retry_count += 1
+                    elif result:
+                        logger.debug('[%s:%s] レジマーク読取結果ファイルの退避が終了しました。:退避先フォルダ[%s], レジマーク読取結果ファイル名[%s]',
+                                     app_id, app_name, output_file_path, file[0])
+                        sorted_files.remove(file[0])
+                        file.remove(file[0])
+                    else:
+                        logger.error('[%s:%s] レジマーク読取結果ファイルの退避に失敗しました。:レジマーク読取結果ファイル名[%s]',
+                                     app_id, app_name, file[0])
+                        sys.exit()
 
-                logger.info("[%s:%s] %s処理は正常に終了しました。", app_id, app_name, app_name)
+            logger.info("[%s:%s] %s処理は正常に終了しました。", app_id, app_name, app_name)
 
-            # DB接続を切断
-            logger.debug('[%s:%s] DB接続の切断を開始します。', app_id, app_name)
-            close_connection(conn, cur)
-            logger.debug('[%s:%s] DB接続の切断が終了しました。', app_id, app_name)
+        # DB接続を切断
+        logger.debug('[%s:%s] DB接続の切断を開始します。', app_id, app_name)
+        close_connection(conn, cur)
+        logger.debug('[%s:%s] DB接続の切断が終了しました。', app_id, app_name)
 
-            # AIモデル未検査フラグを確認
-            # 0の場合はNG行・列判定登録機能を呼び出す
-            if ai_model_flag == 0 or ai_model_flag == None:
+        # AIモデル未検査フラグを確認
+        # 0の場合はNG行・列判定登録機能を呼び出す
+        if ai_model_flag == 0 or ai_model_flag == None:
 
-                logger.debug('[%s:%s] NG行・列判定登録機能呼出を開始します。', app_id, app_name)
-                result = register_ng_info.main(product_name, fabric_name, inspection_num, imaging_starttime)
-                if result:
-                    logger.debug('[%s:%s] NG行・列判定登録機能が終了しました。', app_id, app_name)
-                    result = True
-                    return result
-                else:
-                    logger.debug('[%s:%s] NG行・列判定登録機能が失敗しました。', app_id, app_name)
-                    sys.exit()               
-
-            # 1の場合は処理を終了して、撮像枚数登録機能に戻り値を返す
-            else:
-
+            logger.debug('[%s:%s] NG行・列判定登録機能呼出を開始します。', app_id, app_name)
+            result = register_ng_info.main(product_name, fabric_name, inspection_num, imaging_starttime)
+            if result:
+                logger.debug('[%s:%s] NG行・列判定登録機能が終了しました。', app_id, app_name)
                 result = True
                 return result
+            else:
+                logger.debug('[%s:%s] NG行・列判定登録機能が失敗しました。', app_id, app_name)
+                sys.exit()
+
+        # 1の場合は処理を終了して、撮像枚数登録機能に戻り値を返す
+        else:
+
+            result = True
+            return result
 
     except SystemExit:
         # sys.exit()実行時の例外処理
