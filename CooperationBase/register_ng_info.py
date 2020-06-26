@@ -46,14 +46,14 @@ app_name = inifile.get('APP', 'app_name')
 #                      コネクションオブジェクト
 #                      カーソルオブジェクト
 # ------------------------------------------------------------------------------------
-def select_processing_target(conn, cur, unit_num):
+def select_processing_target(conn, cur, fabric_name, inspection_num, imaging_starttime, unit_num):
     ### クエリを作成する
     sql = 'select ii.inspection_direction ' \
           'FROM fabric_info as fi inner join inspection_info_header as ii on ' \
           'fi.fabric_name = ii.fabric_name and fi.inspection_num = ii.inspection_num and fi.imaging_starttime = ' \
-          'ii.start_datetime and ii.unit_num = \'%s\'' \
-          'where imageprocessing_starttime IS NOT NULL and ng_endtime IS NULL and status <> 0 order by ' \
-          'fi.imaging_starttime asc, imageprocessing_starttime asc ' % unit_num
+          'ii.start_datetime and ii.unit_num = \'%s\' ' \
+          'where imageprocessing_starttime IS NOT NULL and ng_endtime IS NULL and status <> 0 and fi.fabric_name = \'%s\' and fi.inspection_num = %s and fi.imaging_starttime = \'%s\' ' \
+          'order by fi.imaging_starttime asc, imageprocessing_starttime asc ' % (unit_num, fabric_name, inspection_num, imaging_starttime)
 
     logger.debug('[%s:%s] 処理ステータス情報取得SQL [%s]' % (app_id, app_name, sql))
     # DB共通処理を呼び出して、処理ステータステーブルと反物情報テーブルからデータを取得する。
@@ -332,11 +332,13 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
         else:
             logger.error('[%s:%s] DB接続が失敗しました。' % (app_id, app_name))
             sys.exit()
+        
+        count = 0
 
         while True:
             logger.debug('[%s:%s] 処理対象反物情報取得を開始します。' % (app_id, app_name))
             # 検査情報テーブルから検査情報を取得する
-            result, fabric_info, conn, cur = select_processing_target(conn, cur, unit_num)
+            result, fabric_info, conn, cur = select_processing_target(conn, cur, fabric_name, inspection_num, imaging_starttime, unit_num)
 
             if result:
                 logger.debug('[%s:%s] 処理対象反物情報取得が終了しました。' % (app_id, app_name))
@@ -732,7 +734,37 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                 logger.info('[%s:%s] 処理対象反物情報がありません。' % (app_id, app_name))
                 logger.debug('[%s:%s] %s秒スリープします' % (app_id, app_name, sleep_time))
                 time.sleep(sleep_time)
-                continue
+                if count == 5:
+                    logger.debug('[%s:%s] 反物情報ステータス更新を開始します。' % (app_id, app_name))
+                    # 検査情報テーブルから検査情報を取得する
+                    result, conn, cur = update_fabric_info(conn, cur, fabric_name, inspection_num,
+                                                                   fabric_ng_start_status, fabric_ng_start_column,
+                                                                   imaging_starttime, unit_num)
+
+                    if result:
+                        logger.debug('[%s:%s] 反物情報ステータス更新が終了しました。' % (app_id, app_name))
+                        conn.commit()
+                        pass
+                    else:
+                        logger.error('[%s:%s] 反物情報ステータス更新が失敗しました。' % (app_id, app_name))
+                        conn.rollback()
+                        sys.exit()
+                    logger.debug('[%s:%s] 反物情報テーブルの更新を開始します。' % (app_id, app_name))
+                    result, conn, cur = update_fabric_info(conn, cur, fabric_name, inspection_num,
+                                                                   fabric_ng_end_status, fabric_ng_end_column,
+                                                                   imaging_starttime, unit_num)
+                    if result:
+                        logger.debug('[%s:%s] 反物情報ステータスの更新が終了しました。' % (app_id, app_name))
+                        conn.commit()
+                        result = True
+                        return result
+                    else:
+                        logger.error('[%s:%s] 反物情報ステータスの更新が失敗しました。' % (app_id, app_name))
+                        conn.rollback()
+                        sys.exit()
+                else:
+                    count += 1
+                    continue
 
 
     except SystemExit:

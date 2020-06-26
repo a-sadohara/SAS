@@ -11,6 +11,7 @@ import traceback
 import zipfile
 import logging.config
 from dateutil.relativedelta import relativedelta
+from contextlib import suppress 
 
 import error_detail
 import error_util
@@ -62,28 +63,31 @@ def confirm_file(file_list, zip_name, flag, limit_day, limit_month, server):
                             logger.info(
                                 '[%s:%s] ファイル保存期限を過ぎています。対象ファイルをZIPし、ファイル削除を開始します。 [ファイル名=%s]' % (
                                     app_id, app_name, file_name))
-                            with zipfile.ZipFile(file_dir + "\\" + base_name + "_" +
-                                                 datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
-                                                 'w', compression=zipfile.ZIP_DEFLATED) as zip_log:
-                                zip_log.write(file_list[i], arcname=file_name)
-                            os.remove(file_list[i])
+                            with suppress(PermissionError):
+                                with zipfile.ZipFile(file_dir + "\\" + base_name + "_" +
+                                                     datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
+                                                     'w', compression=zipfile.ZIP_DEFLATED) as zip_log:
+                                    zip_log.write(file_list[i], arcname=file_name)
+                                os.remove(file_list[i])
 
                         else:
                             logger.info(
                                 '[%s:%s] ファイル保存期限を過ぎています。対象ファイルをZIPし、ファイル削除を開始します。 [ファイル名=%s]' % (
                                     app_id, app_name, file_name))
                             if i == 0:
-                                with zipfile.ZipFile(file_dir + "\\" + zip_name + "_" +
-                                                     datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
-                                                     'w', compression=zipfile.ZIP_DEFLATED) as zip_log:
-                                    zip_log.write(file_list[i], arcname=file_name)
+                                with suppress(PermissionError):
+                                    with zipfile.ZipFile(file_dir + "\\" + zip_name + "_" +
+                                                         datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
+                                                         'w', compression=zipfile.ZIP_DEFLATED) as zip_log:
+                                        zip_log.write(file_list[i], arcname=file_name)
                             else:
                                 logger.debug('else')
-                                with zipfile.ZipFile(file_dir + "\\" + zip_name + "_" +
-                                                     datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
-                                                     'a', compression=zipfile.ZIP_DEFLATED) as zip_log:
-                                    zip_log.write(file_list[i], arcname=file_name)
-                            os.remove(file_list[i])
+                                with suppress(PermissionError):
+                                    with zipfile.ZipFile(file_dir + "\\" + zip_name + "_" +
+                                                         datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
+                                                         'a', compression=zipfile.ZIP_DEFLATED) as zip_log:
+                                        zip_log.write(file_list[i], arcname=file_name)
+                                    os.remove(file_list[i])
                     else:
                         logger.info('[%s:%s] 対象ではありません。 [ファイル名=%s]' % (app_id, app_name, file_name))
 
@@ -135,7 +139,14 @@ def confirm_file(file_list, zip_name, flag, limit_day, limit_month, server):
     except Exception as e:
 
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        permission_message = 'プロセスはファイルにアクセスできません。別のプロセスが使用中です。'
+        message_check = permission_message in str(e)
+        print(message_check)
+        if message_check:
+            error_detail.exception(e, logger, app_id, app_name)
+            result = True
+        else:
+            error_detail.exception(e, logger, app_id, app_name)
 
     return result
 
@@ -154,6 +165,12 @@ def execute_file(file_path, file_pattern, zip_name, flag, limit_day, limit_month
             logger.error('[%s:%s] ファイル情報取得が失敗しました。 [確認フォルダ=%s]'
                          % (app_id, app_name, file_path))
             return result
+
+        if len(file_list) == 0:
+            result = True
+            return result
+        else:
+            pass
 
         logger.info('[%s:%s] ファイル確認を開始します。 [確認フォルダ=%s]'
                     % (app_id, app_name, file_path))
@@ -185,8 +202,11 @@ def main():
         logger.info('[%s:%s] %sを起動します。' % (app_id, app_name, app_name))
 
         # 通知ファイル確認
+        print(remove_target)
 
-        for target in remove_target:
+        for i in range(len(remove_target)):
+            target = remove_target[i]
+            print(target)
             target = target.split(',')
             file_path = target[0]
             file_pattern = target[1]

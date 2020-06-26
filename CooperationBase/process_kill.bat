@@ -19,6 +19,8 @@ if not "!confirm!" == "1" (
 
 if !ERRORLEVEL! == 0 (
     echo MsgBox "全機能停止が完了しました。", vbOKOnly + vbInformation, "情報" > %TEMP%\msgbox.vbs & %TEMP%\msgbox.vbs
+    for /F %a in ('dir /b %TEMP%\_MEI*') do rd /s /q %TEMP%\%a
 ) else (
     echo MsgBox "エラーが発生しました。" ^& vbCr ^& "エラーログを確認してください。"^& vbCr ^& "" , vbOKOnly + vbCritical, "エラー" > %TEMP%\error_msgbox.vbs & %TEMP%\error_msgbox.vbs
 )
+

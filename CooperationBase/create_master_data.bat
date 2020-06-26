@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 :: 実行コマンド定義
 set program_path=D:\CI\programs
 set program_name=create_master_data.py
-set exec_command=python "%program_path%\%program_name%"
+set exec_command=d:\CI\python\python.exe "%program_path%\%program_name%"
 
 echo MsgBox "iniファイルフォルダ選択画面に遷移します。" ^& vbCr ^& "iniファイルが格納されているフォルダを選択してください。", vbOKOnly + vbInformation, "情報" > %TEMP%\choseimagefoldermsgbox.vbs & %TEMP%\choseimagefoldermsgbox.vbs
 set "psCommand="(new-object -COM 'Shell.Application').BrowseForFolder(0,'iniファイルが格納されているフォルダを選択してください。',0,0).self.path""
@@ -41,7 +41,7 @@ if not "%output_file_path%" == "" (
 :: プログラム実行
 set current_dir=%~dp0
 cd /d %program_path%
-%exec_command% "!ini_file_path!" "!csv_file_path!" "!output_file_path!"
+%exec_command% !ini_file_path! !csv_file_path! !output_file_path!
 
 if !ERRORLEVEL! == 0 (
     echo MsgBox "閾値情報作成が完了しました", vbOKOnly + vbInformation, "情報" > %TEMP%\msgbox.vbs & %TEMP%\msgbox.vbs

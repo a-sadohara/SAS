@@ -68,7 +68,17 @@ def update_fabric_info_status(status, fabric_name, inspection_num, imaging_start
     fabric_imaging_starttime = inifile.get('COLUMN', 'fabric_imaging_starttime')
 
     ### クエリを作成する
-    sql = 'update fabric_info set status = %s ' \
+    sql = 'update fabric_info set status = %s ,imaging_endtime = now(), ' \
+          'separateresize_starttime = (case when separateresize_starttime is Null then now() else separateresize_starttime END), '\
+          'separateresize_endtime = (case when separateresize_endtime is Null then now() else separateresize_endtime END), '\
+          'rapid_starttime = (case when rapid_starttime is Null then now() else rapid_starttime END), ' \
+          'rapid_endtime = (case when rapid_endtime is Null then now() else rapid_endtime END), '\
+          'imageprocessing_starttime = (case when imageprocessing_starttime is Null then now() else imageprocessing_starttime END), '\
+          'imageprocessing_endtime = (case when imageprocessing_endtime is Null then now() else imageprocessing_endtime END), '\
+          'ng_starttime = (case when ng_starttime is Null then now() else ng_starttime END), '\
+          'ng_endtime = (case when ng_endtime is Null then now() else ng_endtime END), '\
+          'ng_ziptrans_starttime = (case when ng_ziptrans_starttime is Null then now() else ng_ziptrans_starttime END), '\
+          'ng_ziptrans_endtime = (case when ng_ziptrans_endtime is Null then now() else ng_ziptrans_endtime END) '\
           'where fabric_name = \'%s\' and inspection_num = %s and %s::date = \'%s\' and unit_num = \'%s\''  \
           % (status, fabric_name, inspection_num, fabric_imaging_starttime, imaging_starttime, unit_num)
 
@@ -278,7 +288,6 @@ def main(fabric_name, inspection_num, inspection_date, unit_num):
         else:
             logger.error('[%s:%s] 処理ステータステーブルの更新に失敗しました。', app_id, app_name)
             conn.rollback()
-            sys.exit()
 
         # RAPID解析情報テーブルのステータス更新
         logger.debug('[%s:%s] RAPID解析情報テーブルの更新を開始します。', app_id, app_name)
@@ -292,7 +301,6 @@ def main(fabric_name, inspection_num, inspection_date, unit_num):
         else:
             logger.error('[%s:%s] RAPID解析情報テーブルの更新に失敗しました。', app_id, app_name)
             conn.rollback()
-            sys.exit()
 
         conn.commit()
         logger.info("[%s:%s] %s処理は正常に終了しました。", app_id, app_name, app_name)
@@ -302,23 +310,10 @@ def main(fabric_name, inspection_num, inspection_date, unit_num):
     except SystemExit:
         # sys.exit()実行時の例外処理
         logger.debug('[%s:%s] sys.exit()によりプログラムを終了します。', app_id, app_name)
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        tmp_result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-        if tmp_result:
-            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
-        else:
-            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
-            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
 
     except:
         logger.error('[%s:%s] 予期しないエラーが発生しました。[%s]' % (app_id, app_name, traceback.format_exc()))
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        tmp_result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-        if tmp_result:
-            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
-        else:
-            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
-            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+
     finally:
         if conn is not None:
             # DB接続済の際はクローズする
