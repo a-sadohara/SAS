@@ -420,7 +420,12 @@ namespace ImageChecker
                     strDecompressionSubDirectory));
 
             // zipファイルを解凍する
-            Task<Boolean> taskExtractZipAll = Task<Boolean>.Run(() => ExtractZipAll(strZipFilePath, strDecompressionDirectory, strDecompressionSubDirectory));
+            Task<Boolean> taskExtractZipAll =
+                Task<Boolean>.Run(() => ExtractZipAll(
+                    strZipFilePath,
+                    strDecompressionDirectory,
+                    strDecompressionSubDirectory,
+                    strLogMessage));
 
             await Task.Delay(1000);
 
@@ -494,7 +499,17 @@ namespace ImageChecker
                 catch (Exception ex)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
+                    WriteEventLog(
+                        g_CON_LEVEL_ERROR,
+                        string.Format(
+                            "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
+                            g_clsMessageInfo.strMsgE0040,
+                            Environment.NewLine,
+                            strLogMessage,
+                            Environment.NewLine,
+                            "未検知画像移動",
+                            Environment.NewLine,
+                            ex.Message));
 
                     // エラー発生時、中途半端に取り込まれた情報を削除する
                     diDecompressionInfo.Delete(true);
@@ -598,9 +613,14 @@ namespace ImageChecker
                 WriteEventLog(
                     g_CON_LEVEL_ERROR,
                     string.Format(
-                        "{0}{1}{2}",
+                        "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
                         g_clsMessageInfo.strMsgE0060,
-                        Environment.NewLine, ex.Message));
+                        Environment.NewLine,
+                        strLogMessage,
+                        Environment.NewLine,
+                        "欠点画像想定枚数取得",
+                        Environment.NewLine,
+                        ex.Message));
 
                 return false;
             }
@@ -651,8 +671,12 @@ namespace ImageChecker
                 WriteEventLog(
                     g_CON_LEVEL_ERROR,
                     string.Format(
-                        "{0}{1}{2}",
+                        "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
                         g_clsMessageInfo.strMsgE0040,
+                        Environment.NewLine,
+                        strLogMessage,
+                        Environment.NewLine,
+                        "欠点画像配置枚数チェック",
                         Environment.NewLine,
                         ex.Message));
 
@@ -732,8 +756,12 @@ namespace ImageChecker
                 WriteEventLog(
                     g_CON_LEVEL_ERROR,
                     string.Format(
-                        "{0}{1}{2}",
+                        "{0}{1}{2}{3}{4}{5}{6}",
                         g_clsMessageInfo.strMsgE0040,
+                        Environment.NewLine,
+                        strLogMessage,
+                        Environment.NewLine,
+                        "欠点画像配置枚数再チェック",
                         Environment.NewLine,
                         ex.Message));
 
@@ -749,10 +777,12 @@ namespace ImageChecker
         /// <param name="strZipFilePath">zipファイルパス</param>
         /// <param name="strDecompressionDirectory">解凍ディレクトリ</param>
         /// <param name="strDecompressionSubDirectory">解凍サブディレクトリ</param>
+        /// <param name="strLogMessage">ログメッセージ</param>
         private static async Task<Boolean> ExtractZipAll(
             string strZipFilePath,
             string strDecompressionDirectory,
-            string strDecompressionSubDirectory)
+            string strDecompressionSubDirectory,
+            string strLogMessage)
         {
             SevenZipBase.Path7za = @".\7z-extra\x64\7za.exe";
 
@@ -771,7 +801,17 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0040, Environment.NewLine, ex.Message));
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
+                        g_clsMessageInfo.strMsgE0040,
+                        Environment.NewLine,
+                        strLogMessage,
+                        Environment.NewLine,
+                        "欠点画像解凍",
+                        Environment.NewLine,
+                        ex.Message));
 
                 // エラー発生時、中途半端に取り込まれた情報を削除する
                 if (Directory.Exists(strDecompressionSubDirectory))
@@ -819,13 +859,15 @@ namespace ImageChecker
         /// <param name="strFabricName">反番</param>
         /// <param name="strInspectionDate">検査日付</param>
         /// <param name="strUnitNum">号機</param>
+        /// <param name="strLogMessage">ログメッセージ</param>
         /// <param name="DecisionResultCheckFlg">合否判定結果チェックフラグ</param>
         /// <returns>存在フラグ</returns>
-        public static bool BolCheckNGRecordCount(
+        public static bool? BolCheckNGRecordCount(
             int intInspectionNum,
             string strFabricName,
             string strInspectionDate,
             string strUnitNum,
+            string strLogMessage,
             bool DecisionResultCheckFlg)
         {
             string strSQL = string.Empty;
@@ -873,24 +915,34 @@ namespace ImageChecker
                         intInspectionNum,
                         strFabricName,
                         strRapidTableName,
-                        "Rapidテーブル件数取得",
+                        "RapidテーブルNGレコード件数取得",
                         Environment.NewLine,
                         pgex.Message));
 
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return false;
+                return null;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
+                        g_clsMessageInfo.strMsgE0001,
+                        Environment.NewLine,
+                        strLogMessage,
+                        Environment.NewLine,
+                        "RapidテーブルNGレコード件数取得",
+                        Environment.NewLine,
+                        ex.Message));
 
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return false;
+                return null;
             }
 
             if (!DecisionResultCheckFlg)
@@ -936,24 +988,34 @@ namespace ImageChecker
                         intInspectionNum,
                         strFabricName,
                         strRapidTableName,
-                        "合否判定結果テーブル件数取得",
+                        "合否判定結果テーブルNGレコード件数取得",
                         Environment.NewLine,
                         pgex.Message));
 
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return false;
+                return null;
             }
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}{3}{4}{5}{6}",
+                        g_clsMessageInfo.strMsgE0001,
+                        Environment.NewLine,
+                        strLogMessage,
+                        Environment.NewLine,
+                        "合否判定結果テーブルNGレコード件数取得",
+                        Environment.NewLine,
+                        ex.Message));
 
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return false;
+                return null;
             }
 
             return true;

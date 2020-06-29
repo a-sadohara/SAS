@@ -471,7 +471,16 @@ namespace ImageChecker
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, g_clsMessageInfo.strMsgE0002 + "\r\n" + ex.Message);
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}処理ブロック:{2}{3}{4}",
+                        g_clsMessageInfo.strMsgE0002,
+                        Environment.NewLine,
+                        "検査対象選択一覧情報取得・表示",
+                        Environment.NewLine,
+                        ex.Message));
+
                 // メッセージ出力
                 MessageBox.Show(g_clsMessageInfo.strMsgE0042, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -489,6 +498,15 @@ namespace ImageChecker
             DataGridViewDisableButtonCell btnTarget)
         {
             string strSQL = string.Empty;
+            string strErrorMessage = string.Empty;
+            string strLogMessage =
+                    string.Format(
+                        g_CON_LOG_MESSAGE_FOMAT,
+                        clsHeaderData.strUnitNum,
+                        clsHeaderData.strInspectionDate,
+                        clsHeaderData.intInspectionNum,
+                        clsHeaderData.strProductName,
+                        clsHeaderData.strFabricName);
 
             if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0010, "中断状態"), g_CON_MESSAGE_TITLE_QUESTION, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
@@ -513,12 +531,14 @@ namespace ImageChecker
                         // 過検知除外ステータスを更新する
                         strSQL += @"SET over_detection_except_status = :over_detection_except_status ";
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptStatusStp });
+                        strErrorMessage = "過検知除外ステータス";
                         break;
 
                     case m_CON_ACCEPTANCE_CHECK_BUTTON_NAME:
                         // 合否確認ステータスを更新する
                         strSQL += @"SET acceptance_check_status = :acceptance_check_status ";
                         lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_status", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckStatusStp });
+                        strErrorMessage = "合否確認ステータス";
                         break;
 
                     default:
@@ -544,7 +564,16 @@ namespace ImageChecker
                 // ログ出力
                 WriteEventLog(
                     g_CON_LEVEL_ERROR,
-                    string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                    string.Format(
+                        "{0}{1}{2}{3}処理ブロック:{4}{5}{6}{7}",
+                        g_clsMessageInfo.strMsgE0002,
+                        Environment.NewLine,
+                        strLogMessage,
+                        Environment.NewLine,
+                        strErrorMessage,
+                        "更新[作業中⇒中断]",
+                        Environment.NewLine,
+                        ex.Message));
 
                 // メッセージ出力
                 MessageBox.Show(
@@ -571,7 +600,7 @@ namespace ImageChecker
         /// <param name="strFabricName">反番</param>
         /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
         /// <param name="strLogMessage">ログメッセージ</param>
-        private async Task<Boolean> BolCheckFaultImage(
+        private async Task<bool?> BolCheckFaultImage(
             int intInspectionNum,
             string strInspectionDate,
             string strUnitNum,
@@ -580,6 +609,7 @@ namespace ImageChecker
             string strLogMessage)
         {
             string strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
+            bool? bolCheckResult = true;
 
             // 画像ディレクトリが存在しない場合、フォルダを作成する
             if (!Directory.Exists(strFaultImageFileDirectory))
@@ -587,10 +617,12 @@ namespace ImageChecker
                 Directory.CreateDirectory(strFaultImageFileDirectory);
             }
 
+            bolCheckResult = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage, true);
+
             // NGレコードが存在しない場合、処理を終了する
-            if (!BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, true))
+            if (!bolCheckResult.Equals(true))
             {
-                return true;
+                return bolCheckResult;
             }
 
             ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
@@ -726,7 +758,7 @@ namespace ImageChecker
                         clsHeaderData.strFabricName);
 
                 // ディレクトリ存在チェック
-                bool tskRet =
+                bool? tskRet =
                     await BolCheckFaultImage(
                         clsHeaderData.intInspectionNum,
                         clsHeaderData.strInspectionDate,
@@ -735,7 +767,12 @@ namespace ImageChecker
                         strFaultImageSubDirectory,
                         strLogMessage);
 
-                if (!tskRet)
+                if (tskRet == null)
+                {
+                    return;
+                }
+
+                if (!tskRet.Equals(true))
                 {
                     DirectoryInfo diFaultImage = new DirectoryInfo(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, clsHeaderData.strUnitNum, strFaultImageSubDirectory));
 
@@ -1029,6 +1066,7 @@ namespace ImageChecker
             string strFaultImageFileDirectory = string.Empty;
             string strRapidTableName = string.Empty;
             string strUnitNum = string.Empty;
+            string strLogMessage = string.Empty;
             int intExecutionCount = 0;
             DateTime dateSyncTargetDate = DateTime.Now.Date.AddDays(-2);
 
@@ -1142,7 +1180,17 @@ namespace ImageChecker
                         catch (Exception ex)
                         {
                             // ログ出力
-                            WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                string.Format(
+                                    "{0}{1}処理ブロック:{2}{3}{4}{5}",
+                                    g_clsMessageInfo.strMsgE0001,
+                                    Environment.NewLine,
+                                    g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".inspection_info_header",
+                                    "号機情報取得",
+                                    Environment.NewLine,
+                                    ex.Message));
+
                             // メッセージ出力
                             MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1171,6 +1219,15 @@ namespace ImageChecker
                                 default:
                                     continue;
                             }
+
+                            strLogMessage =
+                                string.Format(
+                                    g_CON_LOG_MESSAGE_FOMAT,
+                                        strUnitNum,
+                                        strInspectionDate,
+                                        intInspectionNum,
+                                        strProductName,
+                                        strFabricName);
 
                             // 連携済みチェック
                             try
@@ -1213,7 +1270,7 @@ namespace ImageChecker
                                         strProductName,
                                         strFabricName,
                                         g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header",
-                                        "取込済チェック",
+                                        "検査情報取込済チェック",
                                         Environment.NewLine,
                                         pgex.Message));
 
@@ -1225,7 +1282,19 @@ namespace ImageChecker
                             catch (Exception ex)
                             {
                                 // ログ出力
-                                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                                WriteEventLog(
+                                    g_CON_LEVEL_ERROR,
+                                    string.Format(
+                                        "{0}{1}{2}{3}処理ブロック:{4}{5}{6}{7}",
+                                        g_clsMessageInfo.strMsgE0001,
+                                        Environment.NewLine,
+                                        strLogMessage,
+                                        Environment.NewLine,
+                                        g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header",
+                                        "検査情報取込済チェック",
+                                        Environment.NewLine,
+                                        ex.Message));
+
                                 // メッセージ出力
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0031, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1320,7 +1389,7 @@ namespace ImageChecker
                                         strProductName,
                                         strFabricName,
                                         g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header",
-                                        "検査情報ヘッダ取込",
+                                        "検査情報ヘッダレコード取込",
                                         Environment.NewLine,
                                         pgex.Message));
 
@@ -1334,7 +1403,18 @@ namespace ImageChecker
                                 g_clsConnectionNpgsql.DbRollback();
 
                                 // ログ出力
-                                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                                WriteEventLog(
+                                    g_CON_LEVEL_ERROR,
+                                    string.Format(
+                                        "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
+                                        g_clsMessageInfo.strMsgE0002,
+                                        Environment.NewLine,
+                                        strLogMessage,
+                                        Environment.NewLine,
+                                        "検査情報ヘッダレコード取込",
+                                        Environment.NewLine,
+                                        ex.Message));
+
                                 // メッセージ出力
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1463,7 +1543,7 @@ namespace ImageChecker
                                         strFabricName,
                                         strRapidTableName,
                                         "decision_result",
-                                        "検査NG情報取得",
+                                        "RapidテーブルNGレコード取得、合否判定結果レコード移送",
                                         Environment.NewLine,
                                         pgex.Message));
 
@@ -1477,7 +1557,18 @@ namespace ImageChecker
                                 g_clsConnectionNpgsql.DbRollback();
 
                                 // ログ出力
-                                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                                WriteEventLog(
+                                    g_CON_LEVEL_ERROR,
+                                    string.Format(
+                                        "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
+                                        g_clsMessageInfo.strMsgE0002,
+                                        Environment.NewLine,
+                                        strLogMessage,
+                                        Environment.NewLine,
+                                        "RapidテーブルNGレコード取得、合否判定結果レコード移送",
+                                        Environment.NewLine,
+                                        ex.Message));
+
                                 // メッセージ出力
                                 MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1485,6 +1576,22 @@ namespace ImageChecker
                             }
 
                             strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
+
+                            // 非同期処理実行のため、必要な情報を別の変数に退避させる
+                            int intInspectionNumInfo = intInspectionNum;
+                            string strFabricNameInfo = strFabricName;
+                            string strInspectionDateInfo = strInspectionDate;
+                            string strUnitNumInfo = strUnitNum;
+                            string strProductNameInfo = strProductName;
+                            string strFaultImageFileNameInfo = strFaultImageFileName;
+                            string strLogMessageInfo =
+                                string.Format(
+                                    g_CON_LOG_MESSAGE_FOMAT,
+                                        strUnitNumInfo,
+                                        strInspectionDateInfo,
+                                        intInspectionNumInfo,
+                                        strProductNameInfo,
+                                        strFabricNameInfo);
 
                             // 直近2日に行われた検査情報の欠点画像を取得する
                             if (!Directory.Exists(strFaultImageFileDirectory) &&
@@ -1496,24 +1603,15 @@ namespace ImageChecker
                                     await Task.Delay(random.Next(1, 6) * 1000);
                                 }
 
-                                // 非同期処理実行のため、必要な情報を別の変数に退避させる
-                                int intInspectionNumInfo = intInspectionNum;
-                                string strFabricNameInfo = strFabricName;
-                                string strInspectionDateInfo = strInspectionDate;
-                                string strUnitNumInfo = strUnitNum;
-                                string strProductNameInfo = strProductName;
-                                string strFaultImageFileNameInfo = strFaultImageFileName;
-                                string strLogMessage =
-                                    string.Format(
-                                        g_CON_LOG_MESSAGE_FOMAT,
-                                            strUnitNumInfo,
-                                            strInspectionDateInfo,
-                                            intInspectionNumInfo,
-                                            strProductNameInfo,
-                                            strFabricNameInfo);
+                                bool? bolCheckResultInfo = BolCheckNGRecordCount(intInspectionNumInfo, strFabricNameInfo, strInspectionDateInfo, strUnitNumInfo, strLogMessageInfo, true);
+
+                                if (bolCheckResultInfo == null)
+                                {
+                                    continue;
+                                }
 
                                 // NGレコードが存在する場合、欠点画像取込を行う
-                                if (BolCheckNGRecordCount(intInspectionNumInfo, strFabricNameInfo, strInspectionDateInfo, strUnitNumInfo, true))
+                                if (bolCheckResultInfo.Equals(true))
                                 {
                                     lstTask.Add(Task<Boolean>.Run(() => BolGetFaultImage(
                                         intInspectionNumInfo,
@@ -1521,7 +1619,7 @@ namespace ImageChecker
                                         strUnitNumInfo,
                                         strFabricNameInfo,
                                         strFaultImageFileNameInfo,
-                                        strLogMessage)));
+                                        strLogMessageInfo)));
                                 }
                                 else
                                 {
@@ -1532,7 +1630,7 @@ namespace ImageChecker
                                             "{0}{1}{2}{3}パス:{4}",
                                             "▼NGレコードが存在しません。完了通知取込をスキップし、空フォルダを作成します。",
                                             Environment.NewLine,
-                                            strLogMessage,
+                                            strLogMessageInfo,
                                             Environment.NewLine,
                                             strFaultImageFileDirectory));
 
@@ -1545,9 +1643,14 @@ namespace ImageChecker
                             {
                                 dtRapidDisabledData = new DataTable();
                                 DateTime date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-                                bool RapidRecordExistFlg = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, false);
+                                bool? RapidRecordExistFlg = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage, false);
 
-                                if (RapidRecordExistFlg)
+                                if (RapidRecordExistFlg == null)
+                                {
+                                    continue;
+                                }
+
+                                if (RapidRecordExistFlg.Equals(true))
                                 {
                                     try
                                     {
@@ -1590,7 +1693,7 @@ namespace ImageChecker
                                                 strProductName,
                                                 strFabricName,
                                                 strRapidTableName,
-                                                "検査無効情報取得",
+                                                "Rapidテーブル無効レコード取得",
                                                 Environment.NewLine,
                                                 pgex.Message));
 
@@ -1602,7 +1705,18 @@ namespace ImageChecker
                                     catch (Exception ex)
                                     {
                                         // ログ出力
-                                        WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                                        WriteEventLog(
+                                            g_CON_LEVEL_ERROR,
+                                            string.Format(
+                                                "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
+                                                g_clsMessageInfo.strMsgE0001,
+                                                Environment.NewLine,
+                                                strLogMessage,
+                                                Environment.NewLine,
+                                                "Rapidテーブル無効レコード取得",
+                                                Environment.NewLine,
+                                                ex.Message));
+
                                         // メッセージ出力
                                         MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -1632,7 +1746,7 @@ namespace ImageChecker
                                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "current_timestamp", DbType = DbType.DateTime2, Value = date });
                                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
 
-                                    if (RapidRecordExistFlg &&
+                                    if (RapidRecordExistFlg.Equals(true) &&
                                         dtRapidDisabledData.Rows.Count == 0)
                                     {
                                         // 検査無効データが存在しない場合、検査情報ヘッダを「検査有効(NGなし)」の状態に更新する
@@ -1666,7 +1780,7 @@ namespace ImageChecker
                                             strProductName,
                                             strFabricName,
                                             g_clsSystemSettingInfo.strInstanceName + @".inspection_info_header",
-                                            "検査対象外更新",
+                                            "検査情報対象外更新",
                                             Environment.NewLine,
                                             pgex.Message));
 
@@ -1680,7 +1794,18 @@ namespace ImageChecker
                                     g_clsConnectionNpgsql.DbRollback();
 
                                     // ログ出力
-                                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                                    WriteEventLog(
+                                        g_CON_LEVEL_ERROR,
+                                        string.Format(
+                                            "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
+                                            g_clsMessageInfo.strMsgE0002,
+                                            Environment.NewLine,
+                                            strLogMessage,
+                                            Environment.NewLine,
+                                            "検査情報対象外更新",
+                                            Environment.NewLine,
+                                            ex.Message));
+
                                     // メッセージ出力
                                     MessageBox.Show(g_clsMessageInfo.strMsgE0035, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 

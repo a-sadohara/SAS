@@ -500,7 +500,7 @@ namespace ImageChecker
         /// <param name="strFabricName">反番</param>
         /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
         /// <param name="strLogMessage">ログメッセージ</param>
-        private async Task<Boolean> BolCheckFaultImage(
+        private async Task<bool?> BolCheckFaultImage(
             int intInspectionNum,
             string strInspectionDate,
             string strUnitNum,
@@ -509,6 +509,7 @@ namespace ImageChecker
             string strLogMessage)
         {
             string strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
+            bool? bolCheckResult = true;
 
             // 画像ディレクトリが存在しない場合、フォルダを作成する
             if (!Directory.Exists(strFaultImageFileDirectory))
@@ -516,10 +517,12 @@ namespace ImageChecker
                 Directory.CreateDirectory(strFaultImageFileDirectory);
             }
 
+            bolCheckResult = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage, true);
+
             // NGレコードが存在しない場合、処理を終了する
-            if (!BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, true))
+            if (!bolCheckResult.Equals(true))
             {
-                return true;
+                return bolCheckResult;
             }
 
             ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
@@ -651,7 +654,7 @@ namespace ImageChecker
                     m_dtData.Rows[intSelIdx]["fabric_name"].ToString());
 
             // ディレクトリ存在チェック
-            Boolean tskRet =
+            bool? tskRet =
                 await BolCheckFaultImage(
                     Convert.ToInt32(m_dtData.Rows[intSelIdx]["inspection_num"].ToString()),
                     m_dtData.Rows[intSelIdx]["inspection_date"].ToString(),
@@ -660,10 +663,13 @@ namespace ImageChecker
                     strFaultImageSubDirectory,
                     strLogMessage);
 
-            if (!tskRet)
+            switch (tskRet)
             {
-                MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                case false:
+                    MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                case null:
+                    return;
             }
 
             // ヘッダ情報
@@ -924,7 +930,7 @@ namespace ImageChecker
                     m_dtData.Rows[e.RowIndex]["fabric_name"].ToString());
 
             // ディレクトリ存在チェック
-            Boolean tskRet =
+            bool? tskRet =
                 await BolCheckFaultImage(
                     Convert.ToInt32(m_dtData.Rows[e.RowIndex]["inspection_num"].ToString()),
                     m_dtData.Rows[e.RowIndex]["inspection_date"].ToString(),
@@ -933,10 +939,13 @@ namespace ImageChecker
                     strFaultImageSubDirectory,
                     strLogMessage);
 
-            if (!tskRet)
+            switch (tskRet)
             {
-                MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                case false:
+                    MessageBox.Show(g_clsMessageInfo.strMsgW0003, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                case null:
+                    return;
             }
 
             ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
