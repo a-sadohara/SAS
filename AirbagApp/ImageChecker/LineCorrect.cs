@@ -112,7 +112,7 @@ namespace ImageChecker
             lblProductName.Text = m_strProductName;
             lblInspectionNum.Text = m_intInspectionNum.ToString();
             lblStartDatetime.Text = m_strStartDatetime;
-            lblStartDatetime.Text = m_strEndDatetime;
+            lblEndDatetime.Text = m_strEndDatetime;
             lblCorrect.Text = "補正値：±0";
 
             // 行補正値設定
