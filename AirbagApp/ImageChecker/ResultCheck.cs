@@ -1100,6 +1100,14 @@ namespace ImageChecker
                     intMaxLine = m_intInspectionStartLine;
                 }
 
+                // 変数に補正をかける
+                if (intMinLine != 0)
+                {
+                    intMinLine--;
+                }
+
+                intMaxLine++;
+
                 // コンボボックスの設定
                 // 行
                 cmbBoxLine.Items.Clear();
