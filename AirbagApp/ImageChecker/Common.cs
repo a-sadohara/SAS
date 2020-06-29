@@ -901,8 +901,6 @@ namespace ImageChecker
             }
             catch (PostgresException pgex)
             {
-                g_clsConnectionNpgsql.DbRollback();
-
                 // ログ出力
                 WriteEventLog(
                     g_CON_LEVEL_ERROR,
@@ -974,8 +972,6 @@ namespace ImageChecker
             }
             catch (PostgresException pgex)
             {
-                g_clsConnectionNpgsql.DbRollback();
-
                 // ログ出力
                 WriteEventLog(
                     g_CON_LEVEL_ERROR,

@@ -1,4 +1,5 @@
 ﻿using ImageChecker.DTO;
+using Npgsql;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -509,7 +510,8 @@ namespace ImageChecker
             string strLogMessage)
         {
             string strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
-            bool? bolCheckResult = true;
+            bool? bolRapidTableCheckResult = true;
+            bool? bolNGRecordCheckResult = true;
 
             // 画像ディレクトリが存在しない場合、フォルダを作成する
             if (!Directory.Exists(strFaultImageFileDirectory))
@@ -517,12 +519,20 @@ namespace ImageChecker
                 Directory.CreateDirectory(strFaultImageFileDirectory);
             }
 
-            bolCheckResult = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage, true);
+            bolRapidTableCheckResult = BolCheckRapidTableCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage);
+
+            // Rapidテーブルが存在しない場合、処理を終了する
+            if (!bolRapidTableCheckResult.Equals(true))
+            {
+                return false;
+            }
+
+            bolNGRecordCheckResult = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage, true);
 
             // NGレコードが存在しない場合、処理を終了する
-            if (!bolCheckResult.Equals(true))
+            if (!bolNGRecordCheckResult.Equals(true))
             {
-                return bolCheckResult;
+                return bolNGRecordCheckResult;
             }
 
             ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
@@ -545,6 +555,93 @@ namespace ImageChecker
             {
                 frmProgress.Close();
             }
+        }
+
+        /// <summary>
+        /// rapidテーブル存在チェック
+        /// </summary>
+        /// <param name="intInspectionNum">検査番号</param>
+        /// <param name="strFabricName">反番</param>
+        /// <param name="strInspectionDate">検査日付</param>
+        /// <param name="strUnitNum">号機</param>
+        /// <param name="strLogMessage">ログメッセージ</param>
+        /// <returns>存在フラグ</returns>
+        public static bool? BolCheckRapidTableCount(
+            int intInspectionNum,
+            string strFabricName,
+            string strInspectionDate,
+            string strUnitNum,
+            string strLogMessage)
+        {
+            string strSQL = string.Empty;
+            string strRapidTableName = "rapid_" + strFabricName + "_" + intInspectionNum + "_" + strInspectionDate.Replace("/", string.Empty);
+            DataTable dtRapidData = new DataTable();
+            List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+
+            try
+            {
+                // テーブルの存在チェックする
+                strSQL = @"SELECT COUNT(*) AS TableCount
+                           FROM information_schema.tables
+                           WHERE table_name = :table_name";
+
+                // SQLコマンドに各パラメータを設定する
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "table_name", DbType = DbType.String, Value = strRapidTableName });
+
+                // SQLを実行する
+                g_clsConnectionNpgsql.SelectSQL(ref dtRapidData, strSQL, lstNpgsqlCommand);
+
+                if (dtRapidData.Rows.Count == 0 ||
+                    int.Parse(dtRapidData.Rows[0]["TableCount"].ToString()) == 0)
+                {
+                    return false;
+                }
+            }
+            catch (PostgresException pgex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}検査日付:{2}, {3}号機, 検査番号:{4}, 反番:{5}, 取得対象テーブル:{6}, 処理ブロック:{7}{8}{9}",
+                        g_clsMessageInfo.strMsgE0001,
+                        Environment.NewLine,
+                        strInspectionDate,
+                        strUnitNum,
+                        intInspectionNum,
+                        strFabricName,
+                        strRapidTableName,
+                        "Rapidテーブル存在チェック",
+                        Environment.NewLine,
+                        pgex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}{3}処理ブロック:{4}{5}{6}",
+                        g_clsMessageInfo.strMsgE0001,
+                        Environment.NewLine,
+                        strLogMessage,
+                        Environment.NewLine,
+                        "Rapidテーブル存在チェック",
+                        Environment.NewLine,
+                        ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return null;
+            }
+
+            return true;
         }
         #endregion
 
