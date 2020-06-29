@@ -1162,7 +1162,8 @@ namespace ImageChecker
                 if (m_clsDecisionResultCorrection.intBranchNum > 0)
                 {
                     // 判定結果情報が譲渡された（履歴系の画面から遷移した）場合
-                    if (m_clsDecisionResultCorrection.intLine > 0)
+                    if (m_clsDecisionResultCorrection.intLine > 0 ||
+                        !string.IsNullOrWhiteSpace(m_clsDecisionResultCorrection.strCloumns))
                     {
                         // ページIdxを検索
                         for (int idx = 0; idx < m_dtData.Rows.Count; idx++)
