@@ -251,6 +251,8 @@ namespace ImageChecker
             int intMasterPointX = -1;
             int intMasterPointY = -1;
             string strNgFace = string.Empty;
+            string strLine = string.Empty;
+            int intLine = 0;
             int intNgFace = 0;
             Graphics gra;
             Pen pen;
@@ -261,6 +263,7 @@ namespace ImageChecker
             bool bolMovecoercive = false;
             string strMsg = string.Empty;
             bool bolNgReasonReWrite = false;
+            List<string> lstCmbItem = new List<string>();
 
             try
             {
@@ -374,7 +377,31 @@ namespace ImageChecker
                     bolNgReasonReWrite = true;
                 }
 
-                cmbBoxLine.SelectedItem = m_dtData.Rows[intPageIdx]["line"].ToString();
+                // 行情報を取得する
+                strLine = m_dtData.Rows[intPageIdx]["line"].ToString();
+
+                if (!string.IsNullOrWhiteSpace(strLine))
+                {
+                    intLine = int.Parse(strLine);
+                }
+
+                // 変数を補正する
+                if (intLine != 0)
+                {
+                    intLine--;
+                }
+
+                // 選択肢の情報を設定する
+                for (int i = intLine; i < intLine + 3; i++)
+                {
+                    lstCmbItem.Add(i.ToString());
+                }
+
+                // コンボボックスの設定
+                cmbBoxLine.Items.Clear();
+                cmbBoxLine.Items.AddRange(lstCmbItem.ToArray());
+                cmbBoxLine.SelectedItem = strLine;
+
                 cmbBoxColumns.SelectedItem = strCloumns;
 
                 // ひとつ前へ戻るの制御
@@ -1065,10 +1092,6 @@ namespace ImageChecker
 
             bool bolDispForm = false;
 
-            List<string> lstCmbItem = new List<string>();
-            int intMinLine = 0;
-            int intMaxLine = 0;
-
             try
             {
                 this.WindowState = FormWindowState.Maximized;
@@ -1088,35 +1111,8 @@ namespace ImageChecker
                 lblDecisionEndTime.Text = string.Format(m_CON_FORMAT_DECISION_END_DATETIME, m_strDecisionEndTime);
                 lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
-                // コンボボックスのFrom-To
-                if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS || m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionX)
-                {
-                    intMinLine = m_intInspectionStartLine;
-                    intMaxLine = m_intInspectionEndLine;
-                }
-                else if (m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionY || m_strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionR)
-                {
-                    intMinLine = m_intInspectionEndLine;
-                    intMaxLine = m_intInspectionStartLine;
-                }
-
-                // 変数に補正をかける
-                if (intMinLine != 0)
-                {
-                    intMinLine--;
-                }
-
-                intMaxLine++;
-
                 // コンボボックスの設定
-                // 行
-                cmbBoxLine.Items.Clear();
-                for (int i = intMinLine; i <= intMaxLine; i++)
-                {
-                    lstCmbItem.Add(i.ToString());
-                }
-                cmbBoxLine.Items.AddRange(lstCmbItem.ToArray());
-                // 行逆さを調整
+                // 行高さを調整
                 cmbBoxLine.DropDownHeight = this.Size.Height;
 
                 // 列
