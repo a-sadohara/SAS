@@ -25,9 +25,10 @@ namespace ProductMstMaintenance.DTO
         //==============================
         //システム情報設定テーブル
         //==============================
-        public readonly string strMasterImageDirectory;         // マスタ画像格納ディレクトリ
-        public readonly string strLogFileOutputDirectory;       // ログファイル出力先
-        public readonly string strProductInfoImportDirectory;   // 品番情報取込ディレクトリ
+        public readonly string strMasterImageDirectory;             // マスタ画像格納ディレクトリ
+        public readonly string strLogFileOutputDirectory;           // ログファイル出力先
+        public readonly string strProductInfoImportDirectory;       // 品番情報取込ディレクトリ
+        public readonly string strAIModelNameCooperationDirectory;  // AIモデル名情報連携ディレクトリ
 
         /// <summary>
         /// コンストラクタ
@@ -42,6 +43,7 @@ namespace ProductMstMaintenance.DTO
                 GetSystemSettingValue("MasterImageDirectory", ref strMasterImageDirectory);
                 GetSystemSettingValue("LogFileOutputDirectory", ref strLogFileOutputDirectory);
                 GetSystemSettingValue("ProductInfoImportDirectory", ref strProductInfoImportDirectory);
+                GetSystemSettingValue("AIModelNameCooperationDirectory", ref strAIModelNameCooperationDirectory);
 
                 if (m_sbErrMessage.Length > 0)
                 {

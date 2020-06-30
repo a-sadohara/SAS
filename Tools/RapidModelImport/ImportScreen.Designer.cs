@@ -32,15 +32,15 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImportScreen));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblProductNameSelection = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lblExecutionResult = new System.Windows.Forms.Label();
             this.txtExecutionResult = new System.Windows.Forms.TextBox();
             this.txtModelName = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lblModelFileFolderSelection = new System.Windows.Forms.Label();
             this.btnReference = new System.Windows.Forms.Button();
             this.txtFolder = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lblModelName = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnImport = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -58,7 +58,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.lblProductNameSelection);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
@@ -66,42 +66,42 @@
             this.panel1.Size = new System.Drawing.Size(793, 23);
             this.panel1.TabIndex = 0;
             // 
-            // label1
+            // lblProductNameSelection
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 10);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 12);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "品名選択";
+            this.lblProductNameSelection.AutoSize = true;
+            this.lblProductNameSelection.Location = new System.Drawing.Point(20, 10);
+            this.lblProductNameSelection.Name = "lblProductNameSelection";
+            this.lblProductNameSelection.Size = new System.Drawing.Size(53, 12);
+            this.lblProductNameSelection.TabIndex = 0;
+            this.lblProductNameSelection.Text = "品名選択";
             // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.Control;
-            this.panel2.Controls.Add(this.label4);
+            this.panel2.Controls.Add(this.lblExecutionResult);
             this.panel2.Controls.Add(this.txtExecutionResult);
             this.panel2.Controls.Add(this.txtModelName);
-            this.panel2.Controls.Add(this.label3);
+            this.panel2.Controls.Add(this.lblModelFileFolderSelection);
             this.panel2.Controls.Add(this.btnReference);
             this.panel2.Controls.Add(this.txtFolder);
-            this.panel2.Controls.Add(this.label2);
+            this.panel2.Controls.Add(this.lblModelName);
             this.panel2.Controls.Add(this.btnClose);
             this.panel2.Controls.Add(this.btnImport);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 255);
+            this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(793, 629);
+            this.panel2.Size = new System.Drawing.Size(793, 884);
             this.panel2.TabIndex = 1;
             // 
-            // label4
+            // lblExecutionResult
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(20, 156);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(53, 12);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "実行結果";
+            this.lblExecutionResult.AutoSize = true;
+            this.lblExecutionResult.Location = new System.Drawing.Point(20, 156);
+            this.lblExecutionResult.Name = "lblExecutionResult";
+            this.lblExecutionResult.Size = new System.Drawing.Size(53, 12);
+            this.lblExecutionResult.TabIndex = 6;
+            this.lblExecutionResult.Text = "実行結果";
             // 
             // txtExecutionResult
             // 
@@ -113,24 +113,25 @@
             this.txtExecutionResult.Multiline = true;
             this.txtExecutionResult.Name = "txtExecutionResult";
             this.txtExecutionResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtExecutionResult.Size = new System.Drawing.Size(749, 408);
+            this.txtExecutionResult.Size = new System.Drawing.Size(749, 663);
             this.txtExecutionResult.TabIndex = 4;
             // 
             // txtModelName
             // 
             this.txtModelName.Location = new System.Drawing.Point(22, 26);
+            this.txtModelName.MaxLength = 259;
             this.txtModelName.Name = "txtModelName";
             this.txtModelName.Size = new System.Drawing.Size(749, 19);
             this.txtModelName.TabIndex = 0;
             // 
-            // label3
+            // lblModelFileFolderSelection
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(20, 60);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(127, 12);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "モデルファイルフォルダ選択";
+            this.lblModelFileFolderSelection.AutoSize = true;
+            this.lblModelFileFolderSelection.Location = new System.Drawing.Point(20, 60);
+            this.lblModelFileFolderSelection.Name = "lblModelFileFolderSelection";
+            this.lblModelFileFolderSelection.Size = new System.Drawing.Size(127, 12);
+            this.lblModelFileFolderSelection.TabIndex = 4;
+            this.lblModelFileFolderSelection.Text = "モデルファイルフォルダ選択";
             // 
             // btnReference
             // 
@@ -153,19 +154,19 @@
             this.txtFolder.TabIndex = 1;
             this.txtFolder.Click += new System.EventHandler(this.txtFolder_Click);
             // 
-            // label2
+            // lblModelName
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(20, 11);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(46, 12);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "モデル名";
+            this.lblModelName.AutoSize = true;
+            this.lblModelName.Location = new System.Drawing.Point(20, 11);
+            this.lblModelName.Name = "lblModelName";
+            this.lblModelName.Size = new System.Drawing.Size(46, 12);
+            this.lblModelName.TabIndex = 2;
+            this.lblModelName.Text = "モデル名";
             // 
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.Location = new System.Drawing.Point(617, 589);
+            this.btnClose.Location = new System.Drawing.Point(617, 844);
             this.btnClose.Margin = new System.Windows.Forms.Padding(2);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(154, 31);
@@ -192,7 +193,7 @@
             this.panel3.Location = new System.Drawing.Point(0, 23);
             this.panel3.Margin = new System.Windows.Forms.Padding(2);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(22, 232);
+            this.panel3.Size = new System.Drawing.Size(22, 0);
             this.panel3.TabIndex = 2;
             // 
             // panel4
@@ -202,7 +203,7 @@
             this.panel4.Location = new System.Drawing.Point(771, 23);
             this.panel4.Margin = new System.Windows.Forms.Padding(2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(22, 232);
+            this.panel4.Size = new System.Drawing.Size(22, 0);
             this.panel4.TabIndex = 3;
             // 
             // panel5
@@ -213,7 +214,7 @@
             this.panel5.Location = new System.Drawing.Point(22, 23);
             this.panel5.Margin = new System.Windows.Forms.Padding(2);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(749, 232);
+            this.panel5.Size = new System.Drawing.Size(749, 0);
             this.panel5.TabIndex = 4;
             // 
             // dgvData
@@ -252,7 +253,7 @@
             this.dgvData.RowTemplate.ReadOnly = true;
             this.dgvData.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvData.Size = new System.Drawing.Size(749, 232);
+            this.dgvData.Size = new System.Drawing.Size(749, 0);
             this.dgvData.TabIndex = 0;
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvData_CellClick);
             // 
@@ -313,13 +314,13 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn chkSelect;
         private System.Windows.Forms.DataGridViewTextBoxColumn txtProductName;
         private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblProductNameSelection;
         private System.Windows.Forms.Button btnReference;
         private System.Windows.Forms.TextBox txtFolder;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblModelName;
         private System.Windows.Forms.TextBox txtModelName;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblModelFileFolderSelection;
+        private System.Windows.Forms.Label lblExecutionResult;
         private System.Windows.Forms.TextBox txtExecutionResult;
     }
 }

@@ -45,11 +45,8 @@ namespace ProductMstMaintenance
 
             InitializeComponent();
 
-            if (!m_bolEditModeFlg)
-            {
-                // 編集モード以外の場合、品名列を非表示とする
-                this.dgvData.Columns[m_CON_COL_PRODUCT_NAME].Visible = false;
-            }
+            // 仕様変更のため、品名列を非表示とする
+            this.dgvData.Columns[m_CON_COL_PRODUCT_NAME].Visible = false;
 
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
@@ -217,6 +214,12 @@ namespace ProductMstMaintenance
 
                     // SQLを実行する
                     g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL);
+
+                    // データグリッドビューに反映
+                    foreach (DataRow row in m_dtData.Rows)
+                    {
+                        this.dgvData.Rows.Add(bool.Parse(row[0].ToString()), bool.Parse(row[1].ToString()), string.Empty, row[2].ToString());
+                    }
                 }
                 else
                 {
@@ -229,12 +232,12 @@ namespace ProductMstMaintenance
 
                     // SQLを実行する
                     g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL, lstNpgsqlCommand);
-                }
 
-                // データグリッドビューに反映
-                foreach (DataRow row in m_dtData.Rows)
-                {
-                    this.dgvData.Rows.Add(row.ItemArray);
+                    // データグリッドビューに反映
+                    foreach (DataRow row in m_dtData.Rows)
+                    {
+                        this.dgvData.Rows.Add(false, false, string.Empty, row[0].ToString());
+                    }
                 }
             }
             catch (Exception ex)
@@ -297,7 +300,7 @@ namespace ProductMstMaintenance
             {
                 sbAIModelNameInfo.AppendLine(
                     string.Format(
-                        " 品名：{0}、AIモデル名：{1}",
+                        " {1}",
                         NulltoString(row.Cells[m_CON_COL_PRODUCT_NAME].Value),
                         NulltoString(row.Cells[m_CON_COL_AI_MODEL_NAME].Value)));
             }

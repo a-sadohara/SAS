@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using static ProductMstMaintenance.Common;
 
@@ -192,6 +193,9 @@ namespace ProductMstMaintenance
                 CreateFormInfo();
 
                 bolProcOkNg = true;
+
+                // AIモデル名取込
+                ImportAIModelName();
             }
             finally
             {
@@ -1721,6 +1725,107 @@ namespace ProductMstMaintenance
             }
 
             return cnsStructParameter;
+        }
+
+        /// <summary>
+        /// AIモデル名取込
+        /// </summary>
+        private void ImportAIModelName()
+        {
+            string[] stArrayData;
+            string strFileName =
+                string.Format(
+                    "{0}.csv",
+                    m_CON_FILE_NAME_AI_MODEL_NAME_INFO);
+            string strBackupFolder =
+                Path.Combine(
+                    g_clsSystemSettingInfo.strAIModelNameCooperationDirectory,
+                    "Backup");
+            int intRowCount = 0;
+            bool bolResult = false;
+            FileInfo fiAIModelInfoFile =
+                new FileInfo(
+                    Path.Combine(
+                        g_clsSystemSettingInfo.strAIModelNameCooperationDirectory,
+                        strFileName));
+
+            if (!fiAIModelInfoFile.Exists ||
+                fiAIModelInfoFile.Length == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                // ファイル読み込み処理を行う
+                using (StreamReader sr = new StreamReader(fiAIModelInfoFile.FullName, Encoding.GetEncoding("Shift_JIS")))
+                {
+                    string strFileTextLine = string.Empty;
+
+                    // ストリームの末尾まで繰り返す
+                    while (!sr.EndOfStream)
+                    {
+                        // AIモデルマスタ情報ファイルを１行読み込む
+                        strFileTextLine = sr.ReadLine();
+                        intRowCount++;
+
+                        if (string.IsNullOrEmpty(strFileTextLine) || intRowCount == 1)
+                        {
+                            // 空行(最終行)またはヘッダ行の場合読み飛ばす
+                            continue;
+                        }
+
+                        // 半角スペース区切りで分割して配列に格納する
+                        stArrayData = strFileTextLine.Split(',');
+
+                        if (stArrayData.Length != 2)
+                        {
+                            continue;
+                        }
+
+                        // AIモデル名の更新を行う
+                        if (UpsertAIModelName(stArrayData[m_CON_COL_AI_MODEL_NAME]))
+                        {
+                            bolResult = true;
+                        }
+                    }
+                }
+
+                if (!Directory.Exists(strBackupFolder))
+                {
+                    Directory.CreateDirectory(strBackupFolder);
+                }
+
+                // 読み込んだファイルを退避する
+                File.Copy(
+                    fiAIModelInfoFile.FullName,
+                    Path.Combine(
+                        strBackupFolder,
+                        strFileName),
+                    true);
+
+                File.Delete(fiAIModelInfoFile.FullName);
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_WARN,
+                    string.Format(
+                        "{0}の取り込みに失敗しました。{1}{2}",
+                        m_CON_FILE_NAME_AI_MODEL_NAME_INFO,
+                        Environment.NewLine,
+                        ex.Message));
+
+                return;
+            }
+
+            if (bolResult)
+            {
+                // トランザクションコミット
+                g_clsConnectionNpgsql.DbCommit();
+                g_clsConnectionNpgsql.DbClose();
+            }
         }
         #endregion
 

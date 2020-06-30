@@ -1,7 +1,9 @@
 ﻿using log4net;
 using ProductMstMaintenance.DTO;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Text;
 using System.Windows.Forms;
 
@@ -37,6 +39,14 @@ namespace ProductMstMaintenance
         public const int g_CON_LEVEL_WARN = 3;
         public const int g_CON_LEVEL_INFO = 4;
         public const int g_CON_LEVEL_DEBUG = 5;
+
+        // AIモデルマスタCSVファイル配置情報
+        public const int m_CON_COL_MST_AI_MODEL_COLUMN_NUM = 2;
+        public const int m_CON_COL_PRODUCT_NAME_MST_AI_MODEL = 0;
+        public const int m_CON_COL_AI_MODEL_NAME = 1;
+
+        // ファイル名指定
+        public const string m_CON_FILE_NAME_AI_MODEL_NAME_INFO = "AIモデルマスタ情報";
 
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
@@ -144,6 +154,36 @@ namespace ProductMstMaintenance
                     mutex.ReleaseMutex();
                 }
                 mutex.Close();
+            }
+        }
+
+        /// <summary>
+        /// AIモデル名更新
+        /// </summary>
+        /// <param name="strAIModelName">AIモデル名</param>
+        /// <returns>実行結果</returns>
+        public static bool UpsertAIModelName(string strAIModelName)
+        {
+            try
+            {
+                // SQL文を作成する
+                string strCreateSql = g_CON_UPSERT_MST_AI_MODEL;
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strAIModelName", DbType = DbType.String, Value = strAIModelName });
+
+                // SQLを実行する(マスタに存在しないデータのみ登録される)
+                if (g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand) < 0)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
 
@@ -514,11 +554,11 @@ namespace ProductMstMaintenance
                   product_name,
                   ai_model_name
               )
-              VALUES
-              (
-                  :strProductName,
+              SELECT
+                  DISTINCT(product_name),
                   :strAIModelName
-              )
+              FROM mst_product_info
+              ORDER BY product_name
               ON CONFLICT
               DO NOTHING ";
 
@@ -528,15 +568,15 @@ namespace ProductMstMaintenance
 
         // AIモデル名取得SQL
         public const string g_CON_SELECT_MST_AI_MODEL =
-            @"SELECT FALSE, FALSE, product_name, ai_model_name FROM mst_ai_model WHERE product_name = :product_name AND display_flg = 0 ORDER BY ai_model_name";
+            @"SELECT DISTINCT ON (ai_model_name) ai_model_name FROM mst_ai_model WHERE display_flg = 0 ORDER BY ai_model_name";
 
         // AIモデル名取得SQL(編集モード)
         public const string g_CON_SELECT_MST_AI_MODEL_EDITMODE =
-            @"SELECT CASE display_flg WHEN 0 THEN TRUE ELSE FALSE END AS display_flg, CASE display_flg WHEN 0 THEN TRUE ELSE FALSE END AS display_flg_initial_value, product_name, ai_model_name FROM mst_ai_model ORDER BY product_name, ai_model_name";
+            @"SELECT DISTINCT ON (ai_model_name) CASE display_flg WHEN 0 THEN TRUE ELSE FALSE END AS display_flg, CASE display_flg WHEN 0 THEN TRUE ELSE FALSE END AS display_flg_initial_value, ai_model_name FROM mst_ai_model ORDER BY ai_model_name";
 
         // 表示フラグ更新SQL
         public const string g_CON_UPDATE_MST_AI_MODEL_DISPLAY_FLG =
-            @"UPDATE mst_ai_model SET display_flg = :display_flg  WHERE product_name = :product_name AND ai_model_name = :ai_model_name ";
+            @"UPDATE mst_ai_model SET display_flg = :display_flg  WHERE ai_model_name = :ai_model_name ";
 
         // ファイルNo取得SQL
         public const string g_CON_SELECT_MST_PRODUCT_INFO_FILE_NUM =

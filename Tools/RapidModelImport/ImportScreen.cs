@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Linq;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using static RapidModelImport.Common;
 
@@ -46,12 +47,6 @@ namespace RapidModelImport
             this.dgvData.MultiSelect = false;
 
             dgvData.Rows.Clear();
-
-            // 初期表示処理
-            if (!dispDataGridView())
-            {
-                this.Close();
-            }
         }
 
         /// <summary>
@@ -81,21 +76,6 @@ namespace RapidModelImport
         /// <param name="e"></param>
         private void BtnImport_Click(object sender, EventArgs e)
         {
-            DataGridViewRow dgvRow =
-                dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Value.Equals(true)).FirstOrDefault();
-
-            if (dgvRow == null)
-            {
-                // メッセージ出力
-                MessageBox.Show(
-                    "品名が選択されていません。",
-                    g_CON_MESSAGE_TITLE_ERROR,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                return;
-            }
-
             if (string.IsNullOrWhiteSpace(txtModelName.Text))
             {
                 // メッセージ出力
@@ -175,7 +155,7 @@ namespace RapidModelImport
             }
 
             // AIモデルマスタを更新する
-            if (!UpdateAIModelName(dgvRow.Cells[m_CON_COL_PRODUCT_NAME].Value.ToString()))
+            if (!UpdateAIModelName(string.Empty))
             {
                 return;
             }
@@ -227,46 +207,64 @@ namespace RapidModelImport
         /// </summary>
         private bool dispDataGridView()
         {
-            string strSQL = string.Empty;
             m_dtData = new DataTable();
             dgvData.Rows.Clear();
+            List<string> lstProductName = new List<string>();
+            string strline = string.Empty;
+            string strCooperationFile = Path.Combine(g_strCooperationDirectoryPath, g_CON_FILE_NAME_PRODUCT_NAME_INFO);
+            FileInfo fiCooperationFile = new FileInfo(strCooperationFile);
+            Encoding encSJIS = Encoding.GetEncoding("shift_jis");
 
-            try
+            if (fiCooperationFile.Exists &&
+                fiCooperationFile.Length != 0)
             {
-                // SQL文を作成する
-                strSQL = @"SELECT FALSE, product_name FROM mst_product_info ORDER BY product_name";
-
-                // SQLを実行する
-                g_clsConnectionNpgsql.SelectSQL(ref m_dtData, strSQL);
-
-                // データグリッドビューに反映
-                foreach (DataRow row in m_dtData.Rows)
+                try
                 {
-                    this.dgvData.Rows.Add(row.ItemArray);
+                    using (StreamReader sr = new StreamReader(strCooperationFile, encSJIS))
+                    {
+                        while ((strline = sr.ReadLine()) != null)
+                        {
+                            if (strline.Equals("product_name"))
+                            {
+                                continue;
+                            }
+
+                            lstProductName.Add(strline);
+                        }
+                    }
+
+                    lstProductName.Sort();
+
+                    // データグリッドビューに反映
+                    foreach (string strProductName in lstProductName)
+                    {
+                        this.dgvData.Rows.Add(false, strProductName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string strErrorMessage = "品名情報の読込でエラーが発生しました。";
+
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_ERROR,
+                        string.Format(
+                            "{0}{1}{2}",
+                            strErrorMessage,
+                            Environment.NewLine,
+                            ex.Message));
+
+                    // メッセージ出力
+                    MessageBox.Show(
+                        strErrorMessage,
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    return false;
                 }
             }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(
-                    g_CON_LEVEL_ERROR,
-                    string.Format(
-                        "{0}{1}{2}",
-                        g_clsMessageInfo.strMsgE0001,
-                        Environment.NewLine,
-                        ex.Message));
 
-                // メッセージ出力
-                MessageBox.Show(
-                    g_clsMessageInfo.strMsgE0066,
-                    g_CON_MESSAGE_TITLE_ERROR,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                return false;
-            }
-
-            // 行選択はさせない
             dgvData.CurrentCell = null;
 
             if (dgvData.Rows.Count == 0)
@@ -324,57 +322,63 @@ namespace RapidModelImport
         }
 
         /// <summary>
-        /// AIモデルマスタ更新SQL処理
+        /// AIモデルマスタ更新
         /// </summary>
         /// <param name="strProductName">品名</param>
         /// <returns></returns>
         private bool UpdateAIModelName(string strProductName)
         {
+            string strCooperationFile = Path.Combine(g_strCooperationDirectoryPath, g_CON_FILE_NAME_AI_MODEL_NAME_INFO);
+            FileInfo fiCooperationFile = new FileInfo(strCooperationFile);
+            Encoding encSJIS = Encoding.GetEncoding("shift_jis");
+
             try
             {
-                // SQL文を作成する
-                string strINSERTSql = @"
-                    INSERT INTO public.mst_ai_model
-                    (
-                        product_name,
-                        ai_model_name
-                    )
-                    VALUES
-                    (
-                        :strProductName,
-                        :strAIModelName
-                    )
-                    ON CONFLICT
-                    DO NOTHING ";
-
-                // SQLコマンドに各パラメータを設定する
-                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strProductName", DbType = DbType.String, Value = NulltoString(strProductName) });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strAIModelName", DbType = DbType.String, Value = NulltoString(txtModelName.Text) });
-
-                // SQLを実行する(マスタに存在しないデータのみ登録される)
-                g_clsConnectionNpgsql.ExecTranSQL(strINSERTSql, lstNpgsqlCommand);
-
-                // トランザクションコミット
-                g_clsConnectionNpgsql.DbCommit();
-                g_clsConnectionNpgsql.DbClose();
+                if (fiCooperationFile.Exists &&
+                    fiCooperationFile.Length != 0)
+                {
+                    // 既存ファイルに追記する
+                    using (StreamWriter sw = new StreamWriter(strCooperationFile, true, encSJIS))
+                    {
+                        sw.WriteLine(
+                            string.Format(
+                                "*,{1}",
+                                strProductName,
+                                txtModelName.Text));
+                    }
+                }
+                else
+                {
+                    // 新規ファイルを作成する
+                    using (StreamWriter sw = new StreamWriter(strCooperationFile, false, encSJIS))
+                    {
+                        sw.WriteLine(g_CON_FILE_HEADER_AI_MODEL_NAME_INFO);
+                        sw.WriteLine(
+                            string.Format(
+                                "*,{1}",
+                                strProductName,
+                                txtModelName.Text));
+                    }
+                }
 
                 return true;
             }
             catch (Exception ex)
             {
+                string strErrorMessage = "AIモデルマスタ情報の出力でエラーが発生しました。";
+
                 // ログ出力
                 WriteEventLog(
                     g_CON_LEVEL_ERROR,
                     string.Format(
                         "{0}{1}{2}",
-                        g_clsMessageInfo.strMsgE0067,
+                        strErrorMessage,
                         Environment.NewLine,
                         ex.Message));
 
                 // メッセージ出力
                 MessageBox.Show(
-                    g_clsMessageInfo.strMsgE0067,
+                    strErrorMessage,
                     g_CON_MESSAGE_TITLE_ERROR,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);

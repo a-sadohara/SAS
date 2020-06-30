@@ -1,5 +1,4 @@
 ﻿using log4net;
-using RapidModelImport.DTO;
 using System;
 using System.Configuration;
 using System.Runtime.InteropServices;
@@ -21,15 +20,7 @@ namespace RapidModelImport
         public static string g_strDBPort = string.Empty;
         public static string g_strBatchPath = string.Empty;
         public static string g_strINIFilePath = string.Empty;
-
-        // コネクションクラス
-        public static ConnectionNpgsql g_clsConnectionNpgsql;
-
-        // メッセージ情報クラス
-        public static MessageInfo g_clsMessageInfo;
-
-        // システム設定情報取得時のエラーメッセージ格納用
-        private static StringBuilder m_sbErrMessage = new StringBuilder();
+        public static string g_strCooperationDirectoryPath = string.Empty;
 
         // イベントログ出力関連
         public static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -44,6 +35,10 @@ namespace RapidModelImport
         public const string g_CON_MESSAGE_TITLE_WARN = "警告";
         public const string g_CON_MESSAGE_TITLE_QUESTION = "確認";
 
+        // 連携ファイル関連
+        public const string g_CON_FILE_NAME_PRODUCT_NAME_INFO = "品名情報.csv";
+        public const string g_CON_FILE_NAME_AI_MODEL_NAME_INFO = "AIモデルマスタ情報.csv";
+        public const string g_CON_FILE_HEADER_AI_MODEL_NAME_INFO = "品名,AIモデル名";
 
         // INIファイル関連
         private const string m_CON_INI_SECTION_DBConnectionInfo = "DBConnectionInfo";
@@ -54,6 +49,10 @@ namespace RapidModelImport
         private const string m_CON_INI_ITEM_DBServerName = "DBServerName";
         private const string m_CON_INI_ITEM_DBPort = "DBPort";
         private const string m_CON_INI_ITEM_BatchFilePath = "BatchFilePath";
+        private const string m_CON_INI_ITEM_CooperationDirectoryPath = "CooperationDirectoryPath";
+
+        // システム設定情報取得時のエラーメッセージ格納用
+        private static StringBuilder m_sbErrMessage = new StringBuilder();
 
         #region ラッパー
         [DllImport("kernel32.dll")]
@@ -193,6 +192,13 @@ namespace RapidModelImport
                                     m_CON_INI_SECTION_Path,
                                     m_CON_INI_ITEM_BatchFilePath));
 
+                        g_strCooperationDirectoryPath =
+                            NulltoString(
+                                GetIniValue(
+                                    g_strINIFilePath,
+                                    m_CON_INI_SECTION_Path,
+                                    m_CON_INI_ITEM_CooperationDirectoryPath));
+
                         g_strConnectionString =
                             string.Format(
                                 g_CON_CONNECTION_STRING,
@@ -221,19 +227,6 @@ namespace RapidModelImport
 
                         return;
                     }
-
-                    // 接続確認
-                    g_clsConnectionNpgsql = new ConnectionNpgsql(g_strConnectionString);
-                    g_clsConnectionNpgsql.DbOpen();
-                    g_clsConnectionNpgsql.DbClose();
-
-                    // メッセージ情報取得
-                    g_clsMessageInfo = new MessageInfo();
-
-                    if (!g_clsMessageInfo.bolNormalEnd)
-                    {
-                        return;
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -253,13 +246,6 @@ namespace RapidModelImport
                         MessageBoxIcon.Error);
 
                     return;
-                }
-                finally
-                {
-                    if (g_clsConnectionNpgsql != null)
-                    {
-                        g_clsConnectionNpgsql.DbClose();
-                    }
                 }
 
                 // フォーム画面を起動

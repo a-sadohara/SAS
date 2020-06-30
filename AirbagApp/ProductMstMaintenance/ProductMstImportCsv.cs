@@ -22,7 +22,6 @@ namespace ProductMstMaintenance
         private const string m_CON_FILE_NAME_AIRBAG_COORD = "AirBagCoord";
         private const string m_CON_FILE_NAME_CAMERA_INFO = "カメラ情報";
         private const string m_CON_FILE_NAME_REASON_JUDGMENT = "ScratchName";
-        private const string m_CON_FILE_NAME_AI_MODEL_NAME_INFO = "AIモデルマスタ情報";
 
         // INIファイルのセクション
         private const string m_CON_INI_SECTION_REGISTER = "REGISTER";
@@ -54,11 +53,6 @@ namespace ProductMstMaintenance
         private const int m_CON_COL_ILLUMINATION_INFORMATION = 1;
         private const int m_CON_COL_START_REGIMARK_CAMERA_NUM = 2;
         private const int m_CON_COL_END_REGIMARK_CAMERA_NUM = 3;
-
-        // AIモデルマスタCSVファイル配置情報
-        private const int m_CON_COL_MST_AI_MODEL_COLUMN_NUM = 2;
-        private const int m_CON_COL_PRODUCT_NAME_MST_AI_MODEL = 0;
-        private const int m_CON_COL_AI_MODEL_NAME = 1;
 
         // 判定理由CSVファイル配置情報
         private const int m_CON_COL_REASON_CODE = 0;
@@ -2696,12 +2690,6 @@ namespace ProductMstMaintenance
 
             try
             {
-                // SQL文を作成する
-                string strCreateSql = g_CON_UPSERT_MST_AI_MODEL;
-
-                // SQLコマンドに各パラメータを設定する
-                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-
                 // 各項目の値を取得する
                 // FieldInfoを取得する
                 Type typeOfMyStruct = typeof(AIModelNameCsvInfo);
@@ -2710,18 +2698,11 @@ namespace ProductMstMaintenance
                 // CSVファイルから各値を読み込む
                 foreach (var fieldInfo in fieldInfos)
                 {
-                    if (fieldInfo.FieldType == typeof(int))
+                    if (fieldInfo.Name.Equals("strAIModelName"))
                     {
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.Int32, Value = NulltoInt(fieldInfo.GetValue(cciCurrentData)) });
-                    }
-                    else
-                    {
-                        lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = fieldInfo.Name, DbType = DbType.String, Value = NulltoString(fieldInfo.GetValue(cciCurrentData)) });
+                        UpsertAIModelName(NulltoString(fieldInfo.GetValue(cciCurrentData)));
                     }
                 }
-
-                // SQLを実行する(マスタに存在しないデータのみ登録される)
-                g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
 
                 return true;
             }
