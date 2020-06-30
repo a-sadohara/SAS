@@ -10,9 +10,9 @@ namespace ImageChecker
         // 接続文字列
         private static string m_strConnectionString;
         // DBコネクションオブジェクト
-        public static NpgsqlConnection NpgsqlCon;
+        public NpgsqlConnection NpgsqlCon;
         // DBトランザクションオブジェクト
-        public static NpgsqlTransaction NpgsqlTran;
+        public NpgsqlTransaction NpgsqlTran;
 
         // パラメータ構造体
         public struct structParameter
@@ -58,6 +58,18 @@ namespace ImageChecker
                 }
 
             }
+            catch (InvalidOperationException ioex)
+            {
+                if (ioex.Message.Equals("Connection already open"))
+                {
+                    // 再帰処理でオープンを試みる
+                    DbOpen();
+                }
+                else
+                {
+                    throw ioex;
+                }
+            }
             catch (Exception ex)
             {
                 throw ex;
@@ -84,21 +96,21 @@ namespace ImageChecker
             }
             catch (Exception ex)
             {
-                throw ex;
+                // throw ex;
             }
             finally
             {
-                if (NpgsqlTran != null)
-                {
-                    NpgsqlTran.Dispose();
-                    NpgsqlTran = null;
-                }
+                //if (NpgsqlTran != null)
+                //{
+                //    NpgsqlTran.Dispose();
+                //    NpgsqlTran = null;
+                //}
 
-                if (NpgsqlCon != null)
-                {
-                    NpgsqlCon.Dispose();
-                    NpgsqlCon = null;
-                }
+                //if (NpgsqlCon != null)
+                //{
+                //    NpgsqlCon.Dispose();
+                //    NpgsqlCon = null;
+                //}
             }
         }
 

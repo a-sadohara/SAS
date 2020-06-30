@@ -1068,7 +1068,7 @@ namespace ImageChecker
             string strUnitNum = string.Empty;
             string strLogMessage = string.Empty;
             int intExecutionCount = 0;
-            DateTime dateSyncTargetDate = DateTime.Now.Date.AddDays(-2);
+            DateTime dateSyncTargetDate = DateTime.Now.Date.AddDays(g_clsSystemSettingInfo.intNgImageAcquisitionPeriod);
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
@@ -1593,14 +1593,18 @@ namespace ImageChecker
                                         strProductNameInfo,
                                         strFabricNameInfo);
 
-                            // 直近2日に行われた検査情報の欠点画像を取得する
+                            // 直近で行われた検査情報の欠点画像を取得する
                             if (!Directory.Exists(strFaultImageFileDirectory) &&
                                 dateSyncTargetDate < DateTime.Parse(strInspectionDate))
                             {
                                 if (lstTask.Count != 0)
                                 {
-                                    // 複数取込の場合、ランダムで1秒以上6秒未満の待ち時間を挟む
-                                    await Task.Delay(random.Next(1, 6) * 1000);
+                                    // 複数取込の場合、ランダムで待ち時間を挟む
+                                    await Task.Delay(
+                                        random.Next(
+                                            g_clsSystemSettingInfo.intMinDecompressionWaitingTime,
+                                            g_clsSystemSettingInfo.intMaxDecompressionWaitingTime + 1)
+                                        * 1000);
                                 }
 
                                 bool? bolCheckResultInfo = BolCheckNGRecordCount(intInspectionNumInfo, strFabricNameInfo, strInspectionDateInfo, strUnitNumInfo, strLogMessageInfo, true);

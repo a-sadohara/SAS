@@ -97,6 +97,9 @@ namespace ImageChecker.DTO
         private const string con_strSuperUser = "SuperUser";
         private const string con_strRetryTimes = "RetryTimes";
         private const string con_strRetryWaitSeconds = "RetryWaitSeconds";
+        private const string con_strNgImageAcquisitionPeriod = "NgImageAcquisitionPeriod";
+        private const string con_strMinDecompressionWaitingTime = "MinDecompressionWaitingTime";
+        private const string con_strMaxDecompressionWaitingTime = "MaxDecompressionWaitingTime";
         private const string con_strProcessingPriority = "ProcessingPriority";
         private const string con_strMainNGReason1 = "MainNGReason1";
         private const string con_strMainNGReason2 = "MainNGReason2";
@@ -204,6 +207,12 @@ namespace ImageChecker.DTO
         public readonly int intRetryTimes;
         // リトライ待機時間（秒）
         public readonly int intRetryWaitSeconds;
+        // NG画像取得期間（日数）
+        public readonly int intNgImageAcquisitionPeriod;
+        // 解凍待ち時間下限（秒）
+        public readonly int intMinDecompressionWaitingTime;
+        // 解凍待ち時間上限（秒）
+        public readonly int intMaxDecompressionWaitingTime;
         // プロセス優先度
         public readonly int intProcessingPriority;
         public readonly string strProcessingPriority;
@@ -302,6 +311,9 @@ namespace ImageChecker.DTO
                 GetSystemSettingValue(con_strSuperUser, ref strSuperUser);
                 GetSystemSettingValue(con_strRetryTimes, ref intRetryTimes);
                 GetSystemSettingValue(con_strRetryWaitSeconds, ref intRetryWaitSeconds);
+                GetSystemSettingValue(con_strNgImageAcquisitionPeriod, ref intNgImageAcquisitionPeriod);
+                GetSystemSettingValue(con_strMinDecompressionWaitingTime, ref intMinDecompressionWaitingTime);
+                GetSystemSettingValue(con_strMaxDecompressionWaitingTime, ref intMaxDecompressionWaitingTime);
                 GetSystemSettingValue(con_strProcessingPriority, ref intProcessingPriority);
                 GetSystemSettingValue(con_strMainNGReason1, ref intMainNGReason1);
                 GetSystemSettingValue(con_strMainNGReason2, ref intMainNGReason2);
@@ -387,6 +399,9 @@ namespace ImageChecker.DTO
                 GetAppConfigValue(con_strSuperUser, ref strSuperUser);
                 GetAppConfigValue(con_strRetryTimes, ref intRetryTimes);
                 GetAppConfigValue(con_strRetryWaitSeconds, ref intRetryWaitSeconds);
+                GetAppConfigValue(con_strNgImageAcquisitionPeriod, ref intNgImageAcquisitionPeriod);
+                GetAppConfigValue(con_strMinDecompressionWaitingTime, ref intMinDecompressionWaitingTime);
+                GetAppConfigValue(con_strMaxDecompressionWaitingTime, ref intMaxDecompressionWaitingTime);
                 GetAppConfigValue(con_strProcessingPriority, ref intProcessingPriority);
                 GetAppConfigValue(con_strMainNGReason1, ref intMainNGReason1);
                 GetAppConfigValue(con_strMainNGReason2, ref intMainNGReason2);
@@ -412,6 +427,12 @@ namespace ImageChecker.DTO
                 if (intRetryWaitSeconds <= 0)
                 {
                     intRetryWaitSeconds = 1000;
+                }
+
+                // NG画像取得期間（日数）
+                if (intNgImageAcquisitionPeriod > 0)
+                {
+                    intNgImageAcquisitionPeriod *= -1;
                 }
 
                 // プロセス優先度
