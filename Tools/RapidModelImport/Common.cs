@@ -20,7 +20,7 @@ namespace RapidModelImport
         public static string g_strDBPort = string.Empty;
         public static string g_strBatchPath = string.Empty;
         public static string g_strINIFilePath = string.Empty;
-        public static string g_strCooperationDirectoryPath = string.Empty;
+        public static string g_strAIModelNameCooperationDirectoryPath = string.Empty;
 
         // イベントログ出力関連
         public static ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -49,7 +49,7 @@ namespace RapidModelImport
         private const string m_CON_INI_ITEM_DBServerName = "DBServerName";
         private const string m_CON_INI_ITEM_DBPort = "DBPort";
         private const string m_CON_INI_ITEM_BatchFilePath = "BatchFilePath";
-        private const string m_CON_INI_ITEM_CooperationDirectoryPath = "CooperationDirectoryPath";
+        private const string m_CON_INI_ITEM_AIModelNameCooperationDirectoryPath = "AIModelNameCooperationDirectoryPath";
 
         // システム設定情報取得時のエラーメッセージ格納用
         private static StringBuilder m_sbErrMessage = new StringBuilder();
@@ -192,12 +192,12 @@ namespace RapidModelImport
                                     m_CON_INI_SECTION_Path,
                                     m_CON_INI_ITEM_BatchFilePath));
 
-                        g_strCooperationDirectoryPath =
+                        g_strAIModelNameCooperationDirectoryPath =
                             NulltoString(
                                 GetIniValue(
                                     g_strINIFilePath,
                                     m_CON_INI_SECTION_Path,
-                                    m_CON_INI_ITEM_CooperationDirectoryPath));
+                                    m_CON_INI_ITEM_AIModelNameCooperationDirectoryPath));
 
                         g_strConnectionString =
                             string.Format(

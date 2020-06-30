@@ -154,18 +154,8 @@ namespace RapidModelImport
                 return;
             }
 
-            // AIモデルマスタを更新する
-            if (!UpdateAIModelName(string.Empty))
-            {
-                return;
-            }
-
-            // メッセージ出力
-            MessageBox.Show(
-                "AIモデルマスタの更新が完了しました。",
-                g_CON_MESSAGE_TITLE_QUESTION,
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            // AIモデルマスタ情報を出力する
+            UpdateAIModelName(string.Empty);
         }
 
         /// <summary>
@@ -211,7 +201,7 @@ namespace RapidModelImport
             dgvData.Rows.Clear();
             List<string> lstProductName = new List<string>();
             string strline = string.Empty;
-            string strCooperationFile = Path.Combine(g_strCooperationDirectoryPath, g_CON_FILE_NAME_PRODUCT_NAME_INFO);
+            string strCooperationFile = Path.Combine(g_strAIModelNameCooperationDirectoryPath, g_CON_FILE_NAME_PRODUCT_NAME_INFO);
             FileInfo fiCooperationFile = new FileInfo(strCooperationFile);
             Encoding encSJIS = Encoding.GetEncoding("shift_jis");
 
@@ -326,64 +316,100 @@ namespace RapidModelImport
         /// </summary>
         /// <param name="strProductName">品名</param>
         /// <returns></returns>
-        private bool UpdateAIModelName(string strProductName)
+        private void UpdateAIModelName(string strProductName)
         {
-            string strCooperationFile = Path.Combine(g_strCooperationDirectoryPath, g_CON_FILE_NAME_AI_MODEL_NAME_INFO);
-            FileInfo fiCooperationFile = new FileInfo(strCooperationFile);
+            string strCooperationFile = string.Empty;
+            string strPath = string.Empty;
+            FileInfo fiCooperationFile = null;
+            bool bolWriteFlg = false;
             Encoding encSJIS = Encoding.GetEncoding("shift_jis");
 
-            try
+            foreach (string strAIModelNameCooperationDirectoryPath in g_strAIModelNameCooperationDirectoryPath.Split(','))
             {
-                if (fiCooperationFile.Exists &&
-                    fiCooperationFile.Length != 0)
+                try
                 {
-                    // 既存ファイルに追記する
-                    using (StreamWriter sw = new StreamWriter(strCooperationFile, true, encSJIS))
-                    {
-                        sw.WriteLine(
-                            string.Format(
-                                "*,{1}",
-                                strProductName,
-                                txtModelName.Text));
-                    }
-                }
-                else
-                {
-                    // 新規ファイルを作成する
-                    using (StreamWriter sw = new StreamWriter(strCooperationFile, false, encSJIS))
-                    {
-                        sw.WriteLine(g_CON_FILE_HEADER_AI_MODEL_NAME_INFO);
-                        sw.WriteLine(
-                            string.Format(
-                                "*,{1}",
-                                strProductName,
-                                txtModelName.Text));
-                    }
-                }
+                    strPath = strAIModelNameCooperationDirectoryPath.Trim();
 
-                return true;
+                    if (string.IsNullOrWhiteSpace(strPath) ||
+                        !Directory.Exists(strPath))
+                    {
+                        // ログ出力
+                        WriteEventLog(
+                            g_CON_LEVEL_WARN,
+                            string.Format(
+                                "{0}{1}出力先:{2}",
+                                "AIモデル名情報連携ディレクトリが参照できませんでした。",
+                                Environment.NewLine,
+                                strCooperationFile));
+
+                        continue;
+                    }
+
+                    strCooperationFile = Path.Combine(strPath, g_CON_FILE_NAME_AI_MODEL_NAME_INFO);
+                    fiCooperationFile = new FileInfo(strCooperationFile);
+
+                    if (fiCooperationFile.Exists &&
+                        fiCooperationFile.Length != 0)
+                    {
+                        // 既存ファイルに追記する
+                        using (StreamWriter sw = new StreamWriter(strCooperationFile, true, encSJIS))
+                        {
+                            sw.WriteLine(
+                                string.Format(
+                                    "*,{1}",
+                                    strProductName,
+                                    txtModelName.Text));
+                        }
+                    }
+                    else
+                    {
+                        // 新規ファイルを作成する
+                        using (StreamWriter sw = new StreamWriter(strCooperationFile, false, encSJIS))
+                        {
+                            sw.WriteLine(g_CON_FILE_HEADER_AI_MODEL_NAME_INFO);
+                            sw.WriteLine(
+                                string.Format(
+                                    "*,{1}",
+                                    strProductName,
+                                    txtModelName.Text));
+                        }
+                    }
+
+                    bolWriteFlg = true;
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_ERROR,
+                        string.Format(
+                            "{0}{1}出力先:{2}{1}{3}",
+                            "AIモデルマスタ情報の出力でエラーが発生しました。",
+                            Environment.NewLine,
+                            strCooperationFile,
+                            ex.Message));
+
+                    continue;
+                }
             }
-            catch (Exception ex)
+
+            if (bolWriteFlg)
             {
-                string strErrorMessage = "AIモデルマスタ情報の出力でエラーが発生しました。";
-
-                // ログ出力
-                WriteEventLog(
-                    g_CON_LEVEL_ERROR,
-                    string.Format(
-                        "{0}{1}{2}",
-                        strErrorMessage,
-                        Environment.NewLine,
-                        ex.Message));
-
                 // メッセージ出力
                 MessageBox.Show(
-                    strErrorMessage,
-                    g_CON_MESSAGE_TITLE_ERROR,
+                    "AIモデルマスタ情報の出力が完了しました。",
+                    g_CON_MESSAGE_TITLE_QUESTION,
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                return false;
+                    MessageBoxIcon.Information);
+            }
+            else
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    "AIモデルマスタ情報の出力が失敗しました。",
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
             }
         }
         #endregion

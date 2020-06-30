@@ -1733,91 +1733,108 @@ namespace ProductMstMaintenance
         private void ImportAIModelName()
         {
             string[] stArrayData;
-            string strFileName =
-                string.Format(
-                    "{0}.csv",
-                    m_CON_FILE_NAME_AI_MODEL_NAME_INFO);
-            string strBackupFolder =
-                Path.Combine(
-                    g_clsSystemSettingInfo.strAIModelNameCooperationDirectory,
-                    "Backup");
+            string strFileName = string.Empty;
+            string strBackupFolder = string.Empty;
+            string strPath = string.Empty;
             int intRowCount = 0;
             bool bolResult = false;
-            FileInfo fiAIModelInfoFile =
-                new FileInfo(
-                    Path.Combine(
-                        g_clsSystemSettingInfo.strAIModelNameCooperationDirectory,
-                        strFileName));
+            FileInfo fiAIModelInfoFile = null;
 
-            if (!fiAIModelInfoFile.Exists ||
-                fiAIModelInfoFile.Length == 0)
+            foreach (string strAIModelNameCooperation in g_clsSystemSettingInfo.strAIModelNameCooperationDirectory.Split(','))
             {
-                return;
-            }
+                strPath = strAIModelNameCooperation.Trim();
 
-            try
-            {
-                // ファイル読み込み処理を行う
-                using (StreamReader sr = new StreamReader(fiAIModelInfoFile.FullName, Encoding.GetEncoding("Shift_JIS")))
+                if (!Directory.Exists(strPath))
                 {
-                    string strFileTextLine = string.Empty;
+                    continue;
+                }
 
-                    // ストリームの末尾まで繰り返す
-                    while (!sr.EndOfStream)
+                strFileName =
+                    string.Format(
+                        "{0}.csv",
+                        m_CON_FILE_NAME_AI_MODEL_NAME_INFO);
+
+                strBackupFolder =
+                    Path.Combine(
+                        strPath,
+                        "Backup");
+
+                fiAIModelInfoFile =
+                    new FileInfo(
+                        Path.Combine(
+                            strPath,
+                            strFileName));
+
+                if (!fiAIModelInfoFile.Exists ||
+                    fiAIModelInfoFile.Length == 0)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    // ファイル読み込み処理を行う
+                    using (StreamReader sr = new StreamReader(fiAIModelInfoFile.FullName, Encoding.GetEncoding("Shift_JIS")))
                     {
-                        // AIモデルマスタ情報ファイルを１行読み込む
-                        strFileTextLine = sr.ReadLine();
-                        intRowCount++;
+                        string strFileTextLine = string.Empty;
 
-                        if (string.IsNullOrEmpty(strFileTextLine) || intRowCount == 1)
+                        // ストリームの末尾まで繰り返す
+                        while (!sr.EndOfStream)
                         {
-                            // 空行(最終行)またはヘッダ行の場合読み飛ばす
-                            continue;
-                        }
+                            // AIモデルマスタ情報ファイルを１行読み込む
+                            strFileTextLine = sr.ReadLine();
+                            intRowCount++;
 
-                        // 半角スペース区切りで分割して配列に格納する
-                        stArrayData = strFileTextLine.Split(',');
+                            if (string.IsNullOrEmpty(strFileTextLine) || intRowCount == 1)
+                            {
+                                // 空行(最終行)またはヘッダ行の場合読み飛ばす
+                                continue;
+                            }
 
-                        if (stArrayData.Length != 2)
-                        {
-                            continue;
-                        }
+                            // 半角スペース区切りで分割して配列に格納する
+                            stArrayData = strFileTextLine.Split(',');
 
-                        // AIモデル名の更新を行う
-                        if (UpsertAIModelName(stArrayData[m_CON_COL_AI_MODEL_NAME]))
-                        {
-                            bolResult = true;
+                            if (stArrayData.Length != 2)
+                            {
+                                continue;
+                            }
+
+                            // AIモデル名の更新を行う
+                            if (UpsertAIModelName(stArrayData[m_CON_COL_AI_MODEL_NAME]))
+                            {
+                                bolResult = true;
+                            }
                         }
                     }
-                }
 
-                if (!Directory.Exists(strBackupFolder))
+                    if (!Directory.Exists(strBackupFolder))
+                    {
+                        Directory.CreateDirectory(strBackupFolder);
+                    }
+
+                    // 読み込んだファイルを退避する
+                    File.Copy(
+                        fiAIModelInfoFile.FullName,
+                        Path.Combine(
+                            strBackupFolder,
+                            strFileName),
+                        true);
+
+                    File.Delete(fiAIModelInfoFile.FullName);
+                }
+                catch (Exception ex)
                 {
-                    Directory.CreateDirectory(strBackupFolder);
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_WARN,
+                        string.Format(
+                            "{0}の取り込みに失敗しました。{1}{2}",
+                            m_CON_FILE_NAME_AI_MODEL_NAME_INFO,
+                            Environment.NewLine,
+                            ex.Message));
+
+                    continue;
                 }
-
-                // 読み込んだファイルを退避する
-                File.Copy(
-                    fiAIModelInfoFile.FullName,
-                    Path.Combine(
-                        strBackupFolder,
-                        strFileName),
-                    true);
-
-                File.Delete(fiAIModelInfoFile.FullName);
-            }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(
-                    g_CON_LEVEL_WARN,
-                    string.Format(
-                        "{0}の取り込みに失敗しました。{1}{2}",
-                        m_CON_FILE_NAME_AI_MODEL_NAME_INFO,
-                        Environment.NewLine,
-                        ex.Message));
-
-                return;
             }
 
             if (bolResult)
