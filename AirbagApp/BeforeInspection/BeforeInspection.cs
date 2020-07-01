@@ -1420,17 +1420,6 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void btnSet_MouseClick(object sender, MouseEventArgs e)
         {
-            // 撮像装置部が処理中か確認する。
-            if (!bolCheckBusyFile())
-            {
-                return;
-            }
-
-            if (InputDataCheck() == false)
-            {
-                return;
-            }
-
             int intInspectionNum = 0;
             string strEndDatetime = lblEndDatetime.Text;
 
@@ -1445,6 +1434,19 @@ namespace BeforeInspection
                 {
                     return;
                 }
+            }
+
+            // 撮像装置部が処理中か確認する。
+            if (!bolCheckBusyFile() ||
+                (intInspectionNum != m_intInspectionNum &&
+                !bolCheckFinalFile()))
+            {
+                return;
+            }
+
+            if (InputDataCheck() == false)
+            {
+                return;
             }
 
             // 終了時刻入力時に設定ボタン押下で検査番号が繰り上がる場合、
@@ -1478,6 +1480,9 @@ namespace BeforeInspection
             if (m_intStatus == g_clsSystemSettingInfo.intStatusChk &&
                 !string.IsNullOrEmpty(lblEndDatetime.Text))
             {
+                // finalファイルを削除する
+                DeleteFinalFile();
+
                 // 枝番の取得
                 if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
                 {
@@ -1653,6 +1658,9 @@ namespace BeforeInspection
             {
                 return;
             }
+
+            // finalファイルを削除する
+            DeleteFinalFile();
 
             // 終了日付の表示
             lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
@@ -1838,12 +1846,22 @@ namespace BeforeInspection
         }
 
         /// <summary>
+        /// 撮像装置部連携ディレクトリ情報取得
+        /// </summary>
+        /// <returns>撮像装置部連携ディレクトリ情報</returns>
+        private DirectoryInfo GetImagingDeviceCooperationDirectoryInfo()
+        {
+            return new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
+        }
+
+        /// <summary>
         /// Busyファイル存在チェック
         /// </summary>
+        /// <returns>処理続行フラグ</returns>
         private bool bolCheckBusyFile()
         {
             datCheckTime = DateTime.Now;
-            DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
+            DirectoryInfo diImagingDevice = GetImagingDeviceCooperationDirectoryInfo();
 
             // 撮像装置部が処理中(*.busyファイルが存在する)の場合、本処理をストップする。
             if (diImagingDevice.Exists &&
@@ -1860,10 +1878,10 @@ namespace BeforeInspection
         /// <summary>
         /// Finalファイル存在チェック
         /// </summary>
+        /// <returns>処理続行フラグ</returns>
         private bool bolCheckFinalFile()
         {
-            datCheckTime = DateTime.Now;
-            DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
+            DirectoryInfo diImagingDevice = GetImagingDeviceCooperationDirectoryInfo();
 
             // 撮像装置部が最終行の検査中(*.finalファイルが存在する)の場合、本処理をストップする。
             if (diImagingDevice.Exists &&
@@ -1875,6 +1893,23 @@ namespace BeforeInspection
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Finalファイル削除
+        /// </summary>
+        private void DeleteFinalFile()
+        {
+            DirectoryInfo diImagingDevice = GetImagingDeviceCooperationDirectoryInfo();
+
+            // *.finalファイルが存在する場合、削除する
+            if (diImagingDevice.Exists)
+            {
+                foreach (string strPath in diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, m_CON_EXTENSION_FINAL, true) == 0).Select(x => x.FullName))
+                {
+                    File.Delete(strPath);
+                }
+            }
         }
     }
 }
