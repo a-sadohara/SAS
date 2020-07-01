@@ -45,6 +45,12 @@ namespace ProductMstMaintenance
 
             InitializeComponent();
 
+            // 編集モードの場合、ウィンドウのタイトルを変更する
+            if (m_bolEditModeFlg)
+            {
+                this.Text = "AIモデルマスタ";
+            }
+
             // 仕様変更のため、品名列を非表示とする
             this.dgvData.Columns[m_CON_COL_PRODUCT_NAME].Visible = false;
 
