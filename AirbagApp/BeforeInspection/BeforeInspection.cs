@@ -1868,7 +1868,7 @@ namespace BeforeInspection
                 diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, m_CON_EXTENSION_BUSY, true) == 0).Count() != 0)
             {
                 // メッセージ出力
-                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).Show(this);
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0069, true)).Show(this);
                 return false;
             }
 
