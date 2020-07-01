@@ -38,6 +38,7 @@ namespace BeforeInspection
         private const string m_CON_TEXTMODE_NUMBER = "3";
         private const string m_CON_EXTENSION_TEXT = ".txt";
         private const string m_CON_EXTENSION_BUSY = ".busy";
+        private const string m_CON_EXTENSION_FINAL = ".final";
         private const int m_CON_MAXLENGTH_ORDERIMG = 7;
         private const int m_CON_MAXLENGTH_FABRICNAME = 10;
 
@@ -74,7 +75,8 @@ namespace BeforeInspection
         private void DispTenKeyInputForm(object sender, EventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
+            if (!bolCheckBusyFile() ||
+                !bolCheckFinalFile())
             {
                 return;
             }
@@ -1182,7 +1184,8 @@ namespace BeforeInspection
         private void txtProductName_Click(object sender, EventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
+            if (!bolCheckBusyFile() ||
+                !bolCheckFinalFile())
             {
                 return;
             }
@@ -1218,7 +1221,7 @@ namespace BeforeInspection
         private void txtWorker_Click(object sender, EventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
+            if (!bolCheckBusyFile())
             {
                 return;
             }
@@ -1418,7 +1421,7 @@ namespace BeforeInspection
         private void btnSet_MouseClick(object sender, MouseEventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
+            if (!bolCheckBusyFile())
             {
                 return;
             }
@@ -1629,7 +1632,7 @@ namespace BeforeInspection
         private void btnInspectionStop_MouseClick(object sender, MouseEventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
+            if (!bolCheckBusyFile())
             {
                 return;
             }
@@ -1682,7 +1685,8 @@ namespace BeforeInspection
         private void btnNextFabric_MouseClick(object sender, MouseEventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
+            if (!bolCheckBusyFile() ||
+                !bolCheckFinalFile())
             {
                 return;
             }
@@ -1725,7 +1729,8 @@ namespace BeforeInspection
         private void btnStartDatetime_MouseClick(object sender, MouseEventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
+            if (!bolCheckBusyFile() ||
+                !bolCheckFinalFile())
             {
                 return;
             }
@@ -1741,7 +1746,7 @@ namespace BeforeInspection
         private void btnEndDatetime_MouseClick(object sender, MouseEventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
+            if (!bolCheckBusyFile())
             {
                 return;
             }
@@ -1776,7 +1781,8 @@ namespace BeforeInspection
         private void btnInspectionDirection_MouseClick(object sender, MouseEventArgs e)
         {
             // 撮像装置部が処理中か確認する。
-            if (!bolCheckImagingDeviceCooperationDirectory())
+            if (!bolCheckBusyFile() ||
+                !bolCheckFinalFile())
             {
                 return;
             }
@@ -1827,21 +1833,41 @@ namespace BeforeInspection
                 await Task.Delay(10);
 
                 // 撮像装置部が処理中か確認する。
-                bolCheckImagingDeviceCooperationDirectory();
+                bolCheckBusyFile();
             }
         }
 
         /// <summary>
-        /// 撮像装置部連携ディレクトリチェック
+        /// Busyファイル存在チェック
         /// </summary>
-        private bool bolCheckImagingDeviceCooperationDirectory()
+        private bool bolCheckBusyFile()
         {
             datCheckTime = DateTime.Now;
             DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
 
-            // 撮像装置部が処理中のファイルが存在する場合、本処理をストップする。
+            // 撮像装置部が処理中(*.busyファイルが存在する)の場合、本処理をストップする。
             if (diImagingDevice.Exists &&
                 diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, m_CON_EXTENSION_BUSY, true) == 0).Count() != 0)
+            {
+                // メッセージ出力
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).Show(this);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Finalファイル存在チェック
+        /// </summary>
+        private bool bolCheckFinalFile()
+        {
+            datCheckTime = DateTime.Now;
+            DirectoryInfo diImagingDevice = new DirectoryInfo(g_clsSystemSettingInfo.strImagingDeviceCooperationDirectory);
+
+            // 撮像装置部が最終行の検査中(*.finalファイルが存在する)の場合、本処理をストップする。
+            if (diImagingDevice.Exists &&
+                diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, m_CON_EXTENSION_FINAL, true) == 0).Count() != 0)
             {
                 // メッセージ出力
                 new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0065, true)).Show(this);

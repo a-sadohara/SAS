@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -14,8 +13,6 @@ namespace RapidModelImport
         #region 定数・変数
         private const int m_CON_COL_CHK_SELECT = 0;
         private const int m_CON_COL_PRODUCT_NAME = 1;
-
-        private DataTable m_dtData;
         #endregion
 
         #region イベント
@@ -28,6 +25,7 @@ namespace RapidModelImport
 
             // フォームの表示位置調整
             this.StartPosition = FormStartPosition.CenterParent;
+            this.WindowState = FormWindowState.Maximized;
         }
 
         /// <summary>
@@ -37,16 +35,7 @@ namespace RapidModelImport
         /// <param name="e"></param>
         private void SelectAIModelName_Load(object sender, EventArgs e)
         {
-            // 行選択モードに変更
-            this.dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
-            // 新規行を追加させない
-            this.dgvData.AllowUserToAddRows = false;
-
-            // 複数選択させない
-            this.dgvData.MultiSelect = false;
-
-            dgvData.Rows.Clear();
         }
 
         /// <summary>
@@ -167,118 +156,9 @@ namespace RapidModelImport
         {
             this.Close();
         }
-
-        /// <summary>
-        /// データグリッドビューセルクリック
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dgvData_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // ヘッダクリックでソートする際、下記処理をスキップする
-            if (e.RowIndex == -1)
-            {
-                return;
-            }
-
-            // 選択行のみチェック状態とする
-            foreach (DataGridViewRow dgvRow in dgvData.Rows)
-            {
-                dgvRow.Cells[m_CON_COL_CHK_SELECT].Value = false;
-            }
-
-            dgvData.Rows[e.RowIndex].Cells[m_CON_COL_CHK_SELECT].Value = true;
-        }
         #endregion
 
         #region メソッド
-        /// <summary>
-        /// データグリッドビュー表示処理
-        /// </summary>
-        private bool dispDataGridView()
-        {
-            m_dtData = new DataTable();
-            dgvData.Rows.Clear();
-            List<string> lstProductName = new List<string>();
-            string strline = string.Empty;
-            string strCooperationFile = Path.Combine(g_strAIModelNameCooperationDirectoryPath, g_CON_FILE_NAME_PRODUCT_NAME_INFO);
-            FileInfo fiCooperationFile = new FileInfo(strCooperationFile);
-            Encoding encSJIS = Encoding.GetEncoding("shift_jis");
-
-            if (fiCooperationFile.Exists &&
-                fiCooperationFile.Length != 0)
-            {
-                try
-                {
-                    using (StreamReader sr = new StreamReader(strCooperationFile, encSJIS))
-                    {
-                        while ((strline = sr.ReadLine()) != null)
-                        {
-                            if (strline.Equals("product_name"))
-                            {
-                                continue;
-                            }
-
-                            lstProductName.Add(strline);
-                        }
-                    }
-
-                    lstProductName.Sort();
-
-                    // データグリッドビューに反映
-                    foreach (string strProductName in lstProductName)
-                    {
-                        this.dgvData.Rows.Add(false, strProductName);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    string strErrorMessage = "品名情報の読込でエラーが発生しました。";
-
-                    // ログ出力
-                    WriteEventLog(
-                        g_CON_LEVEL_ERROR,
-                        string.Format(
-                            "{0}{1}{2}",
-                            strErrorMessage,
-                            Environment.NewLine,
-                            ex.Message));
-
-                    // メッセージ出力
-                    MessageBox.Show(
-                        strErrorMessage,
-                        g_CON_MESSAGE_TITLE_ERROR,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    return false;
-                }
-            }
-
-            dgvData.CurrentCell = null;
-
-            if (dgvData.Rows.Count == 0)
-            {
-                // メッセージ出力
-                MessageBox.Show(
-                    "品名情報が存在しません。",
-                    g_CON_MESSAGE_TITLE_ERROR,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                return false;
-            }
-            else
-            {
-                // 1行目を選択状態にする
-                dgvData.Rows[0].Selected = true;
-                dgvData.FirstDisplayedScrollingRowIndex = 0;
-                dgvData.Rows[0].Cells[m_CON_COL_CHK_SELECT].Value = true;
-
-                return true;
-            }
-        }
-
         /// <summary>
         /// フォルダ選択
         /// </summary>
