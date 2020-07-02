@@ -11,6 +11,9 @@ from pathlib import Path
 import error_detail
 import configparser
 import file_util
+# ADD 20200701 KQRM 下吉 START
+import math
+# ADD 20200701 KQRM 下吉 END
 
 # ログ設定
 logging.config.fileConfig("D:/CI/programs/config/logging_compress_image.conf", disable_existing_loggers=False)
@@ -182,6 +185,10 @@ def ng_image_compress(image_root_path, imaging_starttime, product_name, fabric_n
     ng_image_zip_file_path = None
     try:
         ### 設定ファイルからの値取得
+        # ADD 20200701 KQRM 下吉 START
+        # 画像分割枚数
+        image_division_number =inifile.get('VALUE', 'max_file')
+        # ADD 20200701 KQRM 下吉 END
         # マーキングNG画像名の接頭辞
         marking_ng_image_file_name_prefix = inifile.get('FILE', 'marking_ng_image_file_name_prefix')
         # 画像ファイルの拡張子
@@ -220,9 +227,77 @@ def ng_image_compress(image_root_path, imaging_starttime, product_name, fabric_n
             # ファイル名は、(撮像開始時刻:YYYYMMDD形式)_反番_検査番号.zip
             zip_file_name = imaging_starttime + '_' + product_name + '_' + fabric_name + '_' + str(inspection_num)
             ng_image_zip_file_path = zip_path + '\\' + zip_file_name
-            shutil.make_archive(ng_image_zip_file_path, 'zip', root_dir=image_root_path, base_dir=path_name)
-            # 戻り値（NG画像圧縮ファイルパス）に、拡張子を付与する。
-            ng_image_zip_file_path = ng_image_zip_file_path + '.zip'
+            # DEL 20200701 KQRM 下吉 START
+            # shutil.make_archive(ng_image_zip_file_path, 'zip', root_dir=image_root_path, base_dir=path_name)
+            # # 戻り値（NG画像圧縮ファイルパス）に、拡張子を付与する。
+            # ng_image_zip_file_path = ng_image_zip_file_path + '.zip'
+            # DEL 20200701 KQRM 下吉 END
+
+            # ADD 20200701 KQRM 下吉 START
+            if image_division_number == 0:
+                logger.debug('[%s:%s] NG画像ファイルの圧縮を開始します。', app_id, app_name)
+                ng_image_zip_file_path = compress_process(ng_image_zip_file_path, image_root_path, path_name, logger)
+                logger.debug('[%s:%s] NG画像ファイルの圧縮が完了しました。', app_id, app_name)
+            else:
+                index = 1
+                file_list = []
+                count = math.ceil(len(ng_image_files) / int(image_division_number))
+                default_path = ng_image_zip_file_path
+                work_path = ng_image_zip_file_path + '_work'
+
+                logger.debug('[%s:%s] NG画像ファイルの分割圧縮を開始します。分割数=[%s]', app_id, app_name, count)
+
+                # 分割作業のため、フォルダ名を変更し、ファイル情報を再取得する
+                os.rename(default_path, work_path)
+                tmp_result, ng_image_files = get_file(work_path + '\\', ng_image_file_name_pattern, logger)
+
+                # 画像分割枚数毎に区切ったファイル情報の配列を生成する
+                divided_array = [ng_image_files[i:i + int(image_division_number)] for i in range(0, len(ng_image_files), int(image_division_number))]
+
+                for array in divided_array:
+                    # ディレクトリを再生成する
+                    tmp_directory = exists_dir(default_path, logger)
+
+                    if not tmp_directory:
+                        logger.error(
+                            '[%s:%s] 分割圧縮用のフォルダ作成が失敗しました。フォルダパス=[%s]',
+                            app_id,
+                            app_name,
+                            default_path)
+                        return result, default_path
+
+                    for image_path in array:
+                        # 画像をフォルダにコピーする
+                        tmp_file = file_util.copy_file(image_path, default_path, logger, app_id, app_name)
+
+                        if not tmp_file:
+                            logger.error(
+                                '[%s:%s] NG画像のファイルコピーに失敗しました。ファイルパス=[%s]',
+                                app_id,
+                                app_name,
+                                image_path)
+                            return result, default_path
+
+                    # zipファイル名に連番を付与する
+                    target_path = default_path + '_' + str(index).zfill(2)
+
+                    # 圧縮する
+                    file_list.append(
+                        compress_process(
+                            target_path,
+                            image_root_path,
+                            path_name,
+                            logger))
+
+                    # 作業フォルダを削除する
+                    shutil.rmtree(default_path)
+                    index += 1
+
+                ng_image_zip_file_path = file_list
+                # 変更したフォルダ名を元に戻す
+                os.rename(work_path, default_path)
+                logger.debug('[%s:%s] NG画像ファイルの分割圧縮が完了しました。', app_id, app_name)
+            # ADD 20200701 KQRM 下吉 END
         else:
             zip_path = image_root_path
             # ファイル名は、(撮像開始時刻:YYYYMMDD形式)_反番_検査番号.zip
@@ -239,6 +314,34 @@ def ng_image_compress(image_root_path, imaging_starttime, product_name, fabric_n
 
     return result, ng_image_zip_file_path
 
+# ADD 20200701 KQRM 下吉 START
+# ------------------------------------------------------------------------------------
+# 処理名             ：圧縮プロセス
+#
+# 処理概要           ：1.NG画像圧縮を行う。
+#
+# 引数               ： 圧縮対象NG画像パス
+#                      NG画像ルートパス
+#                      フォルダ名
+#
+# 戻り値             ：処理結果（True:成功、False:失敗）
+#                    NG画像圧縮ファイルパス
+#
+# ------------------------------------------------------------------------------------
+def compress_process(archive_ng_image_file_path, image_root_path, path_name, logger):
+    zip_file_path = archive_ng_image_file_path
+    try:
+        shutil.make_archive(zip_file_path, 'zip', root_dir=image_root_path, base_dir=path_name)
+
+        # 戻り値（NG画像圧縮ファイルパス）に、拡張子を付与する。
+        zip_file_path = zip_file_path + '.zip'
+
+    except Exception as e:
+        # 失敗時は共通例外関数でエラー詳細をログ出力する
+        error_detail.exception(e, logger, app_id, app_name)
+
+    return zip_file_path
+# ADD 20200701 KQRM 下吉 END
 
 # ------------------------------------------------------------------------------------
 # 処理名             ：NG画像圧縮（未検知画像登録用）
@@ -310,10 +413,15 @@ def make_inspection_completion_notification(
         undetected_image_file_path = inifile.get('PATH', 'undetected_image_file_path')
         # 未検知画像登録完了ファイル名
         undetected_image_name_suffix = inifile.get('FILE', 'undetected_image_name_suffix')
-        base_dir = os.path.basename(archive_ng_image_file_path)
+        # DEL 20200701 KQRM 下吉 START
+        # base_dir = os.path.basename(archive_ng_image_file_path)
+        # DEL 20200701 KQRM 下吉 END
 
         # 未検知画像判定を行う。
         if undetected_image_flag == undetected_image_flag_is_undetected:
+            # ADD 20200701 KQRM 下吉 START
+            base_dir = os.path.basename(archive_ng_image_file_path)
+            # ADD 20200701 KQRM 下吉 END
             # 未検知画像登録完了ファイルを作成する。
             # ファイル名は、未検知画像ファイル名.txt
             base_dir = re.split('\.', base_dir)[0]
@@ -370,13 +478,35 @@ def send_file(
         ### 処理完了通知を、合否確認・判定登録部へ転送する。
         # NG画像
         logger.debug('[%s:%s] NG画像のファイル転送を開始します。', app_id, app_name)
-        tmp_result = file_util.move_file(ng_image_archive_file_path, send_ng_image_file_path, logger, app_id, app_name)
+        # DEL 20200701 KQRM 下吉 START
+        # tmp_result = file_util.move_file(ng_image_archive_file_path, send_ng_image_file_path, logger, app_id, app_name)
+        #
+        # if tmp_result:
+        #     logger.debug('[%s:%s] NG画像のファイル転送が終了しました。', app_id, app_name)
+        # else:
+        #     logger.error('[%s:%s] NG画像のファイル転送に失敗しました。', app_id, app_name)
+        #     return result
+        # DEL 20200701 KQRM 下吉 END
 
-        if tmp_result:
-            logger.debug('[%s:%s] NG画像のファイル転送が終了しました。', app_id, app_name)
+        # ADD 20200701 KQRM 下吉 START
+        if type(ng_image_archive_file_path) is str:
+            tmp_result = file_util.move_file(ng_image_archive_file_path, send_ng_image_file_path, logger, app_id, app_name)
+
+            if tmp_result:
+                logger.debug('[%s:%s] NG画像のファイル転送が終了しました。', app_id, app_name)
+            else:
+                logger.error('[%s:%s] NG画像のファイル転送に失敗しました。', app_id, app_name)
+                return result
         else:
-            logger.error('[%s:%s] NG画像のファイル転送に失敗しました。', app_id, app_name)
-            return result
+            for zip_path in ng_image_archive_file_path:
+                tmp_result = file_util.move_file(zip_path, send_ng_image_file_path, logger, app_id, app_name)
+
+                if tmp_result:
+                    logger.debug('[%s:%s] NG画像のファイル転送が終了しました。', app_id, app_name)
+                else:
+                    logger.error('[%s:%s] NG画像のファイル転送に失敗しました。', app_id, app_name)
+                    return result
+        # ADD 20200701 KQRM 下吉 END
 
         # 未検知画像登録完了
         if undetected_image_flag == undetected_image_flag_is_undetected:
