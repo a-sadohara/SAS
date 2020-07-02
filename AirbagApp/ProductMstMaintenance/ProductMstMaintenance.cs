@@ -1732,6 +1732,12 @@ namespace ProductMstMaintenance
         /// </summary>
         private void ImportAIModelName()
         {
+            // 起動端末が「システム設定テーブル.非AIモデル取込端末」に該当する場合、下記処理をスキップする
+            if (g_clsSystemSettingInfo.strUnAIModelImportTerminal.Split(',').Contains(Environment.MachineName))
+            {
+                return;
+            }
+
             string[] stArrayData;
             string strFileName = string.Empty;
             string strBackupFolder = string.Empty;

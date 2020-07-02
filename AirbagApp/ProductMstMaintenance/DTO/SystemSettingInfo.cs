@@ -29,6 +29,7 @@ namespace ProductMstMaintenance.DTO
         public readonly string strLogFileOutputDirectory;           // ログファイル出力先
         public readonly string strProductInfoImportDirectory;       // 品番情報取込ディレクトリ
         public readonly string strAIModelNameCooperationDirectory;  // AIモデル名情報連携ディレクトリ
+        public readonly string strUnAIModelImportTerminal;          // 非AIモデル取込端末
 
         /// <summary>
         /// コンストラクタ
@@ -44,6 +45,7 @@ namespace ProductMstMaintenance.DTO
                 GetSystemSettingValue("LogFileOutputDirectory", ref strLogFileOutputDirectory);
                 GetSystemSettingValue("ProductInfoImportDirectory", ref strProductInfoImportDirectory);
                 GetSystemSettingValue("AIModelNameCooperationDirectory", ref strAIModelNameCooperationDirectory);
+                GetSystemSettingValue("UnAIModelImportTerminal", ref strUnAIModelImportTerminal);
 
                 if (m_sbErrMessage.Length > 0)
                 {
