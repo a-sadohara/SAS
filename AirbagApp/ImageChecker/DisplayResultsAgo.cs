@@ -511,7 +511,10 @@ namespace ImageChecker
         {
             string strFaultImageFileDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
             bool? bolRapidTableCheckResult = true;
-            bool? bolNGRecordCheckResult = true;
+            bool? bolCheckNGRecordResult = true;
+            bool? bolCheckImageResult = true;
+            int intImageCount = 0;
+            DataTable dtUndetectedImage = null;
 
             // 画像ディレクトリが存在しない場合、フォルダを作成する
             if (!Directory.Exists(strFaultImageFileDirectory))
@@ -527,12 +530,36 @@ namespace ImageChecker
                 return false;
             }
 
-            bolNGRecordCheckResult = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage, true);
+            bolCheckNGRecordResult = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage, true);
+
+            bolCheckImageResult =
+                bolCheckImageCount(
+                    ref dtUndetectedImage,
+                    ref intImageCount,
+                    intInspectionNum,
+                    strInspectionDate,
+                    strUnitNum,
+                    strFabricName,
+                    strFaultImageFileName,
+                    strLogMessage);
 
             // NGレコードが存在しない場合、処理を終了する
-            if (!bolNGRecordCheckResult.Equals(true))
+            if (!bolCheckNGRecordResult.Equals(true))
             {
-                return bolNGRecordCheckResult;
+                // NGレコード・欠点画像がともに存在しない場合、チェックOKとする
+                if (bolCheckNGRecordResult.Equals(false) &&
+                    intImageCount == 0)
+                {
+                    return true;
+                }
+
+                return bolCheckNGRecordResult;
+            }
+
+            // 欠点画像の不足が無い場合、チェック時にエラーが発生した場合、処理を終了する
+            if (!bolCheckImageResult.Equals(false))
+            {
+                return bolCheckImageResult;
             }
 
             ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
@@ -544,10 +571,9 @@ namespace ImageChecker
             {
                 // 欠点画像数チェック・再取込を実施する
                 return await BolReInputFaultImage(
-                    intInspectionNum,
-                    strInspectionDate,
+                    dtUndetectedImage,
+                    intImageCount,
                     strUnitNum,
-                    strFabricName,
                     strFaultImageFileName,
                     strLogMessage);
             }

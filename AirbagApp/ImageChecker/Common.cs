@@ -100,7 +100,7 @@ namespace ImageChecker
         // サブ一時ディレクトリ
         public const string g_CON_DIR_MASTER_IMAGE = "MasterImage";                         // マスタ画像格納先
         public const string g_CON_DIR_MASTER_IMAGE_MARKING = "MasterImageMarking";          // マーキングマスタ画像格納先
-        public const string g_CON_ZIP_EXTRACT_DIR_PATH = "ZipExtractDirPath";               // ZIP解凍用格納先
+        public const string g_CON_ZIP_EXTRACT_DIR_PATH = "ZipExtractDirPath";               // zip解凍用格納先
         public static string g_strMasterImageDirPath = string.Empty;
         public static string g_strMasterImageDirMarking = string.Empty;
         public static string g_strZipExtractDirPath = string.Empty;
@@ -277,6 +277,10 @@ namespace ImageChecker
             bool bolUndetectedImageFlag = false,
             string strFaultImageFolderName = null)
         {
+            bool? bolCheckImageResult = false;
+            int intRecordCount = 0;
+            DataTable dtUndetectedImage = null;
+
             // 画像取込を行う
             Task<Boolean> taskInputFaultImage =
                 Task<Boolean>.Run(() => BolInputFaultImage(
@@ -295,13 +299,29 @@ namespace ImageChecker
                 strFaultImageFileName = strFaultImageFolderName;
             }
 
-            // 画像数のチェック・再取込を行う
-            Task<Boolean> taskReInputFaultImage =
-                Task<Boolean>.Run(() => BolReInputFaultImage(
+            // 画像数のチェックを行う
+            bolCheckImageResult =
+                bolCheckImageCount(
+                    ref dtUndetectedImage,
+                    ref intRecordCount,
                     intInspectionNum,
                     strInspectionDate,
                     strUnitNum,
                     strFabricName,
+                    strFaultImageFileName,
+                    strLogMessage);
+
+            if (bolCheckImageResult.Equals(true))
+            {
+                return true;
+            }
+
+            // 画像数のチェック・再取込を行う
+            Task<Boolean> taskReInputFaultImage =
+                Task<Boolean>.Run(() => BolReInputFaultImage(
+                    dtUndetectedImage,
+                    intRecordCount,
+                    strUnitNum,
                     strFaultImageFileName,
                     strLogMessage));
 
@@ -336,6 +356,11 @@ namespace ImageChecker
             {
                 return false;
             }
+
+            int intIndex = 1;
+
+            // zipファイルパスリスト
+            List<string> listZipFilePath = new List<string>();
 
             // NG画像連携ディレクトリ
             string strNgImageCooperationDirectory = string.Empty;
@@ -392,7 +417,7 @@ namespace ImageChecker
                     g_CON_LEVEL_INFO,
                     string.Format(
                         "{0}{1}{2}",
-                        "▼完了通知のZIPファイル取込処理を開始します。",
+                        "▼完了通知のzipファイル取込処理を開始します。",
                         Environment.NewLine,
                         strLogMessage));
             }
@@ -406,65 +431,105 @@ namespace ImageChecker
             // zipファイルパス
             string strZipFilePath = Path.Combine(strNgImageCooperationDirectory, strZipFileName);
 
-            // ログ出力
-            WriteEventLog(
-                g_CON_LEVEL_INFO,
-                string.Format(
-                    "{0}{1}{2}{3}zipファイル:{4}{5}解凍先:{6}",
-                    "▼解凍処理を開始します。",
-                    Environment.NewLine,
-                    strLogMessage,
-                    Environment.NewLine,
-                    strZipFilePath,
-                    Environment.NewLine,
-                    strDecompressionSubDirectory));
+            if (File.Exists(strZipFilePath))
+            {
+                listZipFilePath.Add(strZipFilePath);
+            }
+            else
+            {
+                // 「ファイル名 + 連番」のzipファイル名を設定する
+                strZipFilePath = CreateFaultImageZipPath(strNgImageCooperationDirectory, strFaultImageFileName, intIndex);
+            }
 
-            // zipファイルを解凍する
-            Task<Boolean> taskExtractZipAll =
-                Task<Boolean>.Run(() => ExtractZipAll(
-                    strZipFilePath,
-                    strDecompressionDirectory,
-                    strDecompressionSubDirectory,
-                    strLogMessage));
+            // 「ファイル名 + 連番」のzipファイルを探索する
+            if (listZipFilePath.Count == 0 &&
+                File.Exists(strZipFilePath))
+            {
+                do
+                {
+                    listZipFilePath.Add(strZipFilePath);
+                    intIndex++;
+                    strZipFilePath = CreateFaultImageZipPath(strNgImageCooperationDirectory, strFaultImageFileName, intIndex);
+                }
+                while (File.Exists(strZipFilePath));
+            }
 
-            await Task.Delay(1000);
+            if (listZipFilePath.Count == 0)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_INFO,
+                    string.Format(
+                        "{0}{1}{2}",
+                        "▼zipファイルが見つかりませんでした。",
+                        Environment.NewLine,
+                        strLogMessage));
 
-            // 解凍処理のプロセス優先度を変更する
-            ChangeProcessingPriority(g_strProcessName7zip);
+                return false;
+            }
 
-            await taskExtractZipAll;
-
-            // 解凍有無をチェックする
-            if (!taskExtractZipAll.Result)
+            foreach (string strZipFile in listZipFilePath)
             {
                 // ログ出力
                 WriteEventLog(
                     g_CON_LEVEL_INFO,
                     string.Format(
                         "{0}{1}{2}{3}zipファイル:{4}{5}解凍先:{6}",
-                        "▼解凍処理が失敗しました。",
+                        "▼解凍処理を開始します。",
                         Environment.NewLine,
                         strLogMessage,
                         Environment.NewLine,
-                        strZipFilePath,
+                        strZipFile,
                         Environment.NewLine,
                         strDecompressionSubDirectory));
 
-                return false;
-            }
+                // zipファイルを解凍する
+                Task<Boolean> taskExtractZipAll =
+                    Task<Boolean>.Run(() => ExtractZipAll(
+                        strZipFile,
+                        strDecompressionDirectory,
+                        strDecompressionSubDirectory,
+                        strLogMessage));
 
-            // ログ出力
-            WriteEventLog(
-                g_CON_LEVEL_INFO,
-                string.Format(
-                    "{0}{1}{2}{3}zipファイル:{4}{5}解凍先:{6}",
-                    "▼解凍処理が成功しました。",
-                    Environment.NewLine,
-                    strLogMessage,
-                    Environment.NewLine,
-                    strZipFilePath,
-                    Environment.NewLine,
-                    strDecompressionSubDirectory));
+                await Task.Delay(1000);
+
+                // 解凍処理のプロセス優先度を変更する
+                ChangeProcessingPriority(g_strProcessName7zip);
+
+                await taskExtractZipAll;
+
+                // 解凍有無をチェックする
+                if (!taskExtractZipAll.Result)
+                {
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_INFO,
+                        string.Format(
+                            "{0}{1}{2}{3}zipファイル:{4}{5}解凍先:{6}",
+                            "▼解凍処理が失敗しました。",
+                            Environment.NewLine,
+                            strLogMessage,
+                            Environment.NewLine,
+                            strZipFile,
+                            Environment.NewLine,
+                            strDecompressionSubDirectory));
+
+                    return false;
+                }
+
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_INFO,
+                    string.Format(
+                        "{0}{1}{2}{3}zipファイル:{4}{5}解凍先:{6}",
+                        "▼解凍処理が成功しました。",
+                        Environment.NewLine,
+                        strLogMessage,
+                        Environment.NewLine,
+                        strZipFile,
+                        Environment.NewLine,
+                        strDecompressionSubDirectory));
+            }
 
             if (bolUndetectedImageFlag)
             {
@@ -536,7 +601,7 @@ namespace ImageChecker
                     g_CON_LEVEL_INFO,
                     string.Format(
                         "{0}{1}{2}",
-                        "▼完了通知のZIPファイル取込処理が成功しました。",
+                        "▼完了通知のzipファイル取込処理が成功しました。",
                         Environment.NewLine,
                         strLogMessage));
             }
@@ -545,15 +610,33 @@ namespace ImageChecker
         }
 
         /// <summary>
-        /// 欠点画像再取込
+        /// 画像数チェック
         /// </summary>
+        /// <param name="strNgImageCooperationDirectory">NG画像連携ディレクトリ</param>
+        /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
+        /// <param name="intIndex">連番</param>
+        public static string CreateFaultImageZipPath(
+            string strNgImageCooperationDirectory,
+            string strFaultImageFileName,
+            int intIndex)
+        {
+            return Path.Combine(strNgImageCooperationDirectory, string.Format("{0}_{1:D2}.zip", strFaultImageFileName, intIndex));
+        }
+
+        /// <summary>
+        /// 画像数チェック
+        /// </summary>
+        /// <param name="dtUndetectedImage">未検知データ</param>
+        /// <param name="intRecordCount">レコード件数</param>
         /// <param name="intInspectionNum">検査番号</param>
         /// <param name="strInspectionDate">検査日付</param>
         /// <param name="strUnitNum">号機</param>
         /// <param name="strFabricName">反番</param>
         /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
         /// <param name="strLogMessage">ログメッセージ</param>
-        public static async Task<Boolean> BolReInputFaultImage(
+        public static bool? bolCheckImageCount(
+            ref DataTable dtUndetectedImage,
+            ref int intRecordCount,
             int intInspectionNum,
             string strInspectionDate,
             string strUnitNum,
@@ -565,7 +648,6 @@ namespace ImageChecker
             DataTable dtData = null;
             string strSQL = string.Empty;
             string strFaultImageDecompressionDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
-            int intTotalCount = 0;
             int intImageCount = 0;
 
             try
@@ -589,9 +671,11 @@ namespace ImageChecker
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
-                intTotalCount = Convert.ToInt32(dtData.Rows[0]["TotalCount"]);
+                intRecordCount = Convert.ToInt32(dtData.Rows[0]["TotalCount"]);
 
-                dtData = new DataTable();
+                Thread.Sleep(10);
+
+                dtUndetectedImage = new DataTable();
 
                 // 合否判定結果テーブルに登録されている未検知画像情報を取得する
                 strSQL = @"SELECT DISTINCT(org_imagepath)
@@ -622,7 +706,10 @@ namespace ImageChecker
                         Environment.NewLine,
                         ex.Message));
 
-                return false;
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return null;
             }
 
             try
@@ -632,7 +719,7 @@ namespace ImageChecker
                 intImageCount = diFaultImage.GetFiles().Where(x => string.Compare(x.Extension, ".jpg", true) == 0).Count();
 
                 // 現在の画像数を比較する
-                if (intImageCount >= intTotalCount)
+                if (intImageCount >= intRecordCount)
                 {
                     // ログ出力
                     WriteEventLog(
@@ -643,7 +730,7 @@ namespace ImageChecker
                             Environment.NewLine,
                             strLogMessage,
                             Environment.NewLine,
-                            intTotalCount,
+                            intRecordCount,
                             Environment.NewLine,
                             intImageCount));
 
@@ -656,13 +743,15 @@ namespace ImageChecker
                         g_CON_LEVEL_INFO,
                         string.Format(
                             "{0}{1}{2}{3}想定枚数:{4}{5}配置枚数:{6}",
-                            "▼欠点画像が不足しているため、ZIPファイルの再取り込み処理を実行します。",
+                            "▼欠点画像が不足しているため、zipファイルの再取り込み処理を実行します。",
                             Environment.NewLine,
                             strLogMessage,
                             Environment.NewLine,
-                            intTotalCount,
+                            intRecordCount,
                             Environment.NewLine,
                             intImageCount));
+
+                    return false;
                 }
             }
             catch (Exception ex)
@@ -680,8 +769,30 @@ namespace ImageChecker
                         Environment.NewLine,
                         ex.Message));
 
-                return false;
+                // メッセージ出力
+                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return null;
             }
+        }
+
+        /// <summary>
+        /// 欠点画像再取込
+        /// </summary>
+        /// <param name="intRecordCount">レコード件数</param>
+        /// <param name="strUnitNum">号機</param>
+        /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
+        /// <param name="strLogMessage">ログメッセージ</param>
+        public static async Task<Boolean> BolReInputFaultImage(
+            DataTable dtUndetectedImage,
+            int intRecordCount,
+            string strUnitNum,
+            string strFaultImageFileName,
+            string strLogMessage)
+        {
+            DirectoryInfo diFaultImage = null;
+            string strFaultImageDecompressionDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
+            int intImageCount = 0;
 
             // 欠点画像の取込を行う
             Task<Boolean> taskInputFaultImage = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, strFaultImageFileName, strLogMessage));
@@ -693,7 +804,7 @@ namespace ImageChecker
             }
 
             // 未検知画像の取込を行う
-            foreach (DataRow row in dtData.Rows)
+            foreach (DataRow row in dtUndetectedImage.Rows)
             {
                 Task<Boolean> taskInputFaultImageUndetected = Task<Boolean>.Run(() => BolInputFaultImage(strUnitNum, row["org_imagepath"].ToString().Replace(".jpg", string.Empty), strLogMessage, true, strFaultImageFileName));
                 await taskInputFaultImageUndetected;
@@ -717,7 +828,7 @@ namespace ImageChecker
                 }
 
                 // 解凍した画像数と比較する
-                if (intImageCount >= intTotalCount)
+                if (intImageCount >= intRecordCount)
                 {
                     // ログ出力
                     WriteEventLog(
@@ -728,7 +839,7 @@ namespace ImageChecker
                             Environment.NewLine,
                             strLogMessage,
                             Environment.NewLine,
-                            intTotalCount,
+                            intRecordCount,
                             Environment.NewLine,
                             intImageCount));
                 }
@@ -739,11 +850,11 @@ namespace ImageChecker
                         g_CON_LEVEL_INFO,
                         string.Format(
                             "{0}{1}{2}{3}想定枚数:{4}{5}配置枚数:{6}",
-                            "▼ZIPファイルの再取り込み処理を実行しましたが、欠点画像が不足しています。",
+                            "▼zipファイルの再取り込み処理を実行しましたが、欠点画像が不足しています。",
                             Environment.NewLine,
                             strLogMessage,
                             Environment.NewLine,
-                            intTotalCount,
+                            intRecordCount,
                             Environment.NewLine,
                             intImageCount));
 

@@ -60,7 +60,8 @@ namespace ImageChecker
             }
             catch (InvalidOperationException ioex)
             {
-                if (ioex.Message.Equals("Connection already open"))
+                if (ioex.Message.Equals("Connection already open") ||
+                    ioex.Message.Equals("The connection is already in state 'Executing'"))
                 {
                     // 再帰処理でオープンを試みる
                     DbOpen();
@@ -93,6 +94,18 @@ namespace ImageChecker
                 {
                     NpgsqlCon.Close();
                 }
+
+                if (NpgsqlTran != null)
+                {
+                    NpgsqlTran.Dispose();
+                    NpgsqlTran = null;
+                }
+
+                if (NpgsqlCon != null)
+                {
+                    NpgsqlCon.Dispose();
+                    NpgsqlCon = null;
+                }
             }
             catch (Exception ex)
             {
@@ -100,17 +113,7 @@ namespace ImageChecker
             }
             finally
             {
-                //if (NpgsqlTran != null)
-                //{
-                //    NpgsqlTran.Dispose();
-                //    NpgsqlTran = null;
-                //}
 
-                //if (NpgsqlCon != null)
-                //{
-                //    NpgsqlCon.Dispose();
-                //    NpgsqlCon = null;
-                //}
             }
         }
 
