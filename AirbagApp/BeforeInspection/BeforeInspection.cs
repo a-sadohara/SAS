@@ -1593,12 +1593,6 @@ namespace BeforeInspection
                     return;
                 }
 
-                // 検査情報ヘッダーの更新
-                if (UpdEndInspectionInfoHeader(m_intInspectionNum, m_intBranchNum, lblEndDatetime.Text, false) == false)
-                {
-                    return;
-                }
-
                 // 終了時刻
                 lblEndDatetime.Text = string.Empty;
 
