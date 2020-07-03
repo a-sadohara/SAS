@@ -63,7 +63,7 @@ def update_processing_status(conn, cur, fabric_name, inspection_num, processing_
 
     logger.debug('[%s:%s] 処理ステータス更新SQL %s' % (app_id, app_name, sql))
     # 処理ステータス（リサイズ完了）を更新する。
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
     return result, conn, cur
 
 
@@ -132,7 +132,7 @@ def marking_process(output_path, masking_result, marking_color, line_width):
 # ------------------------------------------------------------------------------------
 def read_result_file(result_file):
     # マスキング判定結果CSVファイルを読込む
-    result, result_data = file_util.read_result_file(result_file, logger, app_id, app_name)
+    result, result_data, error = file_util.read_result_file(result_file, logger, app_id, app_name)
 
     return result, result_data
 
@@ -151,6 +151,7 @@ def read_result_file(result_file):
 def move_image(image_path, output_path, save_path):
     result = False
     file_name = os.path.basename(image_path)
+    logger.info('[%s:%s] %s %s' % (app_id, app_name, file_name, output_path))
     # 移動先に既にファイルが存在するか確認する。
     if os.path.exists(output_path + "\\" + file_name):
         result = True
@@ -158,12 +159,12 @@ def move_image(image_path, output_path, save_path):
 
     # ファイルが存在しない場合、ファイルを移動させる。
     else:
-        mk_result = file_util.make_directory(output_path, logger, app_id, app_name)
+        mk_result, error = file_util.make_directory(output_path, logger, app_id, app_name)
         if mk_result:
-            mv_result = file_util.move_file(image_path, output_path + "\\" + file_name, logger, app_id, app_name)
+            mv_result, error = file_util.move_file(image_path, output_path, logger, app_id, app_name)
             if mv_result:
                 # ファイル移動後に、別名（marking_*.jpg）でコピーする。
-                cp_result = file_util.copy_file(output_path + "\\" + file_name, save_path, logger, app_id, app_name)
+                cp_result, error = file_util.copy_file(output_path + "\\" + file_name, save_path, logger, app_id, app_name)
                 if cp_result:
                     result = True
                     return result
@@ -201,7 +202,7 @@ def update_marking_image_name(conn, cur, fabric_name, inspection_num, ng_image, 
 
     logger.debug('[%s:%s] マーキング画像名更新SQL %s' % (app_id, app_name, sql))
     # 処理ステータス（リサイズ完了）を更新する。
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
     return result, conn, cur
 
 

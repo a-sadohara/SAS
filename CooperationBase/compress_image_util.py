@@ -6,6 +6,7 @@ import logging.config
 import os
 import shutil
 import re
+import sys
 from pathlib import Path
 
 import error_detail
@@ -44,11 +45,12 @@ app_name = inifile.get('APP', 'app_name')
 #
 # ------------------------------------------------------------------------------------
 def exists_dir(target_path, logger):
+    func_name = sys._getframe().f_code.co_name
     logger.debug('[%s:%s] フォルダを作成します。フォルダ名：[%s]',
                  app_id, app_name, target_path, logger)
-    result = file_util.make_directory(target_path, logger, app_id, app_name)
+    result, error = file_util.make_directory(target_path, logger, app_id, app_name)
 
-    return result
+    return result, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -73,6 +75,8 @@ def exec_compress_and_transfer(
         archive_ng_image_file_path,
         undetected_image_flag, logger):
     result = False
+    func_name = sys._getframe().f_code.co_name
+    error = None
     try:
         ### 設定ファイルからの値取得
         # 連携基盤のルートディレクトリ
@@ -105,12 +109,12 @@ def exec_compress_and_transfer(
             # 合否確認・判定登録部へのファイル送信パス（検査完了通知）
             undetected_image_file_path = inifile.get('PATH', 'undetected_image_file_path')
             undetected_image_file_path = '\\\\' + send_hostname + '\\' + undetected_image_file_path
-            tmp_result, ng_image_zip_file_path = ng_image_compress_undetected_image(
+            tmp_result, ng_image_zip_file_path, error, func_name = ng_image_compress_undetected_image(
                 archive_ng_image_file_path, image_root_path, logger)
 
         else:
 
-            tmp_result, ng_image_zip_file_path = ng_image_compress(image_root_path,
+            tmp_result, ng_image_zip_file_path, error, func_name = ng_image_compress(image_root_path,
                                                                    imaging_starttime, product_name,
                                                                    fabric_name, inspection_num, logger)
         if tmp_result:
@@ -119,14 +123,14 @@ def exec_compress_and_transfer(
             else:
                 logger.debug('[%s:%s] NG画像が存在しませんでした。', app_id, app_name)
                 result = True
-                return result
+                return result, error, func_name
         else:
             logger.error('[%s:%s] NG画像圧縮に失敗しました。', app_id, app_name)
-            return result
+            return result, error, func_name
 
         ### 検査完了通知作成
         logger.debug('[%s:%s] 検査完了通知作成を開始します。', app_id, app_name)
-        tmp_result, inspection_file_path, undetected_image_file_path = \
+        tmp_result, inspection_file_path, undetected_image_file_path, error, func_name = \
             make_inspection_completion_notification(
                 undetected_image_flag, product_name, fabric_name, inspection_num, imaging_starttime, rk_root_path,
                 ng_image_zip_file_path, logger)
@@ -135,12 +139,12 @@ def exec_compress_and_transfer(
             logger.debug('[%s:%s] 検査完了通知作成が終了しました。', app_id, app_name)
         else:
             logger.error('[%s:%s] 検査完了通知作成に失敗しました。', app_id, app_name)
-            return result
+            return result, error, func_name
 
         ### ファイル転送
         logger.debug('[%s:%s] ファイル転送を開始します。', app_id, app_name)
         send_undetected_image_file_path = send_inspection_file_path
-        tmp_result = send_file(undetected_image_flag, ng_image_zip_file_path, inspection_file_path,
+        tmp_result, error, func_name = send_file(undetected_image_flag, ng_image_zip_file_path, inspection_file_path,
                                undetected_image_file_path, send_ng_image_file_path, send_inspection_file_path,
                                send_undetected_image_file_path, logger)
 
@@ -148,7 +152,7 @@ def exec_compress_and_transfer(
             logger.debug('[%s:%s] ファイル転送が終了しました。', app_id, app_name)
         else:
             logger.error('[%s:%s] ファイル転送に失敗しました。', app_id, app_name)
-            return result
+            return result, error, func_name
 
         # NG画像圧縮・転送機能以外から実行された際は、終了ログメッセージを表示する
         if undetected_image_flag == undetected_image_flag_is_undetected:
@@ -159,11 +163,11 @@ def exec_compress_and_transfer(
 
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result
+    return result, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -183,6 +187,8 @@ def exec_compress_and_transfer(
 def ng_image_compress(image_root_path, imaging_starttime, product_name, fabric_name, inspection_num, logger):
     result = False
     ng_image_zip_file_path = None
+    error = None
+    func_name = sys._getframe().f_code.co_name
     try:
         ### 設定ファイルからの値取得
         # ADD 20200701 KQRM 下吉 START
@@ -204,20 +210,20 @@ def ng_image_compress(image_root_path, imaging_starttime, product_name, fabric_n
         ng_image_path = image_root_path + '\\' \
                         + path_name + '\\'
 
-        tmp_file_list = exists_dir(ng_image_path, logger)
+        tmp_file_list, error, func_name = exists_dir(ng_image_path, logger)
         if tmp_file_list:
             logger.debug('[%s:%s] NG画像フォルダ存在チェックが終了しました。', app_id, app_name)
         else:
             logger.error('[%s:%s] NG画像フォルダ存在チェックに失敗しました。', app_id, app_name)
 
         logger.debug('[%s:%s] NG画像ファイルの確認を開始します。', app_id, app_name)
-        tmp_result, ng_image_files = get_file(ng_image_path, ng_image_file_name_pattern, logger)
+        tmp_result, ng_image_files, error, func_name = get_file(ng_image_path, ng_image_file_name_pattern, logger)
 
         if tmp_result:
             logger.debug('[%s:%s] NG画像ファイルの確認が完了しました。', app_id, app_name)
         else:
             logger.error('[%s:%s] NG画像ファイルの確認に失敗しました。', app_id, app_name)
-            return result, ng_image_zip_file_path
+            return result, ng_image_zip_file_path, error, func_name
 
         logger.debug('[%s:%s] NG画像ファイル:[%s]', app_id, app_name, ng_image_files)
 
@@ -249,7 +255,7 @@ def ng_image_compress(image_root_path, imaging_starttime, product_name, fabric_n
 
                 # 分割作業のため、フォルダ名を変更し、ファイル情報を再取得する
                 os.rename(default_path, work_path)
-                tmp_result, ng_image_files = get_file(work_path + '\\', ng_image_file_name_pattern, logger)
+                tmp_result, ng_image_files, error, func_name = get_file(work_path + '\\', ng_image_file_name_pattern, logger)
 
                 # 画像分割枚数毎に区切ったファイル情報の配列を生成する
                 divided_array = [ng_image_files[i:i + int(image_division_number)] for i in range(0, len(ng_image_files), int(image_division_number))]
@@ -264,7 +270,7 @@ def ng_image_compress(image_root_path, imaging_starttime, product_name, fabric_n
                             app_id,
                             app_name,
                             default_path)
-                        return result, default_path
+                        return result, default_path, error, func_name
 
                     for image_path in array:
                         # 画像をフォルダにコピーする
@@ -276,7 +282,7 @@ def ng_image_compress(image_root_path, imaging_starttime, product_name, fabric_n
                                 app_id,
                                 app_name,
                                 image_path)
-                            return result, default_path
+                            return result, default_path, error, func_name
 
                     # zipファイル名に連番を付与する
                     target_path = default_path + '_' + str(index).zfill(2)
@@ -308,11 +314,11 @@ def ng_image_compress(image_root_path, imaging_starttime, product_name, fabric_n
 
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result, ng_image_zip_file_path
+    return result, ng_image_zip_file_path, error, func_name
 
 # ADD 20200701 KQRM 下吉 START
 # ------------------------------------------------------------------------------------
@@ -360,6 +366,8 @@ def compress_process(archive_ng_image_file_path, image_root_path, path_name, log
 def ng_image_compress_undetected_image(archive_ng_image_file_path, output_path, logger):
     result = False
     ng_image_zip_file_path = None
+    error = None
+    func_name = sys._getframe().f_code.co_name
     try:
         root_dir = os.path.dirname(archive_ng_image_file_path)
         base_dir = os.path.basename(archive_ng_image_file_path)
@@ -375,11 +383,11 @@ def ng_image_compress_undetected_image(archive_ng_image_file_path, output_path, 
 
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result, ng_image_zip_file_path
+    return result, ng_image_zip_file_path, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -404,6 +412,8 @@ def make_inspection_completion_notification(
     result = False
     result_inspection_file_path = None
     result_undetected_image_file_path = None
+    error = None
+    func_name = sys._getframe().f_code.co_name
 
     try:
         ### 設定ファイルからの値取得
@@ -442,11 +452,11 @@ def make_inspection_completion_notification(
 
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result, result_inspection_file_path, result_undetected_image_file_path
+    return result, result_inspection_file_path, result_undetected_image_file_path, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -470,6 +480,8 @@ def send_file(
         ng_image_archive_file_path, inspection_file_path, undetected_image_file_path,
         send_ng_image_file_path, send_inspection_file_path, send_undetected_image_file_path, logger):
     result = False
+    func_name = sys._getframe().f_code.co_name
+    error = None
     try:
         ### 設定ファイルからの値取得
         # 未検知画像フラグ:未検知画像である
@@ -490,29 +502,29 @@ def send_file(
 
         # ADD 20200701 KQRM 下吉 START
         if type(ng_image_archive_file_path) is str:
-            tmp_result = file_util.move_file(ng_image_archive_file_path, send_ng_image_file_path, logger, app_id, app_name)
+            tmp_result, error = file_util.move_file(ng_image_archive_file_path, send_ng_image_file_path, logger, app_id, app_name)
 
             if tmp_result:
                 logger.debug('[%s:%s] NG画像のファイル転送が終了しました。', app_id, app_name)
             else:
                 logger.error('[%s:%s] NG画像のファイル転送に失敗しました。', app_id, app_name)
-                return result
+                return result, error, func_name
         else:
             for zip_path in ng_image_archive_file_path:
-                tmp_result = file_util.move_file(zip_path, send_ng_image_file_path, logger, app_id, app_name)
+                tmp_result, error = file_util.move_file(zip_path, send_ng_image_file_path, logger, app_id, app_name)
 
                 if tmp_result:
                     logger.debug('[%s:%s] NG画像のファイル転送が終了しました。', app_id, app_name)
                 else:
                     logger.error('[%s:%s] NG画像のファイル転送に失敗しました。', app_id, app_name)
-                    return result
+                    return result, error, func_name
         # ADD 20200701 KQRM 下吉 END
 
         # 未検知画像登録完了
         if undetected_image_flag == undetected_image_flag_is_undetected:
             # 未検知画像の場合
             logger.debug('[%s:%s] 未検知画像登録完了のファイル転送を開始します。', app_id, app_name)
-            tmp_result = file_util.move_file(undetected_image_file_path, send_undetected_image_file_path, logger,
+            tmp_result, error = file_util.move_file(undetected_image_file_path, send_undetected_image_file_path, logger,
                                              app_id,
                                              app_name)
 
@@ -520,26 +532,26 @@ def send_file(
                 logger.debug('[%s:%s] 未検知画像登録完了のファイル転送が終了しました。', app_id, app_name)
             else:
                 logger.error('[%s:%s] 未検知画像登録完了のファイル転送に失敗しました。', app_id, app_name)
-                return result
+                return result, error, func_name
 
         else:
             # 検査完了通知
             logger.debug('[%s:%s] 検査完了通知のファイル転送を開始します。', app_id, app_name)
-            tmp_result = file_util.move_file(inspection_file_path, send_inspection_file_path, logger, app_id, app_name)
+            tmp_result, error = file_util.move_file(inspection_file_path, send_inspection_file_path, logger, app_id, app_name)
 
             if tmp_result:
                 logger.debug('[%s:%s] 検査完了通知のファイル転送が終了しました。', app_id, app_name)
             else:
                 logger.error('[%s:%s] 検査完了通知のファイル転送に失敗しました。', app_id, app_name)
-                return result
+                return result, error, func_name
 
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result
+    return result, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -556,13 +568,15 @@ def send_file(
 def get_file(file_path, file_name, logger):
     result = False
     file_list = None
+    func_name = sys._getframe().f_code.co_name
+    error = None
 
     try:
         logger.debug('[%s:%s] 撮像画像ファイル格納フォルダパス=[%s]', app_id, app_name, file_path)
 
         # 共通関数で撮像画像ファイル格納フォルダ情報を取得する
         file_list = None
-        tmp_result, file_list = file_util.get_file_list(file_path, file_name, logger, app_id, app_name)
+        tmp_result, file_list, error = file_util.get_file_list(file_path, file_name, logger, app_id, app_name)
 
         if tmp_result:
             # 成功時
@@ -570,12 +584,12 @@ def get_file(file_path, file_name, logger):
         else:
             # 失敗時
             logger.error("[%s:%s] 撮像画像ファイル格納フォルダにアクセス出来ません。", app_id, app_name)
-            return result, file_list
+            return result, file_list, error, func_name
 
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result, file_list
+    return result, file_list, error, func_name

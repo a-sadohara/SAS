@@ -42,7 +42,7 @@ app_name = inifile.get('APP', 'app_name')
 # 戻り値             ：処理結果（True:成功、False:失敗）
 # ------------------------------------------------------------------------------------
 def exec_patrite(file_name , logger, app_id, app_name):
-    result = file_util.light_patlite(file_name, logger, app_id, app_name)
+    result, error = file_util.light_patlite(file_name, logger, app_id, app_name)
 
     return result
 
@@ -85,7 +85,7 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime, image_pat
         ### NG画像圧縮、検査完了通知作成、ファイル転送
 
         logger.debug('[%s:%s] NG画像圧縮、検査完了通知作成、ファイル転送を開始します。', app_id, app_name)
-        tmp_result = compress_image_util.exec_compress_and_transfer(
+        tmp_result, error, func_name = compress_image_util.exec_compress_and_transfer(
         product_name, fabric_name, inspection_num, imaging_starttime,
         image_path, target_ng_image_path, undetected_image_flag_is_undetected, logger)
 

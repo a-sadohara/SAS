@@ -23,4 +23,3 @@ if !ERRORLEVEL! == 0 (
 ) else (
     echo MsgBox "エラーが発生しました。" ^& vbCr ^& "エラーログを確認してください。"^& vbCr ^& "" , vbOKOnly + vbCritical, "エラー" > %TEMP%\error_msgbox.vbs & %TEMP%\error_msgbox.vbs
 )
-

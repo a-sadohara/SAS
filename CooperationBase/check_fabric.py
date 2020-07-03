@@ -15,15 +15,13 @@ import datetime
 import configparser
 import time
 from multiprocessing import Pool
-import multiprocessing as multi
-import gc
 
+import marking_image
 import db_util
 import error_detail
 import error_util
 import file_util
-import masking_fabric
-import marking_image
+
 
 # ログ設定
 logging.config.fileConfig("D:/CI/programs/config/logging_check_fabric.conf", disable_existing_loggers=False)
@@ -53,8 +51,8 @@ app_name = inifile.get('APP', 'app_name')
 # ------------------------------------------------------------------------------------
 def create_connection():
     # DBに接続する。
-    conn, cur, res = db_util.create_connection(logger, app_id, app_name)
-    return conn, cur, res
+    result, error, conn, cur = db_util.create_connection(logger, app_id, app_name)
+    return result, conn, cur
 
 
 # ------------------------------------------------------------------------------------
@@ -80,7 +78,7 @@ def select_fabric_info(conn, cur, status, unit_num):
 
     logger.debug('[%s:%s] 検査情報取得SQL %s' % (app_id, app_name, sql))
     # 反物情報テーブルから総撮像枚数、処理済枚数、撮像完了時刻を取得する。
-    result, fabric_info, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    result, fabric_info, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
 
     return result, fabric_info, conn, cur
 
@@ -111,7 +109,7 @@ def select_ng_info(conn, cur, fabric_info, inspection_num, rapid_ng_status, insp
 
     logger.debug('[%s:%s] NG情報取得SQL %s' % (app_id, app_name, sql))
     # 反物情報テーブルから総撮像枚数、処理済枚数、撮像完了時刻を取得する。
-    result, ng_list, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+    result, ng_list, error, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
 
     return result, ng_list, conn, cur
 
@@ -150,7 +148,7 @@ def create_csv(image_path, csv_path, product_name, fabric_name, inspection_num, 
                         + "_" + str(file_num) + "_" + ng_csv_name
 
         # CSVファイル出力先の作成
-        tmp_result = file_util.make_directory(csv_path, logger, app_id, app_name)
+        tmp_result, error = file_util.make_directory(csv_path, logger, app_id, app_name)
 
         if tmp_result:
             pass
@@ -212,7 +210,7 @@ def update_fabric_info(conn, cur, fabric_name, inspection_num, status, column, t
 
     logger.debug('[%s:%s] 反物情報テーブル更新SQL %s' % (app_id, app_name, sql))
     ### 反物情報テーブルを更新
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -246,7 +244,7 @@ def update_processing_status(conn, cur, fabric_name, inspection_num, processing_
 
     logger.debug('[%s:%s] 処理ステータス更新SQL %s' % (app_id, app_name, sql))
     ### 反物情報テーブルを更新
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -274,7 +272,7 @@ def update_processing_status_all(conn, cur, fabric_name, inspection_num, update_
 
     logger.debug('[%s:%s] 全処理ステータス更新SQL %s' % (app_id, app_name, sql))
     ### 反物情報テーブルを更新
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -300,7 +298,7 @@ def filter_fabric(file, fabric_result, white):
         window_height = fabric_result["height"]
 
         # 画像読み込み
-        result, img_org = file_util.read_image(file, logger, app_id, app_name)
+        result, img_org, error = file_util.read_image(file, logger, app_id, app_name)
         crop_img = img_org[crop_y:crop_y + window_height, crop_x:crop_x + window_width]
 
         # グレースケール化
@@ -362,7 +360,7 @@ def check_fabric(ng_result_file, checkfabric_result_file, label_ng, label_others
     try:
         # 結果ファイル読み込み
         logger.debug('[%s:%s] 結果ファイル読込を開始します。 ' % (app_id, app_name))
-        tmp_result, result_data = file_util.read_result_file(ng_result_file, logger, app_id, app_name)
+        tmp_result, result_data, error = file_util.read_result_file(ng_result_file, logger, app_id, app_name)
 
         if tmp_result:
             logger.debug('[%s:%s] 結果ファイル読込が終了しました。 ' % (app_id, app_name))
@@ -419,11 +417,13 @@ def check_fabric(ng_result_file, checkfabric_result_file, label_ng, label_others
                         and str(process_list[i][4]) == str(ng_result["point"]["x"]) \
                         and str(process_list[i][5]) == str(ng_result["point"]["y"]):
                     process_list[i].append(label_others)
+                    process_list[i].append(label_others)
                     continue
 
                 elif ng_result["label"] == label_ng and process_list[i][3] == ng_result["filename"] \
                         and str(process_list[i][4]) == str(ng_result["point"]["x"]) \
                         and str(process_list[i][5]) == str(ng_result["point"]["y"]):
+                    process_list[i].append(label_ng)
                     process_list[i].append(label_ng)
                     continue
                 else:
@@ -433,7 +433,7 @@ def check_fabric(ng_result_file, checkfabric_result_file, label_ng, label_others
 
         # 結果ファイルの出力
         logger.debug('[%s:%s] 端判定結果CSVファイルの出力を開始します。 ' % (app_id, app_name))
-        tmp_result = file_util.write_result_file(checkfabric_result_file, result_data, image_dir, logger,
+        tmp_result, error = file_util.write_result_file(checkfabric_result_file, result_data, image_dir, logger,
                                                  app_id, app_name)
         if tmp_result:
             logger.debug('[%s:%s] 端判定結果CSVファイルの出力が終了しました。 ' % (app_id, app_name))
@@ -474,7 +474,7 @@ def select_rapid_endtime(conn, cur, fabric_name, inspection_num, imaging_startti
 
     logger.debug('[%s:%s] RAPID完了時刻取得SQL %s' % (app_id, app_name, sql))
     # 反物情報テーブルから総撮像枚数、処理済枚数、撮像完了時刻を取得する。
-    result, fabric_info, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    result, fabric_info, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
 
     return result, fabric_info, conn, cur
 
@@ -482,7 +482,7 @@ def select_rapid_endtime(conn, cur, fabric_name, inspection_num, imaging_startti
 # ------------------------------------------------------------------------------------
 # 処理名             ：RAPID解析情報テーブル更新
 #
-# 処理概要           ：1.端判定、マスキング判定結果をRAPID解析情報テーブルに反映する。
+# 処理概要           ：1.端判定判定結果をRAPID解析情報テーブルに反映する。
 #
 # 引数               ：コネクションオブジェクト
 #                      カーソルオブジェクトステータス
@@ -490,7 +490,6 @@ def select_rapid_endtime(conn, cur, fabric_name, inspection_num, imaging_startti
 #                      検査番号
 #                      処理ID
 #                      端判定結果
-#                      マスキング判定結果
 #                      連番
 #
 # 戻り値             ：コネクションオブジェクト
@@ -506,7 +505,7 @@ def update_rapid_anarysis(conn, cur, fabric_name, inspection_num, processing_id,
 
     logger.debug('[%s:%s] RAPID解析情報テーブル更新SQL %s' % (app_id, app_name, sql))
     ### 反物情報テーブルを更新
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -514,7 +513,7 @@ def update_rapid_anarysis(conn, cur, fabric_name, inspection_num, processing_id,
 # ------------------------------------------------------------------------------------
 # 処理名             ：判定結果登録
 #
-# 処理概要           ：1.端判定とマスキング判定結果を処理情報と紐づけて、RAPID解析情報テーブルを更新する。
+# 処理概要           ：1.端判定判定結果を処理情報と紐づけて、RAPID解析情報テーブルを更新する。
 #
 # 引数               ：カーソルオブジェクト
 #                      コネクションオブジェクト
@@ -614,7 +613,7 @@ def select_masking_result(conn, cur, fabric_name, inspection_num, inspection_dat
 
     logger.debug('[%s:%s] マスキング判定件数取得SQL %s' % (app_id, app_name, sql))
     # 反物情報テーブルから総撮像枚数、処理済枚数、撮像完了時刻を取得する。
-    result, fabric_info, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    result, fabric_info, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
 
     return result, fabric_info, conn, cur
 
@@ -630,7 +629,7 @@ def select_masking_result(conn, cur, fabric_name, inspection_num, inspection_dat
 # 戻り値             ：処理結果（True:成功、False:失敗）
 # ------------------------------------------------------------------------------------
 def close_connection(conn, cur):
-    result = db_util.close_connection(conn, cur, logger, app_id, app_name)
+    result, error = db_util.close_connection(conn, cur, logger, app_id, app_name)
 
     return result
 
@@ -638,7 +637,7 @@ def close_connection(conn, cur):
 # ------------------------------------------------------------------------------------
 # 関数名             ：基底判定処理
 #
-# 処理概要           ：1.端判定、マスキング判定を呼び出す
+# 処理概要           ：1.端判定を呼び出す
 #
 # 引数               ：コネクションオブジェクト
 #                      カーソルオブジェクト
@@ -752,19 +751,6 @@ def base_check_fabric(conn, cur, ng_list, product_name, fabric_name, inspection_
             logger.error('[%s:%s] 端判定が失敗しました。' % (app_id, app_name))
             return result, conn, cur
 
-        masking_result_file = csv_path + "\\" + inspection_date + "_" + product_name + "_" + fabric_name + "_" + str(
-            inspection_num) + "_" + str(file_num) + "_" + masking_csv_name
-
-        logger.debug('[%s:%s] マスキング判定を開始します。' % (app_id, app_name))
-
-        # マスキング判定を呼び出す
-        tmp_result, process_list = masking_fabric.main(checkfabric_result_file, masking_result_file,
-                                                       label_ng, label_others, process_list, inspection_date)
-        if tmp_result:
-            logger.debug('[%s:%s] マスキング判定が終了しました。 %s' % (app_id, app_name, process_list))
-        else:
-            logger.error('[%s:%s] マスキング判定が失敗しました。' % (app_id, app_name))
-            return result, conn, cur
         end_time = datetime.datetime.now()
 
         logger.debug('[%s:%s] 端判定結果及びマスキング判定の結果登録を開始します。' % (app_id, app_name))
@@ -794,14 +780,14 @@ def base_check_fabric(conn, cur, ng_list, product_name, fabric_name, inspection_
             else:
                 logger.error('[%s:%s]  処理ステータスの更新が失敗しました。 [処理ID=%s] [RAPIDサーバーホスト名=%s]' %
                              (app_id, app_name, processing_id, rapid_host_name))
-                return conn, cur, result, process_list
+                return result, conn, cur
 
         conn.commit()
 
         process_id_list.sort(key=lambda x: x[0])
         logger.debug('[%s:%s]  画像マーキング処理を開始します。' % (app_id, app_name))
         tmp_result, conn, cur = marking_image.main(conn, cur, product_name, fabric_name, inspection_num,
-                                                   masking_result_file, process_id_list, imaging_starttime,
+                                                   checkfabric_result_file, process_id_list, imaging_starttime,
                                                    inspection_date, unit_num)
 
         if tmp_result:
@@ -824,8 +810,7 @@ def base_check_fabric(conn, cur, ng_list, product_name, fabric_name, inspection_
 #
 # 処理概要           ：1.反物情報テーブルから検査情報を取得し、NG件数閾値に達した場合
 #                       NG情報からCSVファイルを作成し、端判定を行う。
-#                      2.マスキング判定を呼び出す。
-#                      3.一検査番号の処理が完了したかどうかの判定を行う。
+#                      2.一検査番号の処理が完了したかどうかの判定を行う。
 #
 # 引数               ：コネクションオブジェクト
 #                      カーソルオブジェクト
@@ -927,28 +912,28 @@ def main():
                             rapid_endtime = ng_list[0][6]
 
                             if len(ng_list) >= ng_num:
-                                logger.info('[%s:%s] 端判定・マスキング判定・マーキング処理を開始します。 '
+                                logger.info('[%s:%s] 端判定・マーキング処理を開始します。 '
                                             '[反番, 検査番号, 検査日付]=[%s, %s, %s]' %
                                             (app_id, app_name, fabric_name, inspection_num, inspection_date))
                                 result, conn, cur = base_check_fabric(conn, cur, ng_list, product_name, fabric_name,
                                                                       inspection_num, file_num, imaging_starttime,
                                                                       unit_num)
                                 if result:
-                                    logger.debug('[%s:%s] 端判定・マスキング判定・マーキング処理が終了しました。' % (app_id, app_name))
+                                    logger.debug('[%s:%s] 端判定・マーキング処理が終了しました。' % (app_id, app_name))
                                 else:
-                                    logger.error('[%s:%s] 端判定・マスキング判定・マーキング処理が失敗しました。' % (app_id, app_name))
+                                    logger.error('[%s:%s] 端判定・マーキング処理が失敗しました。' % (app_id, app_name))
                                     sys.exit()
 
                             else:
                                 if rapid_endtime is not None:
-                                    logger.debug('[%s:%s] 端判定・マスキング判定・マーキング処理を開始します。' % (app_id, app_name))
+                                    logger.debug('[%s:%s] 端判定・マーキング処理を開始します。' % (app_id, app_name))
                                     result, conn, cur = base_check_fabric(conn, cur, ng_list, product_name, fabric_name,
                                                                           inspection_num, file_num, imaging_starttime,
                                                                           unit_num)
                                     if result:
-                                        logger.debug('[%s:%s] 端判定・マスキング判定・マーキング処理が終了しました。' % (app_id, app_name))
+                                        logger.debug('[%s:%s] 端判定・マーキング処理が終了しました。' % (app_id, app_name))
                                     else:
-                                        logger.error('[%s:%s] 端判定・マスキング判定・マーキング処理が失敗しました。' % (app_id, app_name))
+                                        logger.error('[%s:%s] 端判定・マーキング処理が失敗しました。' % (app_id, app_name))
                                         sys.exit()
                                 else:
                                     logger.debug('[%s:%s] NG情報が%s件に達しません。' % (app_id, app_name, ng_num))
@@ -970,16 +955,16 @@ def main():
                             sys.exit()
 
                         logger.debug('[%s:%s] 端判定・マスキング判定結果の取得を開始します。' % (app_id, app_name))
-                        # 端判定・マスキング判定結果を取得する
+                        # 端判定定結果を取得する
                         result, rapid_info, conn, cur = select_masking_result(conn, cur, fabric_name, inspection_num,
                                                                               inspection_date, unit_num)
 
                         if result:
-                            logger.debug('[%s:%s] 端判定・マスキング判定結果の取得が終了しました。' % (app_id, app_name))
-                            logger.debug('[%s:%s] 端判定・マスキング判定結果件数: %s' % (app_id, app_name, rapid_info))
+                            logger.debug('[%s:%s] 端判定結果の取得が終了しました。' % (app_id, app_name))
+                            logger.debug('[%s:%s] 端判定結果件数: %s' % (app_id, app_name, rapid_info))
                             conn.commit()
                         else:
-                            logger.error('[%s:%s] 端判定・マスキング判定結果の取得が失敗しました。' % (app_id, app_name))
+                            logger.error('[%s:%s] 端判定結果の取得が失敗しました。' % (app_id, app_name))
                             conn.rollback()
                             sys.exit()
 
@@ -1020,7 +1005,7 @@ def main():
                                 logger.error('[%s:%s] 反物情報テーブルの更新が失敗しました。' % (app_id, app_name))
                                 sys.exit()
 
-                            logger.info('[%s:%s] 端判定、マスキング判定、マーキング処理は正常に終了しました。 '
+                            logger.info('[%s:%s] 端判定、マーキング処理は正常に終了しました。 '
                                         '[反番, 検査番号, 検査日付]=[%s, %s, %s]' %
                                         (app_id, app_name, fabric_name, inspection_num, inspection_date))
 

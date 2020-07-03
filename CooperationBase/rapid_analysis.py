@@ -214,7 +214,7 @@ def get_rapid_server_connect_info(ip_addresses, port_numbers, worker, retry_num,
 #                      カーソルオブジェクト
 # ------------------------------------------------------------------------------------
 def create_connection():
-    result, conn, cur = db_util.create_connection(logger, app_id, app_name)
+    result, error, conn, cur = db_util.create_connection(logger, app_id, app_name)
     return result, conn, cur
 
 
@@ -241,7 +241,8 @@ def select_fabric_info_db_polling(conn, cur, processing_status_status, unit_num)
           ' ,processing_status.imaging_starttime' \
           ' ,processing_status.rapid_starttime' \
           ' from fabric_info,processing_status' \
-          ' where fabric_info.fabric_name = processing_status.fabric_name' \
+          ' where fabric_info.product_name = processing_status.product_name and '\
+          'fabric_info.fabric_name = processing_status.fabric_name' \
           '  and fabric_info.inspection_num = processing_status.inspection_num' \
           '  and fabric_info.unit_num = processing_status.unit_num' \
           '  and processing_status.status = %s and fabric_info.unit_num = \'%s\'' \
@@ -250,7 +251,7 @@ def select_fabric_info_db_polling(conn, cur, processing_status_status, unit_num)
 
     logger.debug('[%s:%s] 反物情報取得（DBポーリング）SQL %s' % (app_id, app_name, sql))
     # DB共通処理を呼び出して、処理ステータステーブルと反物情報テーブルからデータを取得する。
-    result, records, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    result, records, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
     return result, records, conn, cur
 
 
@@ -274,7 +275,7 @@ def select_matser_info(conn, cur, product_name):
 
     logger.debug('[%s:%s] 品番登録情報取得SQL %s' % (app_id, app_name, sql))
     # DB共通処理を呼び出して、処理ステータステーブルと反物情報テーブルからデータを取得する。
-    result, records, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    result, records, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
     return result, records, conn, cur
 
 
@@ -303,7 +304,7 @@ def update_fabric_info(column_name, time, status, fabric_name, inspection_num, c
     ### 反物情報テーブルを更新
     logger.debug('[%s:%s] 反番[%s], 検査番号[%s]のレコードを更新しました。ステータス[%s]',
                  app_id, app_name, fabric_name, inspection_num, status)
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -334,7 +335,7 @@ def select_processing_status_rapid_target(conn, cur, fabric_name, inspection_num
 
     logger.debug('[%s:%s] 処理ステータス情報取得（RAPID解析対象）SQL %s' % (app_id, app_name, sql))
     # DB共通処理を呼び出して、処理ステータステーブルからデータを取得する。
-    result, records, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+    result, records, error, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
 
     return result, records, conn, cur
 
@@ -367,7 +368,7 @@ def update_processing_status(time, status, fabric_name, inspection_num, processi
 
     logger.debug('[%s:%s] 処理ステータステーブルステータス更新SQL %s' % (app_id, app_name, sql))
     ### 処理ステータステーブルを更新
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -389,7 +390,7 @@ def get_file(file_path, file_name, logger):
     logger.debug('[%s:%s] 撮像画像ファイル格納フォルダパス=[%s]', app_id, app_name, file_path)
     # 共通関数で撮像画像ファイル格納フォルダ情報を取得する
 
-    result, file_list = file_util.get_file_list(file_path, file_name, logger, app_id, app_name)
+    result, file_list, error = file_util.get_file_list(file_path, file_name, logger, app_id, app_name)
 
     return result, file_list
 
@@ -408,7 +409,7 @@ def get_file(file_path, file_name, logger):
 #
 # ------------------------------------------------------------------------------------
 def exists_dir(target_path, logger):
-    result = file_util.make_directory(target_path, logger, app_id, app_name)
+    result, error = file_util.make_directory(target_path, logger, app_id, app_name)
 
     return result
 
@@ -644,7 +645,7 @@ def ng_result_register(received_str, product_name, fabric_name, inspection_num, 
 
                         # DB共通処理を呼び出して、RAPID解析情報テーブルに以下の項目を登録する。
 
-                        tmp_result, conn, cur = \
+                        tmp_result, error, conn, cur = \
                             insert_rapid_analysis_info(
                                 product_name,
                                 fabric_name,
@@ -726,7 +727,7 @@ def select_inspection_info(conn, cur, fabric_name, inspection_num, timestamp, im
 
     logger.debug('[%s:%s] 検査情報取得（作業者情報）SQL %s' % (app_id, app_name, sql))
     # DB共通処理を呼び出して、処理ステータステーブルからデータを取得する。
-    result, records, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    result, records, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
 
     return result, records, conn, cur
 
@@ -776,8 +777,12 @@ def insert_rapid_analysis_info(product_name, fabric_name, camera_num_1, camera_n
         logger.error('[%s:%s] 作業者情報取得に失敗しました。', app_id, app_name)
         return tmp_result, conn, cur
 
-    worker_1 = records[0]
-    worker_2 = records[1]
+    if records is None:
+        worker_1 = 'null'
+        worker_2 = 'null'
+    else:
+        worker_1 = records[0]
+        worker_2 = records[1]
 
     ### クエリを作成する
     sql = 'insert into "rapid_%s_%s_%s" (' \
@@ -807,7 +812,7 @@ def insert_rapid_analysis_info(product_name, fabric_name, camera_num_1, camera_n
 # ------------------------------------------------------------------------------------
 def copy_file(target_file_path, copy_path, logger):
     # ファイルコピー
-    result = file_util.copy_file(target_file_path, copy_path, logger, app_id, app_name)
+    result, error = file_util.copy_file(target_file_path, copy_path, logger, app_id, app_name)
     return result
 
 
@@ -843,7 +848,7 @@ def update_processing_status_rapid_end(rapid_ng_num, rapid_processed_num,
 
     logger.debug('[%s:%s] 処理ステータステーブルステータス更新（解析完了）SQL %s' % (app_id, app_name, sql))
     ### 処理ステータステーブルを追加
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -1315,7 +1320,7 @@ def select_processing_status_rapid_end(conn, cur, fabric_name, inspection_num, i
 # ------------------------------------------------------------------------------------
 def close_connection(conn, cur):
     # DB接続を切断する。
-    res = db_util.close_connection(conn, cur, logger, app_id, app_name)
+    res, error = db_util.close_connection(conn, cur, logger, app_id, app_name)
 
     return res
 
@@ -1645,7 +1650,7 @@ def main():
                 logger.debug('[%s:%s] 処理完了判定を開始します。', app_id, app_name)
                 # DB共通処理を呼び出して、反番情報テーブルから検索条件でデータを取得する。
                 logger.debug('[%s:%s] 反物情報取得（分割/リサイズ完了時刻）を開始します。', app_id, app_name)
-                result, records_fabric, conn, cur = \
+                result, records_fabric, error, conn, cur = \
                     select_fabric_info_separateresize_endtime(conn, cur, fabric_name, inspection_num, imaging_starttime,
                                                               unit_num)
 
@@ -1673,7 +1678,7 @@ def main():
                 else:
                     # DB共通処理を呼び出して、処理ステータステーブルから検索条件でデータを取得する。
                     logger.debug('[%s:%s] 処理ステータス情報取得（RAPID解析処理完了）を開始します。', app_id, app_name)
-                    result, record_processing, conn, cur = \
+                    result, record_processing, error, conn, cur = \
                         select_processing_status_rapid_end(
                             conn, cur, fabric_name, inspection_num, imaging_starttime, unit_num)
 

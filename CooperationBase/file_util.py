@@ -46,13 +46,14 @@ networkpath_error = file_inifile.get('ERROR_INFO', 'networkpath_error')
 def get_file_list(file_path, file_patern, logger, app_id, app_name):
     result = False
     file_list = None
+    e = None
     for x in range(setting_loop_num):
         try:
             if os.path.exists(file_path):
                 file_list = glob.glob(file_path + file_patern)
                 # 処理結果=True
                 result = True
-                return result, file_list
+                return result, file_list, e
             else:
                 os.listdir(file_path)
                 continue
@@ -67,10 +68,10 @@ def get_file_list(file_path, file_patern, logger, app_id, app_name):
                     continue
                 # エラー判定結果=Falseの場合、処理結果=False
                 else:
-                    return result, file_list
+                    return result, file_list, e
             # 再実行回数以上の場合、エラー判定。処理結果=False
             else:
-                return result, file_list
+                return result, file_list, e
 
 
 # ------------------------------------------------------------------------------------
@@ -90,6 +91,7 @@ def get_file_list(file_path, file_patern, logger, app_id, app_name):
 # ------------------------------------------------------------------------------------
 def move_file(file_path, output_path, logger, app_id, app_name):
     result = False
+    e = None
     for x in range(setting_loop_num):
         try:
             file_name = os.path.basename(file_path)
@@ -106,10 +108,10 @@ def move_file(file_path, output_path, logger, app_id, app_name):
                     shutil.move(file_path, output_path + "\\" + target_file_name)
                 else:
                     # 存在しない場合、ファイル名はそのままファイルを移動する
-                    shutil.move(file_path, output_path)
+                    shutil.move(file_path, output_path + "\\" + file_name)
                 # 処理結果=True
                 result = True
-                return result
+                return result, e
             else:
                 os.listdir(base_dir)
                 continue
@@ -123,10 +125,10 @@ def move_file(file_path, output_path, logger, app_id, app_name):
                     continue
                 # エラー判定結果=Falseの場合、処理結果=False
                 else:
-                    return result
+                    return result, e
             # 再実行回数以上の場合、エラー判定。処理結果=False
             else:
-                return result
+                return result, e
 
 
 # ------------------------------------------------------------------------------------
@@ -146,6 +148,7 @@ def move_file(file_path, output_path, logger, app_id, app_name):
 # ------------------------------------------------------------------------------------
 def copy_file(file_path, output_path, logger, app_id, app_name):
     result = False
+    e = None
     for x in range(setting_loop_num):
         try:
             file_name = os.path.basename(file_path)
@@ -165,7 +168,7 @@ def copy_file(file_path, output_path, logger, app_id, app_name):
                     shutil.copy2(file_path, output_path)
                 # 処理結果=True
                 result = True
-                return result
+                return result, e
             else:
                 os.listdir(base_dir)
                 continue
@@ -179,10 +182,10 @@ def copy_file(file_path, output_path, logger, app_id, app_name):
                     continue
                 # エラー判定結果=Falseの場合、処理結果=False
                 else:
-                    return result
+                    return result, e
             # 再実行回数以上の場合、エラー判定。処理結果=False
             else:
-                return result
+                return result, e
 
 # ------------------------------------------------------------------------------------
 # 処理名             ：ディレクトリ作成
@@ -201,13 +204,14 @@ def copy_file(file_path, output_path, logger, app_id, app_name):
 def make_directory(file_path, logger, app_id, app_name):
     # 変数設定
     result = False
+    e = None
     for x in range(setting_loop_num):
         try:
             # ディレクトリ作成
             os.makedirs(file_path, exist_ok=True)
             # 処理完了=True
             result = True
-            return result
+            return result, e
         except Exception as e:
             # エラー詳細判定を行う
             result = error_detail.exception(e, logger, app_id, app_name)
@@ -218,10 +222,10 @@ def make_directory(file_path, logger, app_id, app_name):
                     continue
                 # エラー判定結果=Falseの場合、処理結果=False
                 else:
-                    return result
+                    return result, e
             # 再実行回数以上の場合、エラー判定。処理結果=False
             else:
-                return result
+                return result, e
 
 
 # ------------------------------------------------------------------------------------
@@ -244,16 +248,17 @@ def make_directory(file_path, logger, app_id, app_name):
 def read_image(filename, logger, app_id, app_name, flags=cv2.IMREAD_COLOR, dtype=np.uint8):
     result = False
     x = 0
+    e = None
     try:
         n = np.fromfile(filename, dtype)
         img = cv2.imdecode(n, flags)
         result = True
-        return result, img
+        return result, img, e
 
     except Exception as e:
         result = error_detail.exception(e, logger, app_id, app_name)
         img = None
-        return result, img
+        return result, img, e
 
 
 # ------------------------------------------------------------------------------------
@@ -275,6 +280,7 @@ def read_image(filename, logger, app_id, app_name, flags=cv2.IMREAD_COLOR, dtype
 def read_result_file(result_file, logger, app_id, app_name):
     x = 0
     result_data = {}
+    e = None
     try:
         LABEL_NAME = [label_ng, label_others]
         fp = codecs.open(result_file, "r", "SJIS")
@@ -318,11 +324,11 @@ def read_result_file(result_file, logger, app_id, app_name):
         result_data["data"] = datas
         fp.close()
         result = True
-        return result, result_data
+        return result, result_data, e
 
     except Exception as e:
         result = error_detail.exception(e, logger, app_id, app_name)
-        return result, result_data
+        return result, result_data, e
 
 
 # ------------------------------------------------------------------------------------
@@ -342,6 +348,7 @@ def read_result_file(result_file, logger, app_id, app_name):
 def write_result_file(output_file, result_data, datapath, logger, app_id, app_name):
     result = False
     x = 0
+    e = None
     try:
         fp = codecs.open(output_file, "w", "SJIS")
         if result_data["datapath"] == "":
@@ -368,10 +375,10 @@ def write_result_file(output_file, result_data, datapath, logger, app_id, app_na
             fp.write(buf + "\n")
         fp.close()
         result = True
-        return result
+        return result, e
     except Exception as e:
         result = error_detail.exception(e, logger, app_id, app_name)
-        return result
+        return result, e
 
 
 # ------------------------------------------------------------------------------------
@@ -390,13 +397,14 @@ def write_result_file(output_file, result_data, datapath, logger, app_id, app_na
 # ------------------------------------------------------------------------------------
 def light_patlite(name, logger, app_id, app_name):
     patlite_path = common_inifile.get('FILE_PATH', 'patlite_path')
+    e = None
     for x in range(setting_loop_num):
         try:
             if os.path.exists(patlite_path):
                 Path(patlite_path + '\\' +  name).touch()
                 # 処理結果=True
                 result = True
-                return result
+                return result, e
             else:
                 os.listdir(patlite_path)
                 continue
@@ -410,10 +418,10 @@ def light_patlite(name, logger, app_id, app_name):
                     continue
                 # エラー判定結果=Falseの場合、処理結果=False
                 else:
-                    return result
+                    return result, e
             # 再実行回数以上の場合、エラー判定。処理結果=False
             else:
-                return result
+                return result, e
 
 
 # ------------------------------------------------------------------------------------
@@ -426,11 +434,12 @@ def light_patlite(name, logger, app_id, app_name):
 # 戻り値             ：処理結果（True:成功、False:失敗）
 # ------------------------------------------------------------------------------------
 def delete_dir(path, logger, app_id, app_name):
+    e = None
     for x in range(setting_loop_num):
         try:
             shutil.rmtree(path)
             result = True
-            return result
+            return result, e
         except Exception as e:
             # エラー詳細判定を行う
             result = error_detail.exception(e, logger, app_id, app_name)
@@ -441,7 +450,7 @@ def delete_dir(path, logger, app_id, app_name):
                     continue
                 # エラー判定結果=Falseの場合、処理結果=False
                 else:
-                    return result
+                    return result, e
             # 再実行回数以上の場合、エラー判定。処理結果=False
             else:
-                return result
+                return result, e

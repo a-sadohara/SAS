@@ -79,7 +79,7 @@ def exec_program_start(program_id_list, programs_path):
 #
 # 戻り値             ：なし
 # ------------------------------------------------------------------------------------
-def start_up_func(param_program_name=None):
+def start_up_func(param_program_name=None, flag=0):
     # 変数定義
     error_file_name = None
     result = False
@@ -137,23 +137,28 @@ def start_up_func(param_program_name=None):
         result_flg = True
     else:
         pass
-
-    root.destroy()
-
-
-def button_selected():
-
-    if len(listbox.curselection()) == 0:
-        return
-    index = listbox.curselection()[0]
-    print(listbox.get(index))
-    if listbox.get(index) == "全機能起動":
-        start_up_func()
+    if flag == 1:
+        pass
     else:
-        function_dict = dict(zip(all_function_name, all_function_id))
-        function_num = function_dict.get(listbox.get(index))
-        function_name = 'function_' + function_num + '.exe'
-        start_up_func(function_name)
+        root.destroy()
+
+
+def button_selected(flag):
+    if flag == 1:
+        start_up_func(None, flag)
+    else:
+        if len(listbox.curselection()) == 0:
+            return
+        index = listbox.curselection()[0]
+        print('test')
+        print(listbox.get(index))
+        if listbox.get(index) == "全機能起動":
+            start_up_func(None, flag)
+        else:
+            function_dict = dict(zip(all_function_name, all_function_id))
+            function_num = function_dict.get(listbox.get(index))
+            function_name = 'function_' + function_num + '.exe'
+            start_up_func(function_name, flag)
 
 def close_window():
     global result_flg
@@ -170,42 +175,49 @@ def close_window():
 #
 # 戻り値             ：なし
 # ------------------------------------------------------------------------------------
-### メインウィンドウ ###
-root = tk.Tk()
-root.title('起動対象機能選択')
-root.update_idletasks()
-ww = root.winfo_screenwidth()
-lw = root.winfo_width()
-wh = root.winfo_screenheight()
-lh = root.winfo_height()
-root.geometry(str(lw+100) + "x" + str(lh+50) + "+" + str(int(ww / 2 - lw / 2)) + "+" + str(int(wh / 2 - lh / 2)))
-frame = tk.Frame(root, width=400, height=500, bg="white")
-frame.pack(padx=10, pady=10)
+args = sys.argv
 
+if len(args) > 1:
+    print("Recovery")
+    button_selected(1)
 
-
-### Listbox ###
-var = StringVar(value=all_function_name)
-listbox = tk.Listbox(frame,
-                     listvariable=var,
-                     height=10,
-                     width=50)
-listbox.pack()
-
-### Button ###
-button_1 = tk.Button(root, text="実行", command=button_selected)
-button_2 = tk.Button(root, text="キャンセル", command=close_window)
-button_1.place(x=100, y=200)
-button_2.place(x=150, y=200)
-
-root.mainloop()
-
-root = tk.Tk()
-root.withdraw()
-
-if result_flg is True:
-    messagebox.showinfo('起動終了', '対象機能起動処理が終了しました。')
-elif result_flg is False:
-    messagebox.showerror('起動エラー', '対象機能起動処理が失敗しました。')
 else:
-    pass
+    ### メインウィンドウ ###
+    root = tk.Tk()
+    root.title('起動対象機能選択')
+    root.update_idletasks()
+    ww = root.winfo_screenwidth()
+    lw = root.winfo_width()
+    wh = root.winfo_screenheight()
+    lh = root.winfo_height()
+    root.geometry(str(lw+100) + "x" + str(lh+50) + "+" + str(int(ww / 2 - lw / 2)) + "+" + str(int(wh / 2 - lh / 2)))
+    frame = tk.Frame(root, width=400, height=500, bg="white")
+    frame.pack(padx=10, pady=10)
+
+
+
+    ### Listbox ###
+    var = StringVar(value=all_function_name)
+    listbox = tk.Listbox(frame,
+                         listvariable=var,
+                         height=10,
+                         width=50)
+    listbox.pack()
+
+    ### Button ###
+    button_1 = tk.Button(root, text="実行", command=lambda : button_selected(0))
+    button_2 = tk.Button(root, text="キャンセル", command=close_window)
+    button_1.place(x=100, y=200)
+    button_2.place(x=150, y=200)
+
+    root.mainloop()
+
+    root = tk.Tk()
+    root.withdraw()
+
+    if result_flg is True:
+        messagebox.showinfo('起動終了', '対象機能起動処理が終了しました。')
+    elif result_flg is False:
+        messagebox.showerror('起動エラー', '対象機能起動処理が失敗しました。')
+    else:
+        pass

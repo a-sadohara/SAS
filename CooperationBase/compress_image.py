@@ -53,7 +53,7 @@ app_name = inifile.get('APP', 'app_name')
 #                      カーソルオブジェクト
 # ------------------------------------------------------------------------------------
 def create_connection():
-    result, conn, cur = db_util.create_connection(logger, app_id, app_name)
+    result, error, conn, cur = db_util.create_connection(logger, app_id, app_name)
     return result, conn, cur
 
 
@@ -68,7 +68,7 @@ def create_connection():
 # 戻り値             ：処理結果（True:成功、False:失敗）
 # ------------------------------------------------------------------------------------
 def close_connection(conn, cur):
-    result = db_util.close_connection(conn, cur, logger, app_id, app_name)
+    result, error = db_util.close_connection(conn, cur, logger, app_id, app_name)
 
     return result
 
@@ -94,7 +94,7 @@ def select_fabric_info_db_polling(conn, cur, fabric_info_status_ng_ziptrans_star
           % (fabric_info_status_ng_ziptrans_start, unit_num)
 
     # DB共通処理を呼び出して、処理ステータステーブルと反物情報テーブルからデータを取得する。
-    result, records, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+    result, records, error, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
     return result, records, conn, cur
 
 
@@ -118,7 +118,7 @@ def get_file(file_path, file_name):
 
         # 共通関数で撮像画像ファイル格納フォルダ情報を取得する
         file_list = None
-        tmp_result, file_list = file_util.get_file_list(file_path, file_name, logger, app_id, app_name)
+        tmp_result, file_list, error = file_util.get_file_list(file_path, file_name, logger, app_id, app_name)
 
         if tmp_result:
             # 成功時
@@ -151,7 +151,7 @@ def get_file(file_path, file_name):
 def exists_dir(target_path):
     logger.debug('[%s:%s] フォルダを作成します。フォルダ名：[%s]',
                  app_id, app_name, target_path)
-    result = file_util.make_directory(target_path, logger, app_id, app_name)
+    result, error = file_util.make_directory(target_path, logger, app_id, app_name)
 
     return result
 
@@ -170,7 +170,7 @@ def exists_dir(target_path):
 def move_file(target_file, move_dir):
     # ファイル移動
     ctime = datetime.datetime.fromtimestamp(os.path.getctime(target_file)).timestamp()
-    result = file_util.move_file(target_file, move_dir, logger, app_id, app_name)
+    result, error = file_util.move_file(target_file, move_dir, logger, app_id, app_name)
     win32_setctime.setctime(move_dir + '\\' + os.path.basename(target_file), ctime)
 
     return result
@@ -191,7 +191,7 @@ def delete_empty_dir(del_path):
     file_list = []
     try:
         # ファイル情報を取得
-        tmp_result, file_list = file_util.get_file_list(del_path, '*', logger, app_id, app_name)
+        tmp_result, file_list, error = file_util.get_file_list(del_path, '*', logger, app_id, app_name)
         if tmp_result:
             pass
         else:
@@ -201,7 +201,7 @@ def delete_empty_dir(del_path):
         for file in file_list:
             if os.path.isdir(file):
                 # フォルダの場合は、空であるかどうか調べる
-                tmp_result, tmp_file_list = file_util.get_file_list(file, '\\*', logger, app_id, app_name)
+                tmp_result, tmp_file_list, error = file_util.get_file_list(file, '\\*', logger, app_id, app_name)
 
                 if tmp_result:
                     pass
@@ -213,7 +213,7 @@ def delete_empty_dir(del_path):
                     pass
                 else:
                     # 空フォルダの場合、削除する
-                    tmp_result = file_util.delete_dir(file, logger, app_id, app_name)
+                    tmp_result, error = file_util.delete_dir(file, logger, app_id, app_name)
 
                     if tmp_result:
                         pass
@@ -364,7 +364,7 @@ def update_fabric_info_status(status, column, now_datetime, fabric_name, inspect
           'where fabric_name = \'%s\' and inspection_num = %s and imaging_starttime = \'%s\' and unit_num = \'%s\'' \
           % (status, column, now_datetime, fabric_name, inspection_num, imaging_starttime, unit_num)
 
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -382,7 +382,7 @@ def update_fabric_info_status(status, column, now_datetime, fabric_name, inspect
 # 戻り値             ：処理結果（True:成功、False:失敗）
 # ------------------------------------------------------------------------------------
 def exec_patrite(file_name):
-    result = file_util.light_patlite(file_name, logger, app_id, app_name)
+    result, error = file_util.light_patlite(file_name, logger, app_id, app_name)
 
     return result
 
@@ -533,7 +533,7 @@ def main():
                 ### NG画像圧縮、検査完了通知作成、ファイル転送
 
                 logger.debug('[%s:%s] NG画像圧縮、検査完了通知作成、ファイル転送を開始します。', app_id, app_name)
-                tmp_result = compress_image_util.exec_compress_and_transfer(
+                tmp_result, error, func_name = compress_image_util.exec_compress_and_transfer(
                     product_name, fabric_name, inspection_num, date,
                     rk_root_path + '\\' + rapid_ng_image_file_path, None, 0, logger)
 

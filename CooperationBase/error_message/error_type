@@ -1,0 +1,11 @@
+psycopg2.OperationalError,E0001
+psycopg2.InterfaceError,E0001
+psycopg2.errors.UndefinedTable,E0002
+psycopg2.errors.UniqueViolation,E0003
+FileNotFoundError,E0004
+TypeError,E0005
+PIL.UnidentifiedImageError,E0006
+psycopg2.errors.StringDataRightTruncation,E0007
+ZeroDivisionError,E0008
+AttributeError,E0009
+OSError,E0010

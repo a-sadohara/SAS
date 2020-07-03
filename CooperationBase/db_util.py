@@ -61,6 +61,7 @@ def base_create_connection():
 def create_connection(logger, app_id, app_name):
     # 変数設定
     result = False
+    e = None
     x = 0
     conn = None
     cur = None
@@ -69,7 +70,7 @@ def create_connection(logger, app_id, app_name):
         # 接続完了のため処理結果=True
         result = True
         # コネクションオブジェクト、カーソルオブジェクト、処理結果=Trueを返却する。
-        return result, conn, cur
+        return result, e, conn, cur
     except Exception as e:
         # エラー詳細判定を行う
         tmp_result = error_detail.exception(e, logger, app_id, app_name)
@@ -81,11 +82,11 @@ def create_connection(logger, app_id, app_name):
             cur = tmp_result[2]
             # 接続完了のため処理結果=True
             # コネクションオブジェクト、カーソルオブジェクト、処理結果=Trueを返却する。
-            return result, conn, cur
+            return result, e, conn, cur
         # 判定結果=Falseの場合、エラー
         else:
             # コネクションオブジェクト、カーソルオブジェクト、、処理結果=Falseを返却する。
-            return result, conn, cur
+            return result, e, conn, cur
 
 
 # ------------------------------------------------------------------------------------
@@ -109,6 +110,7 @@ def create_connection(logger, app_id, app_name):
 def select_fetchone(conn, cur, sql, logger, app_id, app_name):
     # 変数設定
     result = False
+    e = None
     select_result = None
     for x in range(setting_loop_num):
         try:
@@ -118,7 +120,7 @@ def select_fetchone(conn, cur, sql, logger, app_id, app_name):
             # 参照完了のため処理結果=Ture
             result = True
             # コネクションオブジェクト、カーソルオブジェクト、処理結果、参照結果を返却する。
-            return result, select_result, conn, cur
+            return result, select_result, e, conn, cur
         except Exception as e:
             # エラー詳細判定を行う
             tmp_result = error_detail.exception(e, logger, app_id, app_name)
@@ -134,11 +136,11 @@ def select_fetchone(conn, cur, sql, logger, app_id, app_name):
                 # 判定結果=Falseの場合、エラー
                 else:
                     # コネクションオブジェクト、カーソルオブジェクト、、処理結果=Falseを返却する。
-                    return result, select_result, conn, cur
+                    return result, select_result, e, conn, cur
             # ループ回数条件超過のため、エラー
             else:
                 # コネクションオブジェクト、カーソルオブジェクト、、処理結果=Falseを返却する。
-                return result, select_result, conn, cur
+                return result, select_result, e, conn, cur
 
 
 # ------------------------------------------------------------------------------------
@@ -162,12 +164,13 @@ def select_fetchone(conn, cur, sql, logger, app_id, app_name):
 def select_fetchall(conn, cur, sql, logger, app_id, app_name):
     result = False
     select_result = None
+    e = None
     for x in range(setting_loop_num):
         try:
             cur.execute(sql)
             select_result = cur.fetchall()
             result = True
-            return result, select_result, conn, cur
+            return result, select_result, e, conn, cur
         except Exception as e:
             # エラー詳細判定を行う
             tmp_result = error_detail.exception(e, logger, app_id, app_name)
@@ -183,11 +186,11 @@ def select_fetchall(conn, cur, sql, logger, app_id, app_name):
                 # 判定結果=Falseの場合、エラー
                 else:
                     # コネクションオブジェクト、カーソルオブジェクト、、処理結果=Falseを返却する。
-                    return result, select_result, conn, cur
+                    return result, select_result, e, conn, cur
             # ループ回数条件超過のため、エラー
             else:
                 # コネクションオブジェクト、カーソルオブジェクト、、処理結果=Falseを返却する。
-                return result, select_result, conn, cur
+                return result, select_result, e, conn, cur
 
 
 # ------------------------------------------------------------------------------------
@@ -209,11 +212,12 @@ def select_fetchall(conn, cur, sql, logger, app_id, app_name):
 # ------------------------------------------------------------------------------------
 def operate_data(conn, cur, sql, logger, app_id, app_name):
     result = False
+    e = None
     for x in range(setting_loop_num):
         try:
             cur.execute(sql)
             result = True
-            return result, conn, cur
+            return result, e, conn, cur
         except Exception as e:
             tmp_result = error_detail.exception(e, logger, app_id, app_name)
             if x < (setting_loop_num - 1):
@@ -226,9 +230,9 @@ def operate_data(conn, cur, sql, logger, app_id, app_name):
                     continue
                 # 判定結果=Falseの場合、エラー
                 else:
-                    return result, conn, cur
+                    return result, e, conn, cur
             else:
-                return result, conn, cur
+                return result, e, conn, cur
 
 
 # ------------------------------------------------------------------------------------
@@ -251,11 +255,12 @@ def operate_data(conn, cur, sql, logger, app_id, app_name):
 # ------------------------------------------------------------------------------------
 def create_table(conn, cur, fabric_name, inspection_num, inspection_date, logger, app_id, app_name):
     result = False
+    e = None
     for x in range(setting_loop_num):
         try:
             cur.callproc('table_create', [fabric_name, inspection_num, inspection_date])
             result = True
-            return result, conn, cur
+            return result, e, conn, cur
         except Exception as e:
             tmp_result = error_detail.exception(e, logger, app_id, app_name)
             if x < (setting_loop_num - 1):
@@ -268,9 +273,9 @@ def create_table(conn, cur, fabric_name, inspection_num, inspection_date, logger
                     continue
                 # 判定結果=Falseの場合、エラー
                 else:
-                    return result, conn, cur
+                    return result, e, conn, cur
             else:
-                return result, conn, cur
+                return result, e, conn, cur
 
 
 # ------------------------------------------------------------------------------------
@@ -288,12 +293,13 @@ def create_table(conn, cur, fabric_name, inspection_num, inspection_date, logger
 # ------------------------------------------------------------------------------------
 def close_connection(conn, cur, logger, app_id, app_name):
     result = False
+    e = None
     x = setting_loop_num
     try:
         cur.close()
         conn.close()
         result = True
-        return result
+        return result, e
     except Exception as e:
         result = error_detail.exception(e, logger, app_id, app_name)
-        return result
+        return result, e

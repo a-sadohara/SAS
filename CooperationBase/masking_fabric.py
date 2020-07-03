@@ -488,7 +488,7 @@ def base_masking_fabric(checkfabric_result_file, masking_result_file, label_ng, 
         # 結果ファイル読み込み
         logger.debug('[%s:%s] 結果ファイル読込を開始します。' % (app_id, app_name))
 
-        tmp_result, result_data = file_util.read_result_file(checkfabric_result_file, logger, app_id, app_name)
+        tmp_result, result_data, error = file_util.read_result_file(checkfabric_result_file, logger, app_id, app_name)
         if tmp_result:
             logger.debug('[%s:%s] 結果ファイル読込が終了しました。%s ' % (app_id, app_name, result_data))
         else:
@@ -598,7 +598,7 @@ def base_masking_fabric(checkfabric_result_file, masking_result_file, label_ng, 
 
         logger.debug('[%s:%s] マスキング判定結果CSVファイルの出力を開始します。' % (app_id, app_name))
         # マスキング判定結果CSVファイルを出力する
-        tmp_result = file_util.write_result_file(masking_result_file, result_data, image_dir, logger, app_id, app_name)
+        tmp_result, error = file_util.write_result_file(masking_result_file, result_data, image_dir, logger, app_id, app_name)
         if tmp_result:
             logger.debug('[%s:%s] マスキング判定結果CSVファイルの出力が終了しました。' % (app_id, app_name))
         else:

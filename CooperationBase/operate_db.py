@@ -35,7 +35,7 @@ app_name =inifile.get('APP', 'app_name')
 
 def create_connection():
     # DBに接続する。
-    result, conn, cur = db_util.create_connection(logger, app_id, app_name)
+    result, error, conn, cur = db_util.create_connection(logger, app_id, app_name)
     return result, conn, cur
 
 
@@ -45,7 +45,7 @@ def confirm_inspection_info(limit_month, conn, cur):
         logger.info('[%s:%s] 検査情報ヘッダテーブル情報取得を開始します。' % (app_id, app_name))
         sql = 'select insert_datetime, fabric_name, inspection_num, branch_num, start_datetime, unit_num from inspection_info_header ' \
               'where insert_datetime <= \'%s\'' % limit_month
-        tmp_result, select_result, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+        tmp_result, select_result, error, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
         if tmp_result:
             logger.info('[%s:%s] 検査情報ヘッダテーブル情報取得が終了しました。' % (app_id, app_name))
         else:
@@ -63,7 +63,7 @@ def confirm_inspection_info(limit_month, conn, cur):
 
                 sql = 'delete from inspection_info_header where fabric_name = \'%s\' and inspection_num = %s ' \
                       'and branch_num = %s and start_datetime = \'%s\' and unit_num = \'%s\'' % (fabric_name, inspection_num, branch_num, start_datetime, unit_num)
-                tmp_result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+                tmp_result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
                 if tmp_result:
                     logger.info('[%s:%s] 対象の検査情報ヘッダテーブルのレコード削除が終了しました。 [反番=%s] [検査番号=%s] '
                                 '[枝番=%s] [登録日時=%s]' % (app_id, app_name, fabric_name, inspection_num,
@@ -95,7 +95,7 @@ def confirm_regimark_info(limit_month, conn, cur):
         logger.info('[%s:%s] レジマーク情報テーブル情報取得を開始します。' % (app_id, app_name))
         sql = 'select insert_datetime, fabric_name, inspection_num, line_num, face, imaging_starttime, unit_num from regimark_info ' \
               'where insert_datetime <= \'%s\'' %  limit_month
-        tmp_result, select_result, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+        tmp_result, select_result, error, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
         if tmp_result:
             logger.info('[%s:%s] レジマーク情報テーブル情報取得が終了しました。' % (app_id, app_name))
         else:
@@ -115,7 +115,7 @@ def confirm_regimark_info(limit_month, conn, cur):
                 sql = 'delete from regimark_info where fabric_name = \'%s\' and inspection_num = %s ' \
                       'and line_num = %s and face = \'%s\' and imaging_starttime = \'%s\' and unit_num = \'%s\'' \
                       % (fabric_name, inspection_num, line_num, face, imaging_starttime, unit_num)
-                tmp_result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+                tmp_result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
                 if tmp_result:
                     logger.info('[%s:%s] 対象のレジマーク情報テーブルのレコード削除が終了しました。 [反番=%s] [検査番号=%s] '
                                 '[行番号=%s] [検反部=%s] [登録日時=%s]' % (app_id, app_name, fabric_name, inspection_num,
@@ -146,7 +146,7 @@ def confirm_processing_status(limit_month, conn, cur):
         logger.info('[%s:%s] 処理ステータステーブル情報取得を開始します。' % (app_id, app_name))
         sql = 'select insert_datetime, fabric_name, inspection_num, processing_id, rapid_host_name, imaging_starttime, unit_num from processing_status ' \
               'where insert_datetime <= \'%s\'' % limit_month
-        tmp_result, select_result, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+        tmp_result, select_result, error, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
         if tmp_result:
             logger.info('[%s:%s] 処理ステータステーブル情報取得が終了しました。' % (app_id, app_name))
         else:
@@ -167,7 +167,7 @@ def confirm_processing_status(limit_month, conn, cur):
                 sql = 'delete from processing_status where fabric_name = \'%s\' and inspection_num = %s ' \
                       'and processing_id = %s and rapid_host_name = \'%s\' and imaging_starttime = \'%s\' and unit_num = \'%s\'' \
                       % (fabric_name, inspection_num, processing_id, rapid_host_name, imaging_starttime, unit_num)
-                tmp_result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+                tmp_result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
                 if tmp_result:
                     logger.info('[%s:%s] 対象の処理ステータステーブルのレコード削除が終了しました。 [反番=%s] [検査番号=%s] '
                                 '[処理ID=%s] [RAPIDサーバーホスト名=%s] [登録日時=%s]'
@@ -199,13 +199,13 @@ def confirm_rapid_table(limit_month, conn, cur):
         db_name = inifile.get('DB', 'db_name')
         logger.info('[%s:%s] RAPID解析情報テーブル情報取得を開始します。' % (app_id, app_name))
         sql = 'SELECT datid FROM pg_stat_database  where datname like \'%s\'' % db_name
-        tmp_result, select_result, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+        tmp_result, select_result, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
         dat_id = select_result[0]
 
         sql = 'select relname, (pg_stat_file(\'./base/%s\' || \'/\' || relfilenode::text)).creation FROM pg_class ' \
               'WHERE relkind LIKE \'r\' AND relfilenode <> 0 AND relname like \'%s\'' % (dat_id, 'rapid%')
 
-        tmp_result, select_result, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+        tmp_result, select_result, error, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
         if tmp_result:
             logger.info('[%s:%s] RAPID解析情報テーブル情報取得が終了しました。' % (app_id, app_name))
         else:
@@ -222,7 +222,7 @@ def confirm_rapid_table(limit_month, conn, cur):
                 if tcreate_datetime <= limit_month:
                     logger.info('[%s:%s] 対象のRAPID解析情報テーブルの削除を開始します。' % (app_id, app_name))
                     sql = 'drop table "%s"' % rel_name
-                    tmp_result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+                    tmp_result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
                     if tmp_result:
                         logger.info('[%s:%s] 対象のRAPID解析情報テーブル削除が終了しました。 [テーブル名=%s] [登録日時=%s]'
                                     % (app_id, app_name, rel_name, create_datetime))
@@ -254,7 +254,7 @@ def confirm_fabric_info(limit_month, conn, cur):
         logger.info('[%s:%s] 反物情報テーブル情報取得を開始します。' % (app_id, app_name))
         sql = 'select insert_datetime, fabric_name, inspection_num, imaging_starttime, unit_num from fabric_info ' \
               'where insert_datetime <= \'%s\'' % limit_month
-        tmp_result, select_result, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+        tmp_result, select_result, error, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
         if tmp_result:
             logger.info('[%s:%s] 反物情報テーブル情報取得が終了しました。' % (app_id, app_name))
         else:
@@ -274,7 +274,7 @@ def confirm_fabric_info(limit_month, conn, cur):
                             % (app_id, app_name, fabric_name, inspection_num, insert_datetime))
                 sql = 'delete from fabric_info where fabric_name = \'%s\' and inspection_num = %s and imaging_starttime = \'%s\' and unit_num = \'%s\'' \
                       % (fabric_name, inspection_num, imaging_starttime, unit_num)
-                tmp_result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+                tmp_result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
                 if tmp_result:
                     logger.info('[%s:%s] 対象の反物情報テーブルのレコード削除が終了しました。' % (app_id, app_name))
                     conn.commit()
@@ -298,7 +298,7 @@ def confirm_fabric_info(limit_month, conn, cur):
 
 
 def close_connection(conn, cur):
-    result = db_util.close_connection(conn, cur, logger, app_id, app_name)
+    result, error = db_util.close_connection(conn, cur, logger, app_id, app_name)
 
     return result
 

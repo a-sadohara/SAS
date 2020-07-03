@@ -156,7 +156,7 @@ def execute_file(file_path, file_pattern, zip_name, flag, limit_day, limit_month
     try:
         logger.info('[%s:%s] ファイル情報取得を開始します。 [確認フォルダ=%s]'
                     % (app_id, app_name, file_path))
-        tmp_result, file_list = file_util.get_file_list(file_path, file_pattern,
+        tmp_result, file_list, error = file_util.get_file_list(file_path, file_pattern,
                                                         logger, app_id, app_name)
         if tmp_result:
             logger.info('[%s:%s] ファイル情報取得が終了しました。 [確認フォルダ=%s]'
@@ -253,25 +253,10 @@ def main():
     except SystemExit:
         # sys.exit()実行時の例外処理
         logger.debug('[%s:%s] sys.exit()によりプログラムを終了します。', app_id, app_name)
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-
-        if result:
-            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
-        else:
-            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
-            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
-
+        
     except:
         logger.error('[%s:%s] 予期しないエラーが発生しました。[%s]' % (app_id, app_name, traceback.format_exc()))
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。' % (app_id, app_name))
-        result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-
-        if result:
-            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
-        else:
-            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
-            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+        
 
 
 if __name__ == "__main__":  # このパイソンファイル名で実行した場合
