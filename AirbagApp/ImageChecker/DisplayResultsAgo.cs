@@ -514,7 +514,6 @@ namespace ImageChecker
             bool? bolCheckNGRecordResult = true;
             bool? bolCheckImageResult = true;
             int intImageCount = 0;
-            DataTable dtUndetectedImage = null;
 
             // 画像ディレクトリが存在しない場合、フォルダを作成する
             if (!Directory.Exists(strFaultImageFileDirectory))
@@ -534,7 +533,6 @@ namespace ImageChecker
 
             bolCheckImageResult =
                 bolCheckImageCount(
-                    ref dtUndetectedImage,
                     ref intImageCount,
                     intInspectionNum,
                     strInspectionDate,
@@ -571,9 +569,11 @@ namespace ImageChecker
             {
                 // 欠点画像数チェック・再取込を実施する
                 return await BolReInputFaultImage(
-                    dtUndetectedImage,
                     intImageCount,
+                    intInspectionNum,
+                    strInspectionDate,
                     strUnitNum,
+                    strFabricName,
                     strFaultImageFileName,
                     strLogMessage);
             }
