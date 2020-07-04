@@ -265,6 +265,7 @@ namespace ImageChecker
         /// <param name="strFabricName">反番</param>
         /// <param name="strFaultImageFileName">欠点画像ファイル名</param>
         /// <param name="strLogMessage">ログメッセージ</param>
+        /// <param name="bolWaitFlg">待機フラグ</param>
         /// <param name="bolUndetectedImageFlag">未検知画像フラグ</param>
         /// <param name="strFaultImageFolderName">欠点画像フォルダ名</param>
         public static async Task<Boolean> BolGetFaultImage(
@@ -274,11 +275,25 @@ namespace ImageChecker
             string strFabricName,
             string strFaultImageFileName,
             string strLogMessage,
+            bool bolWaitFlg,
             bool bolUndetectedImageFlag = false,
             string strFaultImageFolderName = null)
         {
+            Random random = new Random();
+
             bool? bolCheckImageResult = false;
             int intRecordCount = 0;
+
+            while (Process.GetProcesses().Where(
+                x => x.ProcessName.Equals("7za")).Count() > 4)
+            {
+                // 複数取込の場合、ランダムで待ち時間を挟む
+                await Task.Delay(
+                    random.Next(
+                        g_clsSystemSettingInfo.intMinDecompressionWaitingTime,
+                        g_clsSystemSettingInfo.intMaxDecompressionWaitingTime + 1)
+                    * 1000);
+            }
 
             // 画像取込を行う
             Task<Boolean> taskInputFaultImage =
@@ -298,6 +313,12 @@ namespace ImageChecker
                 strFaultImageFileName = strFaultImageFolderName;
             }
 
+            if (bolWaitFlg)
+            {
+                // 複数取込の場合、ランダムで待ち時間を挟む
+                await Task.Delay(random.Next(1, 6));
+            }
+
             // 画像数のチェックを行う
             bolCheckImageResult =
                 bolCheckImageCount(
@@ -309,7 +330,11 @@ namespace ImageChecker
                     strFaultImageFileName,
                     strLogMessage);
 
-            if (bolCheckImageResult.Equals(true))
+            if (bolCheckImageResult == null)
+            {
+                return false;
+            }
+            else if (bolCheckImageResult.Equals(true))
             {
                 return true;
             }
@@ -617,15 +642,13 @@ namespace ImageChecker
             string strLogMessage)
         {
             DirectoryInfo diFaultImage = null;
-            DataTable dtData = null;
+            DataTable dtData = dtData = new DataTable();
             string strSQL = string.Empty;
             string strFaultImageDecompressionDirectory = Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory, strUnitNum, strFaultImageFileName);
             int intImageCount = 0;
 
             try
             {
-                dtData = new DataTable();
-
                 // 合否判定結果テーブルに登録されているオリジナル画像・マーキング画像の総数を取得する
                 strSQL = @"SELECT COUNT(DISTINCT(org_imagepath)) * 2 AS TotalCount
                            FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
@@ -1095,6 +1118,10 @@ namespace ImageChecker
 
                 return null;
             }
+            finally
+            {
+                dtRapidData.Dispose();
+            }
 
             if (!DecisionResultCheckFlg)
             {
@@ -1165,6 +1192,10 @@ namespace ImageChecker
                 MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return null;
+            }
+            finally
+            {
+                dtDecisionResultData.Dispose();
             }
 
             return true;

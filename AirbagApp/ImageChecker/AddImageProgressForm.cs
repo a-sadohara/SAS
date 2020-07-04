@@ -557,6 +557,7 @@ namespace ImageChecker
                     m_clsHeaderData.strFabricName,
                     m_strFileName,
                     strLogMessage,
+                    false,
                     true,
                     diFaultImage.Name));
 

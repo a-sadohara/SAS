@@ -8,6 +8,9 @@ namespace ImageChecker
 {
     public partial class CheckExcept : Form
     {
+        // 更新フラグ
+        public bool bolUpdateFlg { get; set; }
+
         // パラメータ関連（不変）
         private readonly int m_intInspectionNum = 0;
         private readonly string m_strUnitNum = string.Empty;
@@ -63,6 +66,7 @@ namespace ImageChecker
             m_intInspectionStartLine = intInspectionStartLine;
             m_intInspectionEndLine = intInspectionEndLine;
             m_bolInspection = bolInspection;
+            bolUpdateFlg = false;
 
             InitializeComponent();
 
@@ -220,8 +224,6 @@ namespace ImageChecker
 
                         // DBコミット
                         g_clsConnectionNpgsql.DbCommit();
-
-                        this.Close();
                     }
                     catch (Exception ex)
                     {
@@ -242,6 +244,8 @@ namespace ImageChecker
                 // DBクローズ
                 g_clsConnectionNpgsql.DbClose();
             }
+
+            bolUpdateFlg = true;
 
             this.Close();
         }

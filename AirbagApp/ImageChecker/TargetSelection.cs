@@ -48,6 +48,9 @@ namespace ImageChecker
         // 前回の連携時間
         private DateTime datetimePrevReplicate;
 
+        // グリッド描写フラグ
+        private bool bolGridRepresentationFlg;
+
         // 選択行保持
         private int m_intSelRowIdx = -1;
         private int m_intFirstDisplayedScrollingRowIdx = -1;
@@ -66,6 +69,8 @@ namespace ImageChecker
             {
                 m_bolIsSuperUser = true;
             }
+
+            bolGridRepresentationFlg = true;
 
             InitializeComponent();
         }
@@ -823,6 +828,11 @@ namespace ImageChecker
 
                         this.Visible = false;
 
+                        // 変数を初期化する
+                        bolGridRepresentationFlg = false;
+                        dgvTargetSelection.Rows.Clear();
+                        datetimePrevReplicate = DateTime.MinValue;
+
                         // 過検知除外
                         frmOverDetectionExcept = new Overdetectionexclusion(ref clsHeaderData);
                         frmOverDetectionExcept.ShowDialog(this);
@@ -830,38 +840,58 @@ namespace ImageChecker
                         // 過検知除外結果から合否確認に遷移
                         if (frmOverDetectionExcept.intDestination == g_CON_APID_RESULT_CHECK)
                         {
+                            // 変数を初期化する
+                            bolGridRepresentationFlg = false;
+                            dgvTargetSelection.Rows.Clear();
+                            datetimePrevReplicate = DateTime.MinValue;
+
                             frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult);
                             frmResultCheck.ShowDialog(this);
                         }
 
+                        // 連携処理をして画面表示
+                        this.Visible = true;
+                        this.Refresh();
+                        this.TargetSelection_Activated(null, null);
                         break;
 
                     case m_CON_COL_IDX_ACCEPTANCECHECK:
 
                         this.Visible = false;
 
+                        // 変数を初期化する
+                        bolGridRepresentationFlg = false;
+                        dgvTargetSelection.Rows.Clear();
+                        datetimePrevReplicate = DateTime.MinValue;
+
                         // 合否確認・判定登録
                         frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult);
                         frmResultCheck.ShowDialog(this);
 
                         // 連携処理をして画面表示
-                        datetimePrevReplicate = DateTime.MinValue;
-
+                        this.Visible = true;
+                        this.Refresh();
+                        this.TargetSelection_Activated(null, null);
                         break;
                     case m_CON_COL_IDX_RESULT:
 
                         this.Visible = false;
+
+                        // 変数を初期化する
+                        bolGridRepresentationFlg = false;
+                        dgvTargetSelection.Rows.Clear();
+                        datetimePrevReplicate = DateTime.MinValue;
 
                         // 検査結果確認
                         DisplayResults frmInspectionResult = new DisplayResults(ref clsHeaderData);
                         frmInspectionResult.ShowDialog(this);
 
                         // 連携処理をして画面表示
-                        datetimePrevReplicate = DateTime.MinValue;
-
+                        this.Visible = true;
+                        this.Refresh();
+                        this.TargetSelection_Activated(null, null);
                         break;
                 }
-                this.Visible = true;
             }
             finally
             {
@@ -889,13 +919,18 @@ namespace ImageChecker
             {
                 this.Visible = false;
 
+                // 変数を初期化する
+                bolGridRepresentationFlg = false;
+                dgvTargetSelection.Rows.Clear();
+                datetimePrevReplicate = DateTime.MinValue;
+
                 DisplayResultsAgo frmResult = new DisplayResultsAgo();
                 frmResult.ShowDialog(this);
 
                 // 連携処理をして画面表示
-                datetimePrevReplicate = DateTime.MinValue;
-
                 this.Visible = true;
+                this.Refresh();
+                this.TargetSelection_Activated(null, null);
             }
             finally
             {
@@ -959,6 +994,9 @@ namespace ImageChecker
                 intInspectionEndLine = int.Parse(m_dtData.Rows[intRow]["inspection_end_line"].ToString());
                 intInspectionNum = int.Parse(m_dtData.Rows[intRow]["inspection_num"].ToString());
 
+                // 変数を初期化する
+                bolGridRepresentationFlg = false;
+
                 // 検査対象外画面表示
                 CheckExcept frmCheckExcept = new CheckExcept(strUnitNum,
                                                              strOrderImg,
@@ -973,10 +1011,13 @@ namespace ImageChecker
                                                              bolInspection);
                 frmCheckExcept.ShowDialog(this);
 
-                // 連携処理をして画面表示
-                datetimePrevReplicate = DateTime.MinValue;
-
-                this.Visible = true;
+                if (frmCheckExcept.bolUpdateFlg)
+                {
+                    // 連携処理をして画面表示
+                    dgvTargetSelection.Rows.Clear();
+                    datetimePrevReplicate = datetimePrevReplicate.AddMinutes(1);
+                    this.TargetSelection_Activated(null, null);
+                }
             }
             finally
             {
@@ -1024,6 +1065,9 @@ namespace ImageChecker
                 intInspectionEndLine = int.Parse(m_dtData.Rows[intRow]["inspection_end_line"].ToString());
                 intInspectionNum = int.Parse(m_dtData.Rows[intRow]["inspection_num"].ToString());
 
+                // 変数を初期化する
+                bolGridRepresentationFlg = false;
+
                 // 行補正画面表示
                 LineCorrect frmLineCorrect = new LineCorrect(strUnitNum,
                                                              strOrderImg,
@@ -1037,9 +1081,13 @@ namespace ImageChecker
                                                              intInspectionEndLine);
                 frmLineCorrect.ShowDialog(this);
 
-                // 連携処理をして画面表示
-                datetimePrevReplicate = DateTime.MinValue;
-                this.Visible = true;
+                if (frmLineCorrect.bolUpdateFlg)
+                {
+                    // 連携処理をして画面表示
+                    dgvTargetSelection.Rows.Clear();
+                    datetimePrevReplicate = datetimePrevReplicate.AddMinutes(1);
+                    this.TargetSelection_Activated(null, null);
+                }
             }
             finally
             {
@@ -1055,6 +1103,14 @@ namespace ImageChecker
         private async void TargetSelection_Activated(object sender, EventArgs e)
         {
             this.SuspendLayout();
+
+            if (!bolGridRepresentationFlg)
+            {
+                bolGridRepresentationFlg = true;
+                await Task.Delay(10);
+                return;
+            }
+
             if (datetimePrevReplicate != DateTime.MinValue &&
                 datetimePrevReplicate > DateTime.Now)
             {
@@ -1098,7 +1154,6 @@ namespace ImageChecker
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
-            Random random = new Random();
 
             // チェック対象の完了通知連携ディレクトリを設定する
             string[] strCompletionNoticeCooperationDirectoryArray =
@@ -1386,7 +1441,9 @@ namespace ImageChecker
                                         AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date_yyyymmdd
                                         AND unit_num = :unit_num
                                 ) header
-                                WHERE SEQ = 1";
+                                WHERE SEQ = 1
+                                ON CONFLICT
+                                DO NOTHING ";
 
                                 // SQLコマンドに各パラメータを設定する
                                 lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -1534,7 +1591,9 @@ namespace ImageChecker
                                     AND edge_result = :edge_result
                                     AND masking_result = :masking_result
                                 ) rpd
-                                WHERE SEQ = 1";
+                                WHERE SEQ = 1
+                                ON CONFLICT
+                                DO NOTHING ";
 
                                 // SQLコマンドに各パラメータを設定する
                                 lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -1623,16 +1682,6 @@ namespace ImageChecker
                             if (!Directory.Exists(strFaultImageFileDirectory) &&
                                 dateSyncTargetDate < DateTime.Parse(strInspectionDate))
                             {
-                                if (lstTask.Count != 0)
-                                {
-                                    // 複数取込の場合、ランダムで待ち時間を挟む
-                                    await Task.Delay(
-                                        random.Next(
-                                            g_clsSystemSettingInfo.intMinDecompressionWaitingTime,
-                                            g_clsSystemSettingInfo.intMaxDecompressionWaitingTime + 1)
-                                        * 1000);
-                                }
-
                                 bool? bolCheckResultInfo = BolCheckNGRecordCount(intInspectionNumInfo, strFabricNameInfo, strInspectionDateInfo, strUnitNumInfo, strLogMessageInfo, true);
 
                                 if (bolCheckResultInfo == null)
@@ -1649,7 +1698,8 @@ namespace ImageChecker
                                         strUnitNumInfo,
                                         strFabricNameInfo,
                                         strFaultImageFileNameInfo,
-                                        strLogMessageInfo)));
+                                        strLogMessageInfo,
+                                        lstTask.Count != 0 ? true : false)));
                                 }
                                 else
                                 {
@@ -1874,6 +1924,8 @@ namespace ImageChecker
             }
             finally
             {
+
+                bolGridRepresentationFlg = false;
                 frmProgress.Close();
             }
 

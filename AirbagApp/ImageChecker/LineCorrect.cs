@@ -8,6 +8,9 @@ namespace ImageChecker
 {
     public partial class LineCorrect : Form
     {
+        // 更新フラグ
+        public bool bolUpdateFlg { get; set; }
+
         // 定義
         private const string m_CON_FORMAT_CORRECT = "補正値：{0}";
 
@@ -62,6 +65,7 @@ namespace ImageChecker
             m_strEndDatetime = strEndDatetime;
             m_intInspectionStartLine = intInspectionStartLine;
             m_intInspectionEndLine = intInspectionEndLine;
+            bolUpdateFlg = false;
 
             InitializeComponent();
 
@@ -212,8 +216,6 @@ namespace ImageChecker
 
                     // DBコミット
                     g_clsConnectionNpgsql.DbCommit();
-
-                    this.Close();
                 }
                 catch (Exception ex)
                 {
@@ -232,6 +234,9 @@ namespace ImageChecker
                     // DBクローズ
                     g_clsConnectionNpgsql.DbClose();
                 }
+
+                bolUpdateFlg = true;
+                this.Close();
             }
         }
 
