@@ -1656,7 +1656,8 @@ namespace ImageChecker
                                     , NULL
                                     , NULL
                                 FROM (
-                                    SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY rapid_endtime DESC) AS SEQ
+                                    SELECT
+                                        ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY abs(694 - (cast((regexp_split_to_array(ng_point, ','))[1] as integer) + cast((regexp_split_to_array(ng_point, ','))[2] as integer))), cast((regexp_split_to_array(ng_point, ','))[1] as integer) + cast((regexp_split_to_array(ng_point, ','))[2] as integer)) AS SEQ
                                         , rpd.*
                                     FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" rpd
                                     WHERE fabric_name = :fabric_name
