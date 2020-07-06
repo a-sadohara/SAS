@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using static ProductMstMaintenance.Common;
@@ -1732,8 +1733,13 @@ namespace ProductMstMaintenance
         /// </summary>
         private void ImportAIModelName()
         {
-            // 起動端末が「システム設定テーブル.非AIモデル取込端末」に該当する場合、下記処理をスキップする
-            if (g_clsSystemSettingInfo.strUnAIModelImportTerminal.Split(',').Contains(Environment.MachineName))
+            IPAddress[] strIPAddress =
+                Dns.GetHostEntry(Dns.GetHostName()).AddressList.Where(
+                    x => x.ToString().StartsWith(g_clsSystemSettingInfo.strAIModelImportTerminal)).ToArray();
+
+            // 起動端末のIPアドレスが「システム設定テーブル.AIモデル取込端末(セグメント指定)」に一致する場合、下記処理を実行する
+            if (strIPAddress == null ||
+                strIPAddress.Length == 0)
             {
                 return;
             }
