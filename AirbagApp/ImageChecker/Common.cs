@@ -91,7 +91,8 @@ namespace ImageChecker
         public const string g_strPriorityAboveNormal = "Above Normal";
         public const string g_strPriorityNormal = "Normal";
         public const string g_strProcessNameImageChecker = "ImageChecker.exe";
-        public const string g_strProcessName7zip = "7za.exe";
+        public const string g_strProcessName7zip = "7za";
+        public const string g_strExecutableFile7zip = "7za.exe";
         private const string g_CON_CHANGE_PRIORITY = @"/c wmic process where name=""{0}"" CALL setpriority ""{1}""";
 
         // ログイン関連
@@ -285,7 +286,7 @@ namespace ImageChecker
             int intRecordCount = 0;
 
             while (Process.GetProcesses().Where(
-                x => x.ProcessName.Equals("7za")).Count() > 4)
+                x => x.ProcessName.Equals(g_strProcessName7zip)).Count() > 4)
             {
                 // 複数取込の場合、ランダムで待ち時間を挟む
                 await Task.Delay(
@@ -497,7 +498,8 @@ namespace ImageChecker
 
             foreach (string strZipFile in listZipFilePath)
             {
-                if (lstTask.Count != 0)
+                while (Process.GetProcesses().Where(
+                    x => x.ProcessName.Equals(g_strProcessName7zip)).Count() > 4)
                 {
                     // 複数取込の場合、ランダムで待ち時間を挟む
                     await Task.Delay(
@@ -517,7 +519,7 @@ namespace ImageChecker
                 await Task.Delay(1000);
 
                 // 解凍処理のプロセス優先度を変更する
-                ChangeProcessingPriority(g_strProcessName7zip);
+                ChangeProcessingPriority(g_strExecutableFile7zip);
             }
 
             // 解凍有無をチェックする

@@ -90,6 +90,7 @@ namespace ImageChecker
             int intAcceptanceCheckStatus = -1;
             string strBefore48hourYmdhms = DateTime.Now.AddHours(-48).ToString("yyyy/MM/dd HH:mm:ss");
             ArrayList arrRow = new ArrayList();
+            string strInspectionEndLine = string.Empty;
 
             dgvTargetSelection.Rows.Clear();
 
@@ -198,6 +199,7 @@ namespace ImageChecker
                     arrRow = new ArrayList();
                     intOverDetectionExceptStatus = -1;
                     intAcceptanceCheckStatus = -1;
+                    strInspectionEndLine = row["inspection_end_line"].ToString();
 
                     // No
                     arrRow.Add(this.dgvTargetSelection.Rows.Count + 1);
@@ -209,10 +211,15 @@ namespace ImageChecker
                     sbFabricInfo.AppendLine(string.Format(m_CON_FORMAT_PRODUCT_NAME, row["product_name"]));
                     arrRow.Add(sbFabricInfo.ToString());
 
+                    if (strInspectionEndLine.Equals(decimal.Zero.ToString()))
+                    {
+                        strInspectionEndLine = string.Empty;
+                    }
+
                     // 外観検査情報
                     sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_START_DATETIME, row["start_datetime"]));
                     sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_END_DATETIME, row["end_datetime"]));
-                    sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_INSPECTION_LINE, row["inspection_start_line"], row["inspection_end_line"]));
+                    sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_INSPECTION_LINE, row["inspection_start_line"], strInspectionEndLine));
                     sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_DECISION_START_DATETIME, row["decision_start_datetime"]));
                     sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_DECISION_END_DATETIME, row["decision_end_datetime"]));
                     sbInspectionInfo.AppendLine(string.Format(m_CON_FORMAT_INSPECTION_NUM, row["inspection_num"]));
@@ -849,6 +856,11 @@ namespace ImageChecker
                             frmResultCheck.ShowDialog(this);
                         }
 
+                        if (!g_clsLoginInfo.bolStatus)
+                        {
+                            return;
+                        }
+
                         // 連携処理をして画面表示
                         this.Visible = true;
                         this.Refresh();
@@ -868,6 +880,11 @@ namespace ImageChecker
                         frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult);
                         frmResultCheck.ShowDialog(this);
 
+                        if (!g_clsLoginInfo.bolStatus)
+                        {
+                            return;
+                        }
+
                         // 連携処理をして画面表示
                         this.Visible = true;
                         this.Refresh();
@@ -885,6 +902,11 @@ namespace ImageChecker
                         // 検査結果確認
                         DisplayResults frmInspectionResult = new DisplayResults(ref clsHeaderData);
                         frmInspectionResult.ShowDialog(this);
+
+                        if (!g_clsLoginInfo.bolStatus)
+                        {
+                            return;
+                        }
 
                         // 連携処理をして画面表示
                         this.Visible = true;
@@ -927,6 +949,11 @@ namespace ImageChecker
                 DisplayResultsAgo frmResult = new DisplayResultsAgo();
                 frmResult.ShowDialog(this);
 
+                if (!g_clsLoginInfo.bolStatus)
+                {
+                    return;
+                }
+
                 // 連携処理をして画面表示
                 this.Visible = true;
                 this.Refresh();
@@ -951,6 +978,7 @@ namespace ImageChecker
             string strInspectionDate = string.Empty;
             string strStartDatetime = string.Empty;
             string strEndDatetime = string.Empty;
+            string strLogMessage = string.Empty;
             int intInspectionStartLine = -1;
             int intInspectionEndLine = -1;
             int intInspectionNum = 0;
@@ -997,6 +1025,29 @@ namespace ImageChecker
                 // 変数を初期化する
                 bolGridRepresentationFlg = false;
 
+                strLogMessage =
+                    string.Format(
+                        g_CON_LOG_MESSAGE_FOMAT,
+                            strUnitNum,
+                            strInspectionDate,
+                            intInspectionNum,
+                            strProductName,
+                            strFabricName);
+
+                bool? bolCheckResultInfo = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage, true);
+
+                if (bolCheckResultInfo == null)
+                {
+                    return;
+                }
+                else if (bolCheckResultInfo.Equals(false))
+                {
+                    // メッセージ出力
+                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0070, btnExceptTarget.Text), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
                 // 検査対象外画面表示
                 CheckExcept frmCheckExcept = new CheckExcept(strUnitNum,
                                                              strOrderImg,
@@ -1040,6 +1091,7 @@ namespace ImageChecker
                 string strInspectionDate = string.Empty;
                 string strStartDatetime = string.Empty;
                 string strEndDatetime = string.Empty;
+                string strLogMessage = string.Empty;
                 int intInspectionStartLine = -1;
                 int intInspectionEndLine = -1;
                 int intInspectionNum = 0;
@@ -1067,6 +1119,29 @@ namespace ImageChecker
 
                 // 変数を初期化する
                 bolGridRepresentationFlg = false;
+
+                strLogMessage =
+                    string.Format(
+                        g_CON_LOG_MESSAGE_FOMAT,
+                            strUnitNum,
+                            strInspectionDate,
+                            intInspectionNum,
+                            strProductName,
+                            strFabricName);
+
+                bool? bolCheckResultInfo = BolCheckNGRecordCount(intInspectionNum, strFabricName, strInspectionDate, strUnitNum, strLogMessage, true);
+
+                if (bolCheckResultInfo == null)
+                {
+                    return;
+                }
+                else if (bolCheckResultInfo.Equals(false))
+                {
+                    // メッセージ出力
+                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0070, btnReviseLine.Text), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
 
                 // 行補正画面表示
                 LineCorrect frmLineCorrect = new LineCorrect(strUnitNum,
