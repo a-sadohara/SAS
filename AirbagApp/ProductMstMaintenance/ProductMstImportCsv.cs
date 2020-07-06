@@ -2686,6 +2686,8 @@ namespace ProductMstMaintenance
                     cciCurrentData.strProductName,
                     cciCurrentData.strAIModelName);
 
+            string strProductName = string.Empty;
+            string strAIModelName = string.Empty;
             string strErrorMessage = string.Empty;
 
             try
@@ -2698,11 +2700,18 @@ namespace ProductMstMaintenance
                 // CSVファイルから各値を読み込む
                 foreach (var fieldInfo in fieldInfos)
                 {
+                    if (fieldInfo.Name.Equals("strProductName"))
+                    {
+                        strProductName = NulltoString(fieldInfo.GetValue(cciCurrentData));
+                    }
+
                     if (fieldInfo.Name.Equals("strAIModelName"))
                     {
-                        UpsertAIModelName(NulltoString(fieldInfo.GetValue(cciCurrentData)));
+                        strAIModelName = NulltoString(fieldInfo.GetValue(cciCurrentData));
                     }
                 }
+
+                UpsertAIModelName(strProductName, strAIModelName);
 
                 return true;
             }

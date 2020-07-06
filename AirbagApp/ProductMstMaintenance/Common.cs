@@ -160,9 +160,12 @@ namespace ProductMstMaintenance
         /// <summary>
         /// AIモデル名更新
         /// </summary>
+        /// <param name="strProductName">品名</param>
         /// <param name="strAIModelName">AIモデル名</param>
         /// <returns>実行結果</returns>
-        public static bool UpsertAIModelName(string strAIModelName)
+        public static bool UpsertAIModelName(
+            string strProductName,
+            string strAIModelName)
         {
             try
             {
@@ -171,6 +174,7 @@ namespace ProductMstMaintenance
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strProductName", DbType = DbType.String, Value = strProductName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "strAIModelName", DbType = DbType.String, Value = strAIModelName });
 
                 // SQLを実行する(マスタに存在しないデータのみ登録される)
@@ -549,16 +553,14 @@ namespace ProductMstMaintenance
 
         // AIモデル名更新SQL
         public const string g_CON_UPSERT_MST_AI_MODEL = @"
-              INSERT INTO public.mst_ai_model
+              INSERT INTO mst_ai_model
               (
                   product_name,
                   ai_model_name
-              )
-              SELECT
-                  DISTINCT(product_name),
+              ) VALUES ( 
+                  :strProductName,
                   :strAIModelName
-              FROM mst_product_info
-              ORDER BY product_name
+              )
               ON CONFLICT
               DO NOTHING ";
 
@@ -568,7 +570,16 @@ namespace ProductMstMaintenance
 
         // AIモデル名取得SQL
         public const string g_CON_SELECT_MST_AI_MODEL =
-            @"SELECT DISTINCT ON (ai_model_name) ai_model_name FROM mst_ai_model WHERE display_flg = 0 ORDER BY ai_model_name";
+            @"
+                SELECT
+                	T1.ai_model_name	
+                FROM mst_ai_model AS T1
+                LEFT JOIN mst_ai_model AS T2
+                	ON T1.ai_model_name = T2.ai_model_name
+                	AND T2.product_name = :product_name
+                WHERE (T1.product_name = :product_name OR T2.product_name IS NULL)
+                	AND T1.display_flg = 0
+                	ORDER BY T1.ai_model_name";
 
         // AIモデル名取得SQL(編集モード)
         public const string g_CON_SELECT_MST_AI_MODEL_EDITMODE =

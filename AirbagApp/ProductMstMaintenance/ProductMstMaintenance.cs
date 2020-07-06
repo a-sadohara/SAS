@@ -1812,11 +1812,13 @@ namespace ProductMstMaintenance
                             }
 
                             // AIモデル名の更新を行う
-                            if (UpsertAIModelName(stArrayData[m_CON_COL_AI_MODEL_NAME]))
+                            if (UpsertAIModelName(stArrayData[m_CON_COL_PRODUCT_NAME_MST_AI_MODEL], stArrayData[m_CON_COL_AI_MODEL_NAME]))
                             {
                                 bolResult = true;
                             }
                         }
+
+                        intRowCount = 0;
                     }
 
                     if (!Directory.Exists(strBackupFolder))
