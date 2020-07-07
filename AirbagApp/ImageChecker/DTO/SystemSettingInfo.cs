@@ -100,6 +100,9 @@ namespace ImageChecker.DTO
         private const string con_strNgImageAcquisitionPeriod = "NgImageAcquisitionPeriod";
         private const string con_strMinDecompressionWaitingTime = "MinDecompressionWaitingTime";
         private const string con_strMaxDecompressionWaitingTime = "MaxDecompressionWaitingTime";
+        private const string con_strResizeImageHeight = "ResizeImageHeight";
+        private const string con_strResizeImageWidth = "ResizeImageWidth";
+        private const string con_strSlidingWindowSize = "SlidingWindowSize";
         private const string con_strProcessingPriority = "ProcessingPriority";
         private const string con_strMainNGReason1 = "MainNGReason1";
         private const string con_strMainNGReason2 = "MainNGReason2";
@@ -213,6 +216,14 @@ namespace ImageChecker.DTO
         public readonly int intMinDecompressionWaitingTime;
         // 解凍待ち時間上限（秒）
         public readonly int intMaxDecompressionWaitingTime;
+        // リサイズ画像高さ(pixel)
+        public readonly int intResizeImageHeight;
+        // リサイズ画像幅(pixel)
+        public readonly int intResizeImageWidth;
+        // スライディングウィンドウサイズ(pixel)
+        public readonly int intSlidingWindowSize;
+        // 座標算出用変数
+        public readonly decimal decCoordinateVariable;
         // プロセス優先度
         public readonly int intProcessingPriority;
         public readonly string strProcessingPriority;
@@ -314,6 +325,9 @@ namespace ImageChecker.DTO
                 GetSystemSettingValue(con_strNgImageAcquisitionPeriod, ref intNgImageAcquisitionPeriod);
                 GetSystemSettingValue(con_strMinDecompressionWaitingTime, ref intMinDecompressionWaitingTime);
                 GetSystemSettingValue(con_strMaxDecompressionWaitingTime, ref intMaxDecompressionWaitingTime);
+                GetSystemSettingValue(con_strResizeImageHeight, ref intResizeImageHeight);
+                GetSystemSettingValue(con_strResizeImageWidth, ref intResizeImageWidth);
+                GetSystemSettingValue(con_strSlidingWindowSize, ref intSlidingWindowSize);
                 GetSystemSettingValue(con_strProcessingPriority, ref intProcessingPriority);
                 GetSystemSettingValue(con_strMainNGReason1, ref intMainNGReason1);
                 GetSystemSettingValue(con_strMainNGReason2, ref intMainNGReason2);
@@ -402,6 +416,9 @@ namespace ImageChecker.DTO
                 GetAppConfigValue(con_strNgImageAcquisitionPeriod, ref intNgImageAcquisitionPeriod);
                 GetAppConfigValue(con_strMinDecompressionWaitingTime, ref intMinDecompressionWaitingTime);
                 GetAppConfigValue(con_strMaxDecompressionWaitingTime, ref intMaxDecompressionWaitingTime);
+                GetAppConfigValue(con_strResizeImageHeight, ref intResizeImageHeight);
+                GetAppConfigValue(con_strResizeImageWidth, ref intResizeImageWidth);
+                GetAppConfigValue(con_strSlidingWindowSize, ref intSlidingWindowSize);
                 GetAppConfigValue(con_strProcessingPriority, ref intProcessingPriority);
                 GetAppConfigValue(con_strMainNGReason1, ref intMainNGReason1);
                 GetAppConfigValue(con_strMainNGReason2, ref intMainNGReason2);
@@ -434,6 +451,12 @@ namespace ImageChecker.DTO
                 {
                     intNgImageAcquisitionPeriod *= -1;
                 }
+
+                // 座標算出用変数
+                decCoordinateVariable =
+                    Math.Round(intResizeImageHeight / 2m, MidpointRounding.AwayFromZero) +
+                    Math.Round(intResizeImageWidth / 2m, MidpointRounding.AwayFromZero) -
+                    intSlidingWindowSize;
 
                 // プロセス優先度
                 switch (intProcessingPriority)

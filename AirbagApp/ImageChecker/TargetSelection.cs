@@ -1655,17 +1655,24 @@ namespace ImageChecker
                                     , NULL
                                     , NULL
                                     , NULL
-                                FROM (
+                                FROM
+                                (
                                     SELECT
-                                        ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY abs(694 - (cast((regexp_split_to_array(ng_point, ','))[1] as integer) + cast((regexp_split_to_array(ng_point, ','))[2] as integer))), cast((regexp_split_to_array(ng_point, ','))[1] as integer) + cast((regexp_split_to_array(ng_point, ','))[2] as integer)) AS SEQ
-                                        , rpd.*
-                                    FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" rpd
-                                    WHERE fabric_name = :fabric_name
-                                    AND inspection_num = :inspection_num 
-                                    AND unit_num = :unit_num 
-                                    AND rapid_result = :rapid_result
-                                    AND edge_result = :edge_result
-                                    AND masking_result = :masking_result
+                                        ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY ABS(:decCoordinateVariable - coordinate_sum), coordinate_sum) AS SEQ
+                                        , *
+                                    FROM 
+                                    (
+                                        SELECT
+                                            CAST((regexp_split_to_array(ng_point, ','))[1] AS INTEGER) + CAST((regexp_split_to_array(ng_point, ','))[2] AS INTEGER) AS coordinate_sum
+                                            , *
+                                        FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" 
+                                        WHERE fabric_name = :fabric_name
+                                        AND inspection_num = :inspection_num 
+                                        AND unit_num = :unit_num 
+                                        AND rapid_result = :rapid_result
+                                        AND edge_result = :edge_result
+                                        AND masking_result = :masking_result
+                                    ) AS TempTable
                                 ) rpd
                                 WHERE SEQ = 1
                                 ON CONFLICT
@@ -1682,6 +1689,7 @@ namespace ImageChecker
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "decCoordinateVariable", DbType = DbType.Decimal, Value = g_clsSystemSettingInfo.decCoordinateVariable });
 
                                 // SQLを実行する
                                 intExecutionCount = g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
