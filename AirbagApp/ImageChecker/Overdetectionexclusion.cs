@@ -408,24 +408,31 @@ namespace ImageChecker
                 Task.Run(() =>
                 {
                     // N秒後に右へボタンを有効にする
-                    System.Threading.Thread.Sleep(g_clsSystemSettingInfo.intWaitingTimeProcessed * 1000);
-                    this.Invoke(new Action(() =>
+                    Thread.Sleep(g_clsSystemSettingInfo.intWaitingTimeProcessed * 1000);
+
+                    if (this.Visible)
                     {
-                        btnLeft.Enabled = true;
-                    }));
+                        this.Invoke(new Action(() =>
+                        {
+                            btnLeft.Enabled = true;
+                        }));
+                    }
                 });
             }
 
             Task.Run(() =>
             {
                 // N秒後に右へボタンを有効にする
-                System.Threading.Thread.Sleep(g_clsSystemSettingInfo.intWaitingTimeProcessed * 1000);
-                this.Invoke(new Action(() =>
-                {
-                    btnRight.Enabled = true;
-                }));
-            });
+                Thread.Sleep(g_clsSystemSettingInfo.intWaitingTimeProcessed * 1000);
 
+                if (this.Visible)
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        btnRight.Enabled = true;
+                    }));
+                }
+            });
 
             // pictureboxの背景色を初期化
             foreach (Control ctrChild in tlpImage.Controls)

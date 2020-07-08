@@ -671,7 +671,7 @@ namespace ImageChecker
             if (int.Parse(m_dtData.Rows[intSelIdx]["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc &&
                 int.Parse(m_dtData.Rows[intSelIdx]["acceptance_check_status"].ToString()) == g_clsSystemSettingInfo.intAcceptanceCheckStatusExc)
             {
-                MessageBox.Show(g_clsMessageInfo.strMsgE0064, g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0064, "検査結果"), g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
