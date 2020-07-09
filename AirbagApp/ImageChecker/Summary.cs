@@ -94,7 +94,7 @@ namespace ImageChecker
             intFirstDisplayedScrollingRowIdx = intFirstDisplayedScrollingRowIndex;
             intDestination = 0;
 
-            m_strFaultImageSubDirName = string.Join("_", m_strInspectionDate.Replace("/", ""),
+            m_strFaultImageSubDirName = string.Join("_", m_strInspectionDate.Replace("/", string.Empty),
                                                          m_strProductName,
                                                          m_strFabricName,
                                                          m_intInspectionNum);
@@ -195,8 +195,8 @@ namespace ImageChecker
             lblStartDatetime.Text = string.Format(m_CON_FORMAT_START_DATETIME, m_strStartDatetime);
             lblEndDatetime.Text = string.Format(m_CON_FORMAT_END_DATETIME, m_strEndDatetime);
             lblInspectionLine.Text = string.Format(m_CON_FORMAT_INSPECTION_LINE, m_intInspectionStartLine, m_intInspectionEndLine);
-            lblDecisionStartTime.Text = string.Format(m_CON_FORMAT_DECISION_START_DATETIME, "");
-            lblDecisionEndTime.Text = string.Format(m_CON_FORMAT_DECISION_END_DATETIME, "");
+            lblDecisionStartTime.Text = string.Format(m_CON_FORMAT_DECISION_START_DATETIME, string.Empty);
+            lblDecisionEndTime.Text = string.Format(m_CON_FORMAT_DECISION_END_DATETIME, string.Empty);
             lblInspectionNum.Text = string.Format(m_CON_FORMAT_INSPECTION_NUM, m_intInspectionNum);
 
             // 判定日時を取得
@@ -235,6 +235,10 @@ namespace ImageChecker
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
+            }
+            finally
+            {
+                dtData.Dispose();
             }
 
             try
@@ -304,6 +308,10 @@ namespace ImageChecker
 
                     return;
                 }
+                finally
+                {
+                    dtData.Dispose();
+                }
 
                 dtData = new DataTable();
                 try
@@ -352,6 +360,10 @@ namespace ImageChecker
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
+                }
+                finally
+                {
+                    dtData.Dispose();
                 }
 
                 // 一覧の表示
@@ -575,11 +587,18 @@ namespace ImageChecker
                 _clickSemaphore.Release();
             }
 
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(m_strFaultImageSubDirPath,
-                                                                                        m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
-                                                                           Path.Combine(m_strFaultImageSubDirPath,
-                                                                                        m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
-            frmViewEnlargedimage.ShowDialog(this);
+            using (ViewEnlargedimage frmViewEnlargedimage =
+                new ViewEnlargedimage(
+                    Path.Combine(
+                        m_strFaultImageSubDirPath,
+                        m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
+                    Path.Combine(
+                        m_strFaultImageSubDirPath,
+                        m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString())))
+            {
+                frmViewEnlargedimage.ShowDialog(this);
+            }
+
             this.Visible = true;
         }
 

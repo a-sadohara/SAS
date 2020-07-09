@@ -84,6 +84,9 @@ namespace ImageChecker
         private const int m_CON_PAGE_WAY_L = -1;
         private const int m_CON_PAGE_WAY_R = 1;
 
+        // フォーム制御フラグ
+        private bool m_bolFormControlFlag = true;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -313,6 +316,7 @@ namespace ImageChecker
                 }
 
                 fs.Close();
+                fs.Dispose();
 
                 // マスタ画像にNG位置をマーキングした画像を一時ファイル保存する
                 strMarkingFilePath = Path.Combine(g_strMasterImageDirMarking, intPageIdx.ToString() + ".bmp");
@@ -478,6 +482,10 @@ namespace ImageChecker
 
                     return false;
                 }
+                finally
+                {
+                    dtData.Dispose();
+                }
 
                 // 同一行列がNGに登録済みになっている場合、他画面でNG登録済みにする
                 if (bolNgReasonReWrite)
@@ -537,6 +545,10 @@ namespace ImageChecker
                         MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         return false;
+                    }
+                    finally
+                    {
+                        dtData.Dispose();
                     }
                 }
 
@@ -880,45 +892,50 @@ namespace ImageChecker
 
             // 結果確認画面に遷移
             this.Visible = false;
-            Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId, m_intSelBranchNum, m_strSelMarkingImagepath);
-            frmResult.ShowDialog(this);
+            m_bolFormControlFlag = false;
 
-            // パラメータ更新
-            m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
-            m_strDecisionEndTime = m_clsHeaderData.strDecisionEndDatetime;
-
-            if (frmResult.bolMod == true)
+            using (Result frmResult = new Result(ref m_clsHeaderData, m_intFromApId, m_intSelBranchNum, m_strSelMarkingImagepath))
             {
-                // 修正ありの場合
+                frmResult.ShowDialog(this);
+                m_bolFormControlFlag = true;
 
-                m_clsDecisionResultCorrection = frmResult.clsDecisionResult;
+                // パラメータ更新
+                m_intAcceptanceCheckStatus = m_clsHeaderData.intAcceptanceCheckStatus;
+                m_strDecisionEndTime = m_clsHeaderData.strDecisionEndDatetime;
 
-                m_intSelBranchNum = m_clsDecisionResultCorrection.intBranchNum;
-                m_strSelMarkingImagepath = m_clsDecisionResultCorrection.strMarkingImagepath;
-
-                // ページIdxを検索
-                for (int idx = 0; idx < m_dtData.Rows.Count; idx++)
+                if (frmResult.bolMod == true)
                 {
-                    if (m_dtData.Rows[idx]["marking_imagepath"].ToString() == m_clsDecisionResultCorrection.strMarkingImagepath)
+                    // 修正ありの場合
+
+                    m_clsDecisionResultCorrection = frmResult.clsDecisionResult;
+
+                    m_intSelBranchNum = m_clsDecisionResultCorrection.intBranchNum;
+                    m_strSelMarkingImagepath = m_clsDecisionResultCorrection.strMarkingImagepath;
+
+                    // ページIdxを検索
+                    for (int idx = 0; idx < m_dtData.Rows.Count; idx++)
                     {
-                        m_intPageIdx = idx;
-                        break;
+                        if (m_dtData.Rows[idx]["marking_imagepath"].ToString() == m_clsDecisionResultCorrection.strMarkingImagepath)
+                        {
+                            m_intPageIdx = idx;
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
-                // 修正なしの場合
-
-                // 遷移先：検査対象選択画面
-                if (frmResult.bolReg == false)
+                else
                 {
-                    intDestination = g_CON_APID_TARGET_SELECTION;
-                }
+                    // 修正なしの場合
 
-                // 画面を閉じる
-                this.Close();
-                return false;
+                    // 遷移先：検査対象選択画面
+                    if (frmResult.bolReg == false)
+                    {
+                        intDestination = g_CON_APID_TARGET_SELECTION;
+                    }
+
+                    // 画面を閉じる
+                    this.Close();
+                    return false;
+                }
             }
 
             this.Visible = true;
@@ -956,11 +973,10 @@ namespace ImageChecker
         private void GetStartPageIdx(ref int intIdxStartPage)
         {
             string strSQL = string.Empty;
-            DataTable dtData;
+            DataTable dtData = new DataTable();
 
             try
             {
-                dtData = new DataTable();
                 strSQL = @"SELECT COALESCE(MAX(sort_num),0) AS max_sort_num
                              FROM (
                                  SELECT ROW_NUMBER() OVER(ORDER BY CASE
@@ -1018,6 +1034,10 @@ namespace ImageChecker
             {
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0044, Environment.NewLine, ex.Message));
+            }
+            finally
+            {
+                dtData.Dispose();
             }
         }
 
@@ -1136,9 +1156,11 @@ namespace ImageChecker
                 try
                 {
                     // 初期状態を描画
-                    FileStream fs = new FileStream(m_strAirbagImagepath, FileMode.Open, FileAccess.Read);
-                    m_bmpMasterImageInit = new Bitmap(Image.FromStream(fs));
-                    fs.Close();
+                    using (FileStream fs = new FileStream(m_strAirbagImagepath, FileMode.Open, FileAccess.Read))
+                    {
+                        m_bmpMasterImageInit = new Bitmap(Image.FromStream(fs));
+                        fs.Close();
+                    }
 
                     // 枠線表示用に調整
                     picMasterImageNo1.Controls.Add(new PictureBox());
@@ -1310,9 +1332,11 @@ namespace ImageChecker
             strMarkingImagepath = strGetMarkingImagePathForPage(m_intPageIdx);
 
             // 画像拡大フォームを開く
-            ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath);
-            frmViewImage.ShowDialog(this);
-            this.Visible = true;
+            using (ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath))
+            {
+                frmViewImage.ShowDialog(this);
+                this.Visible = true;
+            }
         }
 
         /// <summary>
@@ -1485,9 +1509,11 @@ namespace ImageChecker
             string strDecisionReason = string.Empty;
 
             // 理由選択画面を開く
-            SelectErrorReason frmErrorReason = new SelectErrorReason(false);
-            frmErrorReason.ShowDialog(this);
-            strDecisionReason = frmErrorReason.strDecisionReason;
+            using (SelectErrorReason frmErrorReason = new SelectErrorReason(false))
+            {
+                frmErrorReason.ShowDialog(this);
+                strDecisionReason = frmErrorReason.strDecisionReason;
+            }
 
             this.Visible = true;
 
@@ -1549,19 +1575,23 @@ namespace ImageChecker
             }
 
             // 複写指定画面を開く
-            CopyReg frmCopyReg = new CopyReg(m_clsHeaderData,
-                                             cmbBoxLine,
-                                             cmbBoxColumns,
-                                             intLine,
-                                             strColumns,
-                                             strNgReason,
-                                             strMarkingImagepath,
-                                             strOrgImagepath,
-                                             intBranch,
-                                             m_intFromApId,
-                                             bolUpdMode);
-            frmCopyReg.ShowDialog(this);
-            bolRegister = frmCopyReg.bolRegister;
+            using (CopyReg frmCopyReg =
+                new CopyReg(
+                    m_clsHeaderData,
+                    cmbBoxLine,
+                    cmbBoxColumns,
+                    intLine,
+                    strColumns,
+                    strNgReason,
+                    strMarkingImagepath,
+                    strOrgImagepath,
+                    intBranch,
+                    m_intFromApId,
+                    bolUpdMode))
+            {
+                frmCopyReg.ShowDialog(this);
+                bolRegister = frmCopyReg.bolRegister;
+            }
 
             this.Visible = true;
 
@@ -1592,7 +1622,7 @@ namespace ImageChecker
             bool bolProcOkNg = false;
             string strSQL = string.Empty;
             string strFileNameWithExtension = string.Empty;
-            DataTable dtData = null;
+            DataTable dtData = new DataTable();
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             AddImageProgressForm frmProgressForm = null;
 
@@ -1637,7 +1667,6 @@ namespace ImageChecker
                 // 追加分を画面表示
                 try
                 {
-                    dtData = new DataTable();
                     strSQL = @"SELECT
                                    line
                                  , cloumns
@@ -1707,6 +1736,8 @@ namespace ImageChecker
             }
             finally
             {
+                dtData.Dispose();
+
                 if (frmProgressForm != null)
                 {
                     frmProgressForm.Dispose();
@@ -1736,6 +1767,11 @@ namespace ImageChecker
         #region 最大化画面制御
         protected override void WndProc(ref Message m)
         {
+            if (!m_bolFormControlFlag)
+            {
+                return;
+            }
+
             const int WM_NCLBUTTONDBLCLK = 0x00A3;
             const int WM_SYSCOMMAND = 0x0112;
             const long SC_MOVE = 0xF010L;

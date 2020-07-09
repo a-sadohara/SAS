@@ -16,13 +16,13 @@ namespace ImageChecker
 
         // パラメータ関連（不変）
         private readonly int m_intInspectionNum = 0;
-        private readonly string m_strUnitNum = "";
-        private readonly string m_strOrderImg = "";
-        private readonly string m_strFabricName = "";
-        private readonly string m_strProductName = "";
-        private readonly string m_strInspectionDate = "";
-        private readonly string m_strStartDatetime = "";
-        private readonly string m_strEndDatetime = "";
+        private readonly string m_strUnitNum = string.Empty;
+        private readonly string m_strOrderImg = string.Empty;
+        private readonly string m_strFabricName = string.Empty;
+        private readonly string m_strProductName = string.Empty;
+        private readonly string m_strInspectionDate = string.Empty;
+        private readonly string m_strStartDatetime = string.Empty;
+        private readonly string m_strEndDatetime = string.Empty;
         private int m_intInspectionStartLine = -1;
 
         // パラメータ関連（可変）
@@ -140,8 +140,8 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOK_Click(object sender, EventArgs e)
         {
-            string strSQL = "";
-            string strCorrect = "";
+            string strSQL = string.Empty;
+            string strCorrect = string.Empty;
 
             if (m_Correct > 0)
             {

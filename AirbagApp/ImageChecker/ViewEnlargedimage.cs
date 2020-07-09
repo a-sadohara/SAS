@@ -84,6 +84,7 @@ namespace ImageChecker
             }
 
             fs.Close();
+            fs.Dispose();
 
             m_intDispMode = m_CON_DISP_MODE_MRK;
 
@@ -163,6 +164,7 @@ namespace ImageChecker
                 m_intDispMode = m_CON_DISP_MODE_ORG;
             }
             fs.Close();
+            fs.Dispose();
         }
         #endregion
     }

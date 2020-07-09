@@ -170,7 +170,7 @@ namespace ImageChecker
             else if (lblSearch == lblWorkerNameKanaら) { strKanaSta = "ラ"; strKanaEnd = "ロ"; }
             else if (lblSearch == lblWorkerNameKanaわ) { strKanaSta = "ワ"; strKanaEnd = "ン"; }
             else if (lblSearch == lblWorkerNameKanaOther) { strKanaSta = "！"; strKanaEnd = "！"; }
-            else if (lblSearch == lblWorkerNameKanaNoCondition) { strKanaSta = ""; strKanaEnd = ""; }
+            else if (lblSearch == lblWorkerNameKanaNoCondition) { strKanaSta = string.Empty; strKanaEnd = string.Empty; }
 
             foreach (Label lbl in new Label[] { lblWorkerNameKanaあ, lblWorkerNameKanaか, lblWorkerNameKanaさ, lblWorkerNameKanaた, lblWorkerNameKanaな,
                                                 lblWorkerNameKanaは, lblWorkerNameKanaま, lblWorkerNameKanaや, lblWorkerNameKanaら, lblWorkerNameKanaわ,

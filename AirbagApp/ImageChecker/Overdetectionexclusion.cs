@@ -74,6 +74,9 @@ namespace ImageChecker
         private const string m_CON_FORMAT_PICTUREBOX_NAME = "picImage{0}";
         private const string m_CON_FORMAT_LABEL_NAME = "lblImage{0}";
 
+        // フォーム制御フラグ
+        private bool m_bolFormControlFlag = true;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -213,12 +216,11 @@ namespace ImageChecker
             intIdxStartPage = 0;
 
             string strSQL = string.Empty;
-            DataTable dtData;
+            DataTable dtData = new DataTable();
             int intMaxSortNum = 0;
 
             try
             {
-                dtData = new DataTable();
                 strSQL = @"SELECT COALESCE(MAX(sort_num),0) AS max_sort_num
                              FROM (
                                  SELECT ";
@@ -287,6 +289,10 @@ namespace ImageChecker
 
                 return false;
             }
+            finally
+            {
+                dtData.Dispose();
+            }
         }
 
         /// <summary>
@@ -329,7 +335,7 @@ namespace ImageChecker
             Label lblImage = new Label();
             Control[] ctrImage;
             int intStartDataIdxForPage = -1;
-            string strMarkingImagepath = "";
+            string strMarkingImagepath = string.Empty;
 
             // ページ数表示
             lblPageCount.Text = string.Format(m_CON_FORMAT_COUNT_SCORES, (intPageIdx + 1).ToString(), m_intPageCnt.ToString()); ;
@@ -372,10 +378,10 @@ namespace ImageChecker
                         fs = new FileStream(strMarkingImagepath, FileMode.Open, FileAccess.Read);
                         pctImage.Image = Image.FromStream(fs);
                         pctImage.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                        pctImage.Refresh();
                     }
 
                     fs.Close();
+                    fs.Dispose();
 
                     // ステータス設定
                     lblImage = (Label)pctImage.Controls[0];
@@ -449,7 +455,6 @@ namespace ImageChecker
             // 画像の1件目にフォーカスをセットする
             tlpImage.Controls[0].Focus();
             tlpImage.Controls[0].Select();
-
         }
 
         /// <summary>
@@ -651,7 +656,7 @@ namespace ImageChecker
                             sngFontSize = 50;
                             break;
                     }
-                    lblState.Font = new System.Drawing.Font("メイリオ", sngFontSize);
+                    lblState.Font = new Font("メイリオ", sngFontSize);
 
                     // NG表示用ラベル追加
                     pctImage.Controls.Clear();
@@ -805,9 +810,11 @@ namespace ImageChecker
                                                m_dtData.Rows[intIdx]["marking_imagepath"].ToString());
 
             // 画像拡大フォームに遷移
-            ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath);
-            frmViewImage.ShowDialog(this);
-            this.Visible = true;
+            using (ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath))
+            {
+                frmViewImage.ShowDialog(this);
+                this.Visible = true;
+            }
         }
 
         /// <summary>
@@ -968,29 +975,33 @@ namespace ImageChecker
         private void OpenSummaryForm()
         {
             this.Visible = false;
+            m_bolFormControlFlag = false;
 
-            Summary frmSummary = new Summary(g_clsHeaderData, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx);
-            frmSummary.ShowDialog(this);
-
-            if (frmSummary.intSelIdx != -1)
+            using (Summary frmSummary = new Summary(g_clsHeaderData, m_intSelIdx, m_intFirstDisplayedScrollingRowIdx))
             {
-                m_intSelIdx = frmSummary.intSelIdx;
-                m_intFirstDisplayedScrollingRowIdx = frmSummary.intFirstDisplayedScrollingRowIdx;
+                frmSummary.ShowDialog(this);
+                m_bolFormControlFlag = true;
 
-                m_bolRegFlg = false;
-                m_bolUpdFlg = true;
+                if (frmSummary.intSelIdx != -1)
+                {
+                    m_intSelIdx = frmSummary.intSelIdx;
+                    m_intFirstDisplayedScrollingRowIdx = frmSummary.intFirstDisplayedScrollingRowIdx;
 
-                m_intPageIdx = frmSummary.intSelIdx / g_clsLoginInfo.intDispNum;
-                dispImage(m_intPageIdx);
+                    m_bolRegFlg = false;
+                    m_bolUpdFlg = true;
 
-                this.Visible = true;
-            }
-            else
-            {
-                m_bolRegFlg = true;
-                intDestination = frmSummary.intDestination;
+                    m_intPageIdx = frmSummary.intSelIdx / g_clsLoginInfo.intDispNum;
+                    dispImage(m_intPageIdx);
 
-                this.Close();
+                    this.Visible = true;
+                }
+                else
+                {
+                    m_bolRegFlg = true;
+                    intDestination = frmSummary.intDestination;
+
+                    this.Close();
+                }
             }
         }
         #endregion
@@ -998,6 +1009,11 @@ namespace ImageChecker
         #region 最大化画面制御
         protected override void WndProc(ref Message m)
         {
+            if (!m_bolFormControlFlag)
+            {
+                return;
+            }
+
             const int WM_NCLBUTTONDBLCLK = 0x00A3;
             const int WM_SYSCOMMAND = 0x0112;
             const long SC_MOVE = 0xF010L;

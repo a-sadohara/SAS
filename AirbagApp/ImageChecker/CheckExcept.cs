@@ -104,7 +104,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOK_Click(object sender, EventArgs e)
         {
-            string strMsg = "";
+            string strMsg = string.Empty;
             int intOverDetectionExceptStatus = -1;
             int intAcceptanceCheckStatus = -1;
             string strSQL = string.Empty;

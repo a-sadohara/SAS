@@ -355,6 +355,8 @@
             // dgvDecisionResult
             // 
             this.dgvDecisionResult.AllowUserToAddRows = false;
+            this.dgvDecisionResult.AllowUserToResizeColumns = false;
+            this.dgvDecisionResult.AllowUserToResizeRows = false;
             this.dgvDecisionResult.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
@@ -365,6 +367,7 @@
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvDecisionResult.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvDecisionResult.ColumnHeadersHeight = 30;
+            this.dgvDecisionResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvDecisionResult.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.No,
             this.Line,

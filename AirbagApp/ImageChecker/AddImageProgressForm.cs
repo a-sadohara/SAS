@@ -126,7 +126,7 @@ namespace ImageChecker
             string strSQL = string.Empty;
             string[] strFileParam;
             int intParse = -1;
-            DataTable dtData = null;
+            DataTable dtData = new DataTable();
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
             // 未検知画像連携ファイルチェック
@@ -199,7 +199,6 @@ namespace ImageChecker
             // 連携済みチェック
             try
             {
-                dtData = new DataTable();
                 strSQL = @"SELECT COUNT(*) AS cnt
                            FROM  " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                            WHERE fabric_name = :fabric_name
@@ -250,6 +249,10 @@ namespace ImageChecker
 
                 return false;
             }
+            finally
+            {
+                dtData.Dispose();
+            }
 
             m_strChkFilePath = Path.Combine(m_strCompletionNoticeCooperationDirectoryPath, m_strFileName + ".txt");
 
@@ -270,7 +273,7 @@ namespace ImageChecker
             string strRapidTableName = string.Empty;
             string strMsg = string.Empty;
             int intExecutionCount = 0;
-            DataTable dtData = null;
+            DataTable dtData = new DataTable();
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
             try
@@ -349,14 +352,21 @@ namespace ImageChecker
                              , NULL
                              , NULL
                              , NULL
-                           FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @"""
-                           WHERE fabric_name = :fabric_name
-                             AND inspection_num = :inspection_num 
-                             AND ng_image = :ng_image 
-                             AND unit_num = :unit_num 
-                             AND rapid_result = :rapid_result
-                             AND edge_result = :edge_result
-                             AND masking_result = :masking_result";
+                           FROM (
+                               SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY rapid_endtime DESC) AS SEQ
+                                   , rpd.*
+                               FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" rpd
+                               WHERE fabric_name = :fabric_name
+                               AND inspection_num = :inspection_num 
+                               AND ng_image = :ng_image 
+                               AND unit_num = :unit_num 
+                               AND rapid_result = :rapid_result
+                               AND edge_result = :edge_result
+                               AND masking_result = :masking_result
+                           ) rpd
+                           WHERE SEQ = 1
+                           ON CONFLICT
+                           DO NOTHING ";
 
                 // SQLコマンドに各パラメータを設定する
                 lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -431,7 +441,6 @@ namespace ImageChecker
             {
                 try
                 {
-                    dtData = new DataTable();
                     strSQL = @"SELECT
                                    fabric_name
                                FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @"""
@@ -532,6 +541,10 @@ namespace ImageChecker
                         g_CON_MESSAGE_TITLE_ERROR,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    dtData.Dispose();
                 }
 
                 return false;

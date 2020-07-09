@@ -58,6 +58,9 @@ namespace ImageChecker
         // スーパーユーザフラグ
         private bool m_bolIsSuperUser = false;
 
+        // フォーム制御フラグ
+        private bool m_bolFormControlFlag = true;
+
         // パラメータ
         private int m_intInspectionNum = -1;
         private string m_strInspectionDate = string.Empty;
@@ -70,12 +73,6 @@ namespace ImageChecker
         /// </summary>
         public TargetSelection()
         {
-            // ログイン者がスーパーユーザかチェックを行う
-            if (g_clsSystemSettingInfo.strSuperUser.Split(',').Contains(g_clsLoginInfo.strEmployeeNum))
-            {
-                m_bolIsSuperUser = true;
-            }
-
             bolGridRepresentationFlg = true;
 
             InitializeComponent();
@@ -142,6 +139,9 @@ namespace ImageChecker
                 this.dgvTargetSelection.Columns.Add(btnInspectionResult);
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].Name = "InspectionResult";
                 this.dgvTargetSelection.Columns[this.dgvTargetSelection.Columns.Count - 1].HeaderText = string.Empty;
+                btnOverDetectionExcept.Dispose();
+                btnAcceptanceCheck.Dispose();
+                btnInspectionResult.Dispose();
             }
 
             try
@@ -515,6 +515,12 @@ namespace ImageChecker
                     }
                 }
 
+                if (bolAllGetFlg)
+                {
+                    m_intSelRowIdx = 0;
+                    m_intFirstDisplayedScrollingRowIdx = 0;
+                }
+
                 // 行選択
                 if (m_intSelRowIdx != -1)
                 {
@@ -757,6 +763,7 @@ namespace ImageChecker
             finally
             {
                 frmProgress.Close();
+                frmProgress.Dispose();
             }
         }
         #endregion
@@ -777,6 +784,12 @@ namespace ImageChecker
             this.MaximizeBox = false;
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
+
+            // ログイン者がスーパーユーザかチェックを行う
+            if (g_clsSystemSettingInfo.strSuperUser.Split(',').Contains(g_clsLoginInfo.strEmployeeNum))
+            {
+                m_bolIsSuperUser = true;
+            }
 
             try
             {
@@ -856,6 +869,8 @@ namespace ImageChecker
                         clsHeaderData.strProductName,
                         clsHeaderData.strFabricName);
 
+                bolGridRepresentationFlg = false;
+
                 // スーパーユーザが検査中ボタンを押下したかチェックする
                 if (m_bolIsSuperUser &&
                     (btnTarget.Style.BackColor == Color.Red ||
@@ -914,32 +929,35 @@ namespace ImageChecker
                     }
                 }
 
-                Overdetectionexclusion frmOverDetectionExcept;
-                ResultCheck frmResultCheck;
                 m_intInspectionNum = clsHeaderData.intInspectionNum;
                 m_strInspectionDate = clsHeaderData.strInspectionDate;
                 m_strFabricName = clsHeaderData.strFabricName;
                 m_strUnitNum = clsHeaderData.strUnitNum;
-                bolGridRepresentationFlg = false;
                 this.Visible = false;
-
+                m_bolFormControlFlag = false;
                 switch (e.ColumnIndex)
                 {
                     case m_CON_COL_IDX_OVERDETECTIONEXCEPT:
 
                         // 過検知除外
-                        frmOverDetectionExcept = new Overdetectionexclusion(ref clsHeaderData);
-                        frmOverDetectionExcept.ShowDialog(this);
-
-                        // 過検知除外結果から合否確認に遷移
-                        if (frmOverDetectionExcept.intDestination == g_CON_APID_RESULT_CHECK)
+                        using (Overdetectionexclusion frmOverDetectionExcept = new Overdetectionexclusion(ref clsHeaderData))
                         {
-                            // 変数を再初期化する
-                            bolGridRepresentationFlg = false;
+                            frmOverDetectionExcept.ShowDialog(this);
 
-                            frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult);
-                            frmResultCheck.ShowDialog(this);
+                            // 過検知除外結果から合否確認に遷移
+                            if (frmOverDetectionExcept.intDestination == g_CON_APID_RESULT_CHECK)
+                            {
+                                // 変数を再初期化する
+                                bolGridRepresentationFlg = false;
+
+                                using (ResultCheck frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult))
+                                {
+                                    frmResultCheck.ShowDialog(this);
+                                }
+                            }
                         }
+
+                        m_bolFormControlFlag = true;
 
                         // 画面更新を行う
                         bolDispDataGridView(false);
@@ -949,8 +967,12 @@ namespace ImageChecker
                     case m_CON_COL_IDX_ACCEPTANCECHECK:
 
                         // 合否確認・判定登録
-                        frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult);
-                        frmResultCheck.ShowDialog(this);
+                        using (ResultCheck frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult))
+                        {
+                            frmResultCheck.ShowDialog(this);
+                        }
+
+                        m_bolFormControlFlag = true;
 
                         // 画面更新を行う
                         bolDispDataGridView(false);
@@ -960,18 +982,24 @@ namespace ImageChecker
                     case m_CON_COL_IDX_RESULT:
 
                         // 検査結果確認
-                        DisplayResults frmInspectionResult = new DisplayResults(ref clsHeaderData);
-                        frmInspectionResult.ShowDialog(this);
+                        using (DisplayResults frmInspectionResult = new DisplayResults(ref clsHeaderData))
+                        {
+                            frmInspectionResult.ShowDialog(this);
+                        }
+
+                        m_bolFormControlFlag = true;
 
                         break;
                 }
             }
             finally
             {
-                if (!g_clsLoginInfo.bolStatus)
-                {
-                    this.Close();
-                }
+            }
+
+            if (!g_clsLoginInfo.bolStatus)
+            {
+                this.Close();
+                return;
             }
 
             // 連携処理をして画面表示
@@ -987,6 +1015,8 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnLogout_Click(object sender, EventArgs e)
         {
+            datetimePrevReplicate = DateTime.MinValue;
+            this.Close();
             g_clsLoginInfo.Logout();
         }
 
@@ -1002,18 +1032,24 @@ namespace ImageChecker
                 this.Visible = false;
 
                 // 変数を初期化する
+                m_bolFormControlFlag = false;
                 bolGridRepresentationFlg = false;
 
-                DisplayResultsAgo frmResult = new DisplayResultsAgo();
-                frmResult.ShowDialog(this);
-
-                if (!g_clsLoginInfo.bolStatus)
+                using (DisplayResultsAgo frmResult = new DisplayResultsAgo())
                 {
-                    this.Close();
+                    frmResult.ShowDialog(this);
                 }
+
+                m_bolFormControlFlag = true;
             }
             finally
             {
+            }
+
+            if (!g_clsLoginInfo.bolStatus)
+            {
+                this.Close();
+                return;
             }
 
             // 連携処理をして画面表示
@@ -1041,8 +1077,6 @@ namespace ImageChecker
             int intInspectionEndLine = -1;
             int intInspectionNum = 0;
             bool bolInspection = true;
-            CheckExcept frmCheckExcept = null;
-
             int intRow = -1;
 
             try
@@ -1054,11 +1088,14 @@ namespace ImageChecker
                     break;
                 }
 
+                // 変数を初期化する
+                bolGridRepresentationFlg = false;
+
                 // 合否確認ステータス：検査終了の場合
                 if (Convert.ToInt32(m_dtData.Rows[intRow]["acceptance_check_status"]) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
                 {
                     // メッセージ出力
-                    MessageBox.Show(g_clsMessageInfo.strMsgE0062, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0062, btnExceptTarget.Text), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
                 }
@@ -1084,9 +1121,6 @@ namespace ImageChecker
                 m_strInspectionDate = strInspectionDate;
                 m_strFabricName = strFabricName;
                 m_strUnitNum = strUnitNum;
-
-                // 変数を初期化する
-                bolGridRepresentationFlg = false;
 
                 strLogMessage =
                     string.Format(
@@ -1118,27 +1152,31 @@ namespace ImageChecker
                 }
 
                 // 検査対象外画面表示
-                frmCheckExcept = new CheckExcept(strUnitNum,
-                                                 strOrderImg,
-                                                 strFabricName,
-                                                 strProductName,
-                                                 intInspectionNum,
-                                                 strInspectionDate,
-                                                 strStartDatetime,
-                                                 strEndDatetime,
-                                                 intInspectionStartLine,
-                                                 intInspectionEndLine,
-                                                 bolInspection);
-                frmCheckExcept.ShowDialog(this);
+                using (CheckExcept frmCheckExcept =
+                    new CheckExcept(
+                        strUnitNum,
+                        strOrderImg,
+                        strFabricName,
+                        strProductName,
+                        intInspectionNum,
+                        strInspectionDate,
+                        strStartDatetime,
+                        strEndDatetime,
+                        intInspectionStartLine,
+                        intInspectionEndLine,
+                        bolInspection))
+                {
+                    frmCheckExcept.ShowDialog(this);
+
+                    if (frmCheckExcept.bolUpdateFlg)
+                    {
+                        // 画面更新を行う
+                        bolDispDataGridView(false);
+                    }
+                }
             }
             finally
             {
-            }
-
-            if (frmCheckExcept.bolUpdateFlg)
-            {
-                // 画面更新を行う
-                bolDispDataGridView(false);
             }
         }
 
@@ -1160,8 +1198,6 @@ namespace ImageChecker
             int intInspectionStartLine = -1;
             int intInspectionEndLine = -1;
             int intInspectionNum = 0;
-            LineCorrect frmLineCorrect = null;
-
             int intRow = -1;
 
             try
@@ -1173,10 +1209,22 @@ namespace ImageChecker
                     break;
                 }
 
+                // 変数を初期化する
+                bolGridRepresentationFlg = false;
+
+                // 合否確認ステータス：検査終了の場合
+                if (Convert.ToInt32(m_dtData.Rows[intRow]["acceptance_check_status"]) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
+                {
+                    // メッセージ出力
+                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0062, btnReviseLine.Text), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
                 // 既に検査対象外の場合
                 if (int.Parse(m_dtData.Rows[intRow]["over_detection_except_status"].ToString()) == g_clsSystemSettingInfo.intOverDetectionExceptStatusExc)
                 {
-                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0064, "検査情報"), g_CON_MESSAGE_TITLE_WARN, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(string.Format(g_clsMessageInfo.strMsgE0064, "検査情報"), g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -1195,9 +1243,6 @@ namespace ImageChecker
                 m_strInspectionDate = strInspectionDate;
                 m_strFabricName = strFabricName;
                 m_strUnitNum = strUnitNum;
-
-                // 変数を初期化する
-                bolGridRepresentationFlg = false;
 
                 strLogMessage =
                     string.Format(
@@ -1234,26 +1279,30 @@ namespace ImageChecker
                 }
 
                 // 行補正画面表示
-                frmLineCorrect = new LineCorrect(strUnitNum,
-                                                 strOrderImg,
-                                                 strFabricName,
-                                                 strProductName,
-                                                 intInspectionNum,
-                                                 strInspectionDate,
-                                                 strStartDatetime,
-                                                 strEndDatetime,
-                                                 intInspectionStartLine,
-                                                 intInspectionEndLine);
-                frmLineCorrect.ShowDialog(this);
+                using (LineCorrect frmLineCorrect =
+                    new LineCorrect(
+                        strUnitNum,
+                        strOrderImg,
+                        strFabricName,
+                        strProductName,
+                        intInspectionNum,
+                        strInspectionDate,
+                        strStartDatetime,
+                        strEndDatetime,
+                        intInspectionStartLine,
+                        intInspectionEndLine))
+                {
+                    frmLineCorrect.ShowDialog(this);
+
+                    if (frmLineCorrect.bolUpdateFlg)
+                    {
+                        // 画面更新を行う
+                        bolDispDataGridView(false);
+                    }
+                }
             }
             finally
             {
-            }
-
-            if (frmLineCorrect.bolUpdateFlg)
-            {
-                // 画面更新を行う
-                bolDispDataGridView(false);
             }
         }
         #endregion
@@ -1279,6 +1328,13 @@ namespace ImageChecker
                 return;
             }
 
+            await Task.Delay(100);
+
+            if (!this.Visible)
+            {
+                return;
+            }
+
             this.SuspendLayout();
 
             // 連携時間を更新
@@ -1294,9 +1350,9 @@ namespace ImageChecker
             string strFileName = string.Empty;
             string strSQL = string.Empty;
             int intCnt = 0;
-            DataTable dtPublicHeaderData;
-            DataTable dtImagecheckerHeaderData;
-            DataTable dtRapidDisabledData;
+            DataTable dtPublicHeaderData = new DataTable();
+            DataTable dtImagecheckerHeaderData = new DataTable();
+            DataTable dtRapidDisabledData = new DataTable();
 
             // パラメータ
             string strInspectionDate = string.Empty;  // 検査日付(YYYY/MM/DD)
@@ -2093,9 +2149,12 @@ namespace ImageChecker
             }
             finally
             {
-
                 bolGridRepresentationFlg = false;
+                dtPublicHeaderData.Dispose();
+                dtImagecheckerHeaderData.Dispose();
+                dtRapidDisabledData.Dispose();
                 frmProgress.Close();
+                frmProgress.Dispose();
             }
 
             // データグリッドビュー表示
@@ -2170,6 +2229,10 @@ namespace ImageChecker
 
                 return false;
             }
+            finally
+            {
+                dtData.Dispose();
+            }
         }
 
         /// <summary>
@@ -2200,6 +2263,11 @@ namespace ImageChecker
         #region 最大化画面制御
         protected override void WndProc(ref Message m)
         {
+            if (!m_bolFormControlFlag)
+            {
+                return;
+            }
+
             const int WM_NCLBUTTONDBLCLK = 0x00A3;
             const int WM_SYSCOMMAND = 0x0112;
             const long SC_MOVE = 0xF010L;

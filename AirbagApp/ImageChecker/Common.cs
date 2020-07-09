@@ -18,6 +18,10 @@ namespace ImageChecker
 {
     static class Common
     {
+        // フォーム情報
+        public static ProductNameSelection frmProductNameSelection;
+        public static TargetSelection frmTargetSelection;
+
         // 接続情報情報
         public static string g_strConnectionString = string.Empty;
         private const string g_CON_CONNECTION_STRING = "Server={0};Port={1};User ID={2};Database={3};Password={4};Enlist=true";
@@ -254,6 +258,8 @@ namespace ImageChecker
             // フォーム画面を起動
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            frmProductNameSelection = new ProductNameSelection();
+            frmTargetSelection = new TargetSelection();
             Application.Run(new Login());
         }
 

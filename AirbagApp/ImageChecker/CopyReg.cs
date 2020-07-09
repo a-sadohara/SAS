@@ -91,7 +91,7 @@ namespace ImageChecker
             m_intFromApId = intFromApId;
             m_bolUpdMode = bolUpdMode;
 
-            m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
+            m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", string.Empty),
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
@@ -148,7 +148,7 @@ namespace ImageChecker
             int intBranchNum = 0;
             string strNgFace = string.Empty;
             int intCopyRegistInfo = -1;
-            string strDispResultMsg = "";
+            string strDispResultMsg = string.Empty;
 
             // NG理由には「NG理由：」を付与する
             if (strDispResult == g_CON_NG_REASON_OK)
@@ -439,6 +439,10 @@ namespace ImageChecker
 
                 return -1;
             }
+            finally
+            {
+                dtData.Dispose();
+            }
         }
 
         /// <summary>
@@ -557,13 +561,20 @@ namespace ImageChecker
                 }
 
                 // 画像イメージ表示
-                FileStream fs = new FileStream(Path.Combine(m_clsHeaderData.strFaultImageDirectory
-                                               , m_strFaultImageSubDirectory
-                                               , m_strMarkingImagepath), FileMode.Open, FileAccess.Read);
-                picMarkingImage.Image = Image.FromStream(fs);
-                picMarkingImage.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                picMarkingImage.Refresh();
-                fs.Close();
+                using (FileStream fs =
+                    new FileStream(
+                        Path.Combine(
+                            m_clsHeaderData.strFaultImageDirectory,
+                            m_strFaultImageSubDirectory,
+                            m_strMarkingImagepath),
+                        FileMode.Open,
+                        FileAccess.Read))
+                {
+                    picMarkingImage.Image = Image.FromStream(fs);
+                    picMarkingImage.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    picMarkingImage.Refresh();
+                    fs.Close();
+                }
 
                 // その他情報を表示
                 lblNgFace.Text = string.Format(m_CON_FORMAT_NG_FACE, m_dtData.Rows[0]["ng_face"].ToString());
@@ -639,8 +650,11 @@ namespace ImageChecker
                                   , m_strMarkingImagepath);
 
             // 画像拡大フォームに遷移
-            ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath);
-            frmViewImage.ShowDialog(this);
+            using (ViewEnlargedimage frmViewImage = new ViewEnlargedimage(strOrgImagepath, strMarkingImagepath))
+            {
+                frmViewImage.ShowDialog(this);
+            }
+
             this.Visible = true;
         }
 
@@ -761,9 +775,11 @@ namespace ImageChecker
         {
             string strDecisionReason = string.Empty;
 
-            SelectErrorReason frmErrorReason = new SelectErrorReason(false);
-            frmErrorReason.ShowDialog(this);
-            strDecisionReason = frmErrorReason.strDecisionReason;
+            using (SelectErrorReason frmErrorReason = new SelectErrorReason(false))
+            {
+                frmErrorReason.ShowDialog(this);
+                strDecisionReason = frmErrorReason.strDecisionReason;
+            }
 
             this.Visible = true;
 
@@ -790,7 +806,6 @@ namespace ImageChecker
             if (m_bolUpdMode == true && m_intBranchNumUpCnt == 0)
             {
                 // 複写登録がある場合は子画面を表示する
-                dtData = new DataTable();
                 try
                 {
                     strSQL = @"SELECT COALESCE(MAX(branch_num),0) AS branch_num_max
@@ -827,6 +842,10 @@ namespace ImageChecker
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
+                }
+                finally
+                {
+                    dtData.Dispose();
                 }
             }
 

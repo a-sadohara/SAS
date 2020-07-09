@@ -41,7 +41,6 @@ namespace ImageChecker
             try
             {
                 // SQL抽出
-                dtData = new DataTable();
                 strSQL += @"SELECT DISTINCT ";
                 strSQL += @"    0 AS cdk_select, ";
                 strSQL += @"    product_name ";
@@ -64,6 +63,10 @@ namespace ImageChecker
                 MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
+            }
+            finally
+            {
+                dtData.Dispose();
             }
         }
 

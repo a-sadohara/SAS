@@ -344,6 +344,8 @@ namespace ImageChecker
             // dgvTargetSelection
             // 
             this.dgvTargetSelection.AllowUserToAddRows = false;
+            this.dgvTargetSelection.AllowUserToResizeColumns = false;
+            this.dgvTargetSelection.AllowUserToResizeRows = false;
             this.dgvTargetSelection.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dgvTargetSelection.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -355,6 +357,7 @@ namespace ImageChecker
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvTargetSelection.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvTargetSelection.ColumnHeadersHeight = 29;
+            this.dgvTargetSelection.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvTargetSelection.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.No,
             this.TargetInfo,
@@ -377,6 +380,7 @@ namespace ImageChecker
             this.dgvTargetSelection.ReadOnly = true;
             this.dgvTargetSelection.RowHeadersVisible = false;
             this.dgvTargetSelection.RowHeadersWidth = 51;
+            this.dgvTargetSelection.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dgvTargetSelection.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.dgvTargetSelection.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             this.dgvTargetSelection.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.True;

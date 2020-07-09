@@ -185,7 +185,7 @@ namespace ImageChecker
             txtUserId.Select();
 
             // 初期設定
-            txtUserId.Text = "";
+            txtUserId.Text = string.Empty;
             rdbDispNum2.Checked = false;
             rdbDispNum4.Checked = false;
             rdbDispNum6.Checked = true;
@@ -208,17 +208,19 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void txtUserId_Click(object sender, EventArgs e)
         {
-            string strEmployeeNum = "";
-            string strWorkerName = "";
+            string strEmployeeNum = string.Empty;
+            string strWorkerName = string.Empty;
 
             // 作業者検索画面を表示
-            WorkerSelection frmTargetSelection = new WorkerSelection();
-            frmTargetSelection.ShowDialog(this);
-            this.Visible = true;
+            using (WorkerSelection frmTargetSelection = new WorkerSelection())
+            {
+                frmTargetSelection.ShowDialog(this);
+                this.Visible = true;
 
-            // 返却値をセット
-            strEmployeeNum = frmTargetSelection.strEmployeeNum;
-            strWorkerName = frmTargetSelection.strWorkerName;
+                // 返却値をセット
+                strEmployeeNum = frmTargetSelection.strEmployeeNum;
+                strWorkerName = frmTargetSelection.strWorkerName;
+            }
 
             if (!String.IsNullOrEmpty(strEmployeeNum))
             {
@@ -303,7 +305,6 @@ namespace ImageChecker
 
             // 検査対象選択画面に遷移
             this.Visible = false;
-            TargetSelection frmTargetSelection = new TargetSelection();
             frmTargetSelection.ShowDialog(this);
 
             this.Refresh();

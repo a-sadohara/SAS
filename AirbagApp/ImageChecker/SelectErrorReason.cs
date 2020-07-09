@@ -79,7 +79,6 @@ namespace ImageChecker
             try
             {
                 // SQL抽出
-                dtData = new DataTable();
                 strSQL += @"SELECT  ";
                 strSQL += @"    0 AS cdk_select, ";
                 strSQL += @"    decision_reason ";
@@ -142,6 +141,8 @@ namespace ImageChecker
             }
             finally
             {
+                dtData.Dispose();
+
                 if (bolProcOkNg == false)
                 {
                     this.Close();

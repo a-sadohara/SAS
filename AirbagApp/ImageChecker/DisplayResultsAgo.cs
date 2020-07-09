@@ -1,5 +1,4 @@
 ﻿using ImageChecker.DTO;
-using Npgsql;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,6 +39,9 @@ namespace ImageChecker
 
         // [X]ボタン無効
         private bool m_bolXButtonDisable = false;
+
+        // フォーム制御フラグ
+        private bool m_bolFormControlFlag = true;
 
         #region メソッド
         /// <summary>
@@ -437,7 +439,7 @@ namespace ImageChecker
         private bool bolGetCushionCnt()
         {
             string strSQL = string.Empty;
-            DataTable dtData;
+            DataTable dtData = new DataTable();
             string strBefore48hourYmdhms = DateTime.Now.AddHours(-48).ToString("yyyy/MM/dd HH:mm:ss");
             int intImageInspectionCount = 0;
             int intCushionspectionCount = 0;
@@ -445,7 +447,6 @@ namespace ImageChecker
             // 件数の取得
             try
             {
-                dtData = new DataTable();
                 strSQL = @"SELECT 
                                iih.fabric_name
                              , iih.inspection_date
@@ -489,6 +490,10 @@ namespace ImageChecker
                 MessageBox.Show(g_clsMessageInfo.strMsgE0047, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
+            }
+            finally
+            {
+                dtData.Dispose();
             }
         }
 
@@ -580,6 +585,7 @@ namespace ImageChecker
             finally
             {
                 frmProgress.Close();
+                frmProgress.Dispose();
             }
         }
         #endregion
@@ -605,26 +611,34 @@ namespace ImageChecker
             lblWorkerName.Text = string.Format(m_CON_FORMAT_WORKER_NAME, g_clsLoginInfo.strWorkerName);
 
             // 初期化
-            cmbUnitNum.Text = "";
-            txtProductName.Text = "";
-            txtOrderImg.Text = "";
-            txtFabricName.Text = "";
-            txtInspectionNum.Text = "";
-            dtpStartDatetimeFrom.Text = ""; dtpStartDatetimeFrom.CustomFormat = " ";
-            dtpStartDatetimeTo.Text = ""; dtpStartDatetimeTo.CustomFormat = " ";
-            txtSearchFrom.Text = "";
-            txtSearchTo.Text = "";
-            dtpEndDatetimeFrom.Text = ""; dtpEndDatetimeFrom.CustomFormat = " ";
-            dtpEndDatetimeTo.Text = ""; dtpEndDatetimeTo.CustomFormat = " ";
-            dtpDecisionStartTimeFrom.Text = ""; dtpDecisionStartTimeFrom.CustomFormat = " ";
-            dtpDecisionStartTimeTo.Text = ""; dtpDecisionStartTimeTo.CustomFormat = " ";
-            dtpDecisionEndTimeFrom.Text = ""; dtpDecisionEndTimeFrom.CustomFormat = " ";
-            dtpDecisionEndTimeTo.Text = ""; dtpDecisionEndTimeTo.CustomFormat = " ";
-            txtWorkerName.Text = "";
-            txtLine.Text = "";
-            cmbColumns.Text = "";
-            cmbNgFace.Text = "";
-            txtNgReason.Text = "";
+            cmbUnitNum.Text = string.Empty;
+            txtProductName.Text = string.Empty;
+            txtOrderImg.Text = string.Empty;
+            txtFabricName.Text = string.Empty;
+            txtInspectionNum.Text = string.Empty;
+            dtpStartDatetimeFrom.Text = string.Empty;
+            dtpStartDatetimeFrom.CustomFormat = " ";
+            dtpStartDatetimeTo.Text = string.Empty;
+            dtpStartDatetimeTo.CustomFormat = " ";
+            txtSearchFrom.Text = string.Empty;
+            txtSearchTo.Text = string.Empty;
+            dtpEndDatetimeFrom.Text = string.Empty;
+            dtpEndDatetimeFrom.CustomFormat = " ";
+            dtpEndDatetimeTo.Text = string.Empty;
+            dtpEndDatetimeTo.CustomFormat = " ";
+            dtpDecisionStartTimeFrom.Text = string.Empty;
+            dtpDecisionStartTimeFrom.CustomFormat = " ";
+            dtpDecisionStartTimeTo.Text = string.Empty;
+            dtpDecisionStartTimeTo.CustomFormat = " ";
+            dtpDecisionEndTimeFrom.Text = string.Empty;
+            dtpDecisionEndTimeFrom.CustomFormat = " ";
+            dtpDecisionEndTimeTo.Text = string.Empty;
+            dtpDecisionEndTimeTo.CustomFormat = " ";
+            txtWorkerName.Text = string.Empty;
+            txtLine.Text = string.Empty;
+            cmbColumns.Text = string.Empty;
+            cmbNgFace.Text = string.Empty;
+            txtNgReason.Text = string.Empty;
 
             // 列のスタイル変更
             this.dgvCheckInspectionHistory.Columns["No"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
@@ -675,7 +689,7 @@ namespace ImageChecker
                 return;
             }
 
-            strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[intSelIdx]["inspection_date"].ToString().Replace("/", ""),
+            strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[intSelIdx]["inspection_date"].ToString().Replace("/", string.Empty),
                                                          m_dtData.Rows[intSelIdx]["product_name"],
                                                          m_dtData.Rows[intSelIdx]["fabric_name"],
                                                          m_dtData.Rows[intSelIdx]["inspection_num"]);
@@ -684,7 +698,7 @@ namespace ImageChecker
                 string.Format(
                     g_CON_LOG_MESSAGE_FOMAT,
                     m_dtData.Rows[intSelIdx]["unit_num"].ToString(),
-                    m_dtData.Rows[intSelIdx]["inspection_date"].ToString().Replace("/", ""),
+                    m_dtData.Rows[intSelIdx]["inspection_date"].ToString().Replace("/", string.Empty),
                     m_dtData.Rows[intSelIdx]["inspection_num"].ToString(),
                     m_dtData.Rows[intSelIdx]["product_name"].ToString(),
                     m_dtData.Rows[intSelIdx]["fabric_name"].ToString());
@@ -754,15 +768,19 @@ namespace ImageChecker
             m_strSelMarkingImagepath = clsDecisionResult.strMarkingImagepath;
 
             this.Visible = false;
+            m_bolFormControlFlag = false;
 
-            ResultCheck frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS_AGO);
-            frmResultCheck.ShowDialog(this);
-
-            // 判定登録画面:検査開始選択へ戻るボタンで閉じる
-            if (frmResultCheck.intDestination == g_CON_APID_TARGET_SELECTION)
+            using (ResultCheck frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS_AGO))
             {
-                this.Close();
-                return;
+                frmResultCheck.ShowDialog(this);
+                m_bolFormControlFlag = true;
+
+                // 判定登録画面:検査開始選択へ戻るボタンで閉じる
+                if (frmResultCheck.intDestination == g_CON_APID_TARGET_SELECTION)
+                {
+                    this.Close();
+                    return;
+                }
             }
 
             this.Visible = true;
@@ -795,7 +813,7 @@ namespace ImageChecker
             string strInspectionDate = string.Empty;
             string strUnitNum = string.Empty;
             string strSQL = string.Empty;
-            DataTable dtData;
+            DataTable dtData = new DataTable();
 
             // コントロール無効
             m_bolXButtonDisable = true;
@@ -822,7 +840,6 @@ namespace ImageChecker
                     intInspectionNum = int.Parse(m_dtData.Rows[intSelIdx]["inspection_num"].ToString());
 
                     // NG画像の取得
-                    dtData = new DataTable();
                     try
                     {
                         strSQL = @"SELECT
@@ -877,6 +894,10 @@ namespace ImageChecker
 
                         return;
                     }
+                    finally
+                    {
+                        dtData.Dispose();
+                    }
 
                     dtData = new DataTable();
                     try
@@ -919,6 +940,10 @@ namespace ImageChecker
 
                         return;
                     }
+                    finally
+                    {
+                        dtData.Dispose();
+                    }
 
                     // 帳票出力
                     await Task<Boolean>.Run(() =>
@@ -933,6 +958,7 @@ namespace ImageChecker
                 finally
                 {
                     frmProgress.Close();
+                    frmProgress.Dispose();
 
                     m_bolXButtonDisable = false;
                 }
@@ -951,7 +977,7 @@ namespace ImageChecker
                 return;
             }
 
-            string strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", ""),
+            string strFaultImageSubDirectory = string.Join("_", m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", string.Empty),
                                                                 m_dtData.Rows[e.RowIndex]["product_name"],
                                                                 m_dtData.Rows[e.RowIndex]["fabric_name"],
                                                                 m_dtData.Rows[e.RowIndex]["inspection_num"]);
@@ -960,7 +986,7 @@ namespace ImageChecker
                 string.Format(
                     g_CON_LOG_MESSAGE_FOMAT,
                     m_dtData.Rows[e.RowIndex]["unit_num"].ToString(),
-                    m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", ""),
+                    m_dtData.Rows[e.RowIndex]["inspection_date"].ToString().Replace("/", string.Empty),
                     m_dtData.Rows[e.RowIndex]["inspection_num"].ToString(),
                     m_dtData.Rows[e.RowIndex]["product_name"].ToString(),
                     m_dtData.Rows[e.RowIndex]["fabric_name"].ToString());
@@ -984,16 +1010,22 @@ namespace ImageChecker
                     return;
             }
 
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
-                                                                           , m_dtData.Rows[e.RowIndex]["unit_num"].ToString()
-                                                                           , strFaultImageSubDirectory
-                                                                           , m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
-                                                                           Path.Combine(g_clsSystemSettingInfo.strFaultImageDirectory
-                                                                           , m_dtData.Rows[e.RowIndex]["unit_num"].ToString()
-                                                                           , strFaultImageSubDirectory
-                                                                           , m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
-            frmViewEnlargedimage.ShowDialog(this);
-            this.Visible = true;
+            using (ViewEnlargedimage frmViewEnlargedimage =
+                new ViewEnlargedimage(
+                    Path.Combine(
+                        g_clsSystemSettingInfo.strFaultImageDirectory,
+                        m_dtData.Rows[e.RowIndex]["unit_num"].ToString(),
+                        strFaultImageSubDirectory,
+                        m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
+                    Path.Combine(
+                        g_clsSystemSettingInfo.strFaultImageDirectory,
+                        m_dtData.Rows[e.RowIndex]["unit_num"].ToString(),
+                        strFaultImageSubDirectory,
+                        m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString())))
+            {
+                frmViewEnlargedimage.ShowDialog(this);
+                this.Visible = true;
+            }
         }
 
         /// <summary>
@@ -1023,9 +1055,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void txtWorkerName_DoubleClick(object sender, EventArgs e)
         {
-            WorkerSelection frmWorkerSelection = new WorkerSelection();
-            frmWorkerSelection.ShowDialog(this);
-            txtWorkerName.Text = frmWorkerSelection.strWorkerName;
+            using (WorkerSelection frmWorkerSelection = new WorkerSelection())
+            {
+                frmWorkerSelection.ShowDialog(this);
+                txtWorkerName.Text = frmWorkerSelection.strWorkerName;
+            }
         }
 
         /// <summary>
@@ -1035,9 +1069,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void txtNgReason_DoubleClick(object sender, EventArgs e)
         {
-            SelectErrorReason frmSelectErrorReason = new SelectErrorReason(true);
-            frmSelectErrorReason.ShowDialog(this);
-            txtNgReason.Text = frmSelectErrorReason.strDecisionReason;
+            using (SelectErrorReason frmSelectErrorReason = new SelectErrorReason(true))
+            {
+                frmSelectErrorReason.ShowDialog(this);
+                txtNgReason.Text = frmSelectErrorReason.strDecisionReason;
+            }
         }
 
         /// <summary>
@@ -1047,7 +1083,6 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void txtProductName_DoubleClick(object sender, EventArgs e)
         {
-            ProductNameSelection frmProductNameSelection = new ProductNameSelection();
             frmProductNameSelection.ShowDialog(this);
             txtProductName.Text = frmProductNameSelection.strProductName;
         }
@@ -1174,6 +1209,11 @@ namespace ImageChecker
         #region 最大化画面制御
         protected override void WndProc(ref Message m)
         {
+            if (!m_bolFormControlFlag)
+            {
+                return;
+            }
+
             const int WM_NCLBUTTONDBLCLK = 0x00A3;
             const int WM_SYSCOMMAND = 0x0112;
             const long SC_MOVE = 0xF010L;

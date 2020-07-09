@@ -106,6 +106,8 @@
             // dgvProductInfo
             // 
             this.dgvProductInfo.AllowUserToAddRows = false;
+            this.dgvProductInfo.AllowUserToResizeColumns = false;
+            this.dgvProductInfo.AllowUserToResizeRows = false;
             this.dgvProductInfo.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));

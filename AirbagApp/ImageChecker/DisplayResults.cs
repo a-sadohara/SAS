@@ -68,6 +68,9 @@ namespace ImageChecker
         // [X]ボタン無効
         private bool m_bolXButtonDisable = false;
 
+        // フォーム制御フラグ
+        private bool m_bolFormControlFlag = true;
+
         #region メソッド
         /// <summary>
         /// コンストラクタ
@@ -92,7 +95,7 @@ namespace ImageChecker
             m_intInspectionNum = clsHeaderData.intInspectionNum;
             m_intColumnCnt = clsHeaderData.intColumnCnt;
 
-            m_strFaultImageSubDirName = string.Join("_", m_strInspectionDate.Replace("/", ""),
+            m_strFaultImageSubDirName = string.Join("_", m_strInspectionDate.Replace("/", string.Empty),
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
@@ -441,6 +444,10 @@ namespace ImageChecker
 
                 return false;
             }
+            finally
+            {
+                dtData.Dispose();
+            }
 
             dtData = new DataTable();
             try
@@ -494,6 +501,10 @@ namespace ImageChecker
                 MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
+            }
+            finally
+            {
+                dtData.Dispose();
             }
         }
         #endregion
@@ -616,15 +627,20 @@ namespace ImageChecker
                 return;
             }
 
+            using (ViewEnlargedimage frmViewEnlargedimage =
+                new ViewEnlargedimage(
+                    Path.Combine(
+                        m_clsHeaderData.strFaultImageDirectory,
+                        m_strFaultImageSubDirName,
+                        m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
+                    Path.Combine(
+                        m_clsHeaderData.strFaultImageDirectory,
+                        m_strFaultImageSubDirName,
+                        m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString())))
+            {
+                frmViewEnlargedimage.ShowDialog(this);
+            }
 
-
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(m_clsHeaderData.strFaultImageDirectory
-                                                                           , m_strFaultImageSubDirName
-                                                                           , m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
-                                                                           Path.Combine(m_clsHeaderData.strFaultImageDirectory
-                                                                           , m_strFaultImageSubDirName
-                                                                           , m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
-            frmViewEnlargedimage.ShowDialog(this);
             this.Visible = true;
         }
 
@@ -647,7 +663,7 @@ namespace ImageChecker
         {
             int intSelIdx = -1;
             string strSQL = string.Empty;
-            DataTable dtData;
+            DataTable dtData = new DataTable();
 
             // 選択行インデックスの取得
             foreach (DataGridViewRow dgvRow in this.dgvDecisionResult.SelectedRows)
@@ -678,15 +694,19 @@ namespace ImageChecker
             m_strSelMarkingImagepath = clsDecisionResult.strMarkingImagepath;
 
             this.Visible = false;
+            m_bolFormControlFlag = false;
 
-            ResultCheck frmResultCheck = new ResultCheck(ref m_clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS);
-            frmResultCheck.ShowDialog(this);
-
-            // 判定登録画面:検査開始選択へ戻るボタンで閉じる
-            if (frmResultCheck.intDestination == g_CON_APID_TARGET_SELECTION)
+            using (ResultCheck frmResultCheck = new ResultCheck(ref m_clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS))
             {
-                this.Close();
-                return;
+                frmResultCheck.ShowDialog(this);
+                m_bolFormControlFlag = true;
+
+                // 判定登録画面:検査開始選択へ戻るボタンで閉じる
+                if (frmResultCheck.intDestination == g_CON_APID_TARGET_SELECTION)
+                {
+                    this.Close();
+                    return;
+                }
             }
 
             this.Visible = true;
@@ -694,7 +714,6 @@ namespace ImageChecker
             // 初期件数の取得
             try
             {
-                dtData = new DataTable();
                 strSQL = @"SELECT COUNT(*) AS cnt
                            FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                            WHERE fabric_name = :fabric_name
@@ -727,6 +746,10 @@ namespace ImageChecker
 
                 return;
             }
+            finally
+            {
+                dtData.Dispose();
+            }
 
             // 件数の取得
             if (bolGetCushionCnt() == false)
@@ -739,7 +762,6 @@ namespace ImageChecker
             {
                 return;
             }
-
         }
 
         /// <summary>
@@ -772,6 +794,7 @@ namespace ImageChecker
             finally
             {
                 frmProgress.Close();
+                frmProgress.Dispose();
 
                 m_bolXButtonDisable = false;
             }
@@ -786,7 +809,7 @@ namespace ImageChecker
         {
             string strSQL = string.Empty;
             string strFileNameWithExtension = string.Empty;
-            DataTable dtData = null;
+            DataTable dtData = new DataTable();
             AddImageProgressForm frmProgressForm = null;
             DecisionResult clsDecisionResult = null;
 
@@ -841,14 +864,17 @@ namespace ImageChecker
                 m_strSelMarkingImagepath = string.Empty;
 
                 this.Visible = false;
-                ResultCheck frmResultCheck = new ResultCheck(ref m_clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS);
-                frmResultCheck.ShowDialog(this);
 
-                // 判定登録画面:検査開始選択へ戻るボタンで閉じる
-                if (frmResultCheck.intDestination == g_CON_APID_TARGET_SELECTION)
+                using (ResultCheck frmResultCheck = new ResultCheck(ref m_clsHeaderData, clsDecisionResult, g_CON_APID_DISPLAY_RESULTS))
                 {
-                    this.Close();
-                    return;
+                    frmResultCheck.ShowDialog(this);
+
+                    // 判定登録画面:検査開始選択へ戻るボタンで閉じる
+                    if (frmResultCheck.intDestination == g_CON_APID_TARGET_SELECTION)
+                    {
+                        this.Close();
+                        return;
+                    }
                 }
 
                 this.Visible = true;
@@ -856,7 +882,6 @@ namespace ImageChecker
                 // 初期件数の取得
                 try
                 {
-                    dtData = new DataTable();
                     strSQL = @"SELECT COUNT(*) AS cnt
                                FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                                WHERE fabric_name = :fabric_name
@@ -895,6 +920,10 @@ namespace ImageChecker
                         MessageBoxIcon.Error);
 
                     return;
+                }
+                finally
+                {
+                    dtData.Dispose();
                 }
 
                 // 件数の取得
@@ -935,9 +964,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void txtWorkerName_DoubleClick(object sender, EventArgs e)
         {
-            WorkerSelection frmWorkerSelection = new WorkerSelection();
-            frmWorkerSelection.ShowDialog(this);
-            txtWorkerName.Text = frmWorkerSelection.strWorkerName;
+            using (WorkerSelection frmWorkerSelection = new WorkerSelection())
+            {
+                frmWorkerSelection.ShowDialog(this);
+                txtWorkerName.Text = frmWorkerSelection.strWorkerName;
+            }
         }
 
         /// <summary>
@@ -947,9 +978,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void txtNgReason_DoubleClick(object sender, EventArgs e)
         {
-            SelectErrorReason frmSelectErrorReason = new SelectErrorReason(true);
-            frmSelectErrorReason.ShowDialog(this);
-            txtNgReason.Text = frmSelectErrorReason.strDecisionReason;
+            using (SelectErrorReason frmSelectErrorReason = new SelectErrorReason(true))
+            {
+                frmSelectErrorReason.ShowDialog(this);
+                txtNgReason.Text = frmSelectErrorReason.strDecisionReason;
+            }
         }
 
         #region 横スクロール対応
@@ -1002,6 +1035,11 @@ namespace ImageChecker
         #region 最大化画面制御
         protected override void WndProc(ref Message m)
         {
+            if (!m_bolFormControlFlag)
+            {
+                return;
+            }
+
             const int WM_NCLBUTTONDBLCLK = 0x00A3;
             const int WM_SYSCOMMAND = 0x0112;
             const long SC_MOVE = 0xF010L;

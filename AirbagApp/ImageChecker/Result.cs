@@ -109,7 +109,7 @@ namespace ImageChecker
             m_intColumnCnt = clsHeaderData.intColumnCnt;
             m_intFromApId = intFromApId;
 
-            m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", ""),
+            m_strFaultImageSubDirectory = string.Join("_", m_strInspectionDate.Replace("/", string.Empty),
                                                            m_strProductName,
                                                            m_strFabricName,
                                                            m_intInspectionNum);
@@ -319,7 +319,7 @@ namespace ImageChecker
             bool bolProcOkNg = false;
 
             string strSQL = string.Empty;
-            DataTable dtData;
+            DataTable dtData = new DataTable();
             ArrayList arrRow = new ArrayList();
             string stResultName = string.Empty;
             int intImageInspectionCount = -1;
@@ -355,7 +355,6 @@ namespace ImageChecker
 
                 dgvDecisionResult.Rows.Clear();
 
-                dtData = new DataTable();
                 try
                 {
                     strSQL = @"SELECT
@@ -420,6 +419,10 @@ namespace ImageChecker
 
                     return;
                 }
+                finally
+                {
+                    dtData.Dispose();
+                }
 
                 dtData = new DataTable();
                 try
@@ -473,6 +476,10 @@ namespace ImageChecker
                     MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     return;
+                }
+                finally
+                {
+                    dtData.Dispose();
                 }
 
                 // 一覧の表示
@@ -751,7 +758,7 @@ namespace ImageChecker
             bool bolIsOutputSuccessful = false;
 
             string strSQL = string.Empty;
-            DataTable dtData;
+            DataTable dtData = new DataTable();
             string strWriteLine = string.Empty;
 
             if (MessageBox.Show(g_clsMessageInfo.strMsgQ0012, g_CON_MESSAGE_TITLE_QUESTION, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
@@ -796,7 +803,6 @@ namespace ImageChecker
                 // 検査結果CSV作成
                 try
                 {
-                    dtData = new DataTable();
                     strSQL = @"SELECT
                                    CASE WHEN dr.result_update_datetime IS NOT NULL
                                         THEN TO_CHAR(dr.result_update_datetime,'YYYY/MM/DD HH24:MI:SS')
@@ -867,6 +873,8 @@ namespace ImageChecker
             finally
             {
                 frmProgress.Close();
+                frmProgress.Dispose();
+                dtData.Dispose();
 
                 m_bolXButtonDisable = false;
 
@@ -934,14 +942,20 @@ namespace ImageChecker
                 return;
             }
 
-            ViewEnlargedimage frmViewEnlargedimage = new ViewEnlargedimage(Path.Combine(m_clsHeaderData.strFaultImageDirectory
-                                                                           , m_strFaultImageSubDirectory
-                                                                           , m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
-                                                                           Path.Combine(m_clsHeaderData.strFaultImageDirectory
-                                                                           , m_strFaultImageSubDirectory
-                                                                           , m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString()));
-            frmViewEnlargedimage.ShowDialog(this);
-            this.Visible = true;
+            using (ViewEnlargedimage frmViewEnlargedimage =
+                new ViewEnlargedimage(
+                    Path.Combine(
+                        m_clsHeaderData.strFaultImageDirectory,
+                        m_strFaultImageSubDirectory,
+                        m_dtData.Rows[e.RowIndex]["org_imagepath"].ToString()),
+                    Path.Combine(
+                        m_clsHeaderData.strFaultImageDirectory,
+                        m_strFaultImageSubDirectory,
+                        m_dtData.Rows[e.RowIndex]["marking_imagepath"].ToString())))
+            {
+                frmViewEnlargedimage.ShowDialog(this);
+                this.Visible = true;
+            }
         }
 
         /// <summary>

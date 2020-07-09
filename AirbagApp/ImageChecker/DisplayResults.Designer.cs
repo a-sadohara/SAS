@@ -116,19 +116,19 @@
             this.pnlTop.Controls.Add(this.lblUnitNum);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
-            this.pnlTop.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pnlTop.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(1701, 195);
+            this.pnlTop.Size = new System.Drawing.Size(1276, 156);
             this.pnlTop.TabIndex = 0;
             // 
             // btnLogout
             // 
             this.btnLogout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLogout.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnLogout.Location = new System.Drawing.Point(1544, 11);
-            this.btnLogout.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnLogout.Location = new System.Drawing.Point(1158, 9);
+            this.btnLogout.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnLogout.Name = "btnLogout";
-            this.btnLogout.Size = new System.Drawing.Size(143, 45);
+            this.btnLogout.Size = new System.Drawing.Size(107, 36);
             this.btnLogout.TabIndex = 0;
             this.btnLogout.Text = "ログアウト";
             this.btnLogout.UseVisualStyleBackColor = true;
@@ -153,11 +153,9 @@
             this.grbWhere.Controls.Add(this.cmbNgFace);
             this.grbWhere.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.grbWhere.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.grbWhere.Location = new System.Drawing.Point(597, 5);
-            this.grbWhere.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grbWhere.Location = new System.Drawing.Point(448, 4);
             this.grbWhere.Name = "grbWhere";
-            this.grbWhere.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.grbWhere.Size = new System.Drawing.Size(707, 182);
+            this.grbWhere.Size = new System.Drawing.Size(530, 146);
             this.grbWhere.TabIndex = 28;
             this.grbWhere.TabStop = false;
             this.grbWhere.Text = "検索条件";
@@ -167,9 +165,10 @@
             this.lblTitleUserNm.AutoSize = true;
             this.lblTitleUserNm.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleUserNm.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleUserNm.Location = new System.Drawing.Point(28, 36);
+            this.lblTitleUserNm.Location = new System.Drawing.Point(21, 29);
+            this.lblTitleUserNm.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleUserNm.Name = "lblTitleUserNm";
-            this.lblTitleUserNm.Size = new System.Drawing.Size(80, 21);
+            this.lblTitleUserNm.Size = new System.Drawing.Size(63, 17);
             this.lblTitleUserNm.TabIndex = 1;
             this.lblTitleUserNm.Text = "作業者名：";
             // 
@@ -178,20 +177,20 @@
             this.lblNgReason.AutoSize = true;
             this.lblNgReason.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblNgReason.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgReason.Location = new System.Drawing.Point(325, 69);
+            this.lblNgReason.Location = new System.Drawing.Point(244, 55);
+            this.lblNgReason.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgReason.Name = "lblNgReason";
-            this.lblNgReason.Size = new System.Drawing.Size(72, 21);
+            this.lblNgReason.Size = new System.Drawing.Size(57, 17);
             this.lblNgReason.TabIndex = 1;
             this.lblNgReason.Text = "NG理由：";
             // 
             // txtNgReason
             // 
             this.txtNgReason.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txtNgReason.Location = new System.Drawing.Point(407, 65);
-            this.txtNgReason.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtNgReason.Location = new System.Drawing.Point(305, 52);
             this.txtNgReason.MaxLength = 16;
             this.txtNgReason.Name = "txtNgReason";
-            this.txtNgReason.Size = new System.Drawing.Size(245, 28);
+            this.txtNgReason.Size = new System.Drawing.Size(185, 24);
             this.txtNgReason.TabIndex = 26;
             this.txtNgReason.Text = "ＷＷＷＷＷＷＷＷＷＷＷＷＷＷＷＷ";
             this.txtNgReason.DoubleClick += new System.EventHandler(this.txtNgReason_DoubleClick);
@@ -201,9 +200,10 @@
             this.lblNgSide.AutoSize = true;
             this.lblNgSide.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblNgSide.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgSide.Location = new System.Drawing.Point(325, 36);
+            this.lblNgSide.Location = new System.Drawing.Point(244, 29);
+            this.lblNgSide.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgSide.Name = "lblNgSide";
-            this.lblNgSide.Size = new System.Drawing.Size(58, 21);
+            this.lblNgSide.Size = new System.Drawing.Size(46, 17);
             this.lblNgSide.TabIndex = 1;
             this.lblNgSide.Text = "NG面：";
             // 
@@ -212,9 +212,10 @@
             this.lblCol.AutoSize = true;
             this.lblCol.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblCol.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblCol.Location = new System.Drawing.Point(28, 101);
+            this.lblCol.Location = new System.Drawing.Point(21, 81);
+            this.lblCol.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCol.Name = "lblCol";
-            this.lblCol.Size = new System.Drawing.Size(38, 21);
+            this.lblCol.Size = new System.Drawing.Size(30, 17);
             this.lblCol.TabIndex = 1;
             this.lblCol.Text = "列：";
             // 
@@ -223,9 +224,10 @@
             this.lblRow.AutoSize = true;
             this.lblRow.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblRow.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblRow.Location = new System.Drawing.Point(28, 69);
+            this.lblRow.Location = new System.Drawing.Point(21, 55);
+            this.lblRow.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblRow.Name = "lblRow";
-            this.lblRow.Size = new System.Drawing.Size(38, 21);
+            this.lblRow.Size = new System.Drawing.Size(30, 17);
             this.lblRow.TabIndex = 1;
             this.lblRow.Text = "行：";
             // 
@@ -233,11 +235,10 @@
             // 
             this.txtWorkerName.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtWorkerName.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.txtWorkerName.Location = new System.Drawing.Point(119, 32);
-            this.txtWorkerName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtWorkerName.Location = new System.Drawing.Point(89, 26);
             this.txtWorkerName.MaxLength = 10;
             this.txtWorkerName.Name = "txtWorkerName";
-            this.txtWorkerName.Size = new System.Drawing.Size(157, 28);
+            this.txtWorkerName.Size = new System.Drawing.Size(119, 24);
             this.txtWorkerName.TabIndex = 26;
             this.txtWorkerName.Text = "ＷＷＷＷＷＷＷＷＷＷ";
             this.txtWorkerName.DoubleClick += new System.EventHandler(this.txtWorkerName_DoubleClick);
@@ -248,9 +249,10 @@
             this.lblTitleSearchCushionCnt.AutoSize = true;
             this.lblTitleSearchCushionCnt.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleSearchCushionCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleSearchCushionCnt.Location = new System.Drawing.Point(363, 149);
+            this.lblTitleSearchCushionCnt.Location = new System.Drawing.Point(272, 119);
+            this.lblTitleSearchCushionCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleSearchCushionCnt.Name = "lblTitleSearchCushionCnt";
-            this.lblTitleSearchCushionCnt.Size = new System.Drawing.Size(108, 21);
+            this.lblTitleSearchCushionCnt.Size = new System.Drawing.Size(85, 17);
             this.lblTitleSearchCushionCnt.TabIndex = 1;
             this.lblTitleSearchCushionCnt.Text = "クッション数：";
             // 
@@ -258,11 +260,10 @@
             // 
             this.txtLine.Font = new System.Drawing.Font("メイリオ", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txtLine.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.txtLine.Location = new System.Drawing.Point(119, 65);
-            this.txtLine.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtLine.Location = new System.Drawing.Point(89, 52);
             this.txtLine.MaxLength = 4;
             this.txtLine.Name = "txtLine";
-            this.txtLine.Size = new System.Drawing.Size(69, 28);
+            this.txtLine.Size = new System.Drawing.Size(53, 24);
             this.txtLine.TabIndex = 26;
             this.txtLine.Text = "9999";
             this.txtLine.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtLine_KeyPress);
@@ -272,9 +273,10 @@
             this.lblTitleSearchImageCnt.AutoSize = true;
             this.lblTitleSearchImageCnt.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleSearchImageCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleSearchImageCnt.Location = new System.Drawing.Point(363, 128);
+            this.lblTitleSearchImageCnt.Location = new System.Drawing.Point(272, 102);
+            this.lblTitleSearchImageCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleSearchImageCnt.Name = "lblTitleSearchImageCnt";
-            this.lblTitleSearchImageCnt.Size = new System.Drawing.Size(108, 21);
+            this.lblTitleSearchImageCnt.Size = new System.Drawing.Size(85, 17);
             this.lblTitleSearchImageCnt.TabIndex = 1;
             this.lblTitleSearchImageCnt.Text = "画像検査枚数：";
             // 
@@ -282,9 +284,10 @@
             // 
             this.lblCushionSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblCushionSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblCushionSearchCount.Location = new System.Drawing.Point(481, 149);
+            this.lblCushionSearchCount.Location = new System.Drawing.Point(361, 119);
+            this.lblCushionSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCushionSearchCount.Name = "lblCushionSearchCount";
-            this.lblCushionSearchCount.Size = new System.Drawing.Size(103, 21);
+            this.lblCushionSearchCount.Size = new System.Drawing.Size(77, 17);
             this.lblCushionSearchCount.TabIndex = 1;
             this.lblCushionSearchCount.Text = "9999 / 9999";
             this.lblCushionSearchCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -293,9 +296,10 @@
             // 
             this.lblImageSearchCount.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblImageSearchCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblImageSearchCount.Location = new System.Drawing.Point(481, 128);
+            this.lblImageSearchCount.Location = new System.Drawing.Point(361, 102);
+            this.lblImageSearchCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblImageSearchCount.Name = "lblImageSearchCount";
-            this.lblImageSearchCount.Size = new System.Drawing.Size(103, 21);
+            this.lblImageSearchCount.Size = new System.Drawing.Size(77, 17);
             this.lblImageSearchCount.TabIndex = 1;
             this.lblImageSearchCount.Text = "9999 / 9999";
             this.lblImageSearchCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -305,9 +309,10 @@
             this.lblTitleSearchCnt.AutoSize = true;
             this.lblTitleSearchCnt.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblTitleSearchCnt.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblTitleSearchCnt.Location = new System.Drawing.Point(325, 106);
+            this.lblTitleSearchCnt.Location = new System.Drawing.Point(244, 85);
+            this.lblTitleSearchCnt.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTitleSearchCnt.Name = "lblTitleSearchCnt";
-            this.lblTitleSearchCnt.Size = new System.Drawing.Size(80, 21);
+            this.lblTitleSearchCnt.Size = new System.Drawing.Size(63, 17);
             this.lblTitleSearchCnt.TabIndex = 1;
             this.lblTitleSearchCnt.Text = "検索件数：";
             // 
@@ -322,10 +327,9 @@
             "C",
             "D",
             "E"});
-            this.cmbColumns.Location = new System.Drawing.Point(119, 98);
-            this.cmbColumns.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cmbColumns.Location = new System.Drawing.Point(89, 78);
             this.cmbColumns.Name = "cmbColumns";
-            this.cmbColumns.Size = new System.Drawing.Size(69, 29);
+            this.cmbColumns.Size = new System.Drawing.Size(53, 25);
             this.cmbColumns.TabIndex = 27;
             this.cmbColumns.Text = "W";
             // 
@@ -337,20 +341,19 @@
             "",
             "#1",
             "#2"});
-            this.cmbNgFace.Location = new System.Drawing.Point(407, 32);
-            this.cmbNgFace.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cmbNgFace.Location = new System.Drawing.Point(305, 26);
             this.cmbNgFace.Name = "cmbNgFace";
-            this.cmbNgFace.Size = new System.Drawing.Size(69, 29);
+            this.cmbNgFace.Size = new System.Drawing.Size(53, 25);
             this.cmbNgFace.TabIndex = 27;
             this.cmbNgFace.Text = "WW";
             // 
             // btnSearch
             // 
             this.btnSearch.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnSearch.Location = new System.Drawing.Point(1335, 142);
-            this.btnSearch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnSearch.Location = new System.Drawing.Point(1001, 114);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(143, 45);
+            this.btnSearch.Size = new System.Drawing.Size(107, 36);
             this.btnSearch.TabIndex = 0;
             this.btnSearch.Text = "検索";
             this.btnSearch.UseVisualStyleBackColor = true;
@@ -362,12 +365,12 @@
             this.lblWorkerName.AutoSize = true;
             this.lblWorkerName.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblWorkerName.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblWorkerName.Location = new System.Drawing.Point(1139, 24);
-            this.lblWorkerName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.lblWorkerName.MaximumSize = new System.Drawing.Size(400, 0);
-            this.lblWorkerName.MinimumSize = new System.Drawing.Size(400, 0);
+            this.lblWorkerName.Location = new System.Drawing.Point(854, 19);
+            this.lblWorkerName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lblWorkerName.MaximumSize = new System.Drawing.Size(300, 0);
+            this.lblWorkerName.MinimumSize = new System.Drawing.Size(300, 0);
             this.lblWorkerName.Name = "lblWorkerName";
-            this.lblWorkerName.Size = new System.Drawing.Size(400, 21);
+            this.lblWorkerName.Size = new System.Drawing.Size(300, 17);
             this.lblWorkerName.TabIndex = 25;
             this.lblWorkerName.Text = "作業者名：XXXXXXXX";
             this.lblWorkerName.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -377,9 +380,10 @@
             this.lblDecisionEndTime.AutoSize = true;
             this.lblDecisionEndTime.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblDecisionEndTime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblDecisionEndTime.Location = new System.Drawing.Point(249, 96);
+            this.lblDecisionEndTime.Location = new System.Drawing.Point(187, 77);
+            this.lblDecisionEndTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblDecisionEndTime.Name = "lblDecisionEndTime";
-            this.lblDecisionEndTime.Size = new System.Drawing.Size(263, 21);
+            this.lblDecisionEndTime.Size = new System.Drawing.Size(207, 17);
             this.lblDecisionEndTime.TabIndex = 24;
             this.lblDecisionEndTime.Text = "判定終了日時：2999/12/31 23:59:59";
             // 
@@ -388,9 +392,10 @@
             this.lblDecisionStartTime.AutoSize = true;
             this.lblDecisionStartTime.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblDecisionStartTime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblDecisionStartTime.Location = new System.Drawing.Point(249, 75);
+            this.lblDecisionStartTime.Location = new System.Drawing.Point(187, 60);
+            this.lblDecisionStartTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblDecisionStartTime.Name = "lblDecisionStartTime";
-            this.lblDecisionStartTime.Size = new System.Drawing.Size(263, 21);
+            this.lblDecisionStartTime.Size = new System.Drawing.Size(207, 17);
             this.lblDecisionStartTime.TabIndex = 23;
             this.lblDecisionStartTime.Text = "判定開始日時：2999/12/31 23:59:59";
             // 
@@ -399,9 +404,10 @@
             this.lblInspectionLine.AutoSize = true;
             this.lblInspectionLine.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblInspectionLine.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblInspectionLine.Location = new System.Drawing.Point(249, 54);
+            this.lblInspectionLine.Location = new System.Drawing.Point(187, 43);
+            this.lblInspectionLine.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInspectionLine.Name = "lblInspectionLine";
-            this.lblInspectionLine.Size = new System.Drawing.Size(194, 21);
+            this.lblInspectionLine.Size = new System.Drawing.Size(152, 17);
             this.lblInspectionLine.TabIndex = 21;
             this.lblInspectionLine.Text = "検査範囲行　：9999～9999";
             // 
@@ -410,9 +416,10 @@
             this.lblEndDatetime.AutoSize = true;
             this.lblEndDatetime.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblEndDatetime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblEndDatetime.Location = new System.Drawing.Point(249, 32);
+            this.lblEndDatetime.Location = new System.Drawing.Point(187, 26);
+            this.lblEndDatetime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblEndDatetime.Name = "lblEndDatetime";
-            this.lblEndDatetime.Size = new System.Drawing.Size(263, 21);
+            this.lblEndDatetime.Size = new System.Drawing.Size(207, 17);
             this.lblEndDatetime.TabIndex = 20;
             this.lblEndDatetime.Text = "搬送終了日時：2999/12/31 23:59:59";
             // 
@@ -421,9 +428,10 @@
             this.lblStartDatetime.AutoSize = true;
             this.lblStartDatetime.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblStartDatetime.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblStartDatetime.Location = new System.Drawing.Point(249, 11);
+            this.lblStartDatetime.Location = new System.Drawing.Point(187, 9);
+            this.lblStartDatetime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStartDatetime.Name = "lblStartDatetime";
-            this.lblStartDatetime.Size = new System.Drawing.Size(263, 21);
+            this.lblStartDatetime.Size = new System.Drawing.Size(207, 17);
             this.lblStartDatetime.TabIndex = 19;
             this.lblStartDatetime.Text = "搬送開始日時：2999/12/31 23:59:59";
             // 
@@ -432,9 +440,10 @@
             this.lblCushionCount.AutoSize = true;
             this.lblCushionCount.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblCushionCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblCushionCount.Location = new System.Drawing.Point(249, 139);
+            this.lblCushionCount.Location = new System.Drawing.Point(187, 111);
+            this.lblCushionCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCushionCount.Name = "lblCushionCount";
-            this.lblCushionCount.Size = new System.Drawing.Size(328, 21);
+            this.lblCushionCount.Size = new System.Drawing.Size(257, 17);
             this.lblCushionCount.TabIndex = 1;
             this.lblCushionCount.Text = "クッション数：9999（NG：9999 / OK：9999）";
             // 
@@ -443,9 +452,10 @@
             this.lblImageCount.AutoSize = true;
             this.lblImageCount.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblImageCount.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblImageCount.Location = new System.Drawing.Point(249, 118);
+            this.lblImageCount.Location = new System.Drawing.Point(187, 94);
+            this.lblImageCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblImageCount.Name = "lblImageCount";
-            this.lblImageCount.Size = new System.Drawing.Size(310, 21);
+            this.lblImageCount.Size = new System.Drawing.Size(243, 17);
             this.lblImageCount.TabIndex = 1;
             this.lblImageCount.Text = "画像検査枚数：9999（NG：999 / OK：999）";
             // 
@@ -454,9 +464,10 @@
             this.lblInspectionNum.AutoSize = true;
             this.lblInspectionNum.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblInspectionNum.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblInspectionNum.Location = new System.Drawing.Point(249, 160);
+            this.lblInspectionNum.Location = new System.Drawing.Point(187, 128);
+            this.lblInspectionNum.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInspectionNum.Name = "lblInspectionNum";
-            this.lblInspectionNum.Size = new System.Drawing.Size(98, 21);
+            this.lblInspectionNum.Size = new System.Drawing.Size(77, 17);
             this.lblInspectionNum.TabIndex = 1;
             this.lblInspectionNum.Text = "検査番号：99";
             // 
@@ -465,9 +476,10 @@
             this.lblFabricName.AutoSize = true;
             this.lblFabricName.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblFabricName.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblFabricName.Location = new System.Drawing.Point(21, 75);
+            this.lblFabricName.Location = new System.Drawing.Point(16, 60);
+            this.lblFabricName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFabricName.Name = "lblFabricName";
-            this.lblFabricName.Size = new System.Drawing.Size(149, 21);
+            this.lblFabricName.Size = new System.Drawing.Size(117, 17);
             this.lblFabricName.TabIndex = 1;
             this.lblFabricName.Text = "反番：999999-0WW";
             // 
@@ -476,9 +488,10 @@
             this.lblOrderImg.AutoSize = true;
             this.lblOrderImg.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblOrderImg.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblOrderImg.Location = new System.Drawing.Point(21, 52);
+            this.lblOrderImg.Location = new System.Drawing.Point(16, 42);
+            this.lblOrderImg.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblOrderImg.Name = "lblOrderImg";
-            this.lblOrderImg.Size = new System.Drawing.Size(115, 21);
+            this.lblOrderImg.Size = new System.Drawing.Size(90, 17);
             this.lblOrderImg.TabIndex = 1;
             this.lblOrderImg.Text = "指図：9999999";
             // 
@@ -487,9 +500,10 @@
             this.lblProductName.AutoSize = true;
             this.lblProductName.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblProductName.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblProductName.Location = new System.Drawing.Point(21, 32);
+            this.lblProductName.Location = new System.Drawing.Point(16, 26);
+            this.lblProductName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblProductName.Name = "lblProductName";
-            this.lblProductName.Size = new System.Drawing.Size(93, 21);
+            this.lblProductName.Size = new System.Drawing.Size(73, 17);
             this.lblProductName.TabIndex = 1;
             this.lblProductName.Text = "品名：W999";
             // 
@@ -498,9 +512,10 @@
             this.lblUnitNum.AutoSize = true;
             this.lblUnitNum.Font = new System.Drawing.Font("メイリオ", 8F);
             this.lblUnitNum.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblUnitNum.Location = new System.Drawing.Point(21, 11);
+            this.lblUnitNum.Location = new System.Drawing.Point(16, 9);
+            this.lblUnitNum.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblUnitNum.Name = "lblUnitNum";
-            this.lblUnitNum.Size = new System.Drawing.Size(80, 21);
+            this.lblUnitNum.Size = new System.Drawing.Size(63, 17);
             this.lblUnitNum.TabIndex = 1;
             this.lblUnitNum.Text = "号機：WW";
             // 
@@ -512,20 +527,20 @@
             this.pnlBottom.Controls.Add(this.btnInspectionUpdate);
             this.pnlBottom.Controls.Add(this.btnTargetSelection);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 651);
-            this.pnlBottom.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pnlBottom.Location = new System.Drawing.Point(0, 521);
+            this.pnlBottom.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(1701, 98);
+            this.pnlBottom.Size = new System.Drawing.Size(1276, 78);
             this.pnlBottom.TabIndex = 3;
             // 
             // btnAddImage
             // 
             this.btnAddImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddImage.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnAddImage.Location = new System.Drawing.Point(1317, 16);
-            this.btnAddImage.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnAddImage.Location = new System.Drawing.Point(988, 13);
+            this.btnAddImage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnAddImage.Name = "btnAddImage";
-            this.btnAddImage.Size = new System.Drawing.Size(169, 68);
+            this.btnAddImage.Size = new System.Drawing.Size(127, 54);
             this.btnAddImage.TabIndex = 2;
             this.btnAddImage.Text = "未検知画像の追加";
             this.btnAddImage.UseVisualStyleBackColor = true;
@@ -535,10 +550,10 @@
             // 
             this.btnReprint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnReprint.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.btnReprint.Location = new System.Drawing.Point(1127, 16);
-            this.btnReprint.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnReprint.Location = new System.Drawing.Point(845, 13);
+            this.btnReprint.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnReprint.Name = "btnReprint";
-            this.btnReprint.Size = new System.Drawing.Size(169, 68);
+            this.btnReprint.Size = new System.Drawing.Size(127, 54);
             this.btnReprint.TabIndex = 0;
             this.btnReprint.Text = "再印刷";
             this.btnReprint.UseVisualStyleBackColor = true;
@@ -548,10 +563,10 @@
             // 
             this.btnInspectionUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnInspectionUpdate.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnInspectionUpdate.Location = new System.Drawing.Point(1508, 16);
-            this.btnInspectionUpdate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnInspectionUpdate.Location = new System.Drawing.Point(1131, 13);
+            this.btnInspectionUpdate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnInspectionUpdate.Name = "btnInspectionUpdate";
-            this.btnInspectionUpdate.Size = new System.Drawing.Size(169, 68);
+            this.btnInspectionUpdate.Size = new System.Drawing.Size(127, 54);
             this.btnInspectionUpdate.TabIndex = 1;
             this.btnInspectionUpdate.Text = "検査結果を\r\n更新する";
             this.btnInspectionUpdate.UseVisualStyleBackColor = true;
@@ -560,10 +575,10 @@
             // btnTargetSelection
             // 
             this.btnTargetSelection.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnTargetSelection.Location = new System.Drawing.Point(24, 16);
-            this.btnTargetSelection.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnTargetSelection.Location = new System.Drawing.Point(18, 13);
+            this.btnTargetSelection.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnTargetSelection.Name = "btnTargetSelection";
-            this.btnTargetSelection.Size = new System.Drawing.Size(169, 68);
+            this.btnTargetSelection.Size = new System.Drawing.Size(127, 54);
             this.btnTargetSelection.TabIndex = 0;
             this.btnTargetSelection.Text = "検査対象\r\n選択へ戻る";
             this.btnTargetSelection.UseVisualStyleBackColor = true;
@@ -573,20 +588,20 @@
             // 
             this.pnlLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnlLeft.Location = new System.Drawing.Point(0, 195);
-            this.pnlLeft.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pnlLeft.Location = new System.Drawing.Point(0, 156);
+            this.pnlLeft.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlLeft.Name = "pnlLeft";
-            this.pnlLeft.Size = new System.Drawing.Size(53, 456);
+            this.pnlLeft.Size = new System.Drawing.Size(40, 365);
             this.pnlLeft.TabIndex = 4;
             // 
             // pnlRight
             // 
             this.pnlRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.pnlRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlRight.Location = new System.Drawing.Point(1625, 195);
-            this.pnlRight.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pnlRight.Location = new System.Drawing.Point(1219, 156);
+            this.pnlRight.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.pnlRight.Name = "pnlRight";
-            this.pnlRight.Size = new System.Drawing.Size(76, 456);
+            this.pnlRight.Size = new System.Drawing.Size(57, 365);
             this.pnlRight.TabIndex = 5;
             // 
             // panel6
@@ -594,15 +609,17 @@
             this.panel6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             this.panel6.Controls.Add(this.dgvDecisionResult);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(53, 195);
-            this.panel6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panel6.Location = new System.Drawing.Point(40, 156);
+            this.panel6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1572, 456);
+            this.panel6.Size = new System.Drawing.Size(1179, 365);
             this.panel6.TabIndex = 6;
             // 
             // dgvDecisionResult
             // 
             this.dgvDecisionResult.AllowUserToAddRows = false;
+            this.dgvDecisionResult.AllowUserToResizeColumns = false;
+            this.dgvDecisionResult.AllowUserToResizeRows = false;
             this.dgvDecisionResult.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(67)))), ((int)(((byte)(106)))));
@@ -613,6 +630,7 @@
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvDecisionResult.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvDecisionResult.ColumnHeadersHeight = 30;
+            this.dgvDecisionResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dgvDecisionResult.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.No,
             this.Row,
@@ -640,7 +658,7 @@
             this.dgvDecisionResult.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvDecisionResult.EnableHeadersVisualStyles = false;
             this.dgvDecisionResult.Location = new System.Drawing.Point(0, 0);
-            this.dgvDecisionResult.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.dgvDecisionResult.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.dgvDecisionResult.MultiSelect = false;
             this.dgvDecisionResult.Name = "dgvDecisionResult";
             this.dgvDecisionResult.ReadOnly = true;
@@ -660,7 +678,7 @@
             this.dgvDecisionResult.RowTemplate.ReadOnly = true;
             this.dgvDecisionResult.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvDecisionResult.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvDecisionResult.Size = new System.Drawing.Size(1572, 456);
+            this.dgvDecisionResult.Size = new System.Drawing.Size(1179, 365);
             this.dgvDecisionResult.TabIndex = 0;
             this.dgvDecisionResult.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDecisionResult_CellClick);
             this.dgvDecisionResult.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dgvDecisionResult_MouseDown);
@@ -790,16 +808,16 @@
             // 
             // DisplayResults
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1701, 749);
+            this.ClientSize = new System.Drawing.Size(1276, 599);
             this.Controls.Add(this.panel6);
             this.Controls.Add(this.pnlRight);
             this.Controls.Add(this.pnlLeft);
             this.Controls.Add(this.pnlBottom);
             this.Controls.Add(this.pnlTop);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "DisplayResults";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "検査結果確認";
