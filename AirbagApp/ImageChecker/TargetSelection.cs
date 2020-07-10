@@ -784,6 +784,7 @@ namespace ImageChecker
             this.MaximizeBox = false;
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
+            datetimePrevReplicate = DateTime.MinValue;
 
             // ログイン者がスーパーユーザかチェックを行う
             if (g_clsSystemSettingInfo.strSuperUser.Split(',').Contains(g_clsLoginInfo.strEmployeeNum))
@@ -998,6 +999,7 @@ namespace ImageChecker
 
             if (!g_clsLoginInfo.bolStatus)
             {
+                datetimePrevReplicate = DateTime.MinValue;
                 this.Close();
                 return;
             }
@@ -1018,6 +1020,16 @@ namespace ImageChecker
             datetimePrevReplicate = DateTime.MinValue;
             this.Close();
             g_clsLoginInfo.Logout();
+        }
+
+        /// <summary>
+        /// フォームクローズ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TargetSelection_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            datetimePrevReplicate = DateTime.MinValue;
         }
 
         /// <summary>
@@ -1048,6 +1060,7 @@ namespace ImageChecker
 
             if (!g_clsLoginInfo.bolStatus)
             {
+                datetimePrevReplicate = DateTime.MinValue;
                 this.Close();
                 return;
             }

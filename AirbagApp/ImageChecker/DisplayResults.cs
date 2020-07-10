@@ -839,7 +839,14 @@ namespace ImageChecker
                     new AddImageProgressForm(
                         m_clsHeaderData,
                         strFileNameWithExtension,
-                        m_strFaultImageSubDirPath);
+                        m_strFaultImageSubDirPath,
+                        string.Empty,
+                        string.Empty,
+                        string.Empty,
+                        0,
+                        0,
+                        0,
+                        false);
 
                 frmProgressForm.ShowDialog(this);
 

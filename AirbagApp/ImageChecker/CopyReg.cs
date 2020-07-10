@@ -34,6 +34,12 @@ namespace ImageChecker
         private ComboBox m_cmbBoxLine;                          // 行コンボボックス
         private ComboBox m_cmbBoxColumns;                       // 列コンボボックス
         private bool m_bolUpdMode = false;                      // 更新モード
+        private int m_intNgDistanceX = 0;                       // 位置(±Xcm)
+        private int m_intNgDistanceY = 0;                       // 位置(±Ycm)
+
+        // 行列情報
+        private string m_strRetainedLine = string.Empty;
+        private string m_strRetainedCloumns = string.Empty;
 
         // 定数
         private const string m_CON_FORMAT_NG_FACE = "NG面：{0}";
@@ -104,19 +110,38 @@ namespace ImageChecker
             InitializeComponent();
 
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.btnReCalculation.Visible = false;
         }
 
         /// <summary>
         /// 表示初期化
         /// </summary>
-        private void dispInitialize()
+        /// /// <param name="bolInitialDisplayFlg">初期表示フラグ</param>
+        private void dispInitialize(bool bolInitialDisplayFlg)
         {
             try
             {
-                // 行
-                cmbBoxLine.SelectedItem = m_intLine.ToString();
-                // 列
-                cmbBoxColumns.SelectedItem = m_strColumns;
+                if (bolInitialDisplayFlg)
+                {
+                    // 行
+                    cmbBoxLine.SelectedItem = m_intLine.ToString();
+                    m_strRetainedLine = m_intLine.ToString();
+
+                    // 列
+                    cmbBoxColumns.SelectedItem = m_strColumns;
+                    m_strRetainedCloumns = m_strColumns;
+                }
+                else
+                {
+                    // 行
+                    cmbBoxLine.SelectedItem = m_strRetainedLine;
+
+                    // 列
+                    cmbBoxColumns.SelectedItem = m_strRetainedCloumns;
+                }
+
+                this.cmbBox_SelectedIndexChanged(null, null);
+
                 // NG選択理由
                 if (m_intBranchNumUpCnt > 0)
                 {
@@ -493,6 +518,150 @@ namespace ImageChecker
 
             return true;
         }
+
+        /// <summary>
+        /// 再計算ボタンクリック
+        /// </summary>
+        private bool bolCheckLineColumnChangeProcess()
+        {
+            if (this.btnReCalculation.Visible)
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    g_clsMessageInfo.strMsgW0012,
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Rapid情報連携
+        /// </summary>
+        private void RapidInformationInteraction()
+        {
+            bool bolProcOkNg = false;
+            string strSQL = string.Empty;
+            string strFileNameWithExtension = string.Empty;
+            string NotDetectedImageCooperationDirectory = string.Empty;
+            DataTable dtData = new DataTable();
+            List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+            AddImageProgressForm frmProgressForm = null;
+
+            try
+            {
+                // ファイル名にオリジナル画像名を設定する
+                strFileNameWithExtension = m_strOrgImagepath;
+
+                // プログレスフォーム表示
+                frmProgressForm =
+                    new AddImageProgressForm(
+                        m_clsHeaderData,
+                        strFileNameWithExtension,
+                        m_strFaultImageSubDirectory,
+                        m_strMarkingImagepath,
+                        cmbBoxLine.SelectedItem.ToString(),
+                        cmbBoxColumns.SelectedItem.ToString(),
+                        m_intBranchNumGet,
+                        m_intNgDistanceX,
+                        m_intNgDistanceY,
+                        true);
+
+                frmProgressForm.ShowDialog(this);
+
+                this.Visible = true;
+
+                if (!frmProgressForm.bolChgFile)
+                {
+                    // キャンセル
+                    return;
+                }
+
+                // 画面情報を再取得
+                try
+                {
+                    strSQL = @"SELECT
+                                   line
+                                 , cloumns
+                                 , ng_distance_x
+                                 , ng_distance_y
+                               FROM " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
+                               WHERE fabric_name = :fabric_name
+                               AND   inspection_date = TO_DATE(:inspection_date, 'YYYY/MM/DD')
+                               AND   inspection_num = :inspection_num
+                               AND   branch_num = :branch_num
+                               AND   unit_num = :unit_num
+                               AND   marking_imagepath = :marking_imagepath
+                               ORDER BY branch_num DESC";
+
+                    // SQLコマンドに各パラメータを設定する
+                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = m_intBranchNumGet });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                    m_dtData.Rows[0]["line"] = dtData.Rows[0]["line"];
+                    m_dtData.Rows[0]["cloumns"] = dtData.Rows[0]["cloumns"];
+                    m_dtData.Rows[0]["ng_distance_x"] = dtData.Rows[0]["ng_distance_x"];
+                    m_dtData.Rows[0]["ng_distance_y"] = dtData.Rows[0]["ng_distance_y"];
+
+                    // 画面表示
+                    cmbBoxLine.SelectedItem = m_dtData.Rows[0]["line"].ToString();
+                    cmbBoxColumns.SelectedItem = m_dtData.Rows[0]["cloumns"].ToString();
+                    m_intNgDistanceX = Convert.ToInt32(m_dtData.Rows[0]["ng_distance_x"].ToString());
+                    m_intNgDistanceY = Convert.ToInt32(m_dtData.Rows[0]["ng_distance_y"].ToString());
+                    lblNgDistance.Text = string.Format(m_CON_FORMAT_NG_DISTANCE, m_intNgDistanceX, m_intNgDistanceY);
+                    this.btnReCalculation.Visible = false;
+                }
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                    // メッセージ出力
+                    MessageBox.Show(g_clsMessageInfo.strMsgE0039, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
+                bolProcOkNg = true;
+            }
+            finally
+            {
+                dtData.Dispose();
+
+                if (frmProgressForm != null)
+                {
+                    frmProgressForm.Dispose();
+                }
+
+                // DB処理
+                if (bolProcOkNg == true)
+                {
+                    if (m_intFromApId == 0)
+                    {
+                        g_clsConnectionNpgsql.DbCommit();
+                    }
+                }
+                else
+                {
+                    g_clsConnectionNpgsql.DbRollback();
+                }
+
+                if (m_intFromApId == 0)
+                {
+                    g_clsConnectionNpgsql.DbClose();
+                }
+            }
+        }
         #endregion
 
         #region イベント
@@ -578,7 +747,9 @@ namespace ImageChecker
 
                 // その他情報を表示
                 lblNgFace.Text = string.Format(m_CON_FORMAT_NG_FACE, m_dtData.Rows[0]["ng_face"].ToString());
-                lblNgDistance.Text = string.Format(m_CON_FORMAT_NG_DISTANCE, m_dtData.Rows[0]["ng_distance_x"].ToString(), m_dtData.Rows[0]["ng_distance_y"].ToString());
+                m_intNgDistanceX = Convert.ToInt32(m_dtData.Rows[0]["ng_distance_x"].ToString());
+                m_intNgDistanceY = Convert.ToInt32(m_dtData.Rows[0]["ng_distance_y"].ToString());
+                lblNgDistance.Text = string.Format(m_CON_FORMAT_NG_DISTANCE, m_intNgDistanceX, m_intNgDistanceY);
                 lblMarkingImagepath.Text = m_strMarkingImagepath;
 
                 // コントロール初期化 
@@ -599,7 +770,7 @@ namespace ImageChecker
                 // NG選択理由
                 lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, m_strNgReason);
 
-                dispInitialize();
+                dispInitialize(true);
 
                 // 修正の場合、次の欠点を登録するを有効にする
                 if (m_bolUpdMode == true)
@@ -665,6 +836,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOKSelect_Click(object sender, EventArgs e)
         {
+            if (!bolCheckLineColumnChangeProcess())
+            {
+                return;
+            }
+
             // 必須入力チェック
             if (bolChkRequiredInput() == false)
             {
@@ -683,6 +859,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnWhiteThreadOne_Click(object sender, EventArgs e)
         {
+            if (!bolCheckLineColumnChangeProcess())
+            {
+                return;
+            }
+
             // 必須入力チェック
             if (bolChkRequiredInput() == false)
             {
@@ -701,6 +882,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnWhiteThreadMulti_Click(object sender, EventArgs e)
         {
+            if (!bolCheckLineColumnChangeProcess())
+            {
+                return;
+            }
+
             // 必須入力チェック
             if (bolChkRequiredInput() == false)
             {
@@ -719,6 +905,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnBlackThreadOne_Click(object sender, EventArgs e)
         {
+            if (!bolCheckLineColumnChangeProcess())
+            {
+                return;
+            }
+
             // 必須入力チェック
             if (bolChkRequiredInput() == false)
             {
@@ -737,6 +928,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnBlackThreadMulti_Click(object sender, EventArgs e)
         {
+            if (!bolCheckLineColumnChangeProcess())
+            {
+                return;
+            }
+
             // 必須入力チェック
             if (bolChkRequiredInput() == false)
             {
@@ -755,6 +951,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOtherNg_Click(object sender, EventArgs e)
         {
+            if (!bolCheckLineColumnChangeProcess())
+            {
+                return;
+            }
+
             // 必須入力チェック
             if (bolChkRequiredInput() == false)
             {
@@ -773,6 +974,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnOther_Click(object sender, EventArgs e)
         {
+            if (!bolCheckLineColumnChangeProcess())
+            {
+                return;
+            }
+
             string strDecisionReason = string.Empty;
 
             using (SelectErrorReason frmErrorReason = new SelectErrorReason(false))
@@ -798,6 +1004,11 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnNextDefect_Click(object sender, EventArgs e)
         {
+            if (!bolCheckLineColumnChangeProcess())
+            {
+                return;
+            }
+
             btnNextDefect.Enabled = true;
             string strSQL = string.Empty;
             DataTable dtData = new DataTable();
@@ -805,7 +1016,6 @@ namespace ImageChecker
             // 修正の場合、枝番を採番する。
             if (m_bolUpdMode == true && m_intBranchNumUpCnt == 0)
             {
-                // 複写登録がある場合は子画面を表示する
                 try
                 {
                     strSQL = @"SELECT COALESCE(MAX(branch_num),0) AS branch_num_max
@@ -852,7 +1062,11 @@ namespace ImageChecker
             // 枝番のカウントアップ
             m_intBranchNumUpCnt++;
 
-            dispInitialize();
+            m_strRetainedLine = cmbBoxLine.SelectedItem.ToString();
+            m_strRetainedCloumns = cmbBoxColumns.SelectedItem.ToString();
+            this.btnReCalculation.Visible = false;
+
+            dispInitialize(false);
         }
 
         /// <summary>
@@ -863,6 +1077,40 @@ namespace ImageChecker
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        /// <summary>
+        /// コンボボックス変更
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmbBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbBoxLine.SelectedItem == null ||
+                cmbBoxColumns.SelectedItem == null)
+            {
+                return;
+            }
+
+            if (cmbBoxLine.SelectedItem.ToString().Equals(m_strRetainedLine) &&
+                cmbBoxColumns.SelectedItem.ToString().Equals(m_strRetainedCloumns))
+            {
+                this.btnReCalculation.Visible = false;
+            }
+            else
+            {
+                this.btnReCalculation.Visible = true;
+            }
+        }
+
+        /// <summary>
+        /// 再計算ボタンクリック
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnReCalculation_Click(object sender, EventArgs e)
+        {
+            RapidInformationInteraction();
         }
         #endregion
     }

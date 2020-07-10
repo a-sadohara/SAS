@@ -450,6 +450,7 @@ namespace ImageChecker
             this.Text = "検査対象選択";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Activated += new System.EventHandler(this.TargetSelection_Activated);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TargetSelection_FormClosing);
             this.Load += new System.EventHandler(this.TargetSelection_Load);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();

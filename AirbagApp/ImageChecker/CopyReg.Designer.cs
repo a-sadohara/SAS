@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CopyReg));
             this.panel11 = new System.Windows.Forms.Panel();
+            this.btnReCalculation = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
             this.lblNgDistance = new System.Windows.Forms.Label();
             this.lblNgFace = new System.Windows.Forms.Label();
@@ -82,6 +83,7 @@
             // panel11
             // 
             this.tableLayoutPanel6.SetColumnSpan(this.panel11, 3);
+            this.panel11.Controls.Add(this.btnReCalculation);
             this.panel11.Controls.Add(this.label17);
             this.panel11.Controls.Add(this.lblNgDistance);
             this.panel11.Controls.Add(this.lblNgFace);
@@ -92,6 +94,17 @@
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(348, 78);
             this.panel11.TabIndex = 38;
+            // 
+            // btnReCalculation
+            // 
+            this.btnReCalculation.Font = new System.Drawing.Font("メイリオ", 9F);
+            this.btnReCalculation.Location = new System.Drawing.Point(118, 5);
+            this.btnReCalculation.Name = "btnReCalculation";
+            this.btnReCalculation.Size = new System.Drawing.Size(63, 30);
+            this.btnReCalculation.TabIndex = 31;
+            this.btnReCalculation.Text = "再計算";
+            this.btnReCalculation.UseVisualStyleBackColor = true;
+            this.btnReCalculation.Click += new System.EventHandler(this.btnReCalculation_Click);
             // 
             // label17
             // 
@@ -356,6 +369,7 @@
             this.cmbBoxLine.Name = "cmbBoxLine";
             this.cmbBoxLine.Size = new System.Drawing.Size(84, 39);
             this.cmbBoxLine.TabIndex = 1;
+            this.cmbBoxLine.SelectedIndexChanged += new System.EventHandler(this.cmbBox_SelectedIndexChanged);
             // 
             // panel12
             // 
@@ -377,6 +391,7 @@
             this.cmbBoxColumns.Name = "cmbBoxColumns";
             this.cmbBoxColumns.Size = new System.Drawing.Size(62, 39);
             this.cmbBoxColumns.TabIndex = 1;
+            this.cmbBoxColumns.SelectedIndexChanged += new System.EventHandler(this.cmbBox_SelectedIndexChanged);
             // 
             // panel13
             // 
@@ -597,5 +612,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel pnlDock;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Button btnReCalculation;
     }
 }

@@ -31,6 +31,20 @@ namespace ImageChecker
 
         private string m_strFaultImageSubDirPath = string.Empty;
 
+        private string m_strMarkingImagepath = string.Empty;
+
+        private int m_intBranchNum = 0;
+
+        private int m_intNgDistanceX = 0;
+
+        private int m_intNgDistanceY = 0;
+
+        private string m_strLine = string.Empty;
+
+        private string m_strCloumns = string.Empty;
+
+        private bool m_bolLineCloumnsChangeFlg = false;
+
         private FileSystemWatcher m_fsWatcher;
 
         private delegate void Del();
@@ -44,10 +58,24 @@ namespace ImageChecker
         /// <param name="clsHeaderData">ヘッダ情報</param>
         /// <param name="strFileName">ファイル名</param>
         /// <param name="strFaultImageSubDirPath">欠点画像サブディレクトリパス</param>
+        /// <param name="strMarkingImagepath">マーキング画像パス</param>
+        /// <param name="strLine">行</param>
+        /// <param name="strCloumns">列</param>
+        /// <param name="intBranchNum">枝番</param>
+        /// <param name="intNgDistanceX">位置(±Xcm)</param>
+        /// <param name="intNGDistanceY">位置(±Ycm)</param>
+        /// <param name="bolLineCloumnsChangeFlg">行列変更フラグ</param>
         public AddImageProgressForm(
             HeaderData clsHeaderData,
             string strFileName,
-            string strFaultImageSubDirPath)
+            string strFaultImageSubDirPath,
+            string strMarkingImagepath,
+            string strLine,
+            string strCloumns,
+            int intBranchNum,
+            int intNgDistanceX,
+            int intNGDistanceY,
+            bool bolLineCloumnsChangeFlg)
         {
             bolChgFile = false;
 
@@ -88,6 +116,19 @@ namespace ImageChecker
             InitializeComponent();
 
             this.StartPosition = FormStartPosition.CenterScreen;
+
+            m_bolLineCloumnsChangeFlg = bolLineCloumnsChangeFlg;
+
+            if (m_bolLineCloumnsChangeFlg)
+            {
+                m_strMarkingImagepath = strMarkingImagepath;
+                m_strLine = strLine;
+                m_strCloumns = strCloumns;
+                m_intBranchNum = intBranchNum;
+                m_intNgDistanceX = intNgDistanceX;
+                m_intNgDistanceY = intNGDistanceY;
+                this.lblMessage.Text = g_clsMessageInfo.strMsgI0014;
+            }
         }
 
         /// <summary>
@@ -137,9 +178,10 @@ namespace ImageChecker
 
                 // ファイル名妥当性チェック
                 strFileParam = m_strFileName.Split('_');
-                if ((strFileParam.Length < 2 || m_clsHeaderData.strFabricName != strFileParam[1]) ||
+                if (!m_bolLineCloumnsChangeFlg &&
+                    ((strFileParam.Length < 2 || m_clsHeaderData.strFabricName != strFileParam[1]) ||
                     (strFileParam.Length < 3 || m_clsHeaderData.strInspectionDate.Replace("/", string.Empty) != strFileParam[2]) ||
-                    (strFileParam.Length < 4 || int.TryParse(strFileParam[3], out intParse) == false || m_clsHeaderData.intInspectionNum != intParse))
+                    (strFileParam.Length < 4 || int.TryParse(strFileParam[3], out intParse) == false || m_clsHeaderData.intInspectionNum != intParse)))
                 {
                     MessageBox.Show(
                         string.Format(
@@ -162,7 +204,11 @@ namespace ImageChecker
                         // 書き込むファイルが既に存在している場合は、上書きする
                         using (StreamWriter sw = new StreamWriter(strOutPutFilePath, false, Encoding.GetEncoding("shift_jis")))
                         {
-                            // 空ファイルの生成
+                            // 行列変更時は、変更後の内容を書き込む
+                            if (m_bolLineCloumnsChangeFlg)
+                            {
+                                sw.WriteLine(string.Format("{0},{1}", m_strLine, m_strCloumns));
+                            }
                         }
                         break;
                     }
@@ -196,10 +242,12 @@ namespace ImageChecker
                 return false;
             }
 
-            // 連携済みチェック
-            try
+            if (!m_bolLineCloumnsChangeFlg)
             {
-                strSQL = @"SELECT COUNT(*) AS cnt
+                // 連携済みチェック
+                try
+                {
+                    strSQL = @"SELECT COUNT(*) AS cnt
                            FROM  " + g_clsSystemSettingInfo.strInstanceName + @".decision_result
                            WHERE fabric_name = :fabric_name
                            AND   inspection_num = :inspection_num
@@ -207,51 +255,52 @@ namespace ImageChecker
                            AND   unit_num = :unit_num
                            AND   org_imagepath = :org_imagepath ";
 
-                // SQLコマンドに各パラメータを設定する
-                lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_clsHeaderData.strFabricName });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_clsHeaderData.intInspectionNum });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_clsHeaderData.strInspectionDate });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "org_imagepath", DbType = DbType.String, Value = m_strSafeFileName });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_clsHeaderData.strUnitNum });
+                    // SQLコマンドに各パラメータを設定する
+                    lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_clsHeaderData.strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_clsHeaderData.intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_clsHeaderData.strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "org_imagepath", DbType = DbType.String, Value = m_strSafeFileName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_clsHeaderData.strUnitNum });
 
-                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+                    g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
 
-                // 件数
-                if (dtData.Rows.Count > 0)
-                {
-                    if (Convert.ToInt32(dtData.Rows[0]["cnt"]) > 0)
+                    // 件数
+                    if (dtData.Rows.Count > 0)
                     {
-                        // メッセージ出力
-                        MessageBox.Show(
-                            g_clsMessageInfo.strMsgE0061,
-                            g_CON_MESSAGE_TITLE_ERROR,
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                        if (Convert.ToInt32(dtData.Rows[0]["cnt"]) > 0)
+                        {
+                            // メッセージ出力
+                            MessageBox.Show(
+                                g_clsMessageInfo.strMsgE0061,
+                                g_CON_MESSAGE_TITLE_ERROR,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
 
-                        return false;
+                            return false;
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                // ログ出力
-                WriteEventLog(
-                    g_CON_LEVEL_ERROR,
-                    string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                catch (Exception ex)
+                {
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_ERROR,
+                        string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
 
-                // メッセージ出力
-                MessageBox.Show(
-                    g_clsMessageInfo.strMsgE0031,
-                    g_CON_MESSAGE_TITLE_ERROR,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    // メッセージ出力
+                    MessageBox.Show(
+                        g_clsMessageInfo.strMsgE0031,
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
 
-                return false;
-            }
-            finally
-            {
-                dtData.Dispose();
+                    return false;
+                }
+                finally
+                {
+                    dtData.Dispose();
+                }
             }
 
             m_strChkFilePath = Path.Combine(m_strCompletionNoticeCooperationDirectoryPath, m_strFileName + ".txt");
@@ -280,8 +329,47 @@ namespace ImageChecker
             {
                 strRapidTableName = "rapid_" + m_clsHeaderData.strFabricName + "_" + m_clsHeaderData.intInspectionNum + "_" + m_clsHeaderData.strInspectionDate.Replace("/", string.Empty);
 
-                // 判定結果の取り込み処理
-                strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
+                if (m_bolLineCloumnsChangeFlg)
+                {
+                    // 位置(±Xcm)・位置(±Ycm)の更新
+                    strSQL = @"
+                               UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".decision_result AS dr SET
+                                   line = rpd.ng_line,
+                                   cloumns = rpd.columns,
+                                   ng_distance_x = TO_NUMBER(rpd.ng_distance_x,'9999'),
+                                   ng_distance_y = TO_NUMBER(rpd.ng_distance_y,'9999')
+                               FROM
+                               (
+                                   SELECT
+                                       ng_line,
+                                       columns,
+                                       ng_distance_x,
+                                       ng_distance_y
+                                   FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" 
+                                   WHERE fabric_name = :fabric_name
+                                       AND inspection_num = :inspection_num 
+                                       AND ng_image = :ng_image 
+                                       AND unit_num = :unit_num 
+                                       AND rapid_result = :rapid_result
+                                       AND edge_result = :edge_result
+                                       AND masking_result = :masking_result
+                               ) AS rpd
+                               WHERE dr.branch_num = :branch_num
+                                   AND dr.unit_num = :unit_num
+                                   AND dr.marking_imagepath = :marking_imagepath
+                                   AND dr.ng_distance_x = :ng_distance_x
+                                   AND dr.ng_distance_y = :ng_distance_y ";
+
+                    // SQLコマンドに各パラメータを設定する
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int32, Value = m_intBranchNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "marking_imagepath", DbType = DbType.String, Value = m_strMarkingImagepath });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_distance_x", DbType = DbType.Int32, Value = m_intNgDistanceX });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_distance_y", DbType = DbType.Int32, Value = m_intNgDistanceY });
+                }
+                else
+                {
+                    // 判定結果の取り込み処理
+                    strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
                                fabric_name
                              , inspection_num
                              , inspection_date
@@ -365,21 +453,27 @@ namespace ImageChecker
                                AND masking_result = :masking_result
                            ) rpd
                            WHERE SEQ = 1
-                           ON CONFLICT
-                           DO NOTHING ";
+                           ON CONFLICT (branch_num, unit_num, marking_imagepath, ng_distance_x, ng_distance_y)
+                           DO UPDATE SET
+                               line = excluded.line
+                             , cloumns = excluded.cloumns
+                             , ng_distance_x = excluded.ng_distance_x
+                             , ng_distance_y = excluded.ng_distance_y ";
+
+                    // SQLコマンドに各パラメータを設定する
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_clsHeaderData.strInspectionDate });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng_non_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNgNonDetect });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
+                }
 
                 // SQLコマンドに各パラメータを設定する
-                lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = m_clsHeaderData.strInspectionDate });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = m_clsHeaderData.strFabricName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = m_clsHeaderData.intInspectionNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ng_image", DbType = DbType.String, Value = m_strSafeFileName });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "rapid_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intRapidResultNon });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "edge_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intEdgeResultNon });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "masking_result", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intMaskingResultNon });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNon });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "over_detection_except_result_ng_non_detect", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intOverDetectionExceptResultNgNonDetect });
-                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "acceptance_check_result_non", DbType = DbType.Int16, Value = g_clsSystemSettingInfo.intAcceptanceCheckResultNon });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_clsHeaderData.strUnitNum });
 
                 // sqlを実行する
@@ -550,31 +644,36 @@ namespace ImageChecker
                 return false;
             }
 
-            DirectoryInfo diFaultImage = new DirectoryInfo(m_strFaultImageSubDirPath);
+            if (!m_bolLineCloumnsChangeFlg)
+            {
+                DirectoryInfo diFaultImage = new DirectoryInfo(m_strFaultImageSubDirPath);
 
-            string strLogMessage =
-                string.Format(
-                    g_CON_LOG_MESSAGE_FOMAT,
-                    m_clsHeaderData.strUnitNum,
-                    m_clsHeaderData.strInspectionDate,
-                    m_clsHeaderData.intInspectionNum,
-                    m_clsHeaderData.strProductName,
-                    m_clsHeaderData.strFabricName);
+                string strLogMessage =
+                    string.Format(
+                        g_CON_LOG_MESSAGE_FOMAT,
+                        m_clsHeaderData.strUnitNum,
+                        m_clsHeaderData.strInspectionDate,
+                        m_clsHeaderData.intInspectionNum,
+                        m_clsHeaderData.strProductName,
+                        m_clsHeaderData.strFabricName);
 
-            // 未検知画像の取込を行う
-            Task<Boolean> taskCheckFaultImage =
-                Task<Boolean>.Run(() => BolGetFaultImage(
-                    m_clsHeaderData.intInspectionNum,
-                    m_clsHeaderData.strInspectionDate,
-                    m_clsHeaderData.strUnitNum,
-                    m_clsHeaderData.strFabricName,
-                    m_strFileName,
-                    strLogMessage,
-                    false,
-                    true,
-                    diFaultImage.Name));
+                // 未検知画像の取込を行う
+                Task<Boolean> taskCheckFaultImage =
+                    Task<Boolean>.Run(() => BolGetFaultImage(
+                        m_clsHeaderData.intInspectionNum,
+                        m_clsHeaderData.strInspectionDate,
+                        m_clsHeaderData.strUnitNum,
+                        m_clsHeaderData.strFabricName,
+                        m_strFileName,
+                        strLogMessage,
+                        false,
+                        true,
+                        diFaultImage.Name));
 
-            return await taskCheckFaultImage;
+                return await taskCheckFaultImage;
+            }
+
+            return true;
         }
         #endregion
 
