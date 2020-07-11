@@ -1437,6 +1437,8 @@ namespace BeforeInspection
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
+                btnStartDatetime.Focus();
+
                 return;
             }
 
