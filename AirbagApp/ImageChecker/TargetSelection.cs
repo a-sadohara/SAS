@@ -1634,7 +1634,7 @@ namespace ImageChecker
                                     , worker_1
                                     , worker_2
                                     , start_datetime
-                                    , end_datetime
+                                    , COALESCE(end_datetime, :end_datetime) AS end_datetime
                                     , inspection_direction
                                     , inspection_date
                                     , 0
@@ -1660,6 +1660,7 @@ namespace ImageChecker
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_datetime", DbType = DbType.DateTime2, Value = File.GetCreationTime(strFilePath) });
 
                                 // sqlを実行する
                                 g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
