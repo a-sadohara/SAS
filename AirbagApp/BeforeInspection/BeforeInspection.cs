@@ -1424,7 +1424,8 @@ namespace BeforeInspection
             int intInspectionNum = 0;
             string strEndDatetime = lblEndDatetime.Text;
 
-            if (m_intStatus == g_clsSystemSettingInfo.intStatusEnd &&
+            if ((m_intStatus == g_clsSystemSettingInfo.intStatusEnd ||
+                m_intStatus == g_clsSystemSettingInfo.intStatusStp) &&
                 m_strStartDatetime.Equals(lblStartDatetime.Text))
             {
                 // メッセージ出力
@@ -1690,9 +1691,11 @@ namespace BeforeInspection
             // ステータスの表示設定(検査中断)
             SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusStp);
 
+            // 開始時刻の退避
+            m_strStartDatetime = lblStartDatetime.Text;
+
             // フォーカスを検査対象に設定
             txtInspectionTargetLine.Focus();
-
         }
 
         /// <summary>
