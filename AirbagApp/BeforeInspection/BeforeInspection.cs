@@ -23,6 +23,7 @@ namespace BeforeInspection
         private string m_strWorker2 = string.Empty;               // 作業者情報(社員番号)検反部No.2
         private string m_strInspectionDirection;        // 検査方向
         private DateTime m_datInspectionDate;           // 検査日付
+        private string m_strStartDatetime = string.Empty;         // 開始時刻
 
         // 定数
         private const string m_CON_SW = "ＳＷ";
@@ -1423,6 +1424,21 @@ namespace BeforeInspection
             int intInspectionNum = 0;
             string strEndDatetime = lblEndDatetime.Text;
 
+            if (m_intStatus == g_clsSystemSettingInfo.intStatusEnd &&
+                m_strStartDatetime.Equals(lblStartDatetime.Text))
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    string.Format(
+                        g_clsMessageInfo.strMsgE0071,
+                        lblTitleStartDatetime.Text),
+                    "エラー",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return;
+            }
+
             // 検査番号の採番
             if (m_intStatus == g_clsSystemSettingInfo.intStatusChk)
             {
@@ -1504,8 +1520,8 @@ namespace BeforeInspection
                 // ステータスの表示設定(検査終了)
                 SetStatusCtrSetting(g_clsSystemSettingInfo.intStatusEnd);
 
-                // 終了時刻の初期化
-                //lblEndDatetime.Text = string.Empty;
+                // 開始時刻の退避
+                m_strStartDatetime = lblStartDatetime.Text;
 
                 // 次の反番情報を設定
                 btnNextFabric.Focus();

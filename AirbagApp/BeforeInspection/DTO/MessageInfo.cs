@@ -35,6 +35,7 @@ namespace BeforeInspection.DTO
         public readonly string strMsgE0037;
         public readonly string strMsgE0065;
         public readonly string strMsgE0069;
+        public readonly string strMsgE0071;
         public readonly string strMsgQ0008;
 
         /// <summary>
@@ -62,6 +63,7 @@ namespace BeforeInspection.DTO
                 GetMessageContent("E0037", ref strMsgE0037);
                 GetMessageContent("E0065", ref strMsgE0065);
                 GetMessageContent("E0069", ref strMsgE0069);
+                GetMessageContent("E0071", ref strMsgE0071);
                 GetMessageContent("Q0008", ref strMsgQ0008);
 
                 if (m_sbErrMessage.Length > 0)
