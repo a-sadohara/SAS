@@ -241,8 +241,9 @@ def select_fabric_info_db_polling(conn, cur, processing_status_status, unit_num)
           ' ,processing_status.imaging_starttime' \
           ' ,processing_status.rapid_starttime' \
           ' from fabric_info,processing_status' \
-          ' where fabric_info.product_name = processing_status.product_name and '\
-          'fabric_info.fabric_name = processing_status.fabric_name' \
+          ' where fabric_info.product_name = processing_status.product_name and'\
+          ' fabric_info.fabric_name = processing_status.fabric_name and' \
+          ' fabric_info.imaging_starttime = processing_status.imaging_starttime' \
           '  and fabric_info.inspection_num = processing_status.inspection_num' \
           '  and fabric_info.unit_num = processing_status.unit_num' \
           '  and processing_status.status = %s and fabric_info.unit_num = \'%s\'' \

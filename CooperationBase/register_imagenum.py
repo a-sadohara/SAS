@@ -3,6 +3,7 @@
 # ■ 機能302  撮像枚数登録
 # ----------------------------------------
 
+import check_image_num
 import configparser
 from datetime import datetime
 import logging.config
@@ -18,7 +19,7 @@ import db_util
 import file_util
 import register_ng_info
 import register_regimark_info
-import check_image_num
+
 
 # ログ設定
 logging.config.fileConfig("D:/CI/programs/config/logging_register_imagenum.conf", disable_existing_loggers=False)
@@ -559,7 +560,7 @@ def main():
                 inspection_start_line = fabric_info[3]
                 end_line = inspection_line
 
-                if inspection_direction == 'S' or 'X':
+                if inspection_direction == 'S' or inspection_direction == 'X':
                     inspection_target_line = int(end_line) - int(inspection_start_line) + 1
                 else:
                     inspection_target_line = int(inspection_start_line) - int(end_line) + 1
@@ -625,6 +626,7 @@ def main():
                 logger.info("[%s:%s] %s処理は正常に終了しました。", app_id, app_name, app_name)
 
                 logger.debug("[%s:%s] レジマーク情報登録機能呼出を開始します。", app_id, app_name)
+                error_file_name = 'register_regimark_info_error.txt'
                 result, ai_model_flag, error, func_name = \
                     register_regimark_info.main(product_name, fabric_name, inspection_num, imaging_starttime)
                 if result:

@@ -262,19 +262,28 @@ def exec_check_image_num_multi_thread(product_name, fabric_name, inspection_num,
                                         % (app_id, app_name, fabric_name, inspection_num, inspection_date))
                 raise Exception
         else:
-            check_image_list = file_list
+            check_target_front_line_image_num = int(re.split('[._]', after_tmp_file_info[line_info_index-1][0])[6])
+            face = int(re.split('[._]', after_tmp_file_info[line_info_index-1][0])[4])
+            check_target_line_image_num = max([int(re.split('[._]', x.split('\\')[-1])[6]) for x in file_list if int(re.split('[._]', x.split('\\')[-1])[4]) == face])
+            check_image_list = [x for x in file_list if check_target_front_line_image_num <= int(re.split('[._]', x.split('\\')[-1])[6]) and
+                            int(re.split('[._]', x.split('\\')[-1])[6]) <= check_target_line_image_num and int(re.split('[._]', x.split('\\')[-1])[4]) == face]
+            logger_subprocess.debug('[%s:%s] 行間内画像リスト取得。 画像リスト=[%s], ホスト名=[%s], 開始撮像番号=[%s], 終了撮像番号=[%s]' % (app_id, app_name, check_image_list, rapid_host_name, check_target_front_line_image_num, check_target_line_image_num))
+            logger_subprocess.debug('[%s:%s] 最終行枚数=[%s]' % (app_id, app_name, check_target_line_image_num - check_target_front_line_image_num + 1))
+            if len(check_image_list) < (check_target_line_image_num - check_target_front_line_image_num + 1) * int(camera_num):
+                result = 'image_shortage'
+            else:
+                result = True
+            
             if len(check_image_list) == 0:
                 result = True
                 return result, rapid_host_name, check_image_list, error, func_name
             else:
                 pass
 
-            tmp_result, error, func_name = move_file(file_list, move_image_dir)
+            tmp_result, error, func_name = move_file(check_image_list, move_image_dir)
             if tmp_result:
                 logger_subprocess.debug('[%s:%s] 撮像画像の移動が終了しました。 ホスト名=[%s]'
                                         % (app_id, app_name, rapid_host_name))
-                result = True
-
             else:
                 logger_subprocess.error('[%s:%s] 撮像画像の移動が失敗しました。 '
                                         '[反番, 検査番号, 検査日付]=[%s, %s, %s]'
@@ -721,7 +730,7 @@ def main():
             result, scan_info, error, func_name = get_file(scan_input_file_path, scan_file_pattern,
                                                                 network_path_error, 'scan')
             if result == True:
-                logger.error('[%s:%s] 撮像完了通知ファイル %s', app_id, app_name, scan_info)
+                logger.info('[%s:%s] 撮像完了通知ファイル %s', app_id, app_name, scan_info)
                 break
             elif result == network_path_error:
                 logger.warning('[%s:%s] 撮像完了通知ファイルにアクセスできません。', app_id, app_name)
@@ -875,17 +884,40 @@ def main():
                             elif multi_result[0] == 'image_shortage':
                                 host_name = multi_result[1]
                                 file_list = multi_result[2]
-                                logger.error('[%s:%s] マルチスレッドでの行間枚数の欠損が発生しています。 ホスト名=[%s], ファイルリスト=[%s], 行番号=[%s]' %
-                                             (app_id, app_name, host_name, file_list, int(line_info_index) -1 + int(inspection_start_line[0])))
-                                logger.debug('[%s:%s] エラーファイル出力を開始します。', app_id, app_name)
-                                error_file_name = 'Image_on_line_' + \
-                                                  str(int(line_info_index) -1 + int(inspection_start_line[0])) + '_is_lost.txt'
-                                result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-                                if result:
-                                    logger.debug('[%s:%s] エラーファイル出力を終了しました。' % (app_id, app_name))
+                                if int(line_info_index) == 0:
+                                    if inspection_direction == 'S' or inspection_direction == 'X':
+                                        line_number = int(line_info_index) -1 + int(inspection_start_line[0])
+                                    else:
+                                        line_number = int(inspection_start_line[0]) - int(line_info_index) +1
+
+                                    logger.error('[%s:%s] マルチスレッドでの行間枚数の欠損が発生しています。 ホスト名=[%s], ファイルリスト=[%s], 行番号=[%s]' %
+                                                 (app_id, app_name, host_name, file_list, line_number))
+                                    logger.debug('[%s:%s] エラーファイル出力を開始します。', app_id, app_name)
+                                    error_file_name = 'Image_on_line_' + \
+                                                      str(line_number) + '_is_lost.txt'
+                                    result = error_util.common_execute(error_file_name, logger, app_id, app_name)
+                                    if result:
+                                        logger.debug('[%s:%s] エラーファイル出力を終了しました。' % (app_id, app_name))
+                                    else:
+                                        logger.error('[%s:%s] エラーファイル出力が失敗しました。' % (app_id, app_name))
+                                        logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
                                 else:
-                                    logger.error('[%s:%s] エラーファイル出力が失敗しました。' % (app_id, app_name))
-                                    logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+                                    if inspection_direction == 'S' or inspection_direction == 'X':
+                                        line_number = int(line_info_index) -1 + int(inspection_start_line[0])
+                                    else:
+                                        line_number = int(inspection_start_line[0]) - int(line_info_index) +1
+
+                                    logger.error('[%s:%s] マルチスレッドでの行間枚数の欠損が発生しています。 ホスト名=[%s], ファイルリスト=[%s], 行番号=[%s]' %
+                                                 (app_id, app_name, host_name, file_list, line_number))
+                                    logger.debug('[%s:%s] エラーファイル出力を開始します。', app_id, app_name)
+                                    error_file_name = 'Image_on_line_' + \
+                                                      str(line_number) + '_is_lost.txt'
+                                    result = error_util.common_execute(error_file_name, logger, app_id, app_name)
+                                    if result:
+                                        logger.debug('[%s:%s] エラーファイル出力を終了しました。' % (app_id, app_name))
+                                    else:
+                                        logger.error('[%s:%s] エラーファイル出力が失敗しました。' % (app_id, app_name))
+                                        logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
                             # 処理結果=Falseの場合
                             else:
                                 host_name = multi_result[1]
@@ -952,59 +984,71 @@ def main():
                 else:
                     pass
 
-        if check_result[0] == 'OK' and check_result[1] == 'OK':
-            result_list = []
-            error_list = []
-            move_image_dir_list = ["\\\\" + ip_address_list[i] + "\\" +
-                                   move_image_dir for i in range(thread_num)]
-            image_dir_list = ["\\\\" + ip_address_list[i] + "\\" +
-                              image_dir for i in range(thread_num)]
-            after_tmp_file_info = []
-            line_info_index = len(after_tmp_file_info)
-            func_list = []
 
-            with ProcessPoolExecutor() as executor:
-                for j in range(thread_num):
-                    # スレッド実行
-                    func_list.append(
-                        executor.submit(
-                            exec_check_image_num_multi_thread,
-                            product_name, fabric_name, inspection_num, image_dir_list[j],
-                            move_image_dir_list[j], rapid_hostname_list[j], inspection_date,
-                            after_tmp_file_info, line_info_index, 1))
+                result_list = []
+                error_list = []
+                move_image_dir_list = ["\\\\" + ip_address_list[i] + "\\" +
+                                       move_image_dir for i in range(thread_num)]
+                image_dir_list = ["\\\\" + ip_address_list[i] + "\\" +
+                                  image_dir for i in range(thread_num)]
 
-                for k in range(thread_num):
-                    # スレッド戻り値を取得
-                    result_list.append(func_list[k].result())
-                    # マルチスレッド実行結果を確認する。
+                line_info_index = len(after_tmp_file_info)
+                func_list = []
 
-                print(result_list)
-                for l, multi_result in enumerate(result_list):
-                    # 処理結果=Trueの場合
-                    if multi_result[0] is True:
-                        host_name = multi_result[1]
-                        file_list = multi_result[2]
-                        logger.debug('[%s:%s] マルチスレッドでの撮像画像移動が終了しました。 ホスト名=[%s] ファイル数=[%s]' %
-                                     (app_id, app_name, host_name, len(file_list)))
-                    # 処理結果=image_shortageの場合
-                    elif multi_result[0] == 'image_shortage':
-                        host_name = multi_result[1]
-                        file_list = multi_result[2]
-                        logger.error('[%s:%s] マルチスレッドでの行間枚数の欠損が発生しています。 ホスト名=[%s], ファイルリスト=[%s], 行番号=[%s]' %
-                                     (app_id, app_name, host_name, file_list,
-                                      int(line_info_index) + int(inspection_start_line[0])))
-                    # 処理結果=Falseの場合
-                    else:
-                        host_name = multi_result[1]
-                        error = multi_result[3]
-                        func_name = multi_result[4]
-                        logger.error('[%s:%s] マルチスレッドでの撮像画像移動が失敗しました。 '
-                                     '[反番, 検査番号, 検査日付]=[%s, %s, %s] ホスト名=[%s]'
-                                     % (app_id, app_name, fabric_name, inspection_num, inspection_date, host_name))
-                        error_list.extend([host_name, error, func_name])
-                        raise Exception
+                with ProcessPoolExecutor() as executor:
+                    for j in range(thread_num):
+                        # スレッド実行
+                        func_list.append(
+                            executor.submit(
+                                exec_check_image_num_multi_thread,
+                                product_name, fabric_name, inspection_num, image_dir_list[j],
+                                move_image_dir_list[j], rapid_hostname_list[j], inspection_date,
+                                after_tmp_file_info, line_info_index, 1))
 
-            #
+                    for k in range(thread_num):
+                        # スレッド戻り値を取得
+                        result_list.append(func_list[k].result())
+                        # マルチスレッド実行結果を確認する。
+
+                    print(result_list)
+                    for l, multi_result in enumerate(result_list):
+                        # 処理結果=Trueの場合
+                        if multi_result[0] is True:
+                            host_name = multi_result[1]
+                            file_list = multi_result[2]
+                            logger.debug('[%s:%s] マルチスレッドでの撮像画像移動が終了しました。 ホスト名=[%s] ファイル数=[%s]' %
+                                         (app_id, app_name, host_name, len(file_list)))
+                        # 処理結果=image_shortageの場合
+                        elif multi_result[0] == 'image_shortage':
+                            host_name = multi_result[1]
+                            file_list = multi_result[2]
+                            if inspection_direction == 'S' or inspection_direction == 'X':
+                                line_number = int(line_info_index) -1 + int(inspection_start_line[0])
+                            else:
+                                line_number = int(inspection_start_line[0]) - int(line_info_index) +1
+
+                            logger.error('[%s:%s] マルチスレッドでの行間枚数の欠損が発生しています。 ホスト名=[%s], ファイルリスト=[%s], 行番号=[%s]' %
+                                         (app_id, app_name, host_name, file_list, line_number))
+                            logger.debug('[%s:%s] エラーファイル出力を開始します。', app_id, app_name)
+                            error_file_name = 'Image_on_line_' + \
+                                              str(line_number) + '_is_lost.txt'
+                            result = error_util.common_execute(error_file_name, logger, app_id, app_name)
+                            if result:
+                                logger.debug('[%s:%s] エラーファイル出力を終了しました。' % (app_id, app_name))
+                            else:
+                                logger.error('[%s:%s] エラーファイル出力が失敗しました。' % (app_id, app_name))
+                                logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+                        # 処理結果=Falseの場合
+                        else:
+                            host_name = multi_result[1]
+                            error = multi_result[3]
+                            func_name = multi_result[4]
+                            logger.error('[%s:%s] マルチスレッドでの撮像画像移動が失敗しました。 '
+                                         '[反番, 検査番号, 検査日付]=[%s, %s, %s] ホスト名=[%s]'
+                                         % (app_id, app_name, fabric_name, inspection_num, inspection_date, host_name))
+                            error_list.extend([host_name, error, func_name])
+                            raise Exception
+
             return True, scaninfo_file, 'end', func_name
 
     except Exception as error:

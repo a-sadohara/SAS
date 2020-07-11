@@ -55,7 +55,7 @@ def select_inspection_info(conn, cur, inspection_num, product_name, fabric_name,
           % (inspection_num, product_name, fabric_name, imaging_starttime, unit_num)
 
     # DB共通処理を呼び出して、処理ステータステーブルと反物情報テーブルからデータを取得する。
-    result, select_result, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    result, select_result, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
     return result, select_result, conn, cur
 
 
@@ -118,7 +118,7 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
 
         logger.debug('[%s:%s] DB接続を開始します。' % (app_id, app_name))
         # DBに接続する
-        result, conn, cur = register_ng_info_util.create_connection(logger)
+        result, error, conn, cur, func_name = register_ng_info_util.create_connection(logger)
 
         if result:
             logger.debug('[%s:%s] DB接続が終了しました。' % (app_id, app_name))
@@ -128,7 +128,7 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
             sys.exit()
 
         logger.debug('[%s:%s] レジマーク情報取得を開始します。' % (app_id, app_name))
-        result, regimark_info, conn, cur = register_ng_info_util.select_regimark_info(conn, cur, fabric_name,
+        result, regimark_info, error, conn, cur, func_name = register_ng_info_util.select_regimark_info(conn, cur, fabric_name,
                                                                                       inspection_num, imaging_starttime,
                                                                                       unit_num, logger)
         if result:
@@ -140,7 +140,7 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
 
         logger.debug('[%s:%s] 処理対象画像情報 %s' % (app_id, app_name, ng_image_file_name))
         logger.debug('[%s:%s] マスタ情報取得を開始します。' % (app_id, app_name))
-        result, mst_data, conn, cur = register_ng_info_util.select_product_master_info(conn, cur, product_name, logger)
+        result, mst_data, error, conn, cur, func_name = register_ng_info_util.select_product_master_info(conn, cur, product_name, logger)
         if result:
             logger.debug('[%s:%s] マスタ情報取得が終了しました。' % (app_id, app_name))
             logger.debug('[%s:%s] マスタ情報情報 %s' % (app_id, app_name, mst_data))
@@ -154,6 +154,7 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
                                                                          fabric_name, imaging_starttime, unit_num)
         if result:
             logger.debug('[%s:%s] 検査情報取得が終了しました。' % (app_id, app_name))
+            inspection_direction = inspection_direction[0]
         else:
             logger.debug('[%s:%s] 検査情報取得が失敗しました。' % (app_id, app_name))
             sys.exit()
@@ -164,7 +165,7 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
         ng_image_info.append(str(num))
         ng_image_info.append(ng_image_file_name)
         ng_image_info.append(ng_point)
-        result, line_info = register_ng_info_util.specific_line_num(regimark_info, ng_image_info, inspection_direction, logger)
+        result, line_info, last_flag, error, func_name = register_ng_info_util.specific_line_num(regimark_info, ng_image_info, inspection_direction, logger)
         if result:
             logger.debug('[%s:%s] 行番号特定が終了しました。行情報 [%s]' % (app_id, app_name, line_info))
         else:
@@ -172,13 +173,11 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
             sys.exit()
 
         logger.debug('[%s:%s] レジマーク間長さ/幅比率算出を開始します。' % (app_id, app_name))
-        result, regimark_length_ratio, regimark_width_ratio, conf_regimark_between_length_pix = \
-            register_ng_info_util.calc_length_ratio(regimark_info, line_info, nonoverlap_image_width_pix,
-                                                    nonoverlap_image_height_pix,
-                                                    overlap_width_pix, overlap_height_pix,
-                                                    resize_image_height, resize_image_width,
-                                                    mst_data, master_image_width, master_image_height,
-                                                    actual_image_width, actual_image_height, inspection_direction, logger)
+        result, regimark_length_ratio, conf_regimark_between_length_pix, error, func_name = \
+            register_ng_info_util.calc_length_ratio(regimark_info, line_info, nonoverlap_image_height_pix,
+                                                    overlap_height_pix, resize_image_height, 
+                                                    mst_data, master_image_width, 
+                                                    actual_image_height, inspection_direction, logger)
         if result:
             logger.debug('[%s:%s] レジマーク間長さ/幅比率算出が終了しました。' % (app_id, app_name))
         else:
@@ -186,11 +185,10 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
             sys.exit()
 
         logger.debug('[%s:%s] NG位置特定を開始します。' % (app_id, app_name))
-        result, length_on_master, width_on_master, ng_face = register_ng_info_util.specific_ng_point(
-            regimark_info, line_info, ng_image_info, nonoverlap_image_width_pix,
+        result, length_on_master, width_on_master, ng_face, error, func_name = register_ng_info_util.specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix,
             nonoverlap_image_height_pix, overlap_width_pix, overlap_height_pix,
-            resize_image_height, resize_image_width, regimark_length_ratio, regimark_width_ratio,
-            mst_data, inspection_direction, master_image_width, master_image_height, logger)
+            resize_image_height, resize_image_width, regimark_length_ratio,
+            mst_data, inspection_direction, master_image_width, master_image_height, actual_image_width, actual_image_overlap, logger)
         if result:
             logger.debug('[%s:%s] NG位置特定が終了しました。' % (app_id, app_name))
         else:
@@ -198,15 +196,15 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
             sys.exit()
 
         logger.debug('[%s:%s] NG行・列特定を開始します。' % (app_id, app_name))
-        result, judge_result, length_on_master, width_on_master = register_ng_info_util.specific_ng_line_colum(
-            regimark_info, length_on_master, width_on_master, mst_data,
-            conf_regimark_between_length_pix, inspection_direction, logger)
+        result, judge_result, length_on_master, width_on_master, error, func_name = register_ng_info_util.specific_ng_line_colum(
+            line_info, length_on_master, width_on_master, mst_data,
+            conf_regimark_between_length_pix, inspection_direction, last_flag, logger)
         if result == True and judge_result == None:
             logger.debug('[%s:%s] NG行・列特定が終了しました。' % (app_id, app_name))
             logger.debug('[%s:%s] NG行・列境界値判定を開始します。' % (app_id, app_name))
-            result, judge_result, length_on_master, width_on_master = register_ng_info_util.specific_ng_line_colum_border(
+            result, judge_result, length_on_master, width_on_master, error, func_name = register_ng_info_util.specific_ng_line_colum_border(
                 regimark_info, length_on_master, width_on_master, mst_data, conf_regimark_between_length_pix,
-                inspection_direction, logger)
+                inspection_direction, last_flag, logger)
             if result:
                 logger.debug('[%s:%s] NG行・列境界値判定が終了しました。[行,列] = %s' % (app_id, app_name, judge_result))
             else:
@@ -220,7 +218,7 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
             sys.exit()
 
         logger.debug('[%s:%s] 基準点からのNG距離算出を開始します。' % (app_id, app_name))
-        result, ng_dist = register_ng_info_util.calc_distance_from_basepoint(
+        result, ng_dist, error, func_name = register_ng_info_util.calc_distance_from_basepoint(
             length_on_master, width_on_master, judge_result, mst_data, master_image_width,
             master_image_height, logger)
         if result:
@@ -235,13 +233,13 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
         ng_line = judge_result[0]
         ng_colum = judge_result[1]
         master_point = str(round(length_on_master)) + ',' + str(round(width_on_master))
-        ng_distance_x = round(ng_dist[0] / 10)
-        ng_distance_y = round(ng_dist[1] / 10)
+        ng_distance_x = ng_dist[0]
+        ng_distance_y = ng_dist[1]
         num = ng_image_info[0]
         ng_file = ng_image_info[1]
         inspection_date = str(imaging_starttime.strftime('%Y%m%d'))
 
-        result, conn, cur = register_ng_info_util.update_ng_info(
+        result, error, conn, cur, func_name = register_ng_info_util.update_ng_info(
             conn, cur, fabric_name, inspection_num, ng_line, ng_colum, master_point,
             ng_distance_x, ng_distance_y, num, ng_file, undetected_image_flag_is_undetected, inspection_date, unit_num, logger)
         if result:
@@ -253,7 +251,7 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
 
         # 処理対象反物情報が存在しないため、DB接続を切り、一定時間スリープしてから、再取得を行う。
         logger.debug('[%s:%s] DB接続の切断を開始します。' % (app_id, app_name))
-        result = register_ng_info_util.close_connection(conn, cur, logger)
+        result, error, func_name = register_ng_info_util.close_connection(conn, cur, logger)
 
         if result:
             logger.debug('[%s:%s] DB接続の切断が完了しました。' % (app_id, app_name))
@@ -266,14 +264,14 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
         # sys.exit()実行時の例外処理
         logger.debug('[%s:%s] sys.exit()によりプログラムを終了します。', app_id, app_name)
         logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        error_util.common_execute(error_file_name, logger, app_id, app_name)
+        #error_util.common_execute(error_file_name, logger, app_id, app_name)
         logger.debug('[%s:%s] エラー時共通処理実行が終了しました。', app_id, app_name)
 
     except:
         result = False
         logger.error('[%s:%s] %s機能で予期しないエラーが発生しました。[%s]', app_id, app_name, app_name, traceback.format_exc())
         logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        error_util.common_execute(error_file_name, logger, app_id, app_name)
+        #error_util.common_execute(error_file_name, logger, app_id, app_name)
         logger.debug('[%s:%s] エラー時共通処理実行が終了しました。', app_id, app_name)
 
     finally:

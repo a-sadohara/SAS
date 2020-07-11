@@ -43,7 +43,7 @@ app_name = inifile.get('APP', 'app_name')
 #                      カーソルオブジェクト
 # ------------------------------------------------------------------------------------
 def create_connection():
-    result, conn, cur = db_util.create_connection(logger, app_id, app_name)
+    result, error, conn, cur = db_util.create_connection(logger, app_id, app_name)
     return result, conn, cur
 
 # ------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ def update_fabric_info_status(status, fabric_name, inspection_num, imaging_start
           'where fabric_name = \'%s\' and inspection_num = %s and %s::date = \'%s\' and unit_num = \'%s\''  \
           % (status, fabric_name, inspection_num, fabric_imaging_starttime, imaging_starttime, unit_num)
 
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -111,7 +111,7 @@ def update_processing_status(status, fabric_name, inspection_num, imaging_startt
           '  where fabric_name = \'%s\' and inspection_num = %s and %s::date = \'%s\' and unit_num = \'%s\''  \
           % (status, fabric_name, inspection_num, processing_imaging_starttime, imaging_starttime, unit_num)
 
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -142,7 +142,7 @@ def update_rapid_analysis_info(rapid_result, edge_result, masking_result, fabric
           '  where fabric_name = \'%s\' and inspection_num = %s and unit_num = \'%s\''  \
           % (fabric_name, inspection_num, target_date, rapid_result, edge_result, masking_result, fabric_name, inspection_num, unit_num)
 
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -159,7 +159,7 @@ def update_rapid_analysis_info(rapid_result, edge_result, masking_result, fabric
 # 戻り値             ：処理結果（True:成功、False:失敗）
 # ------------------------------------------------------------------------------------
 def close_connection(conn, cur):
-    result = db_util.close_connection(conn, cur, logger, app_id, app_name)
+    result, error = db_util.close_connection(conn, cur, logger, app_id, app_name)
 
     return result
 

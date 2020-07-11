@@ -4,10 +4,12 @@
 # ----------------------------------------
 
 import configparser
+import sys
 from multiprocessing import Pool
 import multiprocessing as multi
 import os
 from PIL import Image
+from PIL import ImageFile
 import traceback
 import datetime
 import logging.config
@@ -15,6 +17,7 @@ import win32_setctime
 
 import db_util
 import error_detail
+import error_util
 import file_util
 
 # ログ設定
@@ -30,6 +33,8 @@ common_inifile.read('D:/CI/programs/config/common_config.ini', 'SJIS')
 # ログ出力に使用する、機能ID、機能名
 app_id = int(inifile.get('APP', 'app_id'))
 app_name = inifile.get('APP', 'app_name')
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 # ------------------------------------------------------------------------------------
@@ -102,10 +107,11 @@ def wrapper_resize_image(args):
 #                      撮像画像リスト
 # ------------------------------------------------------------------------------------
 def specific_image(image_file_path, image_pattern, logger):
+    func_name = sys._getframe().f_code.co_name
     # リサイズ対象画像リストを取得する。
-    result, file_list = file_util.get_file_list(image_file_path, image_pattern, logger, app_id, app_name)
+    result, file_list, error = file_util.get_file_list(image_file_path, image_pattern, logger, app_id, app_name)
 
-    return result, file_list
+    return result, file_list, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -123,7 +129,8 @@ def specific_image(image_file_path, image_pattern, logger):
 # ------------------------------------------------------------------------------------
 def parallel_execution_process(image_file_path, image_file_list, logger):
     result = False
-
+    func_name = sys._getframe().f_code.co_name
+    error = None
     try:
         # 設定ファイルから、リサイズする幅、高さの値を取得する。
         width = int(common_inifile.get('IMAGE_SIZE', 'resize_image_width'))
@@ -147,11 +154,11 @@ def parallel_execution_process(image_file_path, image_file_list, logger):
 
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # エラー詳細判定を行う
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result
+    return result, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -178,6 +185,7 @@ def parallel_execution_process(image_file_path, image_file_list, logger):
 # ------------------------------------------------------------------------------------
 def update_processing_status(conn, cur, fabric_name, inspection_num,processing_id, column_name, now_datetime,
                              rapid_host_name, status, imaging_starttime, unit_num, logger):
+    func_name = sys._getframe().f_code.co_name
     # クエリを作成する
     sql = 'UPDATE processing_status SET status=%s, %s =\'%s\' ' \
           'WHERE fabric_name=\'%s\' AND inspection_num = %s AND processing_id=%s AND rapid_host_name=\'%s\' ' \
@@ -187,8 +195,8 @@ def update_processing_status(conn, cur, fabric_name, inspection_num,processing_i
 
     logger.debug('[%s:%s] 処理ステータス更新SQL %s' % (app_id, app_name, sql))
     # 処理ステータス（リサイズ完了）を更新する。
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
-    return result, conn, cur
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    return result, error, conn, cur, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -213,10 +221,12 @@ def update_processing_status(conn, cur, fabric_name, inspection_num,processing_i
 def main(conn, cur, fabric_name, inspection_num, processed_id, rapid_host_name, separate_image_path, ai_model_flag,
          date, imaging_starttime, unit_num):
     result = False
+    func_name = sys._getframe().f_code.co_name
+    error = None
+    ### ログ設定
+    logger_name = "resize_image_" + str(rapid_host_name)
+    logger = logging.getLogger(logger_name)
     try:
-        ### ログ設定
-        logger_name = "resize_image_" + str(rapid_host_name)
-        logger = logging.getLogger(logger_name)
 
         # 設定ファイルからの値取得
         resize_start_column = inifile.get('COLUMN', 'resize_start')
@@ -237,7 +247,7 @@ def main(conn, cur, fabric_name, inspection_num, processed_id, rapid_host_name, 
         image_file_name = "\\*" + fabric_name + "_" + date + "_" + str(inspection_num).zfill((2)) + image_file_pattern
 
         # リサイズ画像を特定する。
-        result, image_file_list = specific_image(separate_image_path, image_file_name, logger)
+        result, image_file_list, error, func_name = specific_image(separate_image_path, image_file_name, logger)
 
         if result:
             logger.debug('[%s:%s] リサイズ対象の撮像画像特定が終了しました。' % (app_id, app_name))
@@ -245,48 +255,52 @@ def main(conn, cur, fabric_name, inspection_num, processed_id, rapid_host_name, 
 
         else:
             logger.debug('[%s:%s] リサイズ対象の撮像画像特定に失敗しました。' % (app_id, app_name))
-            return result, conn, cur
+            sys.exit()
+
 
         logger.debug('[%s:%s] 処理ステータス（リサイズ開始）の更新を開始しました。' % (app_id, app_name))
 
         # 処理ステータステーブルのステータスを更新する（リサイズ開始）
         now_datetime = datetime.datetime.now()
-        result, conn, cur = update_processing_status(conn, cur, fabric_name, inspection_num, processed_id,
-                                                     resize_start_column, now_datetime, rapid_host_name,
-                                                     resize_start_status, imaging_starttime, unit_num, logger)
+        result, error, conn, cur, func_name = \
+            update_processing_status(conn, cur, fabric_name, inspection_num, processed_id, resize_start_column,
+                                     now_datetime, rapid_host_name, resize_start_status, imaging_starttime, unit_num,
+                                     logger)
         if result:
             logger.debug('[%s:%s] 処理ステータス（リサイズ開始）の更新が終了しました。' % (app_id, app_name))
             conn.commit()
 
         else:
             logger.debug('[%s:%s] 処理ステータス（リサイズ開始）の更新に失敗しました。' % (app_id, app_name))
-            return result, conn, cur
+            sys.exit()
 
         logger.debug('[%s:%s] リサイズ処理の並列実行を開始します。' % (app_id, app_name))
 
         # 画像リサイズ処理を並行実行する。
-        result = parallel_execution_process(separate_image_path, image_file_list, logger)
+        result, error, func_name = parallel_execution_process(separate_image_path, image_file_list, logger)
 
         if result:
             logger.debug('[%s:%s] リサイズ処理の並列実行が終了しました。' % (app_id, app_name))
         else:
             logger.debug('[%s:%s] リサイズ処理の並列実行が失敗しました。' % (app_id, app_name))
-            return result, conn, cur
+            sys.exit()
 
         logger.debug('[%s:%s] 処理ステータス（リサイズ完了）の更新を開始しました。' % (app_id, app_name))
 
         if ai_model_flag == 0:
             now_datetime = datetime.datetime.now()
             # 処理ステータステーブルのステータスを更新する（リサイズ完了）
-            result, conn, cur = update_processing_status(conn, cur, fabric_name, inspection_num, processed_id,
-                                                         resize_end_column, now_datetime, rapid_host_name,
-                                                         resize_end_status, imaging_starttime, unit_num, logger)
+            result, error, conn, cur, func_name = \
+                update_processing_status(conn, cur, fabric_name, inspection_num, processed_id, resize_end_column,
+                                         now_datetime, rapid_host_name, resize_end_status, imaging_starttime,
+                                         unit_num, logger)
         else:
             # 処理ステータステーブルのステータスを更新する（学習用画像リサイズ完了）
             now_datetime = datetime.datetime.now()
-            result, conn, cur = update_processing_status(conn, cur, fabric_name, inspection_num, processed_id,
-                                                         resize_end_column, now_datetime, rapid_host_name, rapid_model
-                                                         ,imaging_starttime, unit_num, logger)
+            result, error, conn, cur, func_name = \
+                update_processing_status(conn, cur, fabric_name, inspection_num, processed_id, resize_end_column,
+                                         now_datetime, rapid_host_name, rapid_model, imaging_starttime, unit_num,
+                                         logger)
 
         if result:
             logger.debug('[%s:%s] 処理ステータス（リサイズ完了）の更新が終了しました。' % (app_id, app_name))
@@ -294,16 +308,31 @@ def main(conn, cur, fabric_name, inspection_num, processed_id, rapid_host_name, 
 
         else:
             logger.debug('[%s:%s] 処理ステータス（リサイズ完了）の更新に失敗しました。' % (app_id, app_name))
-            return result, conn, cur
+            sys.exit()
 
         logger.info('[%s:%s] %s処理は正常に終了しました。 [反番, 検査番号, 検査日付]=[%s, %s, %s] ' 
             % (app_id, app_name, app_name, fabric_name, inspection_num, date))
 
         result = True
-        return result, conn, cur
+        return result, conn, cur, error, func_name
 
-    except Exception as e:
+    except SystemExit:
+        # sys.exit()実行時の例外処理
+        logger.debug('[%s:%s] sys.exit()によりプログラムを終了します。', app_id, app_name)
+
+        logger.debug('[%s:%s] エラー詳細を取得します。' % (app_id, app_name))
+        error_message, error_id = error_detail.get_error_message(error, app_id, func_name)
+
+        logger.error('[%s:%s] %s [ホスト名, エラーコード:%s, %s]' % (app_id, app_name, error_message, rapid_host_name, error_id))
+
+        event_log_message = '[機能名, ホスト名, エラーコード]=[%s, %s, %s] %s' % (app_name, rapid_host_name, error_id, error_message)
+        error_util.write_eventlog_error(app_name, event_log_message)
+
+        result = False
+
+    except Exception as error:
         # 想定外エラー発生
         logger.error('[%s:%s] 予期しないエラーが発生しました。' % (app_id, app_name))
         logger.error(traceback.format_exc())
-        return result, conn, cur
+
+    return result, conn, cur, error, func_name

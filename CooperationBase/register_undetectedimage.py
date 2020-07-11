@@ -12,6 +12,7 @@ import sys
 import time
 import traceback
 import datetime
+import shutil
 
 import error_detail
 import error_util
@@ -60,7 +61,7 @@ def get_file(file_path, file_name):
 
         # 共通関数で未検知画像通知ファイル格納フォルダ情報を取得する
         file_list = None
-        tmp_result, file_list = file_util.get_file_list(file_path + '\\', file_name, logger, app_id, app_name)
+        tmp_result, file_list, error = file_util.get_file_list(file_path + '\\', file_name, logger, app_id, app_name)
 
         if tmp_result:
             # 成功時
@@ -101,7 +102,7 @@ def get_file(file_path, file_name):
 #                      カーソルオブジェクト
 # ------------------------------------------------------------------------------------
 def create_connection():
-    result, conn, cur = db_util.create_connection(logger, app_id, app_name)
+    result, error, conn, cur = db_util.create_connection(logger, app_id, app_name)
     return result, conn, cur
 
 
@@ -118,7 +119,7 @@ def create_connection():
 # 戻り値             ：処理結果（True:成功、False:失敗）
 # ------------------------------------------------------------------------------------
 def close_connection(conn, cur):
-    result = db_util.close_connection(conn, cur, logger, app_id, app_name)
+    result, error = db_util.close_connection(conn, cur, logger, app_id, app_name)
 
     return result
 # ------------------------------------------------------------------------------------
@@ -144,7 +145,7 @@ def select_inspection_info(conn, cur, fabric_name, inspection_num, timestamp, un
           % (fabric_name, inspection_num, unit_num, timestamp)
 
     # DB共通処理を呼び出して、処理ステータステーブルからデータを取得する。
-    result, records, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    result, records, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
 
     return result, records, conn, cur
 
@@ -230,7 +231,7 @@ def read_file(file):
 def exists_dir(target_path):
     logger.debug('[%s:%s] 未検知画像通知ファイルを退避するフォルダを作成します。フォルダ名：[%s]',
                  app_id, app_name, target_path)
-    result = file_util.make_directory(target_path, logger, app_id, app_name)
+    result, error = file_util.make_directory(target_path, logger, app_id, app_name)
 
     return result
 
@@ -249,7 +250,7 @@ def exists_dir(target_path):
 def move_file(target_file, move_dir):
     target_file_name = os.path.basename(target_file)
     # ファイル移動
-    result = file_util.move_file(target_file, move_dir + '\\' + target_file_name, logger, app_id, app_name)
+    result, error = file_util.move_file(target_file, move_dir, logger, app_id, app_name)
     return result
 
 
@@ -411,7 +412,7 @@ def copy_ng_image_file(ng_image_file_path, output_path,
     try:
         # 未検知画像格納フォルダを作成する
         logger.debug('[%s:%s] 未検知画像格納フォルダ:[%s]', app_id, app_name, output_path)
-        tmp_result = file_util.make_directory(output_path, logger, app_id, app_name)
+        tmp_result, error = file_util.make_directory(output_path, logger, app_id, app_name)
 
         if tmp_result:
             pass
@@ -420,10 +421,10 @@ def copy_ng_image_file(ng_image_file_path, output_path,
             return result
 
         # マーキング画像ファイルを、未検知画像格納フォルダにコピーする。
-        tmp_result = file_util.copy_file(ng_image_file_path, output_path, logger, app_id, app_name)
+        tmp_result, error = file_util.copy_file(ng_image_file_path, output_path, logger, app_id, app_name)
         tmp_input_path = output_path + '\\' + os.path.basename(ng_image_file_path)
         tmp_output_path = output_path + '\\' + marking_ng_image_file_name
-        tmp_result = file_util.move_file(tmp_input_path, tmp_output_path, logger, app_id, app_name)
+        shutil.move(tmp_input_path, tmp_output_path)
 
         if tmp_result:
             pass
@@ -432,7 +433,7 @@ def copy_ng_image_file(ng_image_file_path, output_path,
             return result
 
         # NG画像ファイルを、未検知画像格納フォルダにコピーする。
-        tmp_result = file_util.copy_file(ng_image_file_path, output_path, logger, app_id, app_name)
+        tmp_result, error = file_util.copy_file(ng_image_file_path, output_path, logger, app_id, app_name)
 
         if tmp_result:
             pass
@@ -483,7 +484,7 @@ def update_rapid_analysis(conn, cur, fabric_name, inspection_num, inspection_dat
 
     logger.debug('[%s:%s] RAPID解析情報テーブル更新SQL=[%s]' % (app_id, app_name, sql))
     ### 反物情報テーブルを更新
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
 
@@ -688,7 +689,7 @@ def main():
                 imaging_starttime = records[2]
                 inspection_date = str(imaging_starttime.strftime('%Y%m%d'))
 
-                result, conn, cur = \
+                result, error, conn, cur = \
                     insert_rapid_analysis_info(product_name, fabric_name, camera_num_1, camera_num_2, inspection_num,
                                                '#' + str(face_num), ng_image_file_name, center_ng_point, worker_1,
                                                worker_2, cur, conn, inspection_date, unit_num)

@@ -30,31 +30,31 @@ app_name = inifile.get('APP', 'app_name')
 
 #
 
-master_data_dict = {'file_num' : 0, 'register_flg' : 1, 'selection_flg' : 2, 'product_name' : 3,
-                    'inspection_param_num' : 4, 'airbag_imagepath' : 5, 'length' : 6, 'width' : 7,
-                    'marker_color_flat' : 8, 'marker_color_back' : 9, 'auto_print' : 10, 'auto_inspection_stop' : 11,
-                    'regimark_1_imagepath' : 12, 'regimark_1_point_x' : 13, 'regimark_1_point_y' : 14,
-                    'regimark_1_size_w' : 15, 'regimark_1_size_h' : 16, 'regimark_2_imagepath' : 17,
-                    'regimark_2_point_x' : 18, 'regimark_2_point_y' : 19, 'regimark_2_size_w' : 20,
-                    'regimark_2_size_h' : 21, 'base_point_1_x' : 22, 'base_point_1_y' : 23, 'base_point_2_x' : 24,
-                    'base_point_2_y' : 25, 'base_point_3_x' : 26, 'base_point_3_y' : 27, 'base_point_4_x' : 28,
-                    'base_point_4_y' : 29, 'base_point_5_x' : 30, 'base_point_5_y' : 31,
-                    'point_1_plus_direction_x' : 32, 'point_1_plus_direction_y' : 33, 'point_2_plus_direction_x' : 34,
-                    'point_2_plus_direction_y' : 35, 'point_3_plus_direction_x' : 36, 'point_3_plus_direction_y' : 37,
-                    'point_4_plus_direction_x' : 38, 'point_4_plus_direction_y' : 39, 'point_5_plus_direction_x' : 40,
-                    'point_5_plus_direction_y' : 41, 'stretch_rate_x' : 42, 'stretch_rate_y' : 43,
-                    'stretch_rate_x_upd' : 44, 'stretch_rate_y_upd' : 45, 'regimark_3_imagepath' : 46,
-                    'regimark_4_imagepath' : 47, 'stretch_rate_auto_calc_flg' : 48, 'width_coefficient' : 49,
-                    'correct_value' : 50, 'black_thread_cnt_per_line' : 51, 'measuring_black_thread_num' : 52,
-                    'camera_num' : 53, 'column_cnt' : 54, 'illumination_information' : 55,
-                    'start_regimark_camera_num' : 56, 'end_regimark_camera_num' : 57, 'line_length' : 58,
-                    'regimark_between_length' : 59, 'taking_camera_cnt' : 60, 'column_threshold_01' : 61,
-                    'column_threshold_02' : 62, 'column_threshold_03' : 63, 'column_threshold_04' : 64,
-                    'line_threshold_a1' : 65, 'line_threshold_a2' : 66, 'line_threshold_b1' : 67,
-                    'line_threshold_b2' : 68, 'line_threshold_c1' : 69, 'line_threshold_c2' : 70,
-                    'line_threshold_d1' : 71, 'line_threshold_d2' : 72, 'line_threshold_e1' : 73,
-                    'line_threshold_e2' : 74, 'top_point_a' : 75, 'top_point_b' : 76, 'top_point_c' : 77,
-                    'top_point_d' : 78, 'top_point_e' : 79, 'ai_model_non_inspection_flg' : 80, 'ai_model_name' : 81}
+master_data_dict = {'file_num': 0, 'register_flg': 1, 'selection_flg': 2, 'product_name': 3,
+                    'inspection_param_num': 4, 'airbag_imagepath': 5, 'length': 6, 'width': 7,
+                    'marker_color_flat': 8, 'marker_color_back': 9, 'auto_print': 10, 'auto_inspection_stop': 11,
+                    'regimark_1_imagepath': 12, 'regimark_1_point_x': 13, 'regimark_1_point_y': 14,
+                    'regimark_1_size_w': 15, 'regimark_1_size_h': 16, 'regimark_2_imagepath': 17,
+                    'regimark_2_point_x': 18, 'regimark_2_point_y': 19, 'regimark_2_size_w': 20,
+                    'regimark_2_size_h': 21, 'base_point_1_x': 22, 'base_point_1_y': 23, 'base_point_2_x': 24,
+                    'base_point_2_y': 25, 'base_point_3_x': 26, 'base_point_3_y': 27, 'base_point_4_x': 28,
+                    'base_point_4_y': 29, 'base_point_5_x': 30, 'base_point_5_y': 31,
+                    'point_1_plus_direction_x': 32, 'point_1_plus_direction_y': 33, 'point_2_plus_direction_x': 34,
+                    'point_2_plus_direction_y': 35, 'point_3_plus_direction_x': 36, 'point_3_plus_direction_y': 37,
+                    'point_4_plus_direction_x': 38, 'point_4_plus_direction_y': 39, 'point_5_plus_direction_x': 40,
+                    'point_5_plus_direction_y': 41, 'stretch_rate_x': 42, 'stretch_rate_y': 43,
+                    'stretch_rate_x_upd': 44, 'stretch_rate_y_upd': 45, 'regimark_3_imagepath': 46,
+                    'regimark_4_imagepath': 47, 'stretch_rate_auto_calc_flg': 48, 'width_coefficient': 49,
+                    'correct_value': 50, 'black_thread_cnt_per_line': 51, 'measuring_black_thread_num': 52,
+                    'camera_num': 53, 'column_cnt': 54, 'illumination_information': 55,
+                    'start_regimark_camera_num': 56, 'end_regimark_camera_num': 57, 'line_length': 58,
+                    'regimark_between_length': 59, 'taking_camera_cnt': 60, 'column_threshold_01': 61,
+                    'column_threshold_02': 62, 'column_threshold_03': 63, 'column_threshold_04': 64,
+                    'line_threshold_a1': 65, 'line_threshold_a2': 66, 'line_threshold_b1': 67,
+                    'line_threshold_b2': 68, 'line_threshold_c1': 69, 'line_threshold_c2': 70,
+                    'line_threshold_d1': 71, 'line_threshold_d2': 72, 'line_threshold_e1': 73,
+                    'line_threshold_e2': 74, 'top_point_a': 75, 'top_point_b': 76, 'top_point_c': 77,
+                    'top_point_d': 78, 'top_point_e': 79, 'ai_model_non_inspection_flg': 80, 'ai_model_name': 81}
 
 line_name_dict = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
 line_num_dict = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
@@ -73,8 +73,9 @@ line_num_dict = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
 #                      カーソルオブジェクト
 # ------------------------------------------------------------------------------------
 def create_connection(logger):
-    result, conn, cur = db_util.create_connection(logger, app_id, app_name)
-    return result, conn, cur
+    func_name = sys._getframe().f_code.co_name
+    result, error, conn, cur = db_util.create_connection(logger, app_id, app_name)
+    return result, error, conn, cur, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -93,17 +94,17 @@ def create_connection(logger):
 #                      カーソルオブジェクト
 # ------------------------------------------------------------------------------------
 def select_regimark_info(conn, cur, fabric_name, inspection_num, imaging_starttime, unit_num, logger):
-
+    func_name = sys._getframe().f_code.co_name
     ### クエリを作成する
     sql = 'select line_num, start_regimark_file, start_regimark_point_resize, end_regimark_file, ' \
-          'end_regimark_point_resize, face from regimark_info where fabric_name = \'%s\' and inspection_num = %s ' \
+          'end_regimark_point_resize, len_stretchrate, width_stretchrate, face from regimark_info where fabric_name = \'%s\' and inspection_num = %s ' \
           'and imaging_starttime = \'%s\' and unit_num = \'%s\'' \
           % (fabric_name, inspection_num, imaging_starttime, unit_num)
 
     logger.debug('[%s:%s] レジマーク情報取得SQL %s' % (app_id, app_name, sql))
     # DB共通処理を呼び出して、処理ステータステーブルと反物情報テーブルからデータを取得する。
-    result, select_result, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
-    return result, select_result, conn, cur
+    result, select_result, error, conn, cur = db_util.select_fetchall(conn, cur, sql, logger, app_id, app_name)
+    return result, select_result, error, conn, cur, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -121,14 +122,14 @@ def select_regimark_info(conn, cur, fabric_name, inspection_num, imaging_startti
 #                      カーソルオブジェクト
 # ------------------------------------------------------------------------------------
 def select_product_master_info(conn, cur, product_name, logger):
-
+    func_name = sys._getframe().f_code.co_name
     ### クエリを作成する
     sql = 'select * from mst_product_info where product_name = \'%s\' ' % product_name
 
     logger.debug('[%s:%s] 検査マスタ情報取得SQL %s' % (app_id, app_name, sql))
     # DB共通処理を呼び出して、品種登録情報テーブルからマスタ情報を取得する。
-    result, select_result, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
-    return result, select_result, conn, cur
+    result, select_result, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
+    return result, select_result, error, conn, cur, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -155,7 +156,7 @@ def select_product_master_info(conn, cur, product_name, logger):
 def update_ng_info(conn, cur, fabric_name, inspection_num, ng_line, ng_colum, master_point, ng_distance_x,
                    ng_distance_y, num, ng_file, undetected_image_flag_is_undetected, inspection_date, unit_num, logger):
     inspection_num = str(int(inspection_num))
-
+    func_name = sys._getframe().f_code.co_name
     ### クエリを作成する
     if undetected_image_flag_is_undetected == 1:
         sql = 'update \"rapid_%s_%s_%s\" set ng_line = %s, columns = \'%s\', master_point = \'%s\', ' \
@@ -176,8 +177,8 @@ def update_ng_info(conn, cur, fabric_name, inspection_num, ng_line, ng_colum, ma
 
     logger.debug('[%s:%s] NG情報登録SQL %s' % (app_id, app_name, sql))
     # DB共通処理を呼び出して、品種登録情報テーブルからマスタ情報を取得する。
-    result, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
-    return result, conn, cur
+    result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
+    return result, error, conn, cur, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -191,8 +192,9 @@ def update_ng_info(conn, cur, fabric_name, inspection_num, ng_line, ng_colum, ma
 # 戻り値             ：処理結果（True:成功、False:失敗）
 # ------------------------------------------------------------------------------------
 def close_connection(conn, cur, logger):
-    result = db_util.close_connection(conn, cur, logger, app_id, app_name)
-    return result
+    func_name = sys._getframe().f_code.co_name
+    result, error = db_util.close_connection(conn, cur, logger, app_id, app_name)
+    return result, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -210,7 +212,9 @@ def close_connection(conn, cur, logger):
 def specific_line_num(regimark_info, ng_file, inspection_direction, logger):
     result = False
     line_info = None
-
+    last_flag = 0
+    func_name = sys._getframe().f_code.co_name
+    error = None
     try:
         # 画像名の撮像番号から該当行番号を特定するため、画像名を[._]で分割する。
         sp_ng_file = re.split('[_.]', ng_file[1])
@@ -222,44 +226,65 @@ def specific_line_num(regimark_info, ng_file, inspection_direction, logger):
 
         if inspection_direction[0] == 'S' or inspection_direction[0] == 'X':
             sp_regimark_file = [[x[:][0]] + re.split('[._]', x[:][1]) for x in regimark_info if
-                            (int(sp_ng_file[6]) >= int(re.split('[._]', x[:][1])[6])) and ng_face == int(x[:][5])]
-            logger.debug('[%s:%s] S・X方向 スプリットレジマーク情報 %s' % (app_id, app_name, sp_ng_file))
+                                (int(sp_ng_file[6]) >= int(re.split('[._]', x[:][1])[6])) and ng_face == int(x[:][7])]
+            logger.debug('[%s:%s] S・X方向 スプリットレジマーク情報 %s' % (app_id, app_name, sp_regimark_file))
 
             if len(sp_regimark_file) == 0:
                 result = 'error'
-                return result, line_info
+                return result, line_info, last_flag, error, func_name
             else:
                 pass
 
             # NG画像の撮像番号以下の最大値を該当行の開始レジマーク画像として特定する。
             line_num_index = max([int(y[7]) for y in sp_regimark_file])
             line_num = int([z[0] for z in sp_regimark_file if line_num_index == int(z[:][7])][0])
-            line_info = sorted([i for i in regimark_info if ((line_num == i[:][0]) or ((line_num + 1) == i[:][0])) and ng_face == int(i[:][5])])
+            line_info = sorted([i for i in regimark_info if
+                                ((line_num == i[:][0]) or ((line_num + 1) == i[:][0])) and ng_face == int(i[:][7])])
+            last_flag = 0
+
+            if len(line_info) == 1:
+                line_info = sorted([i for i in regimark_info if
+                                    ((line_num == i[:][0]) or ((line_num -1) == i[:][0])) and ng_face == int(i[:][7])])
+                last_flag = 1
+            else:
+                pass
+
         else:
             sp_regimark_file = [[x[:][0]] + re.split('[._]', x[:][3]) for x in regimark_info if
-                                (int(sp_ng_file[6]) >= int(re.split('[._]', x[:][3])[6])) and ng_face == int(x[:][5])]
+                                (int(sp_ng_file[6]) >= int(re.split('[._]', x[:][3])[6])) and ng_face == int(x[:][7])]
             logger.debug('[%s:%s] スプリットレジマーク情報 %s' % (app_id, app_name, sp_ng_file))
 
             if len(sp_regimark_file) == 0:
                 result = 'error'
-                return result, line_info
+                return result, line_info, last_flag, error, func_name
             else:
                 pass
 
             # NG画像の撮像番号以下の最大値を該当行の開始レジマーク画像として特定する。
             line_num_index = max([int(y[7]) for y in sp_regimark_file])
             line_num = int([z[0] for z in sp_regimark_file if line_num_index == int(z[:][7])][0])
-            line_info = sorted([i for i in regimark_info if ((line_num == i[:][0]) or ((line_num - 1) == i[:][0])) and ng_face == int(i[:][5]) ], reverse=True)
+            line_info = sorted([i for i in regimark_info if
+                                ((line_num == i[:][0]) or ((line_num - 1) == i[:][0])) and ng_face == int(i[:][7])],
+                               reverse=True)
+            last_flag = 0
+
+            if len(line_info) == 1:
+                line_info = sorted([i for i in regimark_info if
+                                    ((line_num == i[:][0]) or ((line_num + 1) == i[:][0])) and ng_face == int(i[:][7])], reverse=True)
+                last_flag = 1
+            else:
+                pass
 
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result, line_info
+    return result, line_info, last_flag, error, func_name
 
-#------------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------
 # 関数名             ：撮像画像とマスタ画像の行・列の長さの比率算出
 #
 # 処理概要           ：1.レジマーク間長さ/レジマーク間幅の撮像枚数を算出する。
@@ -282,15 +307,16 @@ def specific_line_num(regimark_info, ng_file, inspection_direction, logger):
 #                      幅比率
 #                      設定レジマーク間長さ[pix]
 #
-#------------------------------------------------------------------------------------
-def calc_length_ratio(regimark_info, line_info, nonoverlap_image_width_pix, nonoverlap_image_height_pix, overlap_width_pix,
-                      overlap_height_pix, resize_image_height, resize_image_width, mst_data, master_image_width,
-                      master_image_height, actual_image_width, actual_image_height, inspection_direction, logger):
+# ------------------------------------------------------------------------------------
+def calc_length_ratio(regimark_info, line_info, nonoverlap_image_height_pix,
+                      overlap_height_pix, resize_image_height, mst_data, master_image_width,
+                      actual_image_height, inspection_direction, logger):
     result = False
     regimark_length_ratio = None
     regimark_width_ratio = None
     conf_regimark_between_length_pix = None
-
+    error = None
+    func_name = sys._getframe().f_code.co_name
     try:
         # マスタ情報から必要な情報を取得する。※カラム数が多いためマスタ情報辞書を利用して情報を取得する。
         conf_regimark_between_length = int(mst_data[master_data_dict['regimark_between_length']])
@@ -302,134 +328,61 @@ def calc_length_ratio(regimark_info, line_info, nonoverlap_image_width_pix, nono
         # マスタ画像幅[pix]:マスタ画像実測幅[mm]=X:設定レジマーク間長さ[mm]
         conf_regimark_between_length_pix = master_image_width * conf_regimark_between_length / length
 
+        # NG画像が含まれる行情報は以下形式で取得
+        # [(1, 'S354_380613-0AC_20191120_01_1_01_00001.jpg', '(619,646)',
+        # 'S354_380613-0AC_20191120_01_1_01_00010.jpg', '(619,646)', '1'),
+        # (2, 'S354_380613-0AC_20191120_01_1_01_00011.jpg', '(619,646)',
+        # 'S354_380613-0AC_20191120_01_1_01_00020.jpg', '(619,646)', '1')]
+        # 検査方向が S, Xの場合、開始レジマーク、次行開始レジマークの撮像番号、座標を抽出する。
+        if len(regimark_info) != 1 and len(line_info) == 2:
+            if inspection_direction == 'S' or inspection_direction == 'X':
+                # 行番号、開始レジマークファイル名、座標が必要。
+                sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + [x[3]] + [x[4]]
+                                    for x in line_info]
+                start_image_num = int(sp_regimark_list[0][7])
+                start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][9])))[1])
 
-        logger.debug('[%s:%s] 行情報 %s' % (app_id, app_name, len(line_info)))
+                next_start_image_num = int(sp_regimark_list[1][7])
+                next_start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[1][9])))[1])
 
-        # 開始レジマーク、次行開始レジマーク、終了レジマークそれぞれの撮像番号、座標を抽出する。
-        if inspection_direction == 'S' or inspection_direction == 'X':
-            if len(line_info) == 2:
-                if line_info[1][3] != None:
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                    in line_info]
-                else:
-                    print('bb')
-                    line_list = list(line_info[1])
-                    line_list[3] = 'NULL'
-                    t_cahnge_line_info = [line_info[0]] + [tuple(line_list)]
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                in t_cahnge_line_info]
-
+            # 検査方向が Y, Rの場合、終了レジマーク、次行終了レジマークの撮像番号、座標を抽出する。
             else:
-                if line_info[0][3] != None:
-                    print('cc')
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                    in line_info]
-                else:
-                    print('dd')
-                    line_list = list(line_info[0])
-                    line_list[3] = 'NULL'
-                    t_cahnge_line_info = [tuple(line_list)]
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                in t_cahnge_line_info]
+                sp_regimark_list = [[x[0]] + [x[1]] + [x[2]] + re.split('[._]', x[:][3]) + [x[4]]
+                                    for x in line_info]
+                print(sp_regimark_list)
 
-        else:
-            if len(line_info) == 2:
-                if line_info[1][1] != None:
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                    in line_info]
-                else:
-                    line_list = list(line_info[1])
-                    line_list[1] = 'NULL'
-                    t_cahnge_line_info = [line_info[0]] + [tuple(line_list)]
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                in t_cahnge_line_info]
+                start_image_num = int(sp_regimark_list[0][9])
+                start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][11])))[1])
 
-            else:
-                if line_info[0][1] != None:
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                    in line_info]
-                else:
-                    line_list = list(line_info[0])
-                    line_list[1] = 'NULL'
-                    t_cahnge_line_info = [tuple(line_list)]
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                in t_cahnge_line_info]
-
-        if len(regimark_info) != 1 and line_info[0][1] != None and line_info[0][3] != None and len(line_info) == 2:
-
-            start_image_num = int(sp_regimark_list[0][7])
-            start_regimark_x = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][9])))[0])
-            start_regimark_y = int(re.split(',',(re.sub('[()]', '',sp_regimark_list[0][9])))[1])
-
-            next_start_image_num = int(sp_regimark_list[1][7])
-            next_start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[1][9])))[1])
-
-            end_image_num = int(sp_regimark_list[0][16])
-            end_regimark_x = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][18])))[0])
-            end_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][18])))[1])
-
-            start_camera_num = int(sp_regimark_list[0][6])
-            end_camera_num = int(sp_regimark_list[0][15])
+                next_start_image_num = int(sp_regimark_list[1][9])
+                next_start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[1][11])))[1])
 
             # 開始-次行開始間長さ、開始-終了間幅の撮像枚数を算出する。
-            start_between_x_image_count = abs(next_start_image_num - start_image_num) - 1
-            start_end_between_x_image_count = abs(end_image_num - start_image_num) - 1
-            if start_camera_num == end_camera_num:
-                between_y_image_count = 0
+            if start_image_num != next_start_image_num:
+                start_between_x_image_count = abs(next_start_image_num - start_image_num) - 1
             else:
-                between_y_image_count = abs(start_camera_num - end_camera_num) -1
+                start_between_x_image_count = 0
 
             # 撮像枚数×1撮像画像の高さ(オーバーラップ除外分)＋(リサイズ画像高さ-[開始レジマークy座標]-[オーバーラップ分高さ])＋[次行開始レジマークy座標]
             start_regimark_x_pix = start_between_x_image_count * nonoverlap_image_height_pix + (
                     resize_image_height - start_regimark_y - overlap_height_pix) + next_start_regimark_y
-            start_end_regimark_length_pix = start_end_between_x_image_count * nonoverlap_image_height_pix + (
-                    resize_image_height - start_regimark_y - overlap_height_pix) + end_regimark_y
 
-
-            if ng_face == 1:
-                if start_camera_num == end_camera_num:
-                    regimark_y_pix = abs(start_regimark_x - end_regimark_x)
-                elif start_camera_num > end_camera_num:
-                    # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[開始レジマークx座標]-[オーバーラップ分幅])＋[NG画像x座標]
-                    regimark_y_pix = between_y_image_count * nonoverlap_image_width_pix + (
-                                resize_image_width - start_regimark_x - overlap_width_pix) + end_regimark_x
-                else:
-                    # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[NG画像x座標]-[オーバーラップ分幅])＋[開始レジマーク x座標]
-                    regimark_y_pix = between_y_image_count * nonoverlap_image_width_pix + (
-                            resize_image_width - end_regimark_x - overlap_width_pix) + start_regimark_x
-            else:
-                if start_camera_num == end_camera_num:
-                    regimark_y_pix = abs(start_regimark_x - end_regimark_x)
-                elif start_camera_num < end_camera_num:
-                    # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[開始レジマークx座標]-[オーバーラップ分幅])＋[NG画像x座標]
-                    regimark_y_pix = between_y_image_count * nonoverlap_image_width_pix + (
-                                resize_image_width - start_regimark_x - overlap_width_pix) + end_regimark_x
-                else:
-                    # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[NG画像x座標]-[オーバーラップ分幅])＋[開始レジマーク x座標]
-                    regimark_y_pix = between_y_image_count * nonoverlap_image_width_pix + (
-                            resize_image_width - end_regimark_x - overlap_width_pix) + start_regimark_x
-
-            # 比率算出
+             # 比率算出
             regimark_length_ratio = start_regimark_x_pix / conf_regimark_between_length_pix
-            regimark_width_ratio = regimark_y_pix / abs(regimark_1_point_y - regimark_2_point_y)
 
         else:
-            width = int(mst_data[master_data_dict['width']])
             stretch_rate_x = float(mst_data[master_data_dict['stretch_rate_x']])
-            stretch_rate_y = float(mst_data[master_data_dict['stretch_rate_y']])
-            regimark_x_pix = (conf_regimark_between_length * (stretch_rate_x/100)) * resize_image_height / actual_image_height
+            regimark_x_pix = (conf_regimark_between_length * (
+                        stretch_rate_x / 100)) * resize_image_height / actual_image_height
             regimark_length_ratio = regimark_x_pix / conf_regimark_between_length_pix
-
-            master_width_mm = (width * abs(regimark_1_point_y - regimark_2_point_y) / master_image_height)
-            regimark_width_ratio = (master_width_mm * resize_image_width /actual_image_width) * (stretch_rate_y/100) /  abs(regimark_1_point_y - regimark_2_point_y)
 
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result, regimark_length_ratio, regimark_width_ratio, conf_regimark_between_length_pix
+    return result, regimark_length_ratio, conf_regimark_between_length_pix, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -454,53 +407,36 @@ def calc_length_ratio(regimark_info, line_info, nonoverlap_image_width_pix, nono
 #                      マスタ画像上のNG座標(Y座標)
 #
 # ------------------------------------------------------------------------------------
-def specific_ng_point(regimark_info, line_info, ng_image_info, nonoverlap_image_width_pix, nonoverlap_image_height_pix,
+def specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix, nonoverlap_image_height_pix,
                       overlap_width_pix, overlap_height_pix, resize_image_height, resize_image_width,
-                      regimark_length_ratio, regimark_width_ratio, mst_data, inspection_direction, master_image_width,
-                      master_image_height, logger):
-
+                      regimark_length_ratio, mst_data, inspection_direction, master_image_width,
+                      master_image_height, actual_image_width, actual_image_overlap, logger):
     result = False
     length_on_master = None
     width_on_master = None
     plus_direction = None
     ng_face = None
+    error = None
+    func_name = sys._getframe().f_code.co_name
 
     try:
         # マスタ情報から必要な情報を取得する。※カラム数が多いためマスタ情報辞書を利用して情報を取得する。
         regimark_1_point_x = int(mst_data[master_data_dict['regimark_1_point_x']])
-        regimark_1_point_y = int(mst_data[master_data_dict['regimark_1_point_y']])
         regimark_2_point_x = int(mst_data[master_data_dict['regimark_2_point_x']])
+        regimark_1_point_y = int(mst_data[master_data_dict['regimark_1_point_y']])
         regimark_2_point_y = int(mst_data[master_data_dict['regimark_2_point_y']])
+        master_width = int(mst_data[master_data_dict['width']])
 
-
-
-        # 開始レジマークの撮像番号、座標を抽出する。
-        sp_ng_file = re.split('[_.]',ng_image_info[1]) + [ng_image_info[2]]
+        stretch_rate_x = float(line_info[0][5])
+        stretch_rate_y = float(line_info[0][6])
+         # 開始レジマークの撮像番号、座標を抽出する。
+        sp_ng_file = re.split('[_.]', ng_image_info[1]) + [ng_image_info[2]]
         ng_face = int(sp_ng_file[4])
 
         if inspection_direction == 'S' or inspection_direction == 'X':
             logger.debug('[%s:%s] 検査方向S or X' % (app_id, app_name))
-            if len(line_info) == 2:
-                if line_info[1][3] != None:
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                    in line_info]
-                else:
-                    line_list = list(line_info[1])
-                    line_list[3] = 'NULL'
-                    t_cahnge_line_info = [line_info[0]] + [tuple(line_list)]
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                in t_cahnge_line_info]
-
-            else:
-                if line_info[0][3] != None:
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                    in line_info]
-                else:
-                    line_list = list(line_info[0])
-                    line_list[3] = 'NULL'
-                    t_cahnge_line_info = [tuple(line_list)]
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                in t_cahnge_line_info]
+            sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + [x[3]] + [x[4]]
+                                for x in line_info]
 
             start_image_num = int(sp_regimark_list[0][7])
             start_regimark_x = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][9])))[0])
@@ -508,6 +444,7 @@ def specific_ng_point(regimark_info, line_info, ng_image_info, nonoverlap_image_
             start_camera_num = int(sp_regimark_list[0][6])
 
             regimark_x = regimark_1_point_x
+
             if inspection_direction == 'S' and ng_face == 2:
                 logger.debug('[%s:%s] 検査方向S 検反部2' % (app_id, app_name))
                 regimark_y = master_image_height - regimark_1_point_y
@@ -519,35 +456,16 @@ def specific_ng_point(regimark_info, line_info, ng_image_info, nonoverlap_image_
 
         else:
             logger.debug('[%s:%s] 検査方向Y or R' % (app_id, app_name))
-            if len(line_info) == 2:
-                if line_info[1][1] != None:
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                    in line_info]
-                else:
-                    line_list = list(line_info[1])
-                    line_list[1] = 'NULL'
-                    t_cahnge_line_info = [line_info[0]] + [tuple(line_list)]
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                in t_cahnge_line_info]
+            sp_regimark_list = [[x[0]] + [x[1]] + [x[2]] + re.split('[._]', x[:][3]) + [x[4]]
+                                for x in line_info]
 
-            else:
-                if line_info[0][1] != None:
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                    in line_info]
-                else:
-                    line_list = list(line_info[0])
-                    line_list[1] = 'NULL'
-                    t_cahnge_line_info = [tuple(line_list)]
-                    sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + re.split('[._]', x[:][3]) + [x[4]] for x
-                                in t_cahnge_line_info]
-
-            start_image_num = int(sp_regimark_list[0][16])
-            start_regimark_x = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][18])))[0])
-            start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][18])))[1])
-            start_camera_num = int(sp_regimark_list[0][15])
-
+            start_image_num = int(sp_regimark_list[0][9])
+            start_regimark_x = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][11])))[0])
+            start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][11])))[1])
+            start_camera_num = int(sp_regimark_list[0][8])
 
             regimark_x = master_image_width - regimark_2_point_x
+
             if inspection_direction == 'Y' and ng_face == 2:
                 logger.debug('[%s:%s] 検査方向Y 検反部2' % (app_id, app_name))
                 regimark_y = master_image_height - regimark_2_point_y
@@ -561,12 +479,10 @@ def specific_ng_point(regimark_info, line_info, ng_image_info, nonoverlap_image_
         ng_x = int(re.split(',', (re.sub('[()]', '', sp_ng_file[8])))[0])
         ng_y = int(re.split(',', (re.sub('[()]', '', sp_ng_file[8])))[1])
 
-
         ng_camera_num = int(sp_ng_file[5])
 
         if ng_image_num == start_image_num:
             logger.debug('[%s:%s] 撮像番号等しい' % (app_id, app_name))
-            between_x_image_count = 0
             ng_x_pix = abs(start_regimark_y - ng_y)
             if start_regimark_y < ng_y:
                 x_plus_direction = 1
@@ -576,59 +492,68 @@ def specific_ng_point(regimark_info, line_info, ng_image_info, nonoverlap_image_
             between_x_image_count = ng_image_num - start_image_num - 1
             # 撮像枚数×1撮像画像の高さ(オーバーラップ除外分)＋(リサイズ画像高さ-[開始レジマークy座標]-[オーバーラップ分高さ])＋[NG画像y座標]
             ng_x_pix = between_x_image_count * nonoverlap_image_height_pix + (
-                        resize_image_height - start_regimark_y - overlap_height_pix) + ng_y
+                    resize_image_height - start_regimark_y - overlap_height_pix) + ng_y
             x_plus_direction = 1
 
         if start_camera_num == ng_camera_num:
             logger.debug('[%s:%s] カメラ番号等しい' % (app_id, app_name))
             between_y_image_count = 0
         else:
-            between_y_image_count = abs(ng_camera_num - start_camera_num) -1
+            between_y_image_count = abs(ng_camera_num - start_camera_num) - 1
 
         if ng_face == 1:
             if start_camera_num == ng_camera_num:
                 logger.debug('[%s:%s] 検反部1 カメラ番号等しい' % (app_id, app_name))
                 ng_y_pix = abs(start_regimark_x - ng_x)
+                ng_y_mm = ng_y_pix * actual_image_width / resize_image_width
                 plus_direction = 1
             elif start_camera_num > ng_camera_num:
                 logger.debug('[%s:%s] 検反部1 レジマークカメラ番号＞NGカメラ番号' % (app_id, app_name))
                 # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[開始レジマークx座標]-[オーバーラップ分幅])＋[NG画像x座標]
-                ng_y_pix = between_y_image_count * nonoverlap_image_width_pix + (
-                        resize_image_width - start_regimark_x - overlap_width_pix) + ng_x
+                register_image_fraction = (resize_image_width - start_regimark_x - overlap_width_pix) * \
+                                          actual_image_width / resize_image_width
+                ng_y_mm = between_y_image_count * (actual_image_width - actual_image_overlap) + \
+                          register_image_fraction + (ng_x * actual_image_width / resize_image_width)
                 plus_direction = -1
             else:
                 logger.debug('[%s:%s] 検反部1 レジマークカメラ番号＜NGカメラ番号' % (app_id, app_name))
                 # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[NG画像x座標]-[オーバーラップ分幅])＋[開始レジマーク x座標]
-                ng_y_pix = between_y_image_count * nonoverlap_image_width_pix + (
-                        resize_image_width - ng_x - overlap_width_pix) + start_regimark_x
+                register_image_fraction = (resize_image_width - ng_x - overlap_width_pix) * \
+                                          actual_image_width / resize_image_width
+                ng_y_mm = between_y_image_count * (actual_image_width - actual_image_overlap) + \
+                          register_image_fraction + (start_regimark_x * actual_image_width / resize_image_width)
                 plus_direction = 1
 
         else:
             if start_camera_num == ng_camera_num:
                 logger.debug('[%s:%s] 検反部2 カメラ番号等しい' % (app_id, app_name))
                 ng_y_pix = abs(start_regimark_x - ng_x)
+                ng_y_mm = ng_y_pix * actual_image_width / resize_image_width
                 plus_direction = 1
             elif start_camera_num > ng_camera_num:
                 logger.debug('[%s:%s] 検反部2 レジマークカメラ番号＞NGカメラ番号' % (app_id, app_name))
                 # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[開始レジマークx座標]-[オーバーラップ分幅])＋[NG画像x座標]
-                ng_y_pix = between_y_image_count * nonoverlap_image_width_pix + (
-                        resize_image_width - ng_x - overlap_width_pix) + start_regimark_x
+                register_image_fraction = (resize_image_width - ng_x - overlap_width_pix) * \
+                                          actual_image_width / resize_image_width
+                ng_y_mm = between_y_image_count * (actual_image_width - actual_image_overlap) + \
+                          register_image_fraction + (start_regimark_x * actual_image_width / resize_image_width )
                 plus_direction = 1
             else:
                 logger.debug('[%s:%s] 検反部2 レジマークカメラ番号＜NGカメラ番号' % (app_id, app_name))
                 # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[NG画像x座標]-[オーバーラップ分幅])＋[開始レジマーク x座標]
-                ng_y_pix = between_y_image_count * nonoverlap_image_width_pix + (
-                        resize_image_width - start_regimark_x - overlap_width_pix) + ng_x
+                register_image_fraction = (resize_image_width - start_regimark_x - overlap_width_pix) * \
+                                          actual_image_width / resize_image_width
+                ng_y_mm = between_y_image_count * (actual_image_width - actual_image_overlap) + \
+                          register_image_fraction + (ng_x * actual_image_width / resize_image_width )
                 plus_direction = -1
 
         # 比率計算
-        between_length_on_master = ng_x_pix / regimark_length_ratio
-        between_width_on_master = ng_y_pix / regimark_width_ratio
+        between_length_on_master = ng_x_pix * (stretch_rate_x / 100 )  / regimark_length_ratio
+        between_width_on_master = master_image_height * ng_y_mm / (stretch_rate_y / 100)  / master_width
 
         # マスタ画像上のNG座標特定
         length_on_master = regimark_x + (between_length_on_master * x_plus_direction)
         width_on_master = regimark_y + (between_width_on_master * plus_direction)
-
 
         if inspection_direction == 'S' and ng_face == 2:
             logger.debug('[%s:%s] 検査方向S 検反部2 Y軸反転' % (app_id, app_name))
@@ -660,11 +585,12 @@ def specific_ng_point(regimark_info, line_info, ng_image_info, nonoverlap_image_
             pass
 
         result = True
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
+        return result, length_on_master, width_on_master, ng_face, error, func_name
 
-    return result, length_on_master, width_on_master, ng_face
+    return result, length_on_master, width_on_master, ng_face, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -682,13 +608,14 @@ def specific_ng_point(regimark_info, line_info, ng_image_info, nonoverlap_image_
 #                      NG画像行・列情報
 # ------------------------------------------------------------------------------------
 def specific_ng_line_colum(line_info, length_on_master, width_on_master, mst_data, conf_regimark_between_length_pix,
-                           inspection_direction, logger):
+                           inspection_direction, last_flag, logger):
     result = False
     judge_result = None
     top_points = []
     last_top_points = []
     next_top_points = []
-
+    error = None
+    func_name = sys._getframe().f_code.co_name
     try:
         # マスタ情報から列数を取得する。※カラム数が多いためマスタ情報辞書を利用して情報を取得する。
         colum_count = mst_data[master_data_dict['column_cnt']]
@@ -706,6 +633,13 @@ def specific_ng_line_colum(line_info, length_on_master, width_on_master, mst_dat
                 [[round(int(re.split(',', x)[0]) + conf_regimark_between_length_pix), int(re.split(',', x)[1])] for x in
                  sp_top_points])
 
+        if last_flag == 0:
+            line_num = int(line_info[0][0])
+        else:
+            if len(line_info) == 1:
+                line_num = int(line_info[0][0])
+            else:
+                line_num = int(line_info[1][0])
         # N行目の頂点座標内外判定
         # 内側と判定された時点で結果を返却する
         for j in range(len(top_points)):
@@ -713,8 +647,8 @@ def specific_ng_line_colum(line_info, length_on_master, width_on_master, mst_dat
             judge_line = cv2.pointPolygonTest(array_top_points, ng_point, False)
             if judge_line == 1:
                 result = True
-                judge_result = [int(line_info[0][0]), line_name_dict[j + 1]]
-                return result, judge_result, length_on_master, width_on_master
+                judge_result = [line_num, line_name_dict[j + 1]]
+                return result, judge_result, length_on_master, width_on_master, error, func_name
             else:
                 pass
 
@@ -727,14 +661,14 @@ def specific_ng_line_colum(line_info, length_on_master, width_on_master, mst_dat
                 result = True
                 if inspection_direction == 'S' or inspection_direction == 'X':
                     logger.debug('[%s:%s] 検査方向S or X' % (app_id, app_name))
-                    line = int(line_info[0][0]) - 1
+                    line = line_num - 1
                 else:
                     logger.debug('[%s:%s] 検査方向Y or R' % (app_id, app_name))
-                    line = int(line_info[0][0]) + 1
+                    line = line_num - 1
 
                 judge_result = [line, line_name_dict[k + 1]]
                 length_on_master = length_on_master + conf_regimark_between_length_pix
-                return result, judge_result, length_on_master, width_on_master
+                return result, judge_result, length_on_master, width_on_master, error, func_name
             else:
                 pass
 
@@ -747,25 +681,25 @@ def specific_ng_line_colum(line_info, length_on_master, width_on_master, mst_dat
                 result = True
                 if inspection_direction == 'S' or inspection_direction == 'X':
                     logger.debug('[%s:%s] 検査方向S or X' % (app_id, app_name))
-                    line = int(line_info[0][0]) + 1
+                    line = line_num + 1
                 else:
                     logger.debug('[%s:%s] 検査方向Y or R' % (app_id, app_name))
-                    line = int(line_info[0][0]) - 1
+                    line = line_num + 1
 
                 judge_result = [line, line_name_dict[l + 1]]
                 length_on_master = length_on_master - conf_regimark_between_length_pix
-                return result, judge_result, length_on_master, width_on_master
+                return result, judge_result, length_on_master, width_on_master, error, func_name
             else:
                 pass
 
         result = True
         logger.debug('[%s:%s] 頂点座標外のNG' % (app_id, app_name))
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result, judge_result, length_on_master, width_on_master
+    return result, judge_result, length_on_master, width_on_master, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -783,12 +717,13 @@ def specific_ng_line_colum(line_info, length_on_master, width_on_master, mst_dat
 #                      NG画像行・列情報
 # ------------------------------------------------------------------------------------
 def specific_ng_line_colum_border(line_info, length_on_master, width_on_master, mst_data,
-                                  conf_regimark_between_length_pix, inspection_direction, logger):
+                                  conf_regimark_between_length_pix, inspection_direction, last_flag, logger):
     result = False
     judge_result = None
     colum_result = None
     line_result = None
-
+    error = None
+    func_name = sys._getframe().f_code.co_name
     try:
         # マスタ情報から列数を取得する。※カラム数が多いためマスタ情報辞書を利用して情報を取得する。
         colum_count = mst_data[master_data_dict['column_cnt']]
@@ -820,7 +755,6 @@ def specific_ng_line_colum_border(line_info, length_on_master, width_on_master, 
                     colum_result = line_name_dict[i + 1]
                     break
 
-
         # 行閾値を取得
         find_str = colum_result.lower()
         find_str_1 = 'line_threshold_' + find_str + '1'
@@ -828,6 +762,14 @@ def specific_ng_line_colum_border(line_info, length_on_master, width_on_master, 
         min_line_threshold = int(mst_data[master_data_dict[find_str_1]])
         max_line_threshold = int(mst_data[master_data_dict[find_str_2]])
 
+
+        if last_flag == 0:
+            line_num = int(line_info[0][0])
+        else:
+            if len(line_info) == 1:
+                line_num = int(line_info[0][0])
+            else:
+                line_num = int(line_info[1][0])
         # 特定した列の行閾値(最小)以下の場合、N-1行とN行の行特定を行う
         if length_on_master <= min_line_threshold:
             # N-1行の行閾値(最大)とN行の行閾値(最小)の間の場合、各閾値からの絶対値で該当行を特定する
@@ -835,24 +777,24 @@ def specific_ng_line_colum_border(line_info, length_on_master, width_on_master, 
                 abs_line = abs(length_on_master - min_line_threshold)
                 abs_last_line = abs(length_on_master - (max_line_threshold - conf_regimark_between_length_pix))
                 if abs_line <= abs_last_line:
-                    line_result = int(line_info[0][0])
+                    line_result = line_num
                 else:
                     if inspection_direction == 'S' or inspection_direction == 'X':
-                        line_result = int(line_info[0][0]) - 1
+                        line_result = line_num - 1
                     else:
-                        line_result = int(line_info[0][0]) + 1
+                        line_result = line_num - 1
 
                     length_on_master = length_on_master + conf_regimark_between_length_pix
             else:
                 if inspection_direction == 'S' or inspection_direction == 'X':
-                    line_result = int(line_info[0][0]) - 1
+                    line_result = line_num - 1
                 else:
-                    line_result = int(line_info[0][0]) + 1
+                    line_result = line_num - 1
 
                 length_on_master = length_on_master + conf_regimark_between_length_pix
         # 特定した列の行閾値(最小)と行閾値(最大)の間の場合、N行と特定する
         elif min_line_threshold < length_on_master <= max_line_threshold:
-            line_result = int(line_info[0][0])
+            line_result = line_num
 
         # 特定した列の行閾値(最大)以上の場合、N行とN+1行の行特定を行う
         elif max_line_threshold <= length_on_master:
@@ -861,30 +803,30 @@ def specific_ng_line_colum_border(line_info, length_on_master, width_on_master, 
                 abs_line = abs(length_on_master - max_line_threshold)
                 abs_next_line = abs(length_on_master - (min_line_threshold + conf_regimark_between_length_pix))
                 if abs_next_line <= abs_line:
-                    line_result = int(line_info[0][0])
+                    line_result = line_num
                 else:
                     if inspection_direction == 'S' or inspection_direction == 'X':
-                        line_result = int(line_info[0][0]) + 1
+                        line_result = line_num + 1
                     else:
-                        line_result = int(line_info[0][0]) - 1
+                        line_result = line_num + 1
 
                     length_on_master = length_on_master - conf_regimark_between_length_pix
             else:
                 if inspection_direction == 'S' or inspection_direction == 'X':
-                    line_result = int(line_info[0][0]) + 1
+                    line_result = line_num + 1
                 else:
-                    line_result = int(line_info[0][0]) - 1
+                    line_result = line_num + 1
 
                 length_on_master = length_on_master - conf_regimark_between_length_pix
 
         judge_result = [line_result, colum_result]
         result = True
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result, judge_result, length_on_master, width_on_master
+    return result, judge_result, length_on_master, width_on_master, error, func_name
 
 
 # ------------------------------------------------------------------------------------
@@ -907,6 +849,8 @@ def calc_distance_from_basepoint(length_on_master, width_on_master, judge_result
                                  master_image_height, logger):
     result = False
     ng_dist = None
+    error = None
+    func_name = sys._getframe().f_code.co_name
 
     try:
         line_name = judge_result[1]
@@ -961,8 +905,8 @@ def calc_distance_from_basepoint(length_on_master, width_on_master, judge_result
         result = True
         ng_dist = [round(x_dist_mm / 10), round(y_dist_mm / 10)]
 
-    except Exception as e:
+    except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
-        error_detail.exception(e, logger, app_id, app_name)
+        error_detail.exception(error, logger, app_id, app_name)
 
-    return result, ng_dist
+    return result, ng_dist, error, func_name

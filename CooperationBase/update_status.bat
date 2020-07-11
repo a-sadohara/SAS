@@ -72,3 +72,7 @@ set temp_path=D:\CI\temp\backup
 
 move %input_path%\ScanInfomation\* %temp_path%\ScanInfomation\
 move %input_path%\RegistrationMarkFiles\* %temp_path%\RegistrationMarkFiles\
+
+set imagecheck_path=D:\CI\temp\image_check
+
+move %imagecheck_path%\*.CSV %imagecheck_path%\CHECKED\

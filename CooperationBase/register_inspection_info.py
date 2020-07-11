@@ -337,6 +337,7 @@ def main():
                                 logger.info('[%s:%s] 前検査の撮像完了通知は出力済です。 [品番, 反番, 検査番号, 検査日付]=[%s, %s, %s, %s]'
                                             % (app_id, app_name, before_product_name, before_fabric_name,
                                                before_inspection_num, before_inspection_date))
+                                time.sleep(sleep_time * 2)
                                 break
                             else:
                                 for i in range(5):
