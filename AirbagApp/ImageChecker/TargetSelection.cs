@@ -1660,7 +1660,7 @@ namespace ImageChecker
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date_yyyymmdd", DbType = DbType.String, Value = strInspectionDate });
                                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = strUnitNum });
-                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_datetime", DbType = DbType.DateTime2, Value = File.GetCreationTime(strFilePath) });
+                                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_datetime", DbType = DbType.DateTime2, Value = File.GetLastWriteTime(strFilePath) });
 
                                 // sqlを実行する
                                 g_clsConnectionNpgsql.ExecTranSQL(strSQL, lstNpgsqlCommand);
