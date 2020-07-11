@@ -98,9 +98,9 @@
             // btnReCalculation
             // 
             this.btnReCalculation.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnReCalculation.Location = new System.Drawing.Point(118, 5);
+            this.btnReCalculation.Location = new System.Drawing.Point(105, 5);
             this.btnReCalculation.Name = "btnReCalculation";
-            this.btnReCalculation.Size = new System.Drawing.Size(63, 30);
+            this.btnReCalculation.Size = new System.Drawing.Size(100, 43);
             this.btnReCalculation.TabIndex = 31;
             this.btnReCalculation.Text = "再計算";
             this.btnReCalculation.UseVisualStyleBackColor = true;
@@ -124,7 +124,7 @@
             this.lblNgDistance.AutoSize = true;
             this.lblNgDistance.Font = new System.Drawing.Font("メイリオ", 12F);
             this.lblNgDistance.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgDistance.Location = new System.Drawing.Point(2, 36);
+            this.lblNgDistance.Location = new System.Drawing.Point(2, 49);
             this.lblNgDistance.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgDistance.Name = "lblNgDistance";
             this.lblNgDistance.Size = new System.Drawing.Size(185, 24);
@@ -136,7 +136,7 @@
             this.lblNgFace.AutoSize = true;
             this.lblNgFace.Font = new System.Drawing.Font("メイリオ", 12F);
             this.lblNgFace.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgFace.Location = new System.Drawing.Point(2, 10);
+            this.lblNgFace.Location = new System.Drawing.Point(2, 16);
             this.lblNgFace.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgFace.Name = "lblNgFace";
             this.lblNgFace.Size = new System.Drawing.Size(98, 24);
@@ -316,10 +316,10 @@
             this.label19.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label19.Font = new System.Drawing.Font("メイリオ", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label19.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label19.Location = new System.Drawing.Point(206, 0);
+            this.label19.Location = new System.Drawing.Point(224, 0);
             this.label19.Margin = new System.Windows.Forms.Padding(0);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(142, 24);
+            this.label19.Size = new System.Drawing.Size(124, 24);
             this.label19.TabIndex = 29;
             this.label19.Text = "OK選択：";
             // 
@@ -329,10 +329,10 @@
             this.label14.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label14.Font = new System.Drawing.Font("メイリオ", 12F);
             this.label14.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label14.Location = new System.Drawing.Point(119, 0);
+            this.label14.Location = new System.Drawing.Point(143, 0);
             this.label14.Margin = new System.Windows.Forms.Padding(0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(87, 24);
+            this.label14.Size = new System.Drawing.Size(81, 24);
             this.label14.TabIndex = 20;
             this.label14.Text = "列：";
             // 
@@ -345,7 +345,7 @@
             this.label13.Location = new System.Drawing.Point(0, 0);
             this.label13.Margin = new System.Windows.Forms.Padding(0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(119, 24);
+            this.label13.Size = new System.Drawing.Size(143, 24);
             this.label13.TabIndex = 19;
             this.label13.Text = "行：";
             // 
@@ -356,7 +356,7 @@
             this.panel7.Location = new System.Drawing.Point(0, 24);
             this.panel7.Margin = new System.Windows.Forms.Padding(0);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(119, 37);
+            this.panel7.Size = new System.Drawing.Size(143, 37);
             this.panel7.TabIndex = 8;
             // 
             // cmbBoxLine
@@ -375,10 +375,10 @@
             // 
             this.panel12.Controls.Add(this.cmbBoxColumns);
             this.panel12.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel12.Location = new System.Drawing.Point(119, 24);
+            this.panel12.Location = new System.Drawing.Point(143, 24);
             this.panel12.Margin = new System.Windows.Forms.Padding(0);
             this.panel12.Name = "panel12";
-            this.panel12.Size = new System.Drawing.Size(87, 37);
+            this.panel12.Size = new System.Drawing.Size(81, 37);
             this.panel12.TabIndex = 8;
             // 
             // cmbBoxColumns
@@ -397,10 +397,10 @@
             // 
             this.panel13.Controls.Add(this.btnOKSelect);
             this.panel13.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel13.Location = new System.Drawing.Point(206, 24);
+            this.panel13.Location = new System.Drawing.Point(224, 24);
             this.panel13.Margin = new System.Windows.Forms.Padding(0);
             this.panel13.Name = "panel13";
-            this.panel13.Size = new System.Drawing.Size(142, 37);
+            this.panel13.Size = new System.Drawing.Size(124, 37);
             this.panel13.TabIndex = 8;
             // 
             // btnOKSelect
@@ -418,9 +418,9 @@
             // tableLayoutPanel6
             // 
             this.tableLayoutPanel6.ColumnCount = 4;
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18.01007F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.20151F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15.61713F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56F));
             this.tableLayoutPanel6.Controls.Add(this.panel13, 2, 1);
             this.tableLayoutPanel6.Controls.Add(this.panel12, 1, 1);
