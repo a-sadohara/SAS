@@ -572,14 +572,18 @@ namespace ProductMstMaintenance
         public const string g_CON_SELECT_MST_AI_MODEL =
             @"
                 SELECT
-                	T1.ai_model_name	
-                FROM mst_ai_model AS T1
+                    T1.ai_model_name
+                FROM
+                (
+                    SELECT * FROM mst_ai_model
+                    WHERE product_name = :product_name OR product_name = '*'
+                ) AS T1
                 LEFT JOIN mst_ai_model AS T2
-                	ON T1.ai_model_name = T2.ai_model_name
-                	AND T2.product_name = :product_name
+                    ON T1.ai_model_name = T2.ai_model_name
+                    AND T2.product_name = :product_name
                 WHERE (T1.product_name = :product_name OR T2.product_name IS NULL)
-                	AND T1.display_flg = 0
-                	ORDER BY T1.ai_model_name";
+                    AND T1.display_flg = 0
+                    ORDER BY T1.ai_model_name";
 
         // AIモデル名取得SQL(編集モード)
         public const string g_CON_SELECT_MST_AI_MODEL_EDITMODE =
