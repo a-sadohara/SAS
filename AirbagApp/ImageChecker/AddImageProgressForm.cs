@@ -321,6 +321,7 @@ namespace ImageChecker
             string strExtractionDestinationPath = string.Empty;
             string strRapidTableName = string.Empty;
             string strMsg = string.Empty;
+            string strErrorMsg = string.Empty;
             int intExecutionCount = 0;
             DataTable dtData = new DataTable();
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -331,11 +332,14 @@ namespace ImageChecker
 
                 if (m_bolLineCloumnsChangeFlg)
                 {
+                    strErrorMsg = g_clsMessageInfo.strMsgE0072;
+
                     // 位置(±Xcm)・位置(±Ycm)の更新
                     strSQL = @"
                                UPDATE " + g_clsSystemSettingInfo.strInstanceName + @".decision_result AS dr SET
                                    line = rpd.ng_line,
                                    cloumns = rpd.columns,
+                                   master_point = rpd.master_point,
                                    ng_distance_x = TO_NUMBER(rpd.ng_distance_x,'9999'),
                                    ng_distance_y = TO_NUMBER(rpd.ng_distance_y,'9999')
                                FROM
@@ -343,6 +347,7 @@ namespace ImageChecker
                                    SELECT
                                        ng_line,
                                        columns,
+                                       master_point,
                                        ng_distance_x,
                                        ng_distance_y
                                    FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" 
@@ -368,6 +373,8 @@ namespace ImageChecker
                 }
                 else
                 {
+                    strErrorMsg = string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName);
+
                     // 判定結果の取り込み処理
                     strSQL = @"INSERT INTO " + g_clsSystemSettingInfo.strInstanceName + @".decision_result(
                                fabric_name
@@ -504,7 +511,7 @@ namespace ImageChecker
 
                 // メッセージ出力
                 MessageBox.Show(
-                    string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
+                    strErrorMsg,
                     g_CON_MESSAGE_TITLE_ERROR,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
@@ -522,7 +529,7 @@ namespace ImageChecker
 
                 // メッセージ出力
                 MessageBox.Show(
-                    string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
+                    strErrorMsg,
                     g_CON_MESSAGE_TITLE_ERROR,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
@@ -615,7 +622,7 @@ namespace ImageChecker
 
                     // メッセージ出力
                     MessageBox.Show(
-                        string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
+                        strErrorMsg,
                         g_CON_MESSAGE_TITLE_ERROR,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
@@ -631,7 +638,7 @@ namespace ImageChecker
 
                     // メッセージ出力
                     MessageBox.Show(
-                        string.Format(g_clsMessageInfo.strMsgE0057, m_strSafeFileName),
+                        strErrorMsg,
                         g_CON_MESSAGE_TITLE_ERROR,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);

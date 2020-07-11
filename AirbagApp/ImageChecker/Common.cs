@@ -110,6 +110,12 @@ namespace ImageChecker
         public static string g_strMasterImageDirMarking = string.Empty;
         public static string g_strZipExtractDirPath = string.Empty;
 
+        // 連携時間
+        public static DateTime g_datetimePrevReplicate = DateTime.MinValue;
+
+        // グリッド描写フラグ
+        public static bool g_bolGridRepresentationFlg = true;
+
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
@@ -757,7 +763,7 @@ namespace ImageChecker
                         ex.Message));
 
                 // メッセージ出力
-                MessageBox.Show(g_clsMessageInfo.strMsgE0050, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return null;
             }

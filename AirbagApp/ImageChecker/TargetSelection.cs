@@ -45,12 +45,6 @@ namespace ImageChecker
         // データ保持関連
         private DataTable m_dtData;
 
-        // 前回の連携時間
-        private DateTime datetimePrevReplicate;
-
-        // グリッド描写フラグ
-        private bool bolGridRepresentationFlg;
-
         // 選択行保持
         private int m_intSelRowIdx = -1;
         private int m_intFirstDisplayedScrollingRowIdx = -1;
@@ -73,7 +67,7 @@ namespace ImageChecker
         /// </summary>
         public TargetSelection()
         {
-            bolGridRepresentationFlg = true;
+            g_bolGridRepresentationFlg = true;
 
             InitializeComponent();
         }
@@ -784,7 +778,6 @@ namespace ImageChecker
             this.MaximizeBox = false;
             this.MaximumSize = this.Size;
             this.MinimumSize = this.Size;
-            datetimePrevReplicate = DateTime.MinValue;
 
             // ログイン者がスーパーユーザかチェックを行う
             if (g_clsSystemSettingInfo.strSuperUser.Split(',').Contains(g_clsLoginInfo.strEmployeeNum))
@@ -870,7 +863,7 @@ namespace ImageChecker
                         clsHeaderData.strProductName,
                         clsHeaderData.strFabricName);
 
-                bolGridRepresentationFlg = false;
+                g_bolGridRepresentationFlg = false;
 
                 // スーパーユーザが検査中ボタンを押下したかチェックする
                 if (m_bolIsSuperUser &&
@@ -949,7 +942,7 @@ namespace ImageChecker
                             if (frmOverDetectionExcept.intDestination == g_CON_APID_RESULT_CHECK)
                             {
                                 // 変数を再初期化する
-                                bolGridRepresentationFlg = false;
+                                g_bolGridRepresentationFlg = false;
 
                                 using (ResultCheck frmResultCheck = new ResultCheck(ref clsHeaderData, clsDecisionResult))
                                 {
@@ -999,7 +992,6 @@ namespace ImageChecker
 
             if (!g_clsLoginInfo.bolStatus)
             {
-                datetimePrevReplicate = DateTime.MinValue;
                 this.Close();
                 return;
             }
@@ -1017,19 +1009,8 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            datetimePrevReplicate = DateTime.MinValue;
             this.Close();
             g_clsLoginInfo.Logout();
-        }
-
-        /// <summary>
-        /// フォームクローズ
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TargetSelection_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            datetimePrevReplicate = DateTime.MinValue;
         }
 
         /// <summary>
@@ -1045,7 +1026,7 @@ namespace ImageChecker
 
                 // 変数を初期化する
                 m_bolFormControlFlag = false;
-                bolGridRepresentationFlg = false;
+                g_bolGridRepresentationFlg = false;
 
                 using (DisplayResultsAgo frmResult = new DisplayResultsAgo())
                 {
@@ -1060,7 +1041,6 @@ namespace ImageChecker
 
             if (!g_clsLoginInfo.bolStatus)
             {
-                datetimePrevReplicate = DateTime.MinValue;
                 this.Close();
                 return;
             }
@@ -1102,7 +1082,7 @@ namespace ImageChecker
                 }
 
                 // 変数を初期化する
-                bolGridRepresentationFlg = false;
+                g_bolGridRepresentationFlg = false;
 
                 // 合否確認ステータス：検査終了の場合
                 if (Convert.ToInt32(m_dtData.Rows[intRow]["acceptance_check_status"]) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
@@ -1223,7 +1203,7 @@ namespace ImageChecker
                 }
 
                 // 変数を初期化する
-                bolGridRepresentationFlg = false;
+                g_bolGridRepresentationFlg = false;
 
                 // 合否確認ステータス：検査終了の場合
                 if (Convert.ToInt32(m_dtData.Rows[intRow]["acceptance_check_status"]) == g_clsSystemSettingInfo.intAcceptanceCheckStatusEnd)
@@ -1327,16 +1307,16 @@ namespace ImageChecker
         /// <param name="e"></param>
         private async void TargetSelection_Activated(object sender, EventArgs e)
         {
-            if (!bolGridRepresentationFlg)
+            if (!g_bolGridRepresentationFlg)
             {
-                bolGridRepresentationFlg = true;
+                g_bolGridRepresentationFlg = true;
                 await Task.Delay(10);
                 return;
             }
 
             // 連携基盤部との前回連携から5分以内の場合は、処理しない
-            if (datetimePrevReplicate != DateTime.MinValue &&
-                datetimePrevReplicate > DateTime.Now)
+            if (g_datetimePrevReplicate != DateTime.MinValue &&
+                g_datetimePrevReplicate > DateTime.Now)
             {
                 return;
             }
@@ -1351,7 +1331,7 @@ namespace ImageChecker
             this.SuspendLayout();
 
             // 連携時間を更新
-            datetimePrevReplicate = DateTime.Now.AddMinutes(5);
+            g_datetimePrevReplicate = DateTime.Now.AddMinutes(5);
 
             ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
             frmProgress.StartPosition = FormStartPosition.CenterScreen;
@@ -2146,7 +2126,7 @@ namespace ImageChecker
                         // メッセージ出力
                         MessageBox.Show(g_clsMessageInfo.strMsgE0041, g_CON_MESSAGE_TITLE_ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        return;
+                        break;
                     }
                 }
 
@@ -2162,7 +2142,7 @@ namespace ImageChecker
             }
             finally
             {
-                bolGridRepresentationFlg = false;
+                g_bolGridRepresentationFlg = false;
                 dtPublicHeaderData.Dispose();
                 dtImagecheckerHeaderData.Dispose();
                 dtRapidDisabledData.Dispose();

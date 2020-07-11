@@ -1259,6 +1259,7 @@ namespace ImageChecker
                     {
                         m_dtData.Rows[m_intPageIdx]["line"] = dtData.Rows[0]["line"];
                         m_dtData.Rows[m_intPageIdx]["cloumns"] = dtData.Rows[0]["cloumns"];
+                        m_dtData.Rows[m_intPageIdx]["master_point"] = dtData.Rows[0]["master_point"];
                         m_dtData.Rows[m_intPageIdx]["ng_distance_x"] = dtData.Rows[0]["ng_distance_x"];
                         m_dtData.Rows[m_intPageIdx]["ng_distance_y"] = dtData.Rows[0]["ng_distance_y"];
                     }

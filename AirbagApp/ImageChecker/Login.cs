@@ -302,6 +302,8 @@ namespace ImageChecker
 
             // ログイン処理
             g_clsLoginInfo.Login(m_strEmployeeNum, m_strWorkerNm, intDispNum);
+            g_datetimePrevReplicate = DateTime.MinValue;
+            g_bolGridRepresentationFlg = true;
 
             // 検査対象選択画面に遷移
             this.Visible = false;
