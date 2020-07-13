@@ -785,7 +785,7 @@
             this.lblNgDistance.AutoSize = true;
             this.lblNgDistance.Font = new System.Drawing.Font("メイリオ", 12F);
             this.lblNgDistance.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgDistance.Location = new System.Drawing.Point(2, 41);
+            this.lblNgDistance.Location = new System.Drawing.Point(2, 49);
             this.lblNgDistance.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgDistance.Name = "lblNgDistance";
             this.lblNgDistance.Size = new System.Drawing.Size(202, 24);
@@ -797,7 +797,7 @@
             this.lblNgFace.AutoSize = true;
             this.lblNgFace.Font = new System.Drawing.Font("メイリオ", 12F);
             this.lblNgFace.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgFace.Location = new System.Drawing.Point(2, 11);
+            this.lblNgFace.Location = new System.Drawing.Point(2, 19);
             this.lblNgFace.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblNgFace.Name = "lblNgFace";
             this.lblNgFace.Size = new System.Drawing.Size(98, 24);
@@ -934,6 +934,7 @@
             this.cmbBoxColumns.Name = "cmbBoxColumns";
             this.cmbBoxColumns.Size = new System.Drawing.Size(62, 39);
             this.cmbBoxColumns.TabIndex = 34;
+            this.cmbBoxColumns.SelectedIndexChanged += new System.EventHandler(this.cmbBox_SelectedIndexChanged);
             // 
             // label14
             // 
@@ -982,6 +983,7 @@
             this.cmbBoxLine.Name = "cmbBoxLine";
             this.cmbBoxLine.Size = new System.Drawing.Size(84, 39);
             this.cmbBoxLine.TabIndex = 34;
+            this.cmbBoxLine.SelectedIndexChanged += new System.EventHandler(this.cmbBox_SelectedIndexChanged);
             // 
             // label13
             // 
@@ -1201,12 +1203,13 @@
             // 
             // btnReCalculation
             // 
+            this.btnReCalculation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnReCalculation.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnReCalculation.Location = new System.Drawing.Point(122, 9);
+            this.btnReCalculation.Location = new System.Drawing.Point(110, 4);
             this.btnReCalculation.Margin = new System.Windows.Forms.Padding(0);
             this.btnReCalculation.Name = "btnReCalculation";
-            this.btnReCalculation.Size = new System.Drawing.Size(63, 26);
-            this.btnReCalculation.TabIndex = 32;
+            this.btnReCalculation.Size = new System.Drawing.Size(102, 42);
+            this.btnReCalculation.TabIndex = 31;
             this.btnReCalculation.Text = "再計算";
             this.btnReCalculation.UseVisualStyleBackColor = true;
             this.btnReCalculation.Click += new System.EventHandler(this.btnReCalculation_Click);
