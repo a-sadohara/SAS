@@ -59,9 +59,9 @@
             this.lblCameraNo22 = new System.Windows.Forms.Label();
             this.lblCameraNo23 = new System.Windows.Forms.Label();
             this.pnlMasterImageNo2 = new System.Windows.Forms.Panel();
+            this.lblNgDistance = new System.Windows.Forms.Label();
             this.picMasterImageNo2 = new System.Windows.Forms.PictureBox();
             this.lblInspectionDirectionNo2 = new System.Windows.Forms.Label();
-            this.lblNgDistance = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.lblPageCount = new System.Windows.Forms.Label();
             this.btnBackPage = new System.Windows.Forms.Button();
@@ -74,11 +74,7 @@
             this.btnInspectionDirectionS = new System.Windows.Forms.Button();
             this.btnInspectionDirectionR = new System.Windows.Forms.Button();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.btnReCalculation = new System.Windows.Forms.Button();
-            this.cmbBoxColumns = new System.Windows.Forms.ComboBox();
-            this.cmbBoxLine = new System.Windows.Forms.ComboBox();
-            this.lblNgFace = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.btnWhiteThreadOne = new System.Windows.Forms.Button();
@@ -87,12 +83,15 @@
             this.btnWhiteThreadMulti = new System.Windows.Forms.Button();
             this.btnBlackThreadOne = new System.Windows.Forms.Button();
             this.btnBlackThreadMulti = new System.Windows.Forms.Button();
+            this.cmbBoxColumns = new System.Windows.Forms.ComboBox();
             this.label14 = new System.Windows.Forms.Label();
             this.panel9 = new System.Windows.Forms.Panel();
             this.lblNgReason = new System.Windows.Forms.Label();
+            this.cmbBoxLine = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnOk = new System.Windows.Forms.Button();
+            this.lblNgFace = new System.Windows.Forms.Label();
             this.panel8 = new System.Windows.Forms.Panel();
             this.pnlFill = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
@@ -106,6 +105,7 @@
             this.picMarkingImage = new System.Windows.Forms.PictureBox();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3.SuspendLayout();
             this.pnlMasterImageNo1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picMasterImageNo1)).BeginInit();
@@ -116,7 +116,6 @@
             this.tableLayoutPanel5.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
-            this.tableLayoutPanel11.SuspendLayout();
             this.tableLayoutPanel7.SuspendLayout();
             this.panel9.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -132,6 +131,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.picMarkingImage)).BeginInit();
             this.pnlBottom.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
+            this.tableLayoutPanel11.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnAddImage
@@ -546,6 +546,19 @@
             this.pnlMasterImageNo2.Size = new System.Drawing.Size(311, 346);
             this.pnlMasterImageNo2.TabIndex = 20;
             // 
+            // lblNgDistance
+            // 
+            this.lblNgDistance.AutoSize = true;
+            this.tableLayoutPanel11.SetColumnSpan(this.lblNgDistance, 2);
+            this.lblNgDistance.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblNgDistance.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblNgDistance.Location = new System.Drawing.Point(2, 91);
+            this.lblNgDistance.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblNgDistance.Name = "lblNgDistance";
+            this.lblNgDistance.Size = new System.Drawing.Size(202, 24);
+            this.lblNgDistance.TabIndex = 30;
+            this.lblNgDistance.Text = "位置(X,Y)cm：-999,-999";
+            // 
             // picMasterImageNo2
             // 
             this.picMasterImageNo2.BackColor = System.Drawing.Color.Transparent;
@@ -572,19 +585,6 @@
             this.lblInspectionDirectionNo2.TabIndex = 19;
             this.lblInspectionDirectionNo2.Text = "検反部No.2：Ｘ";
             this.lblInspectionDirectionNo2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            // 
-            // lblNgDistance
-            // 
-            this.lblNgDistance.AutoSize = true;
-            this.tableLayoutPanel11.SetColumnSpan(this.lblNgDistance, 2);
-            this.lblNgDistance.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.lblNgDistance.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgDistance.Location = new System.Drawing.Point(2, 95);
-            this.lblNgDistance.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblNgDistance.Name = "lblNgDistance";
-            this.lblNgDistance.Size = new System.Drawing.Size(202, 21);
-            this.lblNgDistance.TabIndex = 30;
-            this.lblNgDistance.Text = "位置(X,Y)cm：-999,-999";
             // 
             // panel4
             // 
@@ -757,13 +757,13 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 27.11292F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 8F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.67272F));
-            this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel11, 0, 1);
             this.tableLayoutPanel6.Controls.Add(this.label19, 2, 0);
             this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel7, 4, 1);
             this.tableLayoutPanel6.Controls.Add(this.label14, 1, 0);
             this.tableLayoutPanel6.Controls.Add(this.panel9, 4, 0);
             this.tableLayoutPanel6.Controls.Add(this.label13, 0, 0);
             this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel1, 2, 1);
+            this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel11, 0, 1);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel6.Location = new System.Drawing.Point(280, 0);
             this.tableLayoutPanel6.Margin = new System.Windows.Forms.Padding(0);
@@ -776,83 +776,17 @@
             this.tableLayoutPanel6.Size = new System.Drawing.Size(994, 150);
             this.tableLayoutPanel6.TabIndex = 8;
             // 
-            // tableLayoutPanel11
-            // 
-            this.tableLayoutPanel11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel11.ColumnCount = 2;
-            this.tableLayoutPanel6.SetColumnSpan(this.tableLayoutPanel11, 2);
-            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.33945F));
-            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.66055F));
-            this.tableLayoutPanel11.Controls.Add(this.btnReCalculation, 1, 1);
-            this.tableLayoutPanel11.Controls.Add(this.cmbBoxColumns, 1, 0);
-            this.tableLayoutPanel11.Controls.Add(this.cmbBoxLine, 0, 0);
-            this.tableLayoutPanel11.Controls.Add(this.lblNgDistance, 0, 3);
-            this.tableLayoutPanel11.Controls.Add(this.lblNgFace, 0, 2);
-            this.tableLayoutPanel11.Location = new System.Drawing.Point(0, 24);
-            this.tableLayoutPanel11.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel11.Name = "tableLayoutPanel11";
-            this.tableLayoutPanel11.RowCount = 4;
-            this.tableLayoutPanel6.SetRowSpan(this.tableLayoutPanel11, 2);
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 17.89474F));
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 31.57895F));
-            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel11.Size = new System.Drawing.Size(218, 116);
-            this.tableLayoutPanel11.TabIndex = 5;
-            // 
             // btnReCalculation
             // 
             this.btnReCalculation.Font = new System.Drawing.Font("メイリオ", 9F);
-            this.btnReCalculation.Location = new System.Drawing.Point(125, 48);
+            this.btnReCalculation.Location = new System.Drawing.Point(109, 58);
             this.btnReCalculation.Margin = new System.Windows.Forms.Padding(0);
             this.btnReCalculation.Name = "btnReCalculation";
-            this.tableLayoutPanel11.SetRowSpan(this.btnReCalculation, 2);
-            this.btnReCalculation.Size = new System.Drawing.Size(93, 47);
+            this.btnReCalculation.Size = new System.Drawing.Size(63, 26);
             this.btnReCalculation.TabIndex = 31;
             this.btnReCalculation.Text = "再計算";
             this.btnReCalculation.UseVisualStyleBackColor = true;
             this.btnReCalculation.Click += new System.EventHandler(this.btnReCalculation_Click);
-            // 
-            // cmbBoxColumns
-            // 
-            this.cmbBoxColumns.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbBoxColumns.Font = new System.Drawing.Font("メイリオ", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cmbBoxColumns.FormattingEnabled = true;
-            this.cmbBoxColumns.Location = new System.Drawing.Point(126, 0);
-            this.cmbBoxColumns.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
-            this.cmbBoxColumns.Name = "cmbBoxColumns";
-            this.cmbBoxColumns.Size = new System.Drawing.Size(62, 39);
-            this.cmbBoxColumns.TabIndex = 34;
-            this.cmbBoxColumns.SelectedIndexChanged += new System.EventHandler(this.cmbBox_SelectedIndexChanged);
-            // 
-            // cmbBoxLine
-            // 
-            this.cmbBoxLine.DropDownHeight = 80;
-            this.cmbBoxLine.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbBoxLine.Font = new System.Drawing.Font("メイリオ", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.cmbBoxLine.FormattingEnabled = true;
-            this.cmbBoxLine.IntegralHeight = false;
-            this.cmbBoxLine.ItemHeight = 31;
-            this.cmbBoxLine.Location = new System.Drawing.Point(0, 0);
-            this.cmbBoxLine.Margin = new System.Windows.Forms.Padding(0);
-            this.cmbBoxLine.Name = "cmbBoxLine";
-            this.cmbBoxLine.Size = new System.Drawing.Size(84, 39);
-            this.cmbBoxLine.TabIndex = 34;
-            this.cmbBoxLine.SelectedIndexChanged += new System.EventHandler(this.cmbBox_SelectedIndexChanged);
-            // 
-            // lblNgFace
-            // 
-            this.lblNgFace.AutoSize = true;
-            this.lblNgFace.Font = new System.Drawing.Font("メイリオ", 12F);
-            this.lblNgFace.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblNgFace.Location = new System.Drawing.Point(2, 67);
-            this.lblNgFace.Margin = new System.Windows.Forms.Padding(2);
-            this.lblNgFace.Name = "lblNgFace";
-            this.lblNgFace.Size = new System.Drawing.Size(98, 24);
-            this.lblNgFace.TabIndex = 30;
-            this.lblNgFace.Text = "NG面：＃１";
             // 
             // label19
             // 
@@ -974,6 +908,18 @@
             this.btnBlackThreadMulti.UseVisualStyleBackColor = true;
             this.btnBlackThreadMulti.Click += new System.EventHandler(this.btnBlackThreadMulti_Click);
             // 
+            // cmbBoxColumns
+            // 
+            this.cmbBoxColumns.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbBoxColumns.Font = new System.Drawing.Font("メイリオ", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cmbBoxColumns.FormattingEnabled = true;
+            this.cmbBoxColumns.Location = new System.Drawing.Point(109, 0);
+            this.cmbBoxColumns.Margin = new System.Windows.Forms.Padding(0);
+            this.cmbBoxColumns.Name = "cmbBoxColumns";
+            this.cmbBoxColumns.Size = new System.Drawing.Size(62, 39);
+            this.cmbBoxColumns.TabIndex = 34;
+            this.cmbBoxColumns.SelectedIndexChanged += new System.EventHandler(this.cmbBox_SelectedIndexChanged);
+            // 
             // label14
             // 
             this.label14.AutoSize = true;
@@ -1007,6 +953,21 @@
             this.lblNgReason.Size = new System.Drawing.Size(114, 24);
             this.lblNgReason.TabIndex = 31;
             this.lblNgReason.Text = "NG理由選択：";
+            // 
+            // cmbBoxLine
+            // 
+            this.cmbBoxLine.DropDownHeight = 80;
+            this.cmbBoxLine.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbBoxLine.Font = new System.Drawing.Font("メイリオ", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.cmbBoxLine.FormattingEnabled = true;
+            this.cmbBoxLine.IntegralHeight = false;
+            this.cmbBoxLine.ItemHeight = 31;
+            this.cmbBoxLine.Location = new System.Drawing.Point(0, 0);
+            this.cmbBoxLine.Margin = new System.Windows.Forms.Padding(0);
+            this.cmbBoxLine.Name = "cmbBoxLine";
+            this.cmbBoxLine.Size = new System.Drawing.Size(84, 39);
+            this.cmbBoxLine.TabIndex = 34;
+            this.cmbBoxLine.SelectedIndexChanged += new System.EventHandler(this.cmbBox_SelectedIndexChanged);
             // 
             // label13
             // 
@@ -1051,6 +1012,18 @@
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = true;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+            // 
+            // lblNgFace
+            // 
+            this.lblNgFace.AutoSize = true;
+            this.lblNgFace.Font = new System.Drawing.Font("メイリオ", 12F);
+            this.lblNgFace.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblNgFace.Location = new System.Drawing.Point(2, 60);
+            this.lblNgFace.Margin = new System.Windows.Forms.Padding(2);
+            this.lblNgFace.Name = "lblNgFace";
+            this.lblNgFace.Size = new System.Drawing.Size(98, 24);
+            this.lblNgFace.TabIndex = 30;
+            this.lblNgFace.Text = "NG面：＃１";
             // 
             // panel8
             // 
@@ -1224,6 +1197,31 @@
             this.tableLayoutPanel4.Size = new System.Drawing.Size(1274, 150);
             this.tableLayoutPanel4.TabIndex = 28;
             // 
+            // tableLayoutPanel11
+            // 
+            this.tableLayoutPanel11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel11.ColumnCount = 2;
+            this.tableLayoutPanel6.SetColumnSpan(this.tableLayoutPanel11, 2);
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel11.Controls.Add(this.lblNgDistance, 0, 2);
+            this.tableLayoutPanel11.Controls.Add(this.btnReCalculation, 1, 1);
+            this.tableLayoutPanel11.Controls.Add(this.cmbBoxColumns, 1, 0);
+            this.tableLayoutPanel11.Controls.Add(this.lblNgFace, 0, 1);
+            this.tableLayoutPanel11.Controls.Add(this.cmbBoxLine, 0, 0);
+            this.tableLayoutPanel11.Location = new System.Drawing.Point(0, 24);
+            this.tableLayoutPanel11.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel11.Name = "tableLayoutPanel11";
+            this.tableLayoutPanel11.RowCount = 3;
+            this.tableLayoutPanel6.SetRowSpan(this.tableLayoutPanel11, 2);
+            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 28.44828F));
+            this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20.68966F));
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(218, 116);
+            this.tableLayoutPanel11.TabIndex = 5;
+            // 
             // ResultCheck
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1253,8 +1251,6 @@
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);
             this.tableLayoutPanel6.PerformLayout();
-            this.tableLayoutPanel11.ResumeLayout(false);
-            this.tableLayoutPanel11.PerformLayout();
             this.tableLayoutPanel7.ResumeLayout(false);
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
@@ -1274,6 +1270,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.picMarkingImage)).EndInit();
             this.pnlBottom.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel11.ResumeLayout(false);
+            this.tableLayoutPanel11.PerformLayout();
             this.ResumeLayout(false);
 
         }
