@@ -448,7 +448,7 @@ namespace ImageChecker
                              , NULL
                              , NULL
                            FROM (
-                               SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY rapid_endtime DESC) AS SEQ
+                               SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY insert_datetime DESC) AS SEQ
                                    , rpd.*
                                FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" rpd
                                WHERE fabric_name = :fabric_name
