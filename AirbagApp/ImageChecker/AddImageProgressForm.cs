@@ -350,14 +350,19 @@ namespace ImageChecker
                                        master_point,
                                        ng_distance_x,
                                        ng_distance_y
-                                   FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" 
-                                   WHERE fabric_name = :fabric_name
+                                   FROM (
+                                       SELECT ROW_NUMBER() OVER(PARTITION BY marking_image ORDER BY insert_datetime DESC) AS SEQ
+                                           , rpd.*
+                                       FROM " + g_clsSystemSettingInfo.strCooperationBaseInstanceName + @".""" + strRapidTableName + @""" rpd
+                                       WHERE fabric_name = :fabric_name
                                        AND inspection_num = :inspection_num 
                                        AND ng_image = :ng_image 
                                        AND unit_num = :unit_num 
                                        AND rapid_result = :rapid_result
                                        AND edge_result = :edge_result
                                        AND masking_result = :masking_result
+                                   ) temp
+                                   WHERE SEQ = 1
                                ) AS rpd
                                WHERE dr.branch_num = :branch_num
                                    AND dr.unit_num = :unit_num
