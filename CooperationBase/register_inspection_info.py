@@ -14,10 +14,10 @@ import db_util
 import error_detail
 import error_util
 import file_util
-# ADD 20200711 KQRM 下吉 START
+# ADD 20200714 KQRM 下吉 START
 import os
 import csv
-# ADD 20200711 KQRM 下吉 END
+# ADD 20200714 KQRM 下吉 END
 
 # ログ設定
 logging.config.fileConfig("D:/CI/programs/config/logging_register_inspection_info.conf")
@@ -206,20 +206,20 @@ def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date
         regimark_file_name = regimark_prefix + "_" + product_name + "_" + fabric_name + "_" + str(
             inspection_num) + "_" + inspection_date + "_"
 
-        # ADD 20200711 KQRM 下吉 START
+        # ADD 20200714 KQRM 下吉 START
         number_list_face_no_1 = []
         number_list_face_no_2 = []
         image_num = 0
         image_num_total = 0
         completed_lines = 0
-        # ADD 20200711 KQRM 下吉 END
+        # ADD 20200714 KQRM 下吉 END
 
         for i in range(0, 2):
             for j in range(0, 2):
                 csv_file = output_file_path + "\\" + regimark_path + "\\" + regimark_file_name + str(j + 1) + "_" + str(
                     i + 1) + file_extension
 
-                # ADD 20200711 KQRM 下吉 START
+                # ADD 20200714 KQRM 下吉 START
                 if os.path.exists(csv_file):
                     logger.debug('[%s:%s] レジマーク読取結果ファイルが存在します。[%s]', app_id, app_name, csv_file)
                     if i == 0 and (before_inspection_direction == 'S' or before_inspection_direction == 'X'):
@@ -238,13 +238,13 @@ def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date
                     continue
                 else:
                     logger.debug('[%s:%s] レジマーク読取結果ファイルが存在しません。ダミーファイルを出力します。[%s]', app_id, app_name, csv_file)
-                # ADD 20200711 KQRM 下吉 END
+                # ADD 20200714 KQRM 下吉 END
 
                 with codecs.open(csv_file, "w", "SJIS") as f:
                     f.write("撮像ファイル名,種別,座標幅,座標高,パルス")
                     f.write("\r\n")
 
-        # ADD 20200711 KQRM 下吉 START
+        # ADD 20200714 KQRM 下吉 START
         # 「少ない方の読取行数 -2」の値を設定する
         if len(number_list_face_no_1) > len(number_list_face_no_2):
             completed_lines = len(number_list_face_no_2) - 2
@@ -263,16 +263,16 @@ def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date
 
         # カメラ台数を考慮し、総撮像枚数を設定する
         image_num_total = image_num * 54
-        # ADD 20200711 KQRM 下吉 END
+        # ADD 20200714 KQRM 下吉 END
 
         csv_file = output_file_path + "\\" + scaninfo_path + "\\" + scaninfo_file_name
         with codecs.open(csv_file, "w", "SJIS") as f:
             f.write("カメラ台数,カメラ1台の撮像枚数,総撮像枚数,検査完了行数")
             f.write("\r\n")
-            # UPD 20200711 KQRM 下吉 START
+            # UPD 20200714 KQRM 下吉 START
             # f.write("54,0,0,0")
             f.write("54,{},{},{}".format(image_num, image_num_total, completed_lines))
-            # UPD 20200711 KQRM 下吉 END
+            # UPD 20200714 KQRM 下吉 END
             f.write("\r\n")
 
         result = True
@@ -283,7 +283,7 @@ def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date
 
     return result
 
-# ADD 20200711 KQRM 下吉 START
+# ADD 20200714 KQRM 下吉 START
 # ------------------------------------------------------------------------------------
 # 関数名             ：連番取得
 #
@@ -318,7 +318,7 @@ def get_serial_number_list(file_path, serial_number_list, logger):
         error_detail.exception(e, logger, app_id, app_name)
 
     return result
-# ADD 20200711 KQRM 下吉 END
+# ADD 20200714 KQRM 下吉 END
 
 # ------------------------------------------------------------------------------------
 # 関数名             ：DB切断
