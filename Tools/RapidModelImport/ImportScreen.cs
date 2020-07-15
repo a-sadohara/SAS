@@ -65,6 +65,38 @@ namespace RapidModelImport
         /// <param name="e"></param>
         private void BtnImport_Click(object sender, EventArgs e)
         {
+            string strPath = string.Empty;
+
+            foreach (string strAIModelNameCooperationDirectoryPath in g_strAIModelNameCooperationDirectoryPath.Split(','))
+            {
+                strPath = strAIModelNameCooperationDirectoryPath.Trim();
+
+                if (string.IsNullOrWhiteSpace(strPath) ||
+                    !Directory.Exists(strPath))
+                {
+                    string strErrorMessage =
+                        string.Format(
+                            "{0}{1}出力先:{2}",
+                            "AIモデル名情報連携ディレクトリが参照できませんでした。",
+                            Environment.NewLine,
+                            strPath);
+
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_WARN,
+                        strErrorMessage);
+
+                    // メッセージ出力
+                    MessageBox.Show(
+                        strErrorMessage,
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    return;
+                }
+            }
+
             if (string.IsNullOrWhiteSpace(txtModelName.Text))
             {
                 // メッセージ出力
