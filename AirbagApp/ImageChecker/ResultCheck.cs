@@ -261,6 +261,7 @@ namespace ImageChecker
             string strMarkingImagepath = string.Empty;
             string strImagePath = string.Empty;
             string strCloumns = string.Empty;
+            int intCloumns = 0;
             string[] strMasterPoint;
             int intMasterPointX = -1;
             int intMasterPointY = -1;
@@ -277,7 +278,8 @@ namespace ImageChecker
             bool bolMovecoercive = false;
             string strMsg = string.Empty;
             bool bolNgReasonReWrite = false;
-            List<string> lstCmbItem = new List<string>();
+            List<string> lstCmbCloumnsItem = new List<string>();
+            List<string> lstCmbLineItem = new List<string>();
             this.btnReCalculation.Visible = false;
 
             try
@@ -304,9 +306,69 @@ namespace ImageChecker
                     intNgFace = 2;  // 裏
                 }
 
-                // 列
+                // 列情報を取得する
                 strCloumns = m_dtData.Rows[intPageIdx]["cloumns"].ToString();
                 m_strCloumns = strCloumns;
+
+                switch (strCloumns)
+                {
+                    case g_strColumnsInfoA:
+                        intCloumns = 0;
+                        break;
+                    case g_strColumnsInfoB:
+                        intCloumns = 1;
+                        break;
+                    case g_strColumnsInfoC:
+                        intCloumns = 2;
+                        break;
+                    case g_strColumnsInfoD:
+                        intCloumns = 3;
+                        break;
+                    case g_strColumnsInfoE:
+                        intCloumns = 4;
+                        break;
+                }
+
+                // 変数を補正する
+                if (intCloumns == 4)
+                {
+                    intCloumns--;
+                }
+
+                if (intCloumns != 0)
+                {
+                    intCloumns--;
+                }
+
+                // 選択肢の情報を設定する
+                for (int i = intCloumns; i < intCloumns + 3; i++)
+                {
+                    if (i == 0)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoA);
+                    }
+                    else if (i == 1)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoB);
+                    }
+                    else if (i == 2)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoC);
+                    }
+                    else if (i == 3)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoD);
+                    }
+                    else if (i == 4)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoE);
+                    }
+                }
+
+                // コンボボックスの設定
+                cmbBoxColumns.Items.Clear();
+                cmbBoxColumns.Items.AddRange(lstCmbCloumnsItem.ToArray());
+                cmbBoxColumns.SelectedItem = strCloumns;
 
                 // 欠点画像にフォーカスセット
                 picMarkingImage.Focus();
@@ -417,15 +479,13 @@ namespace ImageChecker
                 // 選択肢の情報を設定する
                 for (int i = intLine; i < intLine + 3; i++)
                 {
-                    lstCmbItem.Add(i.ToString());
+                    lstCmbLineItem.Add(i.ToString());
                 }
 
                 // コンボボックスの設定
                 cmbBoxLine.Items.Clear();
-                cmbBoxLine.Items.AddRange(lstCmbItem.ToArray());
+                cmbBoxLine.Items.AddRange(lstCmbLineItem.ToArray());
                 cmbBoxLine.SelectedItem = strLine;
-
-                cmbBoxColumns.SelectedItem = strCloumns;
 
                 // ひとつ前へ戻るの制御
                 if (m_intPageIdx == 0)
@@ -1378,17 +1438,6 @@ namespace ImageChecker
                 // コンボボックスの設定
                 // 行高さを調整
                 cmbBoxLine.DropDownHeight = this.Size.Height;
-
-                // 列
-                cmbBoxColumns.Items.Clear();
-                for (int i = 1; i <= m_intColumnCnt; i++)
-                {
-                    if (i == 1) cmbBoxColumns.Items.Add("A");
-                    if (i == 2) cmbBoxColumns.Items.Add("B");
-                    if (i == 3) cmbBoxColumns.Items.Add("C");
-                    if (i == 4) cmbBoxColumns.Items.Add("D");
-                    if (i == 5) cmbBoxColumns.Items.Add("E");
-                }
 
                 // 画像パス一覧を取得
                 if (bolGetImagePath() == false)

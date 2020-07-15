@@ -89,6 +89,13 @@ namespace ImageChecker
         public const string g_strUnitNumN3 = "N3";
         public const string g_strUnitNumN4 = "N4";
 
+        // 列情報
+        public const string g_strColumnsInfoA = "A";
+        public const string g_strColumnsInfoB = "B";
+        public const string g_strColumnsInfoC = "C";
+        public const string g_strColumnsInfoD = "D";
+        public const string g_strColumnsInfoE = "E";
+
         // プロセス優先度
         public const string g_strPriorityRealtime = "Realtime";
         public const string g_strPriorityHighPriority = "High Priority";
