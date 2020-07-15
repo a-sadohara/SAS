@@ -43,12 +43,12 @@ namespace BeforeInspection
             try
             {
                 // SQL抽出
-                dtData = new DataTable();
                 strSQL += @"SELECT DISTINCT ";
                 strSQL += @"    0 AS cdk_select, ";
                 strSQL += @"    product_name ";
                 strSQL += @"FROM mst_product_info ";
                 strSQL += @"WHERE register_flg = 1 ";
+                strSQL += @"ORDER BY product_name ";
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL);
 
@@ -65,12 +65,14 @@ namespace BeforeInspection
                 // ログ出力
                 WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
-                System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(g_clsMessageInfo.strMsgE0021, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
             finally
             {
+                dtData.Dispose();
+
                 if (bolProcOkNg == false)
                 {
                     this.Close();

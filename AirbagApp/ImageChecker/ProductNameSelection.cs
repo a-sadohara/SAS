@@ -46,6 +46,7 @@ namespace ImageChecker
                 strSQL += @"    product_name ";
                 strSQL += @"FROM mst_product_info ";
                 strSQL += @"WHERE register_flg = 1 ";
+                strSQL += @"ORDER BY product_name ";
 
                 g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL);
 
