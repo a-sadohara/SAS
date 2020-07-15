@@ -42,6 +42,7 @@ namespace BeforeInspection
         private const string m_CON_EXTENSION_FINAL = ".final";
         private const int m_CON_MAXLENGTH_ORDERIMG = 7;
         private const int m_CON_MAXLENGTH_FABRICNAME = 10;
+        private const string m_CON_INSPECTION_DIRECTION = " ↓↓↓ {0} ↓↓↓ ";
 
         // 検査方向背景色関連
         private Color m_clrInspectionDirectionActFore = System.Drawing.SystemColors.ActiveCaption;
@@ -316,11 +317,26 @@ namespace BeforeInspection
                 }
             }
 
-            lblSEWNo1Top.Text = string.Format(" ↓↓↓ {0} ↓↓↓ ", m_CON_EW);
-            lblSEWNo1Bot.Text = string.Format(" ↓↓↓ {0} ↓↓↓ ", m_CON_SW);
-            lblSEWNo2Top.Text = string.Format(" ↓↓↓ {0} ↓↓↓ ", m_CON_EW);
-            lblSEWNo2Bot.Text = string.Format(" ↓↓↓ {0} ↓↓↓ ", m_CON_SW);
+            string strSEWNoTop = string.Empty;
+            string strSEWNoBot = string.Empty;
 
+            // 検査方向により、EW・SWの表記位置を設定する
+            if (strInspectionDirection.Equals(g_clsSystemSettingInfo.strInspectionDirectionS) ||
+                strInspectionDirection.Equals(g_clsSystemSettingInfo.strInspectionDirectionX))
+            {
+                strSEWNoTop = string.Format(m_CON_INSPECTION_DIRECTION, m_CON_EW);
+                strSEWNoBot = string.Format(m_CON_INSPECTION_DIRECTION, m_CON_SW);
+            }
+            else
+            {
+                strSEWNoTop = string.Format(m_CON_INSPECTION_DIRECTION, m_CON_SW);
+                strSEWNoBot = string.Format(m_CON_INSPECTION_DIRECTION, m_CON_EW);
+            }
+
+            lblSEWNo1Top.Text = strSEWNoTop;
+            lblSEWNo1Bot.Text = strSEWNoBot;
+            lblSEWNo2Top.Text = strSEWNoTop;
+            lblSEWNo2Bot.Text = strSEWNoBot;
 
             // アクティブ化
             if (strInspectionDirection == g_clsSystemSettingInfo.strInspectionDirectionS)
@@ -877,8 +893,14 @@ namespace BeforeInspection
                              , TO_CHAR(iih.end_datetime,'YYYY/MM/DD HH24:MI:SS') AS end_datetime
                              , iih.inspection_direction 
                              , iih.illumination_information 
-                             , iih.start_regimark_camera_num 
-                             , iih.end_regimark_camera_num 
+                             , CASE WHEN iih.inspection_direction  = 'X' OR iih.inspection_direction = 'R'
+                                    THEN abs(iih.start_regimark_camera_num -27) + 1
+                                    ELSE iih.start_regimark_camera_num
+                               END AS start_regimark_camera_num
+                             , CASE WHEN iih.inspection_direction  = 'X' OR iih.inspection_direction = 'R'
+                                    THEN abs(iih.end_regimark_camera_num -27) + 1
+                                    ELSE iih.end_regimark_camera_num
+                               END AS end_regimark_camera_num
                              , COALESCE(mpi.line_length, 0) AS line_length 
                              , COALESCE(mpi.regimark_between_length, 0) AS regimark_between_length
                            FROM 
