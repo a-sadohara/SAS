@@ -313,29 +313,29 @@ namespace ImageChecker
                 switch (strCloumns)
                 {
                     case g_strColumnsInfoA:
-                        intCloumns = 0;
-                        break;
-                    case g_strColumnsInfoB:
                         intCloumns = 1;
                         break;
-                    case g_strColumnsInfoC:
+                    case g_strColumnsInfoB:
                         intCloumns = 2;
                         break;
-                    case g_strColumnsInfoD:
+                    case g_strColumnsInfoC:
                         intCloumns = 3;
                         break;
-                    case g_strColumnsInfoE:
+                    case g_strColumnsInfoD:
                         intCloumns = 4;
+                        break;
+                    case g_strColumnsInfoE:
+                        intCloumns = 5;
                         break;
                 }
 
                 // 変数を補正する
-                if (intCloumns == 4)
+                if (intCloumns == m_intColumnCnt)
                 {
                     intCloumns--;
                 }
 
-                if (intCloumns != 0)
+                if (intCloumns != 1)
                 {
                     intCloumns--;
                 }
@@ -343,23 +343,23 @@ namespace ImageChecker
                 // 選択肢の情報を設定する
                 for (int i = intCloumns; i < intCloumns + 3; i++)
                 {
-                    if (i == 0)
+                    if (i == 1)
                     {
                         lstCmbCloumnsItem.Add(g_strColumnsInfoA);
                     }
-                    else if (i == 1)
+                    else if (i == 2)
                     {
                         lstCmbCloumnsItem.Add(g_strColumnsInfoB);
                     }
-                    else if (i == 2)
+                    else if (i == 3)
                     {
                         lstCmbCloumnsItem.Add(g_strColumnsInfoC);
                     }
-                    else if (i == 3)
+                    else if (i == 4)
                     {
                         lstCmbCloumnsItem.Add(g_strColumnsInfoD);
                     }
-                    else if (i == 4)
+                    else if (i == 5)
                     {
                         lstCmbCloumnsItem.Add(g_strColumnsInfoE);
                     }
