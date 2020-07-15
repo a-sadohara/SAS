@@ -1438,8 +1438,11 @@ namespace ProductMstMaintenance
             if (CheckRequiredInput(txtProductName, "品名") == false ||
                 CheckRequiredInput(txtStretchRateX, "伸縮率（Xb）[%]") == false ||
                 CheckRequiredInput(txtStretchRateY, "伸縮率（Yb）[%]") == false ||
+                (!chkAiModelNonInspectionFlg.Checked &&
+                CheckRequiredInput(txtAiModelName, "AIモデル名") == false) ||
                 CheckRequiredInput(txtStartRegimarkCameraNum, "検出カメラ番号(開始レジマーク)") == false ||
                 CheckRequiredInput(txtEndRegimarkCameraNum, "検出カメラ番号(終了レジマーク)") == false ||
+                CheckRequiredInput(lblIlluminationInformation, "照度") == false ||
                 CheckRequiredInput(txtColumnThresholdAB, "A-B列") == false ||
                 CheckRequiredInput(txtColumnThresholdBC, "B-C列") == false ||
                 CheckRequiredInput(txtColumnThresholdCD, "C-D列") == false ||
@@ -1505,7 +1508,7 @@ namespace ProductMstMaintenance
         /// <param name="intRowCount">チェック対象行番号</param>
         /// <param name="intMaxLength">項目最大長</param>
         /// <returns></returns>
-        private static Boolean CheckRequiredInput(TextBox txtCheckData
+        private static Boolean CheckRequiredInput(Control txtCheckData
                                                 , String strItemName)
         {
             // 境界線項目は無効になっている可能性があるため、有効な場合のみチェックする
