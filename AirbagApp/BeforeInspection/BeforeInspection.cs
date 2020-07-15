@@ -788,6 +788,8 @@ namespace BeforeInspection
                 strSQL += @"    illumination_information";
                 strSQL += @"  , start_regimark_camera_num";
                 strSQL += @"  , end_regimark_camera_num ";
+                strSQL += @"  , ai_model_non_inspection_flg ";
+                strSQL += @"  , ai_model_name ";
                 strSQL += @"FROM ";
                 strSQL += @"    mst_product_info ";
                 strSQL += @"WHERE product_name = :product_name ";
@@ -801,20 +803,26 @@ namespace BeforeInspection
 
                 if (dtData.Rows.Count > 0)
                 {
-                    if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["illumination_information"].ToString()))
+                    if (string.IsNullOrWhiteSpace(dtData.Rows[0]["start_regimark_camera_num"].ToString()) ||
+                        string.IsNullOrWhiteSpace(dtData.Rows[0]["end_regimark_camera_num"].ToString()) ||
+                        string.IsNullOrWhiteSpace(dtData.Rows[0]["illumination_information"].ToString()) ||
+                        string.IsNullOrWhiteSpace(dtData.Rows[0]["ai_model_non_inspection_flg"].ToString()) ||
+                        (int.Parse(dtData.Rows[0]["ai_model_non_inspection_flg"].ToString()) == 0 &&
+                        string.IsNullOrWhiteSpace(dtData.Rows[0]["ai_model_name"].ToString())))
                     {
-                        intIlluminationInformation = int.Parse(dtData.Rows[0]["illumination_information"].ToString());
+                        // メッセージ出力
+                        MessageBox.Show(
+                            g_clsMessageInfo.strMsgE0073,
+                            "エラー",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+
+                        return false;
                     }
 
-                    if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["start_regimark_camera_num"].ToString()))
-                    {
-                        intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["start_regimark_camera_num"].ToString());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["end_regimark_camera_num"].ToString()))
-                    {
-                        intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
-                    }
+                    intIlluminationInformation = int.Parse(dtData.Rows[0]["illumination_information"].ToString());
+                    intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["start_regimark_camera_num"].ToString());
+                    intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
                 }
 
                 return true;
