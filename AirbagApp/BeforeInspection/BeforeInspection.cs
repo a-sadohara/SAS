@@ -1214,6 +1214,8 @@ namespace BeforeInspection
                                         out m_intEndRegimarkCameraNum,
                                         frmHinNoSelection.strProductName) == false)
             {
+                // エラー発生時は品名をクリアする
+                txtProductName.Text = string.Empty;
                 return;
             }
 
