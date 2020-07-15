@@ -1620,6 +1620,8 @@ namespace ImageChecker
                                     , acceptance_check_status
                                     , decision_start_datetime
                                     , decision_end_datetime
+                                    , ai_model_non_inspection_flg
+                                    , ai_model_name
                                 )
                                 SELECT
                                     inspection_num
@@ -1641,6 +1643,8 @@ namespace ImageChecker
                                     , 0
                                     , NULL
                                     , NULL
+                                    , ai_model_non_inspection_flg
+                                    , ai_model_name
                                 FROM (
                                     SELECT ROW_NUMBER() OVER(PARTITION BY inspection_date, fabric_name, inspection_num ORDER BY branch_num DESC) AS SEQ
                                     , header.*

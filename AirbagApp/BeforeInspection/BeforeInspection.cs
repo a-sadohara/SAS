@@ -487,6 +487,26 @@ namespace BeforeInspection
         /// <returns>true:正常終了 false:異常終了</returns>
         private Boolean RegStartInspectionInfoHeader(int intInspectionNum, int intBranchNum)
         {
+            int intAIModelNonInspectionFlg = 0;
+            string strAIModelName = string.Empty;
+
+            if (intBranchNum == 1)
+            {
+                // 新規検査番号での登録時、品番登録情報からAIモデル情報を取得する
+                bolGetAIModelInfo_ProductInfo(
+                    ref intAIModelNonInspectionFlg,
+                    ref strAIModelName);
+            }
+            else
+            {
+                // 枝番が上がる場合、紐付く検査情報ヘッダからAIモデル情報を取得する
+                bolGetAIModelInfo_InspectionInfoHeader(
+                    ref intAIModelNonInspectionFlg,
+                    ref strAIModelName,
+                    intInspectionNum,
+                    intBranchNum);
+            }
+
             try
             {
                 // SQL文を作成する
@@ -509,6 +529,8 @@ namespace BeforeInspection
                                     , illumination_information
                                     , start_regimark_camera_num
                                     , end_regimark_camera_num
+                                    , ai_model_non_inspection_flg
+                                    , ai_model_name
                                     )VALUES(
                                       :inspection_num
                                     , :branch_num
@@ -528,6 +550,8 @@ namespace BeforeInspection
                                     , :illumination_information
                                     , :start_regimark_camera_num
                                     , :end_regimark_camera_num
+                                    , :ai_model_non_inspection_flg
+                                    , :ai_model_name
                                     );";
 
                 // SQLコマンドに各パラメータを設定する
@@ -549,6 +573,8 @@ namespace BeforeInspection
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "illumination_information", DbType = DbType.Int16, Value = m_intIlluminationInformation });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_regimark_camera_num", DbType = DbType.Int16, Value = m_intStartRegimarkCameraNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_regimark_camera_num", DbType = DbType.Int16, Value = m_intEndRegimarkCameraNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_non_inspection_flg", DbType = DbType.Int16, Value = intAIModelNonInspectionFlg });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_name", DbType = DbType.String, Value = strAIModelName });
 
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strSql, lstNpgsqlCommand);
@@ -861,6 +887,137 @@ namespace BeforeInspection
 
                 return false;
             }
+        }
+
+        /// <summary>
+        /// AIモデル情報取得_品番登録情報
+        /// </summary>
+        /// <param name="intAIModelNonInspectionFlg">AIモデル未検査フラグ</param>
+        /// <param name="strAIModelName">AIモデル名</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        private bool bolGetAIModelInfo_ProductInfo(
+            ref int intAIModelNonInspectionFlg,
+            ref string strAIModelName)
+        {
+            string strSQL = string.Empty;
+            DataTable dtData = new DataTable();
+
+            try
+            {
+                strSQL = @"
+                    SELECT
+                        ai_model_non_inspection_flg,
+                        ai_model_name
+                    FROM
+                        mst_product_info
+                    WHERE product_name = :product_name";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "product_name", DbType = DbType.String, Value = txtProductName.Text });
+
+                // SQL抽出
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                //  検査番号
+                if (dtData.Rows.Count > 0)
+                {
+                    intAIModelNonInspectionFlg = int.Parse(dtData.Rows[0]["ai_model_non_inspection_flg"].ToString());
+                    strAIModelName = dtData.Rows[0]["ai_model_name"].ToString();
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}",
+                        g_clsMessageInfo.strMsgE0001,
+                        Environment.NewLine,
+                        ex.Message));
+
+                // メッセージ出力
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0021)).ShowDialog(this);
+            }
+            finally
+            {
+                dtData.Dispose();
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// AIモデル情報取得_検査情報ヘッダ
+        /// </summary>
+        /// <param name="intAIModelNonInspectionFlg">AIモデル未検査フラグ</param>
+        /// <param name="strAIModelName">AIモデル名</param>
+        /// <param name="intInspectionNum">検査番号</param>
+        /// <param name="intBranchNum">枝番</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        private bool bolGetAIModelInfo_InspectionInfoHeader(
+            ref int intAIModelNonInspectionFlg,
+            ref string strAIModelName,
+            int intInspectionNum,
+            int intBranchNum)
+        {
+            string strSQL = string.Empty;
+            DataTable dtData = new DataTable();
+
+            try
+            {
+                strSQL = @"
+                    SELECT
+                        ai_model_non_inspection_flg,
+                        ai_model_name
+                    FROM inspection_info_header
+                    WHERE inspection_num = :inspection_num
+                        AND branch_num = :branch_num
+                        AND unit_num = :unit_num
+                        AND TO_CHAR(inspection_date,'YYYY/MM/DD') = :inspection_date";
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "branch_num", DbType = DbType.Int16, Value = intBranchNum - 1 });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_date", DbType = DbType.String, Value = m_datInspectionDate.ToString("yyyy/MM/dd") });
+
+                // SQL抽出
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, strSQL, lstNpgsqlCommand);
+
+                //  検査番号
+                if (dtData.Rows.Count > 0)
+                {
+                    intAIModelNonInspectionFlg = int.Parse(dtData.Rows[0]["ai_model_non_inspection_flg"].ToString());
+                    strAIModelName = dtData.Rows[0]["ai_model_name"].ToString();
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}",
+                        g_clsMessageInfo.strMsgE0001,
+                        Environment.NewLine,
+                        ex.Message));
+
+                // メッセージ出力
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
+            }
+            finally
+            {
+                dtData.Dispose();
+            }
+
+            return false;
         }
 
         /// <summary>
