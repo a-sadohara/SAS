@@ -1,10 +1,10 @@
-﻿using log4net;
+﻿using BeforeInspection.DTO;
+using log4net;
 using System;
 using System.Configuration;
-using System.Text;
 using System.Data;
+using System.Text;
 using System.Windows.Forms;
-using BeforeInspection.DTO;
 
 namespace BeforeInspection
 {
@@ -85,7 +85,7 @@ namespace BeforeInspection
                 if (m_sbErrMessage.Length > 0)
                 {
                     // ログ出力
-                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "接続文字列取得時にエラーが発生しました。{0}{1}" ,Environment.NewLine, m_sbErrMessage.ToString()));
+                    WriteEventLog(g_CON_LEVEL_ERROR, string.Format("接続文字列取得時にエラーが発生しました。{0}{1}", Environment.NewLine, m_sbErrMessage.ToString()));
                     // メッセージ出力
                     System.Windows.Forms.MessageBox.Show("接続文字列取得時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -111,7 +111,7 @@ namespace BeforeInspection
 
                 // メッセージ情報取得
                 g_clsMessageInfo = new MessageInfo();
-                if (g_clsMessageInfo.bolNormalEnd == false) 
+                if (g_clsMessageInfo.bolNormalEnd == false)
                 {
                     return;
                 }
@@ -130,7 +130,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format( "初期起動時にエラーが発生しました。{0}{1}" ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("初期起動時にエラーが発生しました。{0}{1}", Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show("初期起動時に例外が発生しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -191,7 +191,7 @@ namespace BeforeInspection
             strValue = ConfigurationManager.AppSettings[strKey];
             if (strValue == null)
             {
-                m_sbErrMessage.AppendLine(string.Format("Key[{0}] AppConfigに存在しません。" , strKey));
+                m_sbErrMessage.AppendLine(string.Format("Key[{0}] AppConfigに存在しません。", strKey));
             }
         }
     }

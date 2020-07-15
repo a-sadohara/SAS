@@ -132,7 +132,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine, ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -191,7 +191,7 @@ namespace BeforeInspection
             catch (Exception ex)
             {
                 // ログ出力
-                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001 ,Environment.NewLine , ex.Message));
+                WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
                 // メッセージ出力
                 System.Windows.Forms.MessageBox.Show(g_clsMessageInfo.strMsgE0003, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -204,9 +204,9 @@ namespace BeforeInspection
         /// <param name="e"></param>
         private void dgvWorker_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) 
-            { 
-                return; 
+            if (e.RowIndex < 0)
+            {
+                return;
             }
 
             // 選択行の情報をパラメータにセット
