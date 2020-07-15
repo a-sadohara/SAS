@@ -220,7 +220,7 @@ namespace RapidModelImport
                                 "{0}{1}出力先:{2}",
                                 "AIモデル名情報連携ディレクトリが参照できませんでした。",
                                 Environment.NewLine,
-                                strCooperationFile));
+                                strPath));
 
                         continue;
                     }
