@@ -894,11 +894,11 @@ namespace BeforeInspection
                              , iih.inspection_direction 
                              , iih.illumination_information 
                              , CASE WHEN iih.inspection_direction  = 'X' OR iih.inspection_direction = 'R'
-                                    THEN abs(iih.start_regimark_camera_num -27) + 1
+                                    THEN abs(iih.start_regimark_camera_num - COALESCE(mpi.taking_camera_cnt, 0)) + 1
                                     ELSE iih.start_regimark_camera_num
                                END AS start_regimark_camera_num
                              , CASE WHEN iih.inspection_direction  = 'X' OR iih.inspection_direction = 'R'
-                                    THEN abs(iih.end_regimark_camera_num -27) + 1
+                                    THEN abs(iih.end_regimark_camera_num - COALESCE(mpi.taking_camera_cnt, 0)) + 1
                                     ELSE iih.end_regimark_camera_num
                                END AS end_regimark_camera_num
                              , COALESCE(mpi.line_length, 0) AS line_length 
