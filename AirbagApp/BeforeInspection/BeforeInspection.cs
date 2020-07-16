@@ -19,6 +19,7 @@ namespace BeforeInspection
         private int m_intIlluminationInformation = 0;   // 照度情報
         private int m_intStartRegimarkCameraNum = 0;    // 開始レジマークカメラ番号
         private int m_intEndRegimarkCameraNum = 0;      // 終了レジマークカメラ番号
+        private int m_intTakingCameraCnt = 0;           // 撮像カメラ数
         private string m_strWorker1 = string.Empty;               // 作業者情報(社員番号)検反部No.1
         private string m_strWorker2 = string.Empty;               // 作業者情報(社員番号)検反部No.2
         private string m_strInspectionDirection;        // 検査方向
@@ -548,8 +549,14 @@ namespace BeforeInspection
                                     , :inspection_direction
                                     , TO_DATE(:inspection_date,'YYYY/MM/DD')
                                     , :illumination_information
-                                    , :start_regimark_camera_num
-                                    , :end_regimark_camera_num
+                                    , CASE WHEN :inspection_direction = 'X' OR :inspection_direction = 'R'
+                                           THEN abs(:start_regimark_camera_num - :taking_camera_cnt) + 1
+                                           ELSE :start_regimark_camera_num
+                                      END
+                                    , CASE WHEN :inspection_direction = 'X' OR :inspection_direction = 'R'
+                                           THEN abs(:end_regimark_camera_num - :taking_camera_cnt) + 1
+                                           ELSE :end_regimark_camera_num
+                                      END
                                     , :ai_model_non_inspection_flg
                                     , :ai_model_name
                                     );";
@@ -573,6 +580,7 @@ namespace BeforeInspection
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "illumination_information", DbType = DbType.Int16, Value = m_intIlluminationInformation });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "start_regimark_camera_num", DbType = DbType.Int16, Value = m_intStartRegimarkCameraNum });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "end_regimark_camera_num", DbType = DbType.Int16, Value = m_intEndRegimarkCameraNum });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "taking_camera_cnt", DbType = DbType.Int16, Value = m_intTakingCameraCnt });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_non_inspection_flg", DbType = DbType.Int16, Value = intAIModelNonInspectionFlg });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "ai_model_name", DbType = DbType.String, Value = strAIModelName });
 
@@ -808,17 +816,20 @@ namespace BeforeInspection
         /// <param name="intIlluminationInformation">照度情報</param>
         /// <param name="intStartRegimarkCameraNum">開始レジマークカメラ番号</param>
         /// <param name="intEndRegimarkCameraNum">終了レジマークカメラ番号</param>
+        /// <param name="intTakingCameraCnt">撮像カメラ数</param>
         /// <param name="strProductName">品名</param>
         /// <returns>true:正常終了 false:異常終了</returns>
         private bool bolGetMstProductInfo(out int intIlluminationInformation,
                                           out int intStartRegimarkCameraNum,
                                           out int intEndRegimarkCameraNum,
+                                          out int intTakingCameraCnt,
                                           string strProductName)
         {
             // 初期化
             intIlluminationInformation = 0;
             intStartRegimarkCameraNum = 0;
             intEndRegimarkCameraNum = 0;
+            intTakingCameraCnt = 0;
 
             string strSQL = string.Empty;
             DataTable dtData;
@@ -830,6 +841,7 @@ namespace BeforeInspection
                 strSQL += @"    illumination_information";
                 strSQL += @"  , start_regimark_camera_num";
                 strSQL += @"  , end_regimark_camera_num ";
+                strSQL += @"  , taking_camera_cnt ";
                 strSQL += @"  , ai_model_non_inspection_flg ";
                 strSQL += @"  , ai_model_name ";
                 strSQL += @"FROM ";
@@ -865,6 +877,11 @@ namespace BeforeInspection
                     intIlluminationInformation = int.Parse(dtData.Rows[0]["illumination_information"].ToString());
                     intStartRegimarkCameraNum = int.Parse(dtData.Rows[0]["start_regimark_camera_num"].ToString());
                     intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
+
+                    if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["taking_camera_cnt"].ToString()))
+                    {
+                        intTakingCameraCnt = int.Parse(dtData.Rows[0]["taking_camera_cnt"].ToString());
+                    }
                 }
 
                 return true;
@@ -1050,14 +1067,8 @@ namespace BeforeInspection
                              , TO_CHAR(iih.end_datetime,'YYYY/MM/DD HH24:MI:SS') AS end_datetime
                              , iih.inspection_direction 
                              , iih.illumination_information 
-                             , CASE WHEN iih.inspection_direction  = 'X' OR iih.inspection_direction = 'R'
-                                    THEN abs(iih.start_regimark_camera_num - COALESCE(mpi.taking_camera_cnt, 0)) + 1
-                                    ELSE iih.start_regimark_camera_num
-                               END AS start_regimark_camera_num
-                             , CASE WHEN iih.inspection_direction  = 'X' OR iih.inspection_direction = 'R'
-                                    THEN abs(iih.end_regimark_camera_num - COALESCE(mpi.taking_camera_cnt, 0)) + 1
-                                    ELSE iih.end_regimark_camera_num
-                               END AS end_regimark_camera_num
+                             , iih.start_regimark_camera_num 
+                             , iih.end_regimark_camera_num 
                              , COALESCE(mpi.line_length, 0) AS line_length 
                              , COALESCE(mpi.regimark_between_length, 0) AS regimark_between_length
                            FROM 
@@ -1254,7 +1265,8 @@ namespace BeforeInspection
                                      , TO_CHAR(iih.inspection_date,'YYYY/MM/DD') AS inspection_date 
                                      , mpi.illumination_information
                                      , mpi.start_regimark_camera_num
-                                     , mpi.end_regimark_camera_num 
+                                     , mpi.end_regimark_camera_num
+                                     , mpi.taking_camera_cnt
                                    FROM 
                                        inspection_info_header iih
                                    INNER JOIN
@@ -1307,6 +1319,11 @@ namespace BeforeInspection
                         if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["end_regimark_camera_num"].ToString()))
                         {
                             m_intEndRegimarkCameraNum = int.Parse(dtData.Rows[0]["end_regimark_camera_num"].ToString());
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(dtData.Rows[0]["taking_camera_cnt"].ToString()))
+                        {
+                            m_intTakingCameraCnt = int.Parse(dtData.Rows[0]["taking_camera_cnt"].ToString());
                         }
                     }
                     catch (Exception ex)
@@ -1391,6 +1408,7 @@ namespace BeforeInspection
             if (bolGetMstProductInfo(out m_intIlluminationInformation,
                                         out m_intStartRegimarkCameraNum,
                                         out m_intEndRegimarkCameraNum,
+                                        out m_intTakingCameraCnt,
                                         frmHinNoSelection.strProductName) == false)
             {
                 // エラー発生時は品名をクリアする
