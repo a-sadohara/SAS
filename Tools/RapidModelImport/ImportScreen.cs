@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -66,6 +65,8 @@ namespace RapidModelImport
         private void BtnImport_Click(object sender, EventArgs e)
         {
             string strPath = string.Empty;
+            StringBuilder strErrorPath = new StringBuilder();
+            bool bolDirectoryExistenceFlag = false;
 
             foreach (string strAIModelNameCooperationDirectoryPath in g_strAIModelNameCooperationDirectoryPath.Split(','))
             {
@@ -74,27 +75,40 @@ namespace RapidModelImport
                 if (string.IsNullOrWhiteSpace(strPath) ||
                     !Directory.Exists(strPath))
                 {
-                    string strErrorMessage =
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_WARN,
                         string.Format(
                             "{0}{1}出力先:{2}",
                             "AIモデル名情報連携ディレクトリが参照できませんでした。",
                             Environment.NewLine,
-                            strPath);
+                            strPath));
 
-                    // ログ出力
-                    WriteEventLog(
-                        g_CON_LEVEL_WARN,
-                        strErrorMessage);
+                    strErrorPath.AppendLine(string.Format("出力先:[{0}]", strPath));
 
-                    // メッセージ出力
-                    MessageBox.Show(
-                        strErrorMessage,
-                        g_CON_MESSAGE_TITLE_ERROR,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    return;
+                    continue;
                 }
+
+                bolDirectoryExistenceFlag = true;
+            }
+
+            if (!bolDirectoryExistenceFlag)
+            {
+                string strErrorMessage =
+                    string.Format(
+                        "{0}{1}{2}",
+                        "AIモデル名情報連携ディレクトリが参照できませんでした。",
+                        Environment.NewLine,
+                        strErrorPath.ToString());
+
+                // メッセージ出力
+                MessageBox.Show(
+                    strErrorMessage,
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return;
             }
 
             if (string.IsNullOrWhiteSpace(txtModelName.Text))
