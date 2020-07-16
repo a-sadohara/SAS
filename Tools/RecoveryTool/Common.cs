@@ -24,11 +24,12 @@ namespace RecoveryTool
         public static string g_strDomain = string.Empty;
         public static string g_strConnectionPassword = string.Empty;
         public static string g_strErrorFileOutputPath = string.Empty;
+        public static string[] g_strProcessName;
         public static int g_intFabricInfoUpdateStatus = 0;
         public static int g_intProcessingStatusUpdateStatus = 0;
-        public static string g_strRapidAnalysisRapidResultUpdateStatus = string.Empty;
-        public static string g_strRapidAnalysisEdgeResultUpdateStatus = string.Empty;
-        public static string g_strRapidAnalysisMaskingResultUpdateStatus = string.Empty;
+        public static int g_intRapidAnalysisRapidResultUpdateStatus = 0;
+        public static int g_intRapidAnalysisEdgeResultUpdateStatus = 0;
+        public static int g_intRapidAnalysisMaskingResultUpdateStatus = 0;
         public static int[] g_intFabricInfoExtractionStatus;
         public static int[] g_intProcessingStatusExtractionStatus;
 
@@ -84,8 +85,10 @@ namespace RecoveryTool
                     return;
                 }
 
-                string strFabricInfoUpdateStatus = string.Empty;
-                string strProcessingStatusUpdateStatus = string.Empty;
+                string strConnectionPoint = string.Empty;
+                string strDomain = string.Empty;
+                string strConnectionPassword = string.Empty;
+                string strProcessName = string.Empty;
                 string strFabricInfoExtractionStatus = string.Empty;
                 string strProcessingStatusExtractionStatus = string.Empty;
 
@@ -96,15 +99,16 @@ namespace RecoveryTool
                 GetAppConfigValue("DBServerName", ref g_strDBServerName);
                 GetAppConfigValue("DBPort", ref g_strDBPort);
                 GetAppConfigValue("UnitNum", ref g_strUnitNum);
-                GetAppConfigValue("ConnectionPoint", ref g_strConnectionPoint);
-                GetAppConfigValue("Domain", ref g_strDomain);
-                GetAppConfigValue("ConnectionPassword", ref g_strConnectionPassword);
+                GetAppConfigValue("ConnectionPoint", ref strConnectionPoint);
+                GetAppConfigValue("Domain", ref strDomain);
+                GetAppConfigValue("ConnectionPassword", ref strConnectionPassword);
+                GetAppConfigValue("ProcessName", ref strProcessName);
                 GetAppConfigValue("ErrorFileOutputPath", ref g_strErrorFileOutputPath);
-                GetAppConfigValue("FabricInfoUpdateStatus", ref strFabricInfoUpdateStatus);
-                GetAppConfigValue("ProcessingStatusUpdateStatus", ref strProcessingStatusUpdateStatus);
-                GetAppConfigValue("RapidAnalysisRapidResultUpdateStatus", ref g_strRapidAnalysisRapidResultUpdateStatus);
-                GetAppConfigValue("RapidAnalysisEdgeResultUpdateStatus", ref g_strRapidAnalysisEdgeResultUpdateStatus);
-                GetAppConfigValue("RapidAnalysisMaskingResultUpdateStatus", ref g_strRapidAnalysisMaskingResultUpdateStatus);
+                GetAppConfigValue("FabricInfoUpdateStatus", ref g_intFabricInfoUpdateStatus);
+                GetAppConfigValue("ProcessingStatusUpdateStatus", ref g_intProcessingStatusUpdateStatus);
+                GetAppConfigValue("RapidAnalysisRapidResultUpdateStatus", ref g_intRapidAnalysisRapidResultUpdateStatus);
+                GetAppConfigValue("RapidAnalysisEdgeResultUpdateStatus", ref g_intRapidAnalysisEdgeResultUpdateStatus);
+                GetAppConfigValue("RapidAnalysisMaskingResultUpdateStatus", ref g_intRapidAnalysisMaskingResultUpdateStatus);
                 GetAppConfigValue("FabricInfoExtractionStatus", ref strFabricInfoExtractionStatus);
                 GetAppConfigValue("ProcessingStatusExtractionStatus", ref strProcessingStatusExtractionStatus);
 
@@ -128,8 +132,22 @@ namespace RecoveryTool
                     return;
                 }
 
-                g_intFabricInfoUpdateStatus = int.Parse(strFabricInfoUpdateStatus);
-                g_intProcessingStatusUpdateStatus = int.Parse(strProcessingStatusUpdateStatus);
+                if (!string.IsNullOrWhiteSpace(strConnectionPoint))
+                {
+                    g_strConnectionPoint = string.Format("/S {0}", strConnectionPoint);
+                }
+
+                if (!string.IsNullOrWhiteSpace(strDomain))
+                {
+                    g_strDomain = string.Format("/U {0}", strDomain);
+                }
+
+                if (!string.IsNullOrWhiteSpace(strConnectionPassword))
+                {
+                    g_strConnectionPassword = string.Format("/P {0}", strConnectionPassword);
+                }
+
+                g_strProcessName = strProcessName.Split(',');
                 g_intFabricInfoExtractionStatus = strFabricInfoExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
                 g_intProcessingStatusExtractionStatus = strProcessingStatusExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
 
@@ -222,6 +240,27 @@ namespace RecoveryTool
             if (strValue == null)
             {
                 m_sbErrMessage.AppendLine("Key[" + strKey + "] AppConfigに存在しません。");
+            }
+        }
+
+        /// <summary>
+        /// App.configファイルから設定値を取得
+        /// </summary>
+        /// <param name="strKey">キー</param>
+        /// <param name="intValue">設定値</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        private static void GetAppConfigValue(string strKey, ref int intValue)
+        {
+            string strValue = string.Empty;
+
+            try
+            {
+                GetAppConfigValue(strKey, ref strValue);
+                intValue = int.Parse(strValue);
+            }
+            catch (Exception ex)
+            {
+                m_sbErrMessage.AppendLine(string.Format("Key[{0}] {1}", strKey, ex.Message));
             }
         }
     }
