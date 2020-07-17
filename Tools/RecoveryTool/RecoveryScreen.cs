@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static RecoveryTool.Common;
@@ -25,10 +24,13 @@ namespace RecoveryTool
         private const string m_CON_COMMAND_TASKKILL = @"/c taskkill {0} {1} {2} /F /FI ""IMAGENAME eq function_*""";
         private const string m_CON_COMMAND_TASKLIST = @"/c tasklist {0} {1} {2} /FI ""IMAGENAME eq function_*""";
         private const string m_CON_COMMAND_SCHTASKS = @"/c schtasks /RUN {0} {1} {2} /I /TN ""{3}""";
-        private const string m_CON_RESULT_SUCCESS = "情報: 指定された条件に一致するタスクは実行されていません。";
+        private const string m_CON_RESULT_ERROR = "処理の実行に失敗しました。";
+        private const string m_CON_CONFIG_ERROR = "設定不備の可能性があるため、Config情報を確認してください。";
+        private const string m_CON_RETRY_ERROR = "管理者に連絡してサーバの状態を確認してください。";
         private const string m_CON_UNIT_NUM_FORMAT = "{0}号機";
         private const string m_CON_LOG_FORMAT = "{0}号機、検査日付:{1}、検査番号:{2}、反番:{3}";
-        private const string m_CON_FUNCTION_NAME_PATTERN = "function_[0-9][0-9][0-9].exe";
+        private const string m_CON_TEXT_ACTIV = "起動中";
+        private const string m_CON_TEXT_STOP = "停止";
 
         // 検査情報リスト
         private List<InspectionInfo> m_lstInspectionInfo;
@@ -66,6 +68,20 @@ namespace RecoveryTool
 
             // 複数選択させない
             this.dgvData.MultiSelect = false;
+
+            // エラーファイル格納ディレクトリの有無確認
+            if (!Directory.Exists(g_strErrorFileOutputPath))
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    "エラーファイル格納ディレクトリが参照できません。",
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                this.Close();
+                return;
+            }
 
             m_lstFiles =
                 Directory.EnumerateFiles(
@@ -125,8 +141,11 @@ namespace RecoveryTool
 
             try
             {
+                int intTrialCount = 0;
+                bool bolProcessCheckResult = true;
                 string strResult = string.Empty;
                 string strErrorFile = string.Empty;
+                string strStatus = string.Empty;
                 List<string> strFunctionName = new List<string>();
                 List<Task<string>> lstTask = new List<Task<string>>();
 
@@ -164,23 +183,72 @@ namespace RecoveryTool
 
                     await taskExecuteTaskKill;
 
-                    ExecutionResultTextAdded(
-                        false,
-                        string.Format(
-                            "{0}{1}",
-                            taskExecuteTaskKill.Result,
-                            Environment.NewLine));
+                    if (string.IsNullOrWhiteSpace(taskExecuteTaskKill.Result))
+                    {
+                        string strErrorMessage =
+                            string.Format(
+                                "{0}{1}{2}",
+                                m_CON_RESULT_ERROR,
+                                Environment.NewLine,
+                                m_CON_CONFIG_ERROR);
 
-                    await Task.Delay(1000);
+                        // ログ出力
+                        WriteEventLog(
+                            g_CON_LEVEL_ERROR,
+                            strErrorMessage);
+
+                        ExecutionResultTextAdded(
+                            false,
+                            strErrorMessage);
+
+                        // メッセージ出力
+                        MessageBox.Show(
+                            strErrorMessage,
+                            g_CON_MESSAGE_TITLE_ERROR,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+
+                        return;
+                    }
+
+                    await Task.Delay(2000);
 
                     do
                     {
+                        if (intTrialCount > 3)
+                        {
+                            string strErrorMessage =
+                                string.Format(
+                                    "{0}{1}{2}",
+                                    "プロセスを停止できませんでした。",
+                                    Environment.NewLine,
+                                    m_CON_RETRY_ERROR);
+
+                            // ログ出力
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                strErrorMessage);
+
+                            ExecutionResultTextAdded(
+                                false,
+                                strErrorMessage);
+
+                            // メッセージ出力
+                            MessageBox.Show(
+                                strErrorMessage,
+                                g_CON_MESSAGE_TITLE_ERROR,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+
+                            return;
+                        }
+
                         if (!string.IsNullOrWhiteSpace(strResult))
                         {
                             ExecutionResultTextAdded(
                                 false,
                                 string.Format(
-                                    "{0}{1}{1}{1}",
+                                    "{0}{1}{1}",
                                     "⇒全てのプロセス停止が確認できないため、10秒後に再確認します。",
                                     Environment.NewLine));
 
@@ -190,9 +258,9 @@ namespace RecoveryTool
                         ExecutionResultTextAdded(
                             false,
                             string.Format(
-                                "{0}{1}",
-                                "⇒プロセスの状態を確認します。",
-                                Environment.NewLine));
+                                "{0}{1}{0}",
+                                Environment.NewLine,
+                                "⇒プロセスの状態を確認します。"));
 
                         // プロセスの状態を確認する
                         Task<string> taskExecuteTaskList =
@@ -204,14 +272,60 @@ namespace RecoveryTool
 
                         strResult = taskExecuteTaskList.Result;
 
-                        ExecutionResultTextAdded(
-                            false,
-                            string.Format(
-                                "{0}{1}",
-                                strResult,
-                                Environment.NewLine));
+                        if (string.IsNullOrWhiteSpace(strResult))
+                        {
+                            string strErrorMessage =
+                                string.Format(
+                                    "{0}{1}{2}",
+                                    m_CON_RESULT_ERROR,
+                                    Environment.NewLine,
+                                    m_CON_CONFIG_ERROR);
+
+                            // ログ出力
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                strErrorMessage);
+
+                            ExecutionResultTextAdded(
+                                false,
+                                strErrorMessage);
+
+                            // メッセージ出力
+                            MessageBox.Show(
+                                strErrorMessage,
+                                g_CON_MESSAGE_TITLE_ERROR,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+
+                            return;
+                        }
+
+                        bolProcessCheckResult = true;
+
+                        foreach (string strFileName in g_strExecutionFileName)
+                        {
+                            if (strResult.Contains(strFileName))
+                            {
+                                strStatus = m_CON_TEXT_ACTIV;
+                                bolProcessCheckResult = false;
+                            }
+                            else
+                            {
+                                strStatus = m_CON_TEXT_STOP;
+                            }
+
+                            ExecutionResultTextAdded(
+                                false,
+                                string.Format(
+                                    " ・{0} {1}{2}",
+                                    strFileName.Replace(".exe", string.Empty),
+                                    strStatus,
+                                    Environment.NewLine));
+                        }
+
+                        intTrialCount++;
                     }
-                    while (!strResult.Replace(Environment.NewLine, string.Empty).Equals(m_CON_RESULT_SUCCESS));
+                    while (!bolProcessCheckResult);
                 }
                 catch (Exception ex)
                 {
@@ -323,28 +437,47 @@ namespace RecoveryTool
                             Environment.NewLine));
 
                     await Task.WhenAll(lstTask.ToArray());
+                    await Task.Delay(2000);
 
-                    foreach (Task<string> tsk in lstTask)
-                    {
-                        ExecutionResultTextAdded(
-                            false,
-                            string.Format(
-                                "{0}{1}",
-                                tsk.Result,
-                                Environment.NewLine));
-                    }
-
-                    await Task.Delay(1000);
                     strResult = string.Empty;
+                    intTrialCount = 0;
 
                     do
                     {
+                        if (intTrialCount > 3)
+                        {
+                            string strErrorMessage =
+                                string.Format(
+                                    "{0}{1}{2}",
+                                    "プロセスを起動できませんでした。",
+                                    Environment.NewLine,
+                                    m_CON_RETRY_ERROR);
+
+                            // ログ出力
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                strErrorMessage);
+
+                            ExecutionResultTextAdded(
+                                false,
+                                strErrorMessage);
+
+                            // メッセージ出力
+                            MessageBox.Show(
+                                strErrorMessage,
+                                g_CON_MESSAGE_TITLE_ERROR,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+
+                            return;
+                        }
+
                         if (!string.IsNullOrWhiteSpace(strResult))
                         {
                             ExecutionResultTextAdded(
                                 false,
                                 string.Format(
-                                    "{0}{1}{1}{1}",
+                                    "{0}{1}{1}",
                                     "⇒全てのプロセス起動が確認できないため、10秒後に再確認します。",
                                     Environment.NewLine));
 
@@ -368,21 +501,61 @@ namespace RecoveryTool
 
                         strResult = taskExecuteTaskList.Result;
 
-                        ExecutionResultTextAdded(
-                            false,
-                            string.Format(
-                                "{0}{1}",
-                                strResult,
-                                Environment.NewLine));
+                        if (string.IsNullOrWhiteSpace(strResult))
+                        {
+                            string strErrorMessage =
+                                string.Format(
+                                    "{0}{1}{2}",
+                                    m_CON_RESULT_ERROR,
+                                    Environment.NewLine,
+                                    m_CON_CONFIG_ERROR);
 
+                            // ログ出力
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                strErrorMessage);
+
+                            ExecutionResultTextAdded(
+                                false,
+                                strErrorMessage);
+
+                            // メッセージ出力
+                            MessageBox.Show(
+                                strErrorMessage,
+                                g_CON_MESSAGE_TITLE_ERROR,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+
+                            return;
+                        }
+
+                        bolProcessCheckResult = true;
                         strFunctionName.Clear();
 
-                        foreach (Match mFunctionName in Regex.Matches(strResult, m_CON_FUNCTION_NAME_PATTERN))
+                        foreach (string strFileName in g_strExecutionFileName)
                         {
-                            strFunctionName.Add(mFunctionName.Value);
+                            if (strResult.Contains(strFileName))
+                            {
+                                strStatus = m_CON_TEXT_ACTIV;
+                            }
+                            else
+                            {
+                                strStatus = m_CON_TEXT_STOP;
+                                bolProcessCheckResult = false;
+                            }
+
+                            ExecutionResultTextAdded(
+                                false,
+                                string.Format(
+                                    " ・{0} {1}{2}",
+                                    strFileName.Replace(".exe", string.Empty),
+                                    strStatus,
+                                    Environment.NewLine));
                         }
+
+                        intTrialCount++;
                     }
-                    while (g_strTaskName.Length != strFunctionName.Distinct().Count());
+                    while (!bolProcessCheckResult);
                 }
                 catch (Exception ex)
                 {
@@ -594,7 +767,7 @@ namespace RecoveryTool
                     string.Format(
                         strCommand,
                         g_strConnectionPoint,
-                        g_strDomain,
+                        g_strConnectionUser,
                         g_strConnectionPassword,
                         strProcessName);
                 prCmd.StartInfo.CreateNoWindow = true;

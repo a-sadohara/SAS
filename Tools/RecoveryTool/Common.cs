@@ -21,10 +21,11 @@ namespace RecoveryTool
         public static string g_strDBPort = string.Empty;
         public static string g_strUnitNum = string.Empty;
         public static string g_strConnectionPoint = string.Empty;
-        public static string g_strDomain = string.Empty;
+        public static string g_strConnectionUser = string.Empty;
         public static string g_strConnectionPassword = string.Empty;
         public static string g_strErrorFileOutputPath = string.Empty;
         public static string[] g_strTaskName;
+        public static string[] g_strExecutionFileName;
         public static int g_intFabricInfoUpdateStatus = 0;
         public static int g_intProcessingStatusUpdateStatus = 0;
         public static int g_intRapidAnalysisRapidResultUpdateStatus = 0;
@@ -86,9 +87,10 @@ namespace RecoveryTool
                 }
 
                 string strConnectionPoint = string.Empty;
-                string strDomain = string.Empty;
+                string strConnectionUser = string.Empty;
                 string strConnectionPassword = string.Empty;
                 string strTaskName = string.Empty;
+                string strExecutionFileName = string.Empty;
                 string strFabricInfoExtractionStatus = string.Empty;
                 string strProcessingStatusExtractionStatus = string.Empty;
 
@@ -100,10 +102,11 @@ namespace RecoveryTool
                 GetAppConfigValue("DBPort", ref g_strDBPort);
                 GetAppConfigValue("UnitNum", ref g_strUnitNum);
                 GetAppConfigValue("ConnectionPoint", ref strConnectionPoint);
-                GetAppConfigValue("Domain", ref strDomain);
+                GetAppConfigValue("ConnectionUser", ref strConnectionUser);
                 GetAppConfigValue("ConnectionPassword", ref strConnectionPassword);
                 GetAppConfigValue("TaskName", ref strTaskName);
                 GetAppConfigValue("ErrorFileOutputPath", ref g_strErrorFileOutputPath);
+                GetAppConfigValue("ExecutionFileName", ref strExecutionFileName);
                 GetAppConfigValue("FabricInfoUpdateStatus", ref g_intFabricInfoUpdateStatus);
                 GetAppConfigValue("ProcessingStatusUpdateStatus", ref g_intProcessingStatusUpdateStatus);
                 GetAppConfigValue("RapidAnalysisRapidResultUpdateStatus", ref g_intRapidAnalysisRapidResultUpdateStatus);
@@ -137,9 +140,9 @@ namespace RecoveryTool
                     g_strConnectionPoint = string.Format("/S {0}", strConnectionPoint);
                 }
 
-                if (!string.IsNullOrWhiteSpace(strDomain))
+                if (!string.IsNullOrWhiteSpace(strConnectionUser))
                 {
-                    g_strDomain = string.Format("/U {0}", strDomain);
+                    g_strConnectionUser = string.Format("/U {0}", strConnectionUser);
                 }
 
                 if (!string.IsNullOrWhiteSpace(strConnectionPassword))
@@ -147,7 +150,8 @@ namespace RecoveryTool
                     g_strConnectionPassword = string.Format("/P {0}", strConnectionPassword);
                 }
 
-                g_strTaskName = strTaskName.Split(',');
+                g_strTaskName = strTaskName.Split(',').OrderBy(x => x).ToArray();
+                g_strExecutionFileName = strExecutionFileName.Split(',').OrderBy(x => x).ToArray();
                 g_intFabricInfoExtractionStatus = strFabricInfoExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
                 g_intProcessingStatusExtractionStatus = strProcessingStatusExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
 
