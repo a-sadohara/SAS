@@ -5,8 +5,8 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static RecoveryTool.Common;
@@ -20,11 +20,15 @@ namespace RecoveryTool
         private const int m_CON_COL_INSPECTION_DATE = 1;
         private const int m_CON_COL_INSPECTION_NUM = 2;
         private const int m_CON_COL_FABRICNAME = 3;
+        private const int m_CON_COL_IMAGING_STARTTIME_DATE = 4;
         private const string m_FILENAME_COMMANDPROMPT = "cmd.exe";
         private const string m_CON_COMMAND_TASKKILL = @"/c taskkill {0} {1} {2} /F /FI ""IMAGENAME eq function_*""";
         private const string m_CON_COMMAND_TASKLIST = @"/c tasklist {0} {1} {2} /FI ""IMAGENAME eq function_*""";
-        private const string m_CON_COMMAND_SCHTASKS = @"/c SCHTASKS /Run {0} {1} {2} /I /TN ""{3} startup""";
-        private const string m_COM_RESULT_SUCCESS = "情報: 指定された条件に一致するタスクは実行されていません。";
+        private const string m_CON_COMMAND_SCHTASKS = @"/c schtasks /RUN {0} {1} {2} /I /TN ""{3}""";
+        private const string m_CON_RESULT_SUCCESS = "情報: 指定された条件に一致するタスクは実行されていません。";
+        private const string m_CON_UNIT_NUM_FORMAT = "{0}号機";
+        private const string m_CON_LOG_FORMAT = "{0}号機、検査日付:{1}、検査番号:{2}、反番:{3}";
+        private const string m_CON_FUNCTION_NAME_PATTERN = "function_[0-9][0-9][0-9].exe";
 
         // 検査情報リスト
         private List<InspectionInfo> m_lstInspectionInfo;
@@ -44,6 +48,7 @@ namespace RecoveryTool
         {
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
+            lblUnitNum.Text = string.Format(m_CON_UNIT_NUM_FORMAT, g_strUnitNum);
         }
 
         /// <summary>
@@ -121,7 +126,8 @@ namespace RecoveryTool
             try
             {
                 string strResult = string.Empty;
-                bool bolProcessStartUpCheck = true;
+                string strErrorFile = string.Empty;
+                List<string> strFunctionName = new List<string>();
                 List<Task<string>> lstTask = new List<Task<string>>();
 
                 ExecutionResultTextAdded(
@@ -205,7 +211,7 @@ namespace RecoveryTool
                                 strResult,
                                 Environment.NewLine));
                     }
-                    while (!strResult.Replace(Environment.NewLine, string.Empty).Equals(m_COM_RESULT_SUCCESS));
+                    while (!strResult.Replace(Environment.NewLine, string.Empty).Equals(m_CON_RESULT_SUCCESS));
                 }
                 catch (Exception ex)
                 {
@@ -216,6 +222,14 @@ namespace RecoveryTool
                         g_CON_LEVEL_ERROR,
                         string.Format(
                             "{0}{1}{2}",
+                            strErrorMessage,
+                            Environment.NewLine,
+                            ex.Message));
+
+                    ExecutionResultTextAdded(
+                        false,
+                        string.Format(
+                            "⇒{0}{1}{2}",
                             strErrorMessage,
                             Environment.NewLine,
                             ex.Message));
@@ -246,34 +260,41 @@ namespace RecoveryTool
                         "■処理ステータスを更新します。",
                         Environment.NewLine));
 
-                try
+                if (dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Value.Equals(true)).Count() != 0)
                 {
-                    // ステータス更新を行う
-                    if (!bolUpdateFabricInfo() ||
-                        !bolUpdateProcessingStatus() ||
-                        !bolUpdateRapidAnalysisInfo())
+                    try
                     {
-                        ExecutionResultTextAdded(
-                            false,
-                            string.Format(
-                                "{0}{1}",
-                                "⇒更新に失敗しました。詳細はイベントログを参照ください。",
-                                Environment.NewLine));
+                        // ステータス更新を行う
+                        if (!bolUpdateFabricInfo() ||
+                            !bolUpdateProcessingStatus() ||
+                            !bolUpdateRapidAnalysisInfo())
+                        {
+                            return;
+                        }
 
-                        return;
+                        g_clsConnectionNpgsql.DbCommit();
                     }
-                }
-                finally
-                {
-                    g_clsConnectionNpgsql.DbClose();
-                }
+                    finally
+                    {
+                        g_clsConnectionNpgsql.DbClose();
+                    }
 
-                ExecutionResultTextAdded(
-                    false,
-                    string.Format(
-                        "{0}{1}{1}",
-                        "⇒更新が完了しました。",
-                        Environment.NewLine));
+                    ExecutionResultTextAdded(
+                        false,
+                        string.Format(
+                            "{0}{1}{1}",
+                            "⇒更新が完了しました。",
+                            Environment.NewLine));
+                }
+                else
+                {
+                    ExecutionResultTextAdded(
+                        false,
+                        string.Format(
+                            "{0}{1}{1}",
+                            "⇒更新対象のデータがありませんでした。",
+                            Environment.NewLine));
+                }
                 #endregion
 
                 #region プロセス全起動
@@ -284,99 +305,179 @@ namespace RecoveryTool
                         "■連携基盤のプロセスを開始します。",
                         Environment.NewLine));
 
-                foreach (string strProcessName in g_strProcessName)
+                try
                 {
-                    // プロセスを開始する
-                    lstTask.Add(Task.Run(() => strExecuteCommandPrompt(
-                            m_CON_COMMAND_SCHTASKS,
-                            strProcessName)));
-                }
+                    foreach (string strTaskName in g_strTaskName)
+                    {
+                        // プロセスを開始する
+                        lstTask.Add(Task.Run(() => strExecuteCommandPrompt(
+                                m_CON_COMMAND_SCHTASKS,
+                                strTaskName)));
+                    }
 
-                ExecutionResultTextAdded(
-                    false,
-                    string.Format(
-                        "{0}{1}",
-                        "⇒プロセス起動コマンドを実行しました。",
-                        Environment.NewLine));
-
-                await Task.WhenAll(lstTask.ToArray());
-
-                foreach (Task<string> tsk in lstTask)
-                {
                     ExecutionResultTextAdded(
                         false,
                         string.Format(
                             "{0}{1}",
-                            tsk.Result,
+                            "⇒プロセス起動コマンドを実行しました。",
                             Environment.NewLine));
-                }
 
-                await Task.Delay(1000);
-                strResult = string.Empty;
+                    await Task.WhenAll(lstTask.ToArray());
 
-                do
-                {
-                    if (!string.IsNullOrWhiteSpace(strResult))
+                    foreach (Task<string> tsk in lstTask)
                     {
                         ExecutionResultTextAdded(
                             false,
                             string.Format(
-                                "{0}{1}{1}{1}",
-                                "⇒全てのプロセス起動が確認できないため、10秒後に再確認します。",
+                                "{0}{1}",
+                                tsk.Result,
+                                Environment.NewLine));
+                    }
+
+                    await Task.Delay(1000);
+                    strResult = string.Empty;
+
+                    do
+                    {
+                        if (!string.IsNullOrWhiteSpace(strResult))
+                        {
+                            ExecutionResultTextAdded(
+                                false,
+                                string.Format(
+                                    "{0}{1}{1}{1}",
+                                    "⇒全てのプロセス起動が確認できないため、10秒後に再確認します。",
+                                    Environment.NewLine));
+
+                            await Task.Delay(10000);
+                        }
+
+                        ExecutionResultTextAdded(
+                            false,
+                            string.Format(
+                                "{0}{1}{0}",
+                                Environment.NewLine,
+                                "⇒プロセスの状態を確認します。"));
+
+                        // プロセスの状態を確認する
+                        Task<string> taskExecuteTaskList =
+                            Task.Run(() => strExecuteCommandPrompt(
+                                m_CON_COMMAND_TASKLIST,
+                                string.Empty));
+
+                        await taskExecuteTaskList;
+
+                        strResult = taskExecuteTaskList.Result;
+
+                        ExecutionResultTextAdded(
+                            false,
+                            string.Format(
+                                "{0}{1}",
+                                strResult,
                                 Environment.NewLine));
 
-                        await Task.Delay(10000);
-                    }
+                        strFunctionName.Clear();
 
-                    ExecutionResultTextAdded(
-                        false,
-                        string.Format(
-                            "{0}{1}{0}",
-                            Environment.NewLine,
-                            "⇒プロセスの状態を確認します。"));
-
-                    // プロセスの状態を確認する
-                    Task<string> taskExecuteTaskList =
-                        Task.Run(() => strExecuteCommandPrompt(
-                            m_CON_COMMAND_TASKLIST,
-                            string.Empty));
-
-                    await taskExecuteTaskList;
-
-                    strResult = taskExecuteTaskList.Result;
-
-                    ExecutionResultTextAdded(
-                        false,
-                        string.Format(
-                            "{0}{1}",
-                            strResult,
-                            Environment.NewLine));
-
-                    bolProcessStartUpCheck = true;
-
-                    foreach (string strProcessName in g_strProcessName)
-                    {
-                        if (!strResult.Contains(strProcessName.Substring(strProcessName.Length - 3, 3)))
+                        foreach (Match mFunctionName in Regex.Matches(strResult, m_CON_FUNCTION_NAME_PATTERN))
                         {
-                            bolProcessStartUpCheck = false;
+                            strFunctionName.Add(mFunctionName.Value);
                         }
                     }
+                    while (g_strTaskName.Length != strFunctionName.Distinct().Count());
                 }
-                while (!bolProcessStartUpCheck);
+                catch (Exception ex)
+                {
+                    string strErrorMessage = "プロセス起動中にエラーが発生しました。";
+
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_ERROR,
+                        string.Format(
+                            "{0}{1}{2}",
+                            strErrorMessage,
+                            Environment.NewLine,
+                            ex.Message));
+
+                    ExecutionResultTextAdded(
+                        false,
+                        string.Format(
+                            "⇒{0}{1}{2}",
+                            strErrorMessage,
+                            Environment.NewLine,
+                            ex.Message));
+
+                    // メッセージ出力
+                    MessageBox.Show(
+                        strErrorMessage,
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    return;
+                }
 
                 ExecutionResultTextAdded(
                     false,
                     string.Format(
-                        "{0}{1}",
+                        "{0}{1}{1}",
                         "⇒全てのプロセスが起動しました。",
                         Environment.NewLine));
                 #endregion
 
                 #region エラーファイル削除
-                foreach (string strFile in m_lstFiles)
+                ExecutionResultTextAdded(
+                    false,
+                    string.Format(
+                        "{0}{1}",
+                        "■エラーファイルを削除します。",
+                        Environment.NewLine));
+
+                try
                 {
-                    File.Delete(strFile);
+                    foreach (string strFile in m_lstFiles)
+                    {
+                        strErrorFile = strFile;
+                        File.Delete(strErrorFile);
+                    }
                 }
+                catch (Exception ex)
+                {
+                    string strErrorMessage = "エラーファイルの削除処理中にエラーが発生しました。";
+
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_ERROR,
+                        string.Format(
+                            "{0}{1}対象ファイル:{2}{1}{3}",
+                            strErrorMessage,
+                            Environment.NewLine,
+                            strErrorFile,
+                            ex.Message));
+
+                    ExecutionResultTextAdded(
+                        false,
+                        string.Format(
+                            "⇒{0}{1}対象ファイル:{2}{1}{3}",
+                            strErrorMessage,
+                            Environment.NewLine,
+                            strErrorFile,
+                            ex.Message));
+
+                    // メッセージ出力
+                    MessageBox.Show(
+                        strErrorMessage,
+                        g_CON_MESSAGE_TITLE_ERROR,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    return;
+                }
+
+                ExecutionResultTextAdded(
+                    false,
+                    string.Format(
+                        "{0}{1}{1}",
+                        "⇒エラーファイルの削除処理が完了しました。",
+                        Environment.NewLine));
                 #endregion
 
                 ExecutionResultTextAdded(
@@ -424,12 +525,12 @@ namespace RecoveryTool
         {
             m_lstInspectionInfo = new List<InspectionInfo>();
             dgvData.Rows.Clear();
-            bolGetFabricInfo();
+            bolGetInspectionInfo();
 
             // データグリッドビューに反映
             foreach (InspectionInfo row in m_lstInspectionInfo)
             {
-                this.dgvData.Rows.Add(true, row.dtInspectionDate, row.intInspectionNum, row.strFabricName);
+                this.dgvData.Rows.Add(true, row.dtInspectionDate, row.intInspectionNum, row.strFabricName, row.dtImagingStarttime);
             }
 
             // 行選択の状態をリセットする
@@ -508,9 +609,9 @@ namespace RecoveryTool
         }
 
         /// <summary>
-        /// 反物情報テーブル取得
+        /// 検査情報取得
         /// </summary>
-        private bool bolGetFabricInfo()
+        private bool bolGetInspectionInfo()
         {
             string strSQL = string.Empty;
             DataTable dtData = new DataTable();
@@ -523,6 +624,7 @@ namespace RecoveryTool
                 sbSQL.AppendLine(" SELECT ");
                 sbSQL.AppendLine("     fi.fabric_name, ");
                 sbSQL.AppendLine("     fi.inspection_num, ");
+                sbSQL.AppendLine("     fi.imaging_starttime, ");
                 sbSQL.AppendLine("     ii.inspection_date ");
                 sbSQL.AppendLine(" FROM fabric_info AS fi ");
                 sbSQL.AppendLine(" INNER JOIN inspection_info_header AS ii on  ");
@@ -555,6 +657,7 @@ namespace RecoveryTool
                 sbSQL.AppendLine("     distinct ");
                 sbSQL.AppendLine("     ps.fabric_name, ");
                 sbSQL.AppendLine("     ps.inspection_num, ");
+                sbSQL.AppendLine("     ps.imaging_starttime, ");
                 sbSQL.AppendLine("     ii.inspection_date ");
                 sbSQL.AppendLine(" FROM processing_status AS ps ");
                 sbSQL.AppendLine(" INNER JOIN inspection_info_header AS ii on  ");
@@ -598,17 +701,38 @@ namespace RecoveryTool
                     clsInspectionInfo = new InspectionInfo();
                     clsInspectionInfo.strFabricName = row[0].ToString();
                     clsInspectionInfo.intInspectionNum = int.Parse(row[1].ToString());
-                    clsInspectionInfo.dtInspectionDate = DateTime.Parse(row[2].ToString());
+                    clsInspectionInfo.dtImagingStarttime = DateTime.Parse(row[2].ToString());
+                    clsInspectionInfo.dtInspectionDate = DateTime.Parse(row[3].ToString());
                     m_lstInspectionInfo.Add(clsInspectionInfo);
                 }
             }
             catch (Exception ex)
             {
-                // ログ出力
-                //WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0001, Environment.NewLine, ex.Message));
+                string strErrorMessage = "復旧対象データの取得中にエラーが発生しました。";
 
-                //// メッセージ出力
-                //MessageBox.Show(g_clsMessageInfo.strMsgE0066, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        ex.Message));
+
+                ExecutionResultTextAdded(
+                    false,
+                    string.Format(
+                        "⇒{0}{1}{2}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(
+                    strErrorMessage,
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
 
                 return false;
             }
@@ -626,6 +750,10 @@ namespace RecoveryTool
         private bool bolUpdateFabricInfo()
         {
             int intExecCount = 0;
+            int intInspectionNum = 0;
+            DateTime dtInspectionDate = DateTime.MinValue;
+            DateTime dtImagingStartTime = DateTime.MinValue;
+            string strFabricName = string.Empty;
 
             try
             {
@@ -651,21 +779,24 @@ namespace RecoveryTool
 
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
-                foreach (DataGridViewRow dgvRow in dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Selected))
+                foreach (DataGridViewRow dgvRow in dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Value.Equals(true)))
                 {
+                    strFabricName = dgvRow.Cells[m_CON_COL_FABRICNAME].Value.ToString();
+                    intInspectionNum = int.Parse(dgvRow.Cells[m_CON_COL_INSPECTION_NUM].Value.ToString());
+                    dtInspectionDate = DateTime.Parse(dgvRow.Cells[m_CON_COL_INSPECTION_DATE].Value.ToString());
+                    dtImagingStartTime = DateTime.Parse(dgvRow.Cells[m_CON_COL_IMAGING_STARTTIME_DATE].Value.ToString());
+
                     // SQLコマンドに各パラメータを設定する
                     lstNpgsqlCommand.Clear();
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "status", DbType = DbType.Int32, Value = g_intFabricInfoUpdateStatus });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = dgvRow.Cells[m_CON_COL_FABRICNAME].Value });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = dgvRow.Cells[m_CON_COL_INSPECTION_NUM].Value });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "imaging_starttime", DbType = DbType.DateTime2, Value = dgvRow.Cells[m_CON_COL_INSPECTION_DATE].Value });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "imaging_starttime", DbType = DbType.DateTime2, Value = dtImagingStartTime });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = g_strUnitNum });
 
                     // SQLを実行する
                     intExecCount = g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
                 }
-
-                g_clsConnectionNpgsql.DbCommit();
 
                 return true;
             }
@@ -673,11 +804,41 @@ namespace RecoveryTool
             {
                 g_clsConnectionNpgsql.DbRollback();
 
-                // ログ出力
-                //WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                string strErrorMessage = "反物情報テーブルのステータス更新中にエラーが発生しました。";
+                string strLogInfo =
+                    string.Format(
+                        m_CON_LOG_FORMAT,
+                        g_strUnitNum,
+                        dtInspectionDate.ToString("yyyy/MM/dd"),
+                        intInspectionNum,
+                        strFabricName);
 
-                //// メッセージ出力
-                //MessageBox.Show(g_clsMessageInfo.strMsgE0067, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}{1}{3}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        strLogInfo,
+                        ex.Message));
+
+                ExecutionResultTextAdded(
+                    false,
+                    string.Format(
+                        "⇒{0}{1}{2}{1}{3}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        strLogInfo,
+                        ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(
+                    strErrorMessage,
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
                 return false;
             }
         }
@@ -688,6 +849,10 @@ namespace RecoveryTool
         private bool bolUpdateProcessingStatus()
         {
             int intExecCount = 0;
+            int intInspectionNum = 0;
+            DateTime dtInspectionDate = DateTime.MinValue;
+            DateTime dtImagingStartTime = DateTime.MinValue;
+            string strFabricName = string.Empty;
 
             try
             {
@@ -702,21 +867,24 @@ namespace RecoveryTool
 
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
-                foreach (DataGridViewRow dgvRow in dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Selected))
+                foreach (DataGridViewRow dgvRow in dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Value.Equals(true)))
                 {
+                    strFabricName = dgvRow.Cells[m_CON_COL_FABRICNAME].Value.ToString();
+                    intInspectionNum = int.Parse(dgvRow.Cells[m_CON_COL_INSPECTION_NUM].Value.ToString());
+                    dtInspectionDate = DateTime.Parse(dgvRow.Cells[m_CON_COL_INSPECTION_DATE].Value.ToString());
+                    dtImagingStartTime = DateTime.Parse(dgvRow.Cells[m_CON_COL_IMAGING_STARTTIME_DATE].Value.ToString());
+
                     // SQLコマンドに各パラメータを設定する
                     lstNpgsqlCommand.Clear();
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "status", DbType = DbType.Int32, Value = g_intProcessingStatusUpdateStatus });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = dgvRow.Cells[m_CON_COL_FABRICNAME].Value });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = dgvRow.Cells[m_CON_COL_INSPECTION_NUM].Value });
-                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "imaging_starttime", DbType = DbType.DateTime2, Value = dgvRow.Cells[m_CON_COL_INSPECTION_DATE].Value });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "fabric_name", DbType = DbType.String, Value = strFabricName });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "inspection_num", DbType = DbType.Int32, Value = intInspectionNum });
+                    lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "imaging_starttime", DbType = DbType.DateTime2, Value = dtImagingStartTime });
                     lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = g_strUnitNum });
 
                     // SQLを実行する
                     intExecCount = g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
                 }
-
-                g_clsConnectionNpgsql.DbCommit();
 
                 return true;
             }
@@ -724,11 +892,41 @@ namespace RecoveryTool
             {
                 g_clsConnectionNpgsql.DbRollback();
 
-                // ログ出力
-                //WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                string strErrorMessage = "処理ステータステーブルのステータス更新中にエラーが発生しました。";
+                string strLogInfo =
+                    string.Format(
+                        m_CON_LOG_FORMAT,
+                        g_strUnitNum,
+                        dtInspectionDate.ToString("yyyy/MM/dd"),
+                        intInspectionNum,
+                        strFabricName);
 
-                //// メッセージ出力
-                //MessageBox.Show(g_clsMessageInfo.strMsgE0067, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}{1}{3}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        strLogInfo,
+                        ex.Message));
+
+                ExecutionResultTextAdded(
+                    false,
+                    string.Format(
+                        "⇒{0}{1}{2}{1}{3}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        strLogInfo,
+                        ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(
+                    strErrorMessage,
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
                 return false;
             }
         }
@@ -738,18 +936,19 @@ namespace RecoveryTool
         /// </summary>
         private bool bolUpdateRapidAnalysisInfo()
         {
-            string strFabricName = string.Empty;
-            int intInspectionNum = 0;
             int intExecCount = 0;
+            int intInspectionNum = 0;
             DateTime dtInspectionDate = DateTime.MinValue;
+            string strFabricName = string.Empty;
             string strRapidTableName = string.Empty;
             string strUpdateSql = string.Empty;
+            bool? bolRapidTableCheckResult = true;
 
             try
             {
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
 
-                foreach (DataGridViewRow dgvRow in dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Selected))
+                foreach (DataGridViewRow dgvRow in dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Value.Equals(true)))
                 {
                     strFabricName = dgvRow.Cells[m_CON_COL_FABRICNAME].Value.ToString();
                     intInspectionNum = int.Parse(dgvRow.Cells[m_CON_COL_INSPECTION_NUM].Value.ToString());
@@ -758,9 +957,17 @@ namespace RecoveryTool
                     // テーブル名を設定する
                     strRapidTableName = "rapid_" + strFabricName + "_" + intInspectionNum + "_" + dtInspectionDate.ToString("yyyyMMdd");
 
-                    // テーブルが存在しない場合、スキップする
-                    if (!bolCheckRapidTable(strRapidTableName))
+                    // テーブルの存在チェックを行う
+                    bolRapidTableCheckResult = bolCheckRapidTable(strRapidTableName);
+
+                    if (bolRapidTableCheckResult == null)
                     {
+                        // 例外発生時は以降の処理をストップする
+                        return false;
+                    }
+                    if (bolRapidTableCheckResult.Equals(false))
+                    {
+                        // テーブルが存在しない場合、スキップする
                         continue;
                     }
 
@@ -787,19 +994,47 @@ namespace RecoveryTool
                     intExecCount = g_clsConnectionNpgsql.ExecTranSQL(strUpdateSql, lstNpgsqlCommand);
                 }
 
-                g_clsConnectionNpgsql.DbCommit();
-
                 return true;
             }
             catch (Exception ex)
             {
                 g_clsConnectionNpgsql.DbRollback();
 
-                // ログ出力
-                //WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                string strErrorMessage = "RAPID解析情報テーブルのステータス更新中にエラーが発生しました。";
+                string strLogInfo =
+                    string.Format(
+                        m_CON_LOG_FORMAT,
+                        g_strUnitNum,
+                        dtInspectionDate.ToString("yyyy/MM/dd"),
+                        intInspectionNum,
+                        strFabricName);
 
-                //// メッセージ出力
-                //MessageBox.Show(g_clsMessageInfo.strMsgE0067, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}{1}{3}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        strLogInfo,
+                        ex.Message));
+
+                ExecutionResultTextAdded(
+                    false,
+                    string.Format(
+                        "⇒{0}{1}{2}{1}{3}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        strLogInfo,
+                        ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(
+                    strErrorMessage,
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
                 return false;
             }
         }
@@ -809,7 +1044,7 @@ namespace RecoveryTool
         /// </summary>
         /// <param name="strRapidTableName">rapidテーブル名</param>
         /// <returns>存在フラグ</returns>
-        public bool bolCheckRapidTable(string strRapidTableName)
+        public bool? bolCheckRapidTable(string strRapidTableName)
         {
             string strSQL = string.Empty;
             DataTable dtData = new DataTable();
@@ -836,12 +1071,35 @@ namespace RecoveryTool
             }
             catch (Exception ex)
             {
-                // ログ出力
-                //WriteEventLog(g_CON_LEVEL_ERROR, string.Format("{0}{1}{2}", g_clsMessageInfo.strMsgE0002, Environment.NewLine, ex.Message));
+                string strErrorMessage = "RAPID解析情報テーブルの存在チェック処理中にエラーが発生しました。";
 
-                //// メッセージ出力
-                //MessageBox.Show(g_clsMessageInfo.strMsgE0067, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}対象テーブル:{2}{1}{3}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        strRapidTableName,
+                        ex.Message));
+
+                ExecutionResultTextAdded(
+                    false,
+                    string.Format(
+                        "⇒{0}{1}対象テーブル:{2}{1}{3}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        strRapidTableName,
+                        ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(
+                    strErrorMessage,
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return null;
             }
             finally
             {

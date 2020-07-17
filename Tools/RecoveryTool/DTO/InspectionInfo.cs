@@ -11,6 +11,12 @@ namespace RecoveryTool.DTO
         public DateTime dtInspectionDate { get; set; }
 
         /// <summary>
+        /// 撮像開始時刻を取得または設定する
+        /// </summary>
+        /// <value>撮像開始時刻</value>
+        public DateTime dtImagingStarttime { get; set; }
+
+        /// <summary>
         /// 検査番号を取得または設定する
         /// </summary>
         /// <value>検査番号</value>
