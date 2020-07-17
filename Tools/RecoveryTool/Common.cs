@@ -1,5 +1,4 @@
 ﻿using log4net;
-using RecoveryTool.DTO;
 using System;
 using System.Configuration;
 using System.Linq;
@@ -31,6 +30,9 @@ namespace RecoveryTool
         public static int g_intRapidAnalysisRapidResultUpdateStatus = 0;
         public static int g_intRapidAnalysisEdgeResultUpdateStatus = 0;
         public static int g_intRapidAnalysisMaskingResultUpdateStatus = 0;
+        public static int g_intRetryTimes = 0;
+        public static int g_intRetryWaitSeconds = 0;
+        public static int g_intRetryWaitMilliSeconds = 0;
         public static int[] g_intFabricInfoExtractionStatus;
         public static int[] g_intProcessingStatusExtractionStatus;
 
@@ -112,6 +114,8 @@ namespace RecoveryTool
                 GetAppConfigValue("RapidAnalysisRapidResultUpdateStatus", ref g_intRapidAnalysisRapidResultUpdateStatus);
                 GetAppConfigValue("RapidAnalysisEdgeResultUpdateStatus", ref g_intRapidAnalysisEdgeResultUpdateStatus);
                 GetAppConfigValue("RapidAnalysisMaskingResultUpdateStatus", ref g_intRapidAnalysisMaskingResultUpdateStatus);
+                GetAppConfigValue("RetryTimes", ref g_intRetryTimes);
+                GetAppConfigValue("RetryWaitSeconds", ref g_intRetryWaitSeconds);
                 GetAppConfigValue("FabricInfoExtractionStatus", ref strFabricInfoExtractionStatus);
                 GetAppConfigValue("ProcessingStatusExtractionStatus", ref strProcessingStatusExtractionStatus);
 
@@ -154,6 +158,13 @@ namespace RecoveryTool
                 g_strExecutionFileName = strExecutionFileName.Split(',').OrderBy(x => x).ToArray();
                 g_intFabricInfoExtractionStatus = strFabricInfoExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
                 g_intProcessingStatusExtractionStatus = strProcessingStatusExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
+
+                if (g_intRetryWaitSeconds == 0)
+                {
+                    g_intRetryWaitSeconds = 10;
+                }
+
+                g_intRetryWaitMilliSeconds = g_intRetryWaitSeconds * 1000;
 
                 g_strConnectionString =
                     string.Format(

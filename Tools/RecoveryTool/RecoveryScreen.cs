@@ -215,7 +215,7 @@ namespace RecoveryTool
 
                     do
                     {
-                        if (intTrialCount > 3)
+                        if (intTrialCount > g_intRetryTimes)
                         {
                             string strErrorMessage =
                                 string.Format(
@@ -248,11 +248,11 @@ namespace RecoveryTool
                             ExecutionResultTextAdded(
                                 false,
                                 string.Format(
-                                    "{0}{1}{1}",
-                                    "⇒全てのプロセス停止が確認できないため、10秒後に再確認します。",
+                                    "⇒全てのプロセス停止が確認できないため、{0}秒後に再確認します。{1}{1}",
+                                    g_intRetryWaitSeconds,
                                     Environment.NewLine));
 
-                            await Task.Delay(10000);
+                            await Task.Delay(g_intRetryWaitMilliSeconds);
                         }
 
                         ExecutionResultTextAdded(
@@ -444,7 +444,7 @@ namespace RecoveryTool
 
                     do
                     {
-                        if (intTrialCount > 3)
+                        if (intTrialCount > g_intRetryTimes)
                         {
                             string strErrorMessage =
                                 string.Format(
@@ -477,11 +477,11 @@ namespace RecoveryTool
                             ExecutionResultTextAdded(
                                 false,
                                 string.Format(
-                                    "{0}{1}{1}",
-                                    "⇒全てのプロセス起動が確認できないため、10秒後に再確認します。",
+                                    "⇒全てのプロセス起動が確認できないため、{0}秒後に再確認します。{1}{1}",
+                                    g_intRetryWaitSeconds,
                                     Environment.NewLine));
 
-                            await Task.Delay(10000);
+                            await Task.Delay(g_intRetryWaitMilliSeconds);
                         }
 
                         ExecutionResultTextAdded(
