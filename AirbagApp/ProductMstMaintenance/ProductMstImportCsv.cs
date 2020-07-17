@@ -1744,7 +1744,7 @@ namespace ProductMstMaintenance
 
             // 桁数入力チェック
             if (CheckLengthInput(stArrayData[m_CON_COL_PRODUCT_NAME], "品名", intRowCount, 1, 16, strFileReadLine) == false ||
-                CheckLengthInput(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION], "照度情報", intRowCount, 1, 3, strFileReadLine) == false ||
+                CheckLengthInput(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION], "照度情報", intRowCount, 1, 4, strFileReadLine) == false ||
                 CheckLengthInput(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM], "開始レジマークカメラ番号", intRowCount, 1, 2, strFileReadLine) == false ||
                 CheckLengthInput(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM], "終了レジマークカメラ番号", intRowCount, 1, 2, strFileReadLine) == false)
             {
@@ -1752,7 +1752,7 @@ namespace ProductMstMaintenance
             }
 
             // 最大範囲入力チェック
-            if (CheckRangeInput(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION], "照度情報", intRowCount, 0, 255, strFileReadLine) == false ||
+            if (CheckRangeInput(stArrayData[m_CON_COL_ILLUMINATION_INFORMATION], "照度情報", intRowCount, 0, 1024, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_START_REGIMARK_CAMERA_NUM], "開始レジマークカメラ番号", intRowCount, 1, 27, strFileReadLine) == false ||
                 CheckRangeInput(stArrayData[m_CON_COL_END_REGIMARK_CAMERA_NUM], "終了レジマークカメラ番号", intRowCount, 1, 27, strFileReadLine) == false)
             {
