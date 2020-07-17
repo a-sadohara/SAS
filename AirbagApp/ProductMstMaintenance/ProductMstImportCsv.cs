@@ -1638,23 +1638,9 @@ namespace ProductMstMaintenance
                         continue;
                     }
 
-                    // 取込対象の情報かチェックする
-                    if (m_lstImportProductName.Contains(cciCurrentData.strProductName))
-                    {
-                        lstCameraCsvInfo.Add(cciCurrentData);
-                    }
-                }
+                    // csvのリストに現在行を追加
+                    lstCameraCsvInfo.Add(cciCurrentData);
 
-                if (m_lstImportProductName.Count != lstCameraCsvInfo.Count)
-                {
-                    foreach (string strProductName in m_lstImportProductName)
-                    {
-                        if (lstCameraCsvInfo.Select(x => x.strProductName.Equals(strProductName)).Count() == 0)
-                        {
-                            OutPutImportLog(string.Format("更新対象のデータが存在しません。品名[{0}]", strProductName));
-                            m_intErrorCameraReg++;
-                        }
-                    }
                 }
 
                 return lstCameraCsvInfo;
