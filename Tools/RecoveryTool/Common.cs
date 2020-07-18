@@ -33,8 +33,7 @@ namespace RecoveryTool
         public static int g_intRetryTimes = 0;
         public static int g_intRetryWaitSeconds = 0;
         public static int g_intRetryWaitMilliSeconds = 0;
-        public static int[] g_intFabricInfoExtractionStatus;
-        public static int[] g_intProcessingStatusExtractionStatus;
+        public static int[] g_intFabricInfoExceptExtractionStatus;
 
         // コネクションクラス
         public static ConnectionNpgsql g_clsConnectionNpgsql;
@@ -93,8 +92,7 @@ namespace RecoveryTool
                 string strConnectionPassword = string.Empty;
                 string strTaskName = string.Empty;
                 string strExecutionFileName = string.Empty;
-                string strFabricInfoExtractionStatus = string.Empty;
-                string strProcessingStatusExtractionStatus = string.Empty;
+                string strFabricInfoExceptExtractionStatus = string.Empty;
 
                 // 接続文字列をApp.configファイルから取得
                 GetAppConfigValue("DBName", ref g_strDBName);
@@ -116,8 +114,7 @@ namespace RecoveryTool
                 GetAppConfigValue("RapidAnalysisMaskingResultUpdateStatus", ref g_intRapidAnalysisMaskingResultUpdateStatus);
                 GetAppConfigValue("RetryTimes", ref g_intRetryTimes);
                 GetAppConfigValue("RetryWaitSeconds", ref g_intRetryWaitSeconds);
-                GetAppConfigValue("FabricInfoExtractionStatus", ref strFabricInfoExtractionStatus);
-                GetAppConfigValue("ProcessingStatusExtractionStatus", ref strProcessingStatusExtractionStatus);
+                GetAppConfigValue("FabricInfoExceptExtractionStatus", ref strFabricInfoExceptExtractionStatus);
 
                 if (m_sbErrMessage.Length > 0)
                 {
@@ -156,8 +153,7 @@ namespace RecoveryTool
 
                 g_strTaskName = strTaskName.Split(',').OrderBy(x => x).ToArray();
                 g_strExecutionFileName = strExecutionFileName.Split(',').OrderBy(x => x).ToArray();
-                g_intFabricInfoExtractionStatus = strFabricInfoExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
-                g_intProcessingStatusExtractionStatus = strProcessingStatusExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
+                g_intFabricInfoExceptExtractionStatus = strFabricInfoExceptExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
 
                 if (g_intRetryWaitSeconds == 0)
                 {

@@ -808,57 +808,12 @@ namespace RecoveryTool
                 sbSQL.AppendLine(" AND fi.unit_num = :unit_num ");
 
                 // 反物情報.ステータスの抽出条件を付与する
-                if (g_intFabricInfoExtractionStatus.Count() > 0)
+                for (int index = 0; index < g_intFabricInfoExceptExtractionStatus.Count(); index++)
                 {
-                    sbSQL.AppendLine(" AND ( ");
-
-                    for (int index = 0; index < g_intFabricInfoExtractionStatus.Count(); index++)
-                    {
-                        if (index != 0)
-                        {
-                            sbSQL.Append(string.Format(" OR"));
-                        }
-
-                        sbSQL.AppendLine(string.Format(" fi.status = {0}", g_intFabricInfoExtractionStatus[index]));
-                    }
-
-                    sbSQL.AppendLine(" ) ");
+                    sbSQL.AppendLine(string.Format(" AND fi.status <> {0}", g_intFabricInfoExceptExtractionStatus[index]));
                 }
 
-                sbSQL.AppendLine(" UNION ");
-                sbSQL.AppendLine(" SELECT ");
-                sbSQL.AppendLine("     distinct ");
-                sbSQL.AppendLine("     ps.fabric_name, ");
-                sbSQL.AppendLine("     ps.inspection_num, ");
-                sbSQL.AppendLine("     ps.imaging_starttime, ");
-                sbSQL.AppendLine("     ii.inspection_date ");
-                sbSQL.AppendLine(" FROM processing_status AS ps ");
-                sbSQL.AppendLine(" INNER JOIN inspection_info_header AS ii on  ");
-                sbSQL.AppendLine(" ps.fabric_name = ii.fabric_name ");
-                sbSQL.AppendLine(" AND ps.inspection_num = ii.inspection_num ");
-                sbSQL.AppendLine(" AND ps.imaging_starttime = ii.start_datetime ");
-                sbSQL.AppendLine(" AND ps.unit_num = ii.unit_num ");
-                sbSQL.AppendLine(" AND ps.unit_num = :unit_num ");
-
-                // 処理ステータス.ステータスの抽出条件を付与する
-                if (g_intProcessingStatusExtractionStatus.Count() > 0)
-                {
-                    sbSQL.AppendLine(" AND ( ");
-
-                    for (int index = 0; index < g_intProcessingStatusExtractionStatus.Count(); index++)
-                    {
-                        if (index != 0)
-                        {
-                            sbSQL.Append(string.Format(" OR"));
-                        }
-
-                        sbSQL.AppendLine(string.Format(" ps.status = {0}", g_intProcessingStatusExtractionStatus[index]));
-                    }
-
-                    sbSQL.AppendLine(" ) ");
-                }
-
-                sbSQL.AppendLine(" ORDER BY inspection_date, inspection_num, inspection_date ");
+                sbSQL.AppendLine(" ORDER BY ii.inspection_date, fi.inspection_num, fi.fabric_name ");
 
 
                 // SQLコマンドに各パラメータを設定する
