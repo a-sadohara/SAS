@@ -25,6 +25,7 @@ namespace RecoveryTool
         public static string g_strErrorFileOutputPath = string.Empty;
         public static string[] g_strTaskName;
         public static string[] g_strExecutionFileName;
+        public static string[] g_strRecoveryExemptErrorFileName;
         public static int g_intFabricInfoUpdateStatus = 0;
         public static int g_intProcessingStatusUpdateStatus = 0;
         public static int g_intRapidAnalysisRapidResultUpdateStatus = 0;
@@ -91,6 +92,7 @@ namespace RecoveryTool
                 string strConnectionUser = string.Empty;
                 string strConnectionPassword = string.Empty;
                 string strTaskName = string.Empty;
+                string strRecoveryExemptErrorFileName = string.Empty;
                 string strExecutionFileName = string.Empty;
                 string strFabricInfoExceptExtractionStatus = string.Empty;
 
@@ -106,6 +108,7 @@ namespace RecoveryTool
                 GetAppConfigValue("ConnectionPassword", ref strConnectionPassword);
                 GetAppConfigValue("TaskName", ref strTaskName);
                 GetAppConfigValue("ErrorFileOutputPath", ref g_strErrorFileOutputPath);
+                GetAppConfigValue("RecoveryExemptErrorFileName", ref strRecoveryExemptErrorFileName);
                 GetAppConfigValue("ExecutionFileName", ref strExecutionFileName);
                 GetAppConfigValue("FabricInfoUpdateStatus", ref g_intFabricInfoUpdateStatus);
                 GetAppConfigValue("ProcessingStatusUpdateStatus", ref g_intProcessingStatusUpdateStatus);
@@ -152,6 +155,7 @@ namespace RecoveryTool
                 }
 
                 g_strTaskName = strTaskName.Split(',').OrderBy(x => x).ToArray();
+                g_strRecoveryExemptErrorFileName = strRecoveryExemptErrorFileName.Split(',').OrderBy(x => x).ToArray();
                 g_strExecutionFileName = strExecutionFileName.Split(',').OrderBy(x => x).ToArray();
                 g_intFabricInfoExceptExtractionStatus = strFabricInfoExceptExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
 

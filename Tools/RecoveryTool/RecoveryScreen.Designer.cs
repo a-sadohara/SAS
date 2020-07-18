@@ -33,6 +33,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RecoveryScreen));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lblUnitNum = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnRecovery = new System.Windows.Forms.Button();
             this.lblExecutionResult = new System.Windows.Forms.Label();
@@ -46,7 +47,6 @@
             this.intInspectionNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.txtFabricName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dtImagingStarttime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.lblUnitNum = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel5.SuspendLayout();
@@ -63,6 +63,15 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(567, 19);
             this.panel1.TabIndex = 0;
+            // 
+            // lblUnitNum
+            // 
+            this.lblUnitNum.AutoSize = true;
+            this.lblUnitNum.Location = new System.Drawing.Point(20, 5);
+            this.lblUnitNum.Name = "lblUnitNum";
+            this.lblUnitNum.Size = new System.Drawing.Size(37, 12);
+            this.lblUnitNum.TabIndex = 8;
+            this.lblUnitNum.Text = "N号機";
             // 
             // panel2
             // 
@@ -86,7 +95,7 @@
             this.btnRecovery.Name = "btnRecovery";
             this.btnRecovery.Size = new System.Drawing.Size(154, 37);
             this.btnRecovery.TabIndex = 0;
-            this.btnRecovery.Text = "復旧";
+            this.btnRecovery.Text = "リセット";
             this.btnRecovery.UseVisualStyleBackColor = true;
             this.btnRecovery.Click += new System.EventHandler(this.btnRecovery_Click);
             // 
@@ -236,15 +245,6 @@
             this.dtImagingStarttime.Visible = false;
             this.dtImagingStarttime.Width = 110;
             // 
-            // lblUnitNum
-            // 
-            this.lblUnitNum.AutoSize = true;
-            this.lblUnitNum.Location = new System.Drawing.Point(20, 5);
-            this.lblUnitNum.Name = "lblUnitNum";
-            this.lblUnitNum.Size = new System.Drawing.Size(37, 12);
-            this.lblUnitNum.TabIndex = 8;
-            this.lblUnitNum.Text = "N号機";
-            // 
             // RecoveryScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -260,7 +260,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "RecoveryScreen";
-            this.Text = "復旧ツール";
+            this.Text = "リセットツール";
             this.Load += new System.EventHandler(this.RecoveryScreen_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

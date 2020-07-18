@@ -39,7 +39,10 @@ namespace RecoveryTool
         private IEnumerable<string> m_lstFiles;
 
         // 初回起動フラグ
-        private bool bolInitialLaunch = true;
+        private bool bolInitialLaunchFlg = true;
+
+        // プロセス復旧対象フラグ
+        private bool bolProcessTargetFlg = false;
         #endregion
 
         #region イベント
@@ -60,6 +63,9 @@ namespace RecoveryTool
         /// <param name="e"></param>
         private async void RecoveryScreen_Load(object sender, EventArgs e)
         {
+            string strResult = string.Empty;
+            bool bolProcessCheckResult = true;
+
             // 行選択モードに変更
             this.dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
@@ -68,6 +74,53 @@ namespace RecoveryTool
 
             // 複数選択させない
             this.dgvData.MultiSelect = false;
+
+            // プロセスの状態を確認する
+            Task<string> taskExecuteTaskList =
+                Task.Run(() => strExecuteCommandPrompt(
+                    m_CON_COMMAND_TASKLIST,
+                    string.Empty));
+
+            await taskExecuteTaskList;
+
+            strResult = taskExecuteTaskList.Result;
+
+            if (string.IsNullOrWhiteSpace(strResult))
+            {
+                string strErrorMessage =
+                    string.Format(
+                        "{0}{1}{2}",
+                        m_CON_RESULT_ERROR,
+                        Environment.NewLine,
+                        m_CON_CONFIG_ERROR);
+
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    strErrorMessage);
+
+                ExecutionResultTextAdded(
+                    false,
+                    strErrorMessage);
+
+                // メッセージ出力
+                MessageBox.Show(
+                    strErrorMessage,
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return;
+            }
+
+            foreach (string strFileName in g_strExecutionFileName)
+            {
+                if (!strResult.Contains(strFileName))
+                {
+                    bolProcessTargetFlg = true;
+                    break;
+                }
+            }
 
             // エラーファイル格納ディレクトリの有無確認
             if (!Directory.Exists(g_strErrorFileOutputPath))
@@ -92,15 +145,21 @@ namespace RecoveryTool
             // エラーファイルの有無確認
             if (m_lstFiles.Count() == 0)
             {
+                string strErrorMessage = "エラーファイルは出力されていません。";
+
+                ExecutionResultTextAdded(
+                    false,
+                    string.Format(
+                        "{0}{1}",
+                        strErrorMessage,
+                        Environment.NewLine));
+
                 // メッセージ出力
                 MessageBox.Show(
-                    "エラーファイルは出力されていません。",
+                    strErrorMessage,
                     g_CON_MESSAGE_TITLE_WARN,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
-
-                this.Close();
-                return;
             }
             else
             {
@@ -150,56 +209,206 @@ namespace RecoveryTool
                 List<Task<string>> lstTask = new List<Task<string>>();
 
                 ExecutionResultTextAdded(
-                    !bolInitialLaunch,
+                    !bolInitialLaunchFlg,
                     string.Format(
                         "{0}{1}{1}",
                         "復旧処理を開始します。",
                         Environment.NewLine));
 
-                bolInitialLaunch = false;
+                bolInitialLaunchFlg = false;
 
-                #region プロセス停止
-                try
+                // プロセス復旧が必要な場合、下記処理を行う
+                if (bolProcessTargetFlg)
                 {
-                    ExecutionResultTextAdded(
-                        false,
-                        string.Format(
-                            "{0}{1}",
-                            "■連携基盤のプロセスを停止します。",
-                            Environment.NewLine));
-
-                    // プロセスを停止する
-                    Task<string> taskExecuteTaskKill =
-                        Task.Run(() => strExecuteCommandPrompt(
-                            m_CON_COMMAND_TASKKILL,
-                            string.Empty));
-
-                    ExecutionResultTextAdded(
-                        false,
-                        string.Format(
-                            "{0}{1}",
-                            "⇒プロセスの停止コマンドを実行しました。",
-                            Environment.NewLine));
-
-                    await taskExecuteTaskKill;
-
-                    if (string.IsNullOrWhiteSpace(taskExecuteTaskKill.Result))
+                    #region プロセス停止
+                    try
                     {
-                        string strErrorMessage =
+                        ExecutionResultTextAdded(
+                            false,
                             string.Format(
-                                "{0}{1}{2}",
-                                m_CON_RESULT_ERROR,
-                                Environment.NewLine,
-                                m_CON_CONFIG_ERROR);
+                                "{0}{1}",
+                                "■連携基盤のプロセスを停止します。",
+                                Environment.NewLine));
+
+                        // プロセスを停止する
+                        Task<string> taskExecuteTaskKill =
+                            Task.Run(() => strExecuteCommandPrompt(
+                                m_CON_COMMAND_TASKKILL,
+                                string.Empty));
+
+                        ExecutionResultTextAdded(
+                            false,
+                            string.Format(
+                                "{0}{1}",
+                                "⇒プロセスの停止コマンドを実行しました。",
+                                Environment.NewLine));
+
+                        await taskExecuteTaskKill;
+
+                        if (string.IsNullOrWhiteSpace(taskExecuteTaskKill.Result))
+                        {
+                            string strErrorMessage =
+                                string.Format(
+                                    "{0}{1}{2}",
+                                    m_CON_RESULT_ERROR,
+                                    Environment.NewLine,
+                                    m_CON_CONFIG_ERROR);
+
+                            // ログ出力
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                strErrorMessage);
+
+                            ExecutionResultTextAdded(
+                                false,
+                                strErrorMessage);
+
+                            // メッセージ出力
+                            MessageBox.Show(
+                                strErrorMessage,
+                                g_CON_MESSAGE_TITLE_ERROR,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+
+                            return;
+                        }
+
+                        await Task.Delay(2000);
+
+                        do
+                        {
+                            if (intTrialCount > g_intRetryTimes)
+                            {
+                                string strErrorMessage =
+                                    string.Format(
+                                        "{0}{1}{2}",
+                                        "プロセスを停止できませんでした。",
+                                        Environment.NewLine,
+                                        m_CON_RETRY_ERROR);
+
+                                // ログ出力
+                                WriteEventLog(
+                                    g_CON_LEVEL_ERROR,
+                                    strErrorMessage);
+
+                                ExecutionResultTextAdded(
+                                    false,
+                                    strErrorMessage);
+
+                                // メッセージ出力
+                                MessageBox.Show(
+                                    strErrorMessage,
+                                    g_CON_MESSAGE_TITLE_ERROR,
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+
+                                return;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(strResult))
+                            {
+                                ExecutionResultTextAdded(
+                                    false,
+                                    string.Format(
+                                        "⇒全てのプロセス停止が確認できないため、{0}秒後に再確認します。{1}{1}",
+                                        g_intRetryWaitSeconds,
+                                        Environment.NewLine));
+
+                                await Task.Delay(g_intRetryWaitMilliSeconds);
+                            }
+
+                            ExecutionResultTextAdded(
+                                false,
+                                string.Format(
+                                    "{0}{1}{0}",
+                                    Environment.NewLine,
+                                    "⇒プロセスの状態を確認します。"));
+
+                            // プロセスの状態を確認する
+                            Task<string> taskExecuteTaskList =
+                                Task.Run(() => strExecuteCommandPrompt(
+                                    m_CON_COMMAND_TASKLIST,
+                                    string.Empty));
+
+                            await taskExecuteTaskList;
+
+                            strResult = taskExecuteTaskList.Result;
+
+                            if (string.IsNullOrWhiteSpace(strResult))
+                            {
+                                string strErrorMessage =
+                                    string.Format(
+                                        "{0}{1}{2}",
+                                        m_CON_RESULT_ERROR,
+                                        Environment.NewLine,
+                                        m_CON_CONFIG_ERROR);
+
+                                // ログ出力
+                                WriteEventLog(
+                                    g_CON_LEVEL_ERROR,
+                                    strErrorMessage);
+
+                                ExecutionResultTextAdded(
+                                    false,
+                                    strErrorMessage);
+
+                                // メッセージ出力
+                                MessageBox.Show(
+                                    strErrorMessage,
+                                    g_CON_MESSAGE_TITLE_ERROR,
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+
+                                return;
+                            }
+
+                            bolProcessCheckResult = true;
+
+                            foreach (string strFileName in g_strExecutionFileName)
+                            {
+                                if (strResult.Contains(strFileName))
+                                {
+                                    strStatus = m_CON_TEXT_ACTIV;
+                                    bolProcessCheckResult = false;
+                                }
+                                else
+                                {
+                                    strStatus = m_CON_TEXT_STOP;
+                                }
+
+                                ExecutionResultTextAdded(
+                                    false,
+                                    string.Format(
+                                        " ・{0} {1}{2}",
+                                        strFileName.Replace(".exe", string.Empty),
+                                        strStatus,
+                                        Environment.NewLine));
+                            }
+
+                            intTrialCount++;
+                        }
+                        while (!bolProcessCheckResult);
+                    }
+                    catch (Exception ex)
+                    {
+                        string strErrorMessage = "プロセス停止中にエラーが発生しました。";
 
                         // ログ出力
                         WriteEventLog(
                             g_CON_LEVEL_ERROR,
-                            strErrorMessage);
+                            string.Format(
+                                "{0}{1}{2}",
+                                strErrorMessage,
+                                Environment.NewLine,
+                                ex.Message));
 
                         ExecutionResultTextAdded(
                             false,
-                            strErrorMessage);
+                            string.Format(
+                                "⇒{0}{1}{2}",
+                                strErrorMessage,
+                                Environment.NewLine,
+                                ex.Message));
 
                         // メッセージ出力
                         MessageBox.Show(
@@ -211,390 +420,244 @@ namespace RecoveryTool
                         return;
                     }
 
-                    await Task.Delay(2000);
-
-                    do
-                    {
-                        if (intTrialCount > g_intRetryTimes)
-                        {
-                            string strErrorMessage =
-                                string.Format(
-                                    "{0}{1}{2}",
-                                    "プロセスを停止できませんでした。",
-                                    Environment.NewLine,
-                                    m_CON_RETRY_ERROR);
-
-                            // ログ出力
-                            WriteEventLog(
-                                g_CON_LEVEL_ERROR,
-                                strErrorMessage);
-
-                            ExecutionResultTextAdded(
-                                false,
-                                strErrorMessage);
-
-                            // メッセージ出力
-                            MessageBox.Show(
-                                strErrorMessage,
-                                g_CON_MESSAGE_TITLE_ERROR,
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-
-                            return;
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(strResult))
-                        {
-                            ExecutionResultTextAdded(
-                                false,
-                                string.Format(
-                                    "⇒全てのプロセス停止が確認できないため、{0}秒後に再確認します。{1}{1}",
-                                    g_intRetryWaitSeconds,
-                                    Environment.NewLine));
-
-                            await Task.Delay(g_intRetryWaitMilliSeconds);
-                        }
-
-                        ExecutionResultTextAdded(
-                            false,
-                            string.Format(
-                                "{0}{1}{0}",
-                                Environment.NewLine,
-                                "⇒プロセスの状態を確認します。"));
-
-                        // プロセスの状態を確認する
-                        Task<string> taskExecuteTaskList =
-                            Task.Run(() => strExecuteCommandPrompt(
-                                m_CON_COMMAND_TASKLIST,
-                                string.Empty));
-
-                        await taskExecuteTaskList;
-
-                        strResult = taskExecuteTaskList.Result;
-
-                        if (string.IsNullOrWhiteSpace(strResult))
-                        {
-                            string strErrorMessage =
-                                string.Format(
-                                    "{0}{1}{2}",
-                                    m_CON_RESULT_ERROR,
-                                    Environment.NewLine,
-                                    m_CON_CONFIG_ERROR);
-
-                            // ログ出力
-                            WriteEventLog(
-                                g_CON_LEVEL_ERROR,
-                                strErrorMessage);
-
-                            ExecutionResultTextAdded(
-                                false,
-                                strErrorMessage);
-
-                            // メッセージ出力
-                            MessageBox.Show(
-                                strErrorMessage,
-                                g_CON_MESSAGE_TITLE_ERROR,
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-
-                            return;
-                        }
-
-                        bolProcessCheckResult = true;
-
-                        foreach (string strFileName in g_strExecutionFileName)
-                        {
-                            if (strResult.Contains(strFileName))
-                            {
-                                strStatus = m_CON_TEXT_ACTIV;
-                                bolProcessCheckResult = false;
-                            }
-                            else
-                            {
-                                strStatus = m_CON_TEXT_STOP;
-                            }
-
-                            ExecutionResultTextAdded(
-                                false,
-                                string.Format(
-                                    " ・{0} {1}{2}",
-                                    strFileName.Replace(".exe", string.Empty),
-                                    strStatus,
-                                    Environment.NewLine));
-                        }
-
-                        intTrialCount++;
-                    }
-                    while (!bolProcessCheckResult);
-                }
-                catch (Exception ex)
-                {
-                    string strErrorMessage = "プロセス停止中にエラーが発生しました。";
-
-                    // ログ出力
-                    WriteEventLog(
-                        g_CON_LEVEL_ERROR,
-                        string.Format(
-                            "{0}{1}{2}",
-                            strErrorMessage,
-                            Environment.NewLine,
-                            ex.Message));
-
-                    ExecutionResultTextAdded(
-                        false,
-                        string.Format(
-                            "⇒{0}{1}{2}",
-                            strErrorMessage,
-                            Environment.NewLine,
-                            ex.Message));
-
-                    // メッセージ出力
-                    MessageBox.Show(
-                        strErrorMessage,
-                        g_CON_MESSAGE_TITLE_ERROR,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    return;
-                }
-
-                ExecutionResultTextAdded(
-                    false,
-                    string.Format(
-                        "{0}{1}{1}",
-                        "⇒全てのプロセスが停止しました。",
-                        Environment.NewLine));
-                #endregion
-
-                #region ステータス更新
-                ExecutionResultTextAdded(
-                    false,
-                    string.Format(
-                        "{0}{1}",
-                        "■処理ステータスを更新します。",
-                        Environment.NewLine));
-
-                if (dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Value.Equals(true)).Count() != 0)
-                {
-                    try
-                    {
-                        // ステータス更新を行う
-                        if (!bolUpdateFabricInfo() ||
-                            !bolUpdateProcessingStatus() ||
-                            !bolUpdateRapidAnalysisInfo())
-                        {
-                            return;
-                        }
-
-                        g_clsConnectionNpgsql.DbCommit();
-                    }
-                    finally
-                    {
-                        g_clsConnectionNpgsql.DbClose();
-                    }
-
                     ExecutionResultTextAdded(
                         false,
                         string.Format(
                             "{0}{1}{1}",
-                            "⇒更新が完了しました。",
+                            "⇒全てのプロセスが停止しました。",
                             Environment.NewLine));
-                }
-                else
-                {
-                    ExecutionResultTextAdded(
-                        false,
-                        string.Format(
-                            "{0}{1}{1}",
-                            "⇒更新対象のデータがありませんでした。",
-                            Environment.NewLine));
-                }
-                #endregion
+                    #endregion
 
-                #region プロセス全起動
-                ExecutionResultTextAdded(
-                    false,
-                    string.Format(
-                        "{0}{1}",
-                        "■連携基盤のプロセスを開始します。",
-                        Environment.NewLine));
-
-                try
-                {
-                    foreach (string strTaskName in g_strTaskName)
-                    {
-                        // プロセスを開始する
-                        lstTask.Add(Task.Run(() => strExecuteCommandPrompt(
-                                m_CON_COMMAND_SCHTASKS,
-                                strTaskName)));
-                    }
-
+                    #region ステータス更新
                     ExecutionResultTextAdded(
                         false,
                         string.Format(
                             "{0}{1}",
-                            "⇒プロセス起動コマンドを実行しました。",
+                            "■処理ステータスを更新します。",
                             Environment.NewLine));
 
-                    await Task.WhenAll(lstTask.ToArray());
-                    await Task.Delay(2000);
-
-                    strResult = string.Empty;
-                    intTrialCount = 0;
-
-                    do
+                    if (dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Value.Equals(true)).Count() != 0)
                     {
-                        if (intTrialCount > g_intRetryTimes)
+                        try
                         {
-                            string strErrorMessage =
-                                string.Format(
-                                    "{0}{1}{2}",
-                                    "プロセスを起動できませんでした。",
-                                    Environment.NewLine,
-                                    m_CON_RETRY_ERROR);
+                            // ステータス更新を行う
+                            if (!bolUpdateFabricInfo() ||
+                                !bolUpdateProcessingStatus() ||
+                                !bolUpdateRapidAnalysisInfo())
+                            {
+                                return;
+                            }
 
-                            // ログ出力
-                            WriteEventLog(
-                                g_CON_LEVEL_ERROR,
-                                strErrorMessage);
-
-                            ExecutionResultTextAdded(
-                                false,
-                                strErrorMessage);
-
-                            // メッセージ出力
-                            MessageBox.Show(
-                                strErrorMessage,
-                                g_CON_MESSAGE_TITLE_ERROR,
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-
-                            return;
+                            g_clsConnectionNpgsql.DbCommit();
                         }
-
-                        if (!string.IsNullOrWhiteSpace(strResult))
+                        finally
                         {
-                            ExecutionResultTextAdded(
-                                false,
-                                string.Format(
-                                    "⇒全てのプロセス起動が確認できないため、{0}秒後に再確認します。{1}{1}",
-                                    g_intRetryWaitSeconds,
-                                    Environment.NewLine));
-
-                            await Task.Delay(g_intRetryWaitMilliSeconds);
+                            g_clsConnectionNpgsql.DbClose();
                         }
 
                         ExecutionResultTextAdded(
                             false,
                             string.Format(
-                                "{0}{1}{0}",
-                                Environment.NewLine,
-                                "⇒プロセスの状態を確認します。"));
-
-                        // プロセスの状態を確認する
-                        Task<string> taskExecuteTaskList =
-                            Task.Run(() => strExecuteCommandPrompt(
-                                m_CON_COMMAND_TASKLIST,
-                                string.Empty));
-
-                        await taskExecuteTaskList;
-
-                        strResult = taskExecuteTaskList.Result;
-
-                        if (string.IsNullOrWhiteSpace(strResult))
-                        {
-                            string strErrorMessage =
-                                string.Format(
-                                    "{0}{1}{2}",
-                                    m_CON_RESULT_ERROR,
-                                    Environment.NewLine,
-                                    m_CON_CONFIG_ERROR);
-
-                            // ログ出力
-                            WriteEventLog(
-                                g_CON_LEVEL_ERROR,
-                                strErrorMessage);
-
-                            ExecutionResultTextAdded(
-                                false,
-                                strErrorMessage);
-
-                            // メッセージ出力
-                            MessageBox.Show(
-                                strErrorMessage,
-                                g_CON_MESSAGE_TITLE_ERROR,
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-
-                            return;
-                        }
-
-                        bolProcessCheckResult = true;
-                        strFunctionName.Clear();
-
-                        foreach (string strFileName in g_strExecutionFileName)
-                        {
-                            if (strResult.Contains(strFileName))
-                            {
-                                strStatus = m_CON_TEXT_ACTIV;
-                            }
-                            else
-                            {
-                                strStatus = m_CON_TEXT_STOP;
-                                bolProcessCheckResult = false;
-                            }
-
-                            ExecutionResultTextAdded(
-                                false,
-                                string.Format(
-                                    " ・{0} {1}{2}",
-                                    strFileName.Replace(".exe", string.Empty),
-                                    strStatus,
-                                    Environment.NewLine));
-                        }
-
-                        intTrialCount++;
+                                "{0}{1}{1}",
+                                "⇒更新が完了しました。",
+                                Environment.NewLine));
                     }
-                    while (!bolProcessCheckResult);
-                }
-                catch (Exception ex)
-                {
-                    string strErrorMessage = "プロセス起動中にエラーが発生しました。";
+                    else
+                    {
+                        ExecutionResultTextAdded(
+                            false,
+                            string.Format(
+                                "{0}{1}{1}",
+                                "⇒更新対象のデータがありませんでした。",
+                                Environment.NewLine));
+                    }
+                    #endregion
 
-                    // ログ出力
-                    WriteEventLog(
-                        g_CON_LEVEL_ERROR,
+                    #region プロセス全起動
+                    ExecutionResultTextAdded(
+                        false,
                         string.Format(
-                            "{0}{1}{2}",
+                            "{0}{1}",
+                            "■連携基盤のプロセスを開始します。",
+                            Environment.NewLine));
+
+                    try
+                    {
+                        foreach (string strTaskName in g_strTaskName)
+                        {
+                            // プロセスを開始する
+                            lstTask.Add(Task.Run(() => strExecuteCommandPrompt(
+                                    m_CON_COMMAND_SCHTASKS,
+                                    strTaskName)));
+                        }
+
+                        ExecutionResultTextAdded(
+                            false,
+                            string.Format(
+                                "{0}{1}",
+                                "⇒プロセス起動コマンドを実行しました。",
+                                Environment.NewLine));
+
+                        await Task.WhenAll(lstTask.ToArray());
+                        await Task.Delay(2000);
+
+                        strResult = string.Empty;
+                        intTrialCount = 0;
+
+                        do
+                        {
+                            if (intTrialCount > g_intRetryTimes)
+                            {
+                                string strErrorMessage =
+                                    string.Format(
+                                        "{0}{1}{2}",
+                                        "プロセスを起動できませんでした。",
+                                        Environment.NewLine,
+                                        m_CON_RETRY_ERROR);
+
+                                // ログ出力
+                                WriteEventLog(
+                                    g_CON_LEVEL_ERROR,
+                                    strErrorMessage);
+
+                                ExecutionResultTextAdded(
+                                    false,
+                                    strErrorMessage);
+
+                                // メッセージ出力
+                                MessageBox.Show(
+                                    strErrorMessage,
+                                    g_CON_MESSAGE_TITLE_ERROR,
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+
+                                return;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(strResult))
+                            {
+                                ExecutionResultTextAdded(
+                                    false,
+                                    string.Format(
+                                        "⇒全てのプロセス起動が確認できないため、{0}秒後に再確認します。{1}{1}",
+                                        g_intRetryWaitSeconds,
+                                        Environment.NewLine));
+
+                                await Task.Delay(g_intRetryWaitMilliSeconds);
+                            }
+
+                            ExecutionResultTextAdded(
+                                false,
+                                string.Format(
+                                    "{0}{1}{0}",
+                                    Environment.NewLine,
+                                    "⇒プロセスの状態を確認します。"));
+
+                            // プロセスの状態を確認する
+                            Task<string> taskExecuteTaskList =
+                                Task.Run(() => strExecuteCommandPrompt(
+                                    m_CON_COMMAND_TASKLIST,
+                                    string.Empty));
+
+                            await taskExecuteTaskList;
+
+                            strResult = taskExecuteTaskList.Result;
+
+                            if (string.IsNullOrWhiteSpace(strResult))
+                            {
+                                string strErrorMessage =
+                                    string.Format(
+                                        "{0}{1}{2}",
+                                        m_CON_RESULT_ERROR,
+                                        Environment.NewLine,
+                                        m_CON_CONFIG_ERROR);
+
+                                // ログ出力
+                                WriteEventLog(
+                                    g_CON_LEVEL_ERROR,
+                                    strErrorMessage);
+
+                                ExecutionResultTextAdded(
+                                    false,
+                                    strErrorMessage);
+
+                                // メッセージ出力
+                                MessageBox.Show(
+                                    strErrorMessage,
+                                    g_CON_MESSAGE_TITLE_ERROR,
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+
+                                return;
+                            }
+
+                            bolProcessCheckResult = true;
+                            strFunctionName.Clear();
+
+                            foreach (string strFileName in g_strExecutionFileName)
+                            {
+                                if (strResult.Contains(strFileName))
+                                {
+                                    strStatus = m_CON_TEXT_ACTIV;
+                                }
+                                else
+                                {
+                                    strStatus = m_CON_TEXT_STOP;
+                                    bolProcessCheckResult = false;
+                                }
+
+                                ExecutionResultTextAdded(
+                                    false,
+                                    string.Format(
+                                        " ・{0} {1}{2}",
+                                        strFileName.Replace(".exe", string.Empty),
+                                        strStatus,
+                                        Environment.NewLine));
+                            }
+
+                            intTrialCount++;
+                        }
+                        while (!bolProcessCheckResult);
+                    }
+                    catch (Exception ex)
+                    {
+                        string strErrorMessage = "プロセス起動中にエラーが発生しました。";
+
+                        // ログ出力
+                        WriteEventLog(
+                            g_CON_LEVEL_ERROR,
+                            string.Format(
+                                "{0}{1}{2}",
+                                strErrorMessage,
+                                Environment.NewLine,
+                                ex.Message));
+
+                        ExecutionResultTextAdded(
+                            false,
+                            string.Format(
+                                "⇒{0}{1}{2}",
+                                strErrorMessage,
+                                Environment.NewLine,
+                                ex.Message));
+
+                        // メッセージ出力
+                        MessageBox.Show(
                             strErrorMessage,
-                            Environment.NewLine,
-                            ex.Message));
+                            g_CON_MESSAGE_TITLE_ERROR,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+
+                        return;
+                    }
 
                     ExecutionResultTextAdded(
                         false,
                         string.Format(
-                            "⇒{0}{1}{2}",
-                            strErrorMessage,
-                            Environment.NewLine,
-                            ex.Message));
-
-                    // メッセージ出力
-                    MessageBox.Show(
-                        strErrorMessage,
-                        g_CON_MESSAGE_TITLE_ERROR,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    return;
+                            "{0}{1}{1}",
+                            "⇒全てのプロセスが起動しました。",
+                            Environment.NewLine));
+                    #endregion
                 }
-
-                ExecutionResultTextAdded(
-                    false,
-                    string.Format(
-                        "{0}{1}{1}",
-                        "⇒全てのプロセスが起動しました。",
-                        Environment.NewLine));
-                #endregion
 
                 #region エラーファイル削除
                 ExecutionResultTextAdded(
@@ -716,7 +779,7 @@ namespace RecoveryTool
                 dgvData.FirstDisplayedScrollingRowIndex = 0;
                 dgvData.Rows[0].Cells[m_CON_COL_CHK_SELECT].Value = true;
             }
-            else if (bolInitialLaunch)
+            else if (bolInitialLaunchFlg)
             {
                 // メッセージ出力
                 MessageBox.Show(
@@ -1172,7 +1235,7 @@ namespace RecoveryTool
         /// </summary>
         /// <param name="strRapidTableName">rapidテーブル名</param>
         /// <returns>存在フラグ</returns>
-        public bool? bolCheckRapidTable(string strRapidTableName)
+        private bool? bolCheckRapidTable(string strRapidTableName)
         {
             string strSQL = string.Empty;
             DataTable dtData = new DataTable();
