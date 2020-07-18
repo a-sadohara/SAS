@@ -75,6 +75,9 @@ namespace RecoveryTool
             // 複数選択させない
             this.dgvData.MultiSelect = false;
 
+            // リセットボタンを無効化
+            btnRecovery.Enabled = false;
+
             // プロセスの状態を確認する
             Task<string> taskExecuteTaskList =
                 Task.Run(() => strExecuteCommandPrompt(
@@ -113,21 +116,68 @@ namespace RecoveryTool
                 return;
             }
 
+            // プロセスの状態を表示
+            ExecutionResultTextAdded(true, string.Format(
+                                "{0}{1}",
+                                "■連携基盤のプロセス状態を確認します。",
+                                Environment.NewLine));
+
+
+            string strStatus = string.Empty;
             foreach (string strFileName in g_strExecutionFileName)
             {
+
+                if (strResult.Contains(strFileName))
+                {
+                    strStatus = m_CON_TEXT_ACTIV;
+                    bolProcessCheckResult = false;
+                }
+                else
+                {
+                    strStatus = m_CON_TEXT_STOP;
+                }
+
+                ExecutionResultTextAdded(
+                    false,
+                    string.Format(
+                        " ・{0} {1}{2}",
+                        strFileName.Replace(".exe", string.Empty),
+                        strStatus,
+                        Environment.NewLine));
+
                 if (!strResult.Contains(strFileName))
                 {
                     bolProcessTargetFlg = true;
-                    break;
                 }
             }
+
+            if(bolProcessTargetFlg)
+            {
+                ExecutionResultTextAdded(false, string.Format(
+                    "{0}{1}",
+                    "■□■□　　連携基盤のプロセスが異常な状態です。リセットボタンを押してください　　■□■□",
+                    Environment.NewLine));
+            }
+            else
+            {
+                ExecutionResultTextAdded(false, string.Format("{0}{1}",
+                    "⇒　連携基盤のプロセスは正常に稼働しています。",
+                    Environment.NewLine));
+            }
+
+
+            ExecutionResultTextAdded(false, string.Format("{0}{1}{2}{3}",
+                "-----------------------------------------------------",
+                Environment.NewLine,
+                "■アラートファイルを確認します。",
+                Environment.NewLine));
 
             // エラーファイル格納ディレクトリの有無確認
             if (!Directory.Exists(g_strErrorFileOutputPath))
             {
                 // メッセージ出力
                 MessageBox.Show(
-                    "エラーファイル格納ディレクトリが参照できません。",
+                    "アラートファイル格納ディレクトリが参照できません。",
                     g_CON_MESSAGE_TITLE_WARN,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
@@ -145,7 +195,7 @@ namespace RecoveryTool
             // エラーファイルの有無確認
             if (m_lstFiles.Count() == 0)
             {
-                string strErrorMessage = "エラーファイルは出力されていません。";
+                string strErrorMessage = "⇒アラートファイルは出力されていません。";
 
                 ExecutionResultTextAdded(
                     false,
@@ -154,12 +204,6 @@ namespace RecoveryTool
                         strErrorMessage,
                         Environment.NewLine));
 
-                // メッセージ出力
-                MessageBox.Show(
-                    strErrorMessage,
-                    g_CON_MESSAGE_TITLE_WARN,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
             }
             else
             {
@@ -167,7 +211,7 @@ namespace RecoveryTool
                     false,
                     string.Format(
                         "{0}{1}",
-                        "エラーファイルが出力されています。",
+                        "⇒アラートファイルが出力されています。",
                         Environment.NewLine));
 
                 foreach (string strFile in m_lstFiles)
@@ -187,6 +231,10 @@ namespace RecoveryTool
 
             // 初期表示処理
             dispDataGridView();
+
+            // リセットボタン有効化
+            btnRecovery.Enabled = true;
+
         }
 
         /// <summary>
@@ -211,11 +259,50 @@ namespace RecoveryTool
                 ExecutionResultTextAdded(
                     !bolInitialLaunchFlg,
                     string.Format(
-                        "{0}{1}{1}",
-                        "復旧処理を開始します。",
+                        "{0}{1}{2}{3}",
+                        "-----------------------------------------------------",
+                        Environment.NewLine,
+                        "■□■□　　　　　リセット処理を開始します。　　　　　　□■□■",
                         Environment.NewLine));
 
                 bolInitialLaunchFlg = false;
+
+
+                if (dgvData.Rows.Cast<DataGridViewRow>().Where(x => x.Cells[m_CON_COL_CHK_SELECT].Value.Equals(true)).Count() != 0)
+                {
+
+                    if (MessageBox.Show("当該検査番号は、検査無効となります。本当に 【リセット】 しますか？", "リセット確認",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    {
+                        ExecutionResultTextAdded(
+                            false,
+                            string.Format("{0}{1}",
+                            "⇒　処理を中断します。",
+                            Environment.NewLine));
+                        return;
+                    }
+
+                    bolProcessTargetFlg = true;
+                }
+                else 
+                {
+
+                    if (bolProcessTargetFlg)
+                    {
+                        if (MessageBox.Show("本当に復旧しますか?", "リセット確認",
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        {
+                            ExecutionResultTextAdded(
+                                false,
+                                string.Format("{0}{1}",
+                                "⇒　処理を中断します。",
+                                Environment.NewLine));
+                            return;
+                        }
+
+                    }
+                }
+
 
                 // プロセス復旧が必要な場合、下記処理を行う
                 if (bolProcessTargetFlg)
@@ -664,20 +751,52 @@ namespace RecoveryTool
                     false,
                     string.Format(
                         "{0}{1}",
-                        "■エラーファイルを削除します。",
+                        "■アラートファイルを削除します。",
                         Environment.NewLine));
 
                 try
                 {
-                    foreach (string strFile in m_lstFiles)
+                    if (bolProcessTargetFlg)
                     {
-                        strErrorFile = strFile;
-                        File.Delete(strErrorFile);
+                        // リカバリ済みのため全てのアラートファイルを削除
+                        foreach (string strFile in m_lstFiles)
+                        {
+                            File.Delete(strFile);
+                            ExecutionResultTextAdded(
+                                false,
+                                string.Format("{0}{1}{2}",
+                                "   ・",
+                                strFile,
+                                Environment.NewLine));
+                        }
                     }
+                    else
+                    {
+                        foreach (string strFile in m_lstFiles)
+                        {
+                            // リカバリ対象外のアラートファイルを削除   
+                            foreach(string strTagetFile in g_strRecoveryExemptErrorFileName)
+                            {
+                                if ( Path.GetFileName(strFile).StartsWith(strTagetFile))
+                                {
+                                    File.Delete(strFile);
+                                    ExecutionResultTextAdded(
+                                        false,
+                                        string.Format("{0}{1}{2}",
+                                        "   ・",
+                                        strFile,
+                                        Environment.NewLine));
+                                }
+                            }
+                        }
+
+                    }
+
+
                 }
                 catch (Exception ex)
                 {
-                    string strErrorMessage = "エラーファイルの削除処理中にエラーが発生しました。";
+                    string strErrorMessage = "アラートファイルの削除処理中にエラーが発生しました。";
 
                     // ログ出力
                     WriteEventLog(
@@ -712,13 +831,13 @@ namespace RecoveryTool
                     false,
                     string.Format(
                         "{0}{1}{1}",
-                        "⇒エラーファイルの削除処理が完了しました。",
+                        "⇒アラートファイルの削除処理が完了しました。",
                         Environment.NewLine));
                 #endregion
 
                 ExecutionResultTextAdded(
                     false,
-                    "復旧処理が終了しました。");
+                    "■□■□　　　　　リセット処理が終了しました。　　　　　■□■□");
 
                 dispDataGridView();
             }
@@ -779,15 +898,7 @@ namespace RecoveryTool
                 dgvData.FirstDisplayedScrollingRowIndex = 0;
                 dgvData.Rows[0].Cells[m_CON_COL_CHK_SELECT].Value = true;
             }
-            else if (bolInitialLaunchFlg)
-            {
-                // メッセージ出力
-                MessageBox.Show(
-                    "復旧対象のデータが存在しません。",
-                    g_CON_MESSAGE_TITLE_WARN,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-            }
+           
         }
 
         /// <summary>
