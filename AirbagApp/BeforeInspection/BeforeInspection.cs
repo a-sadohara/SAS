@@ -1706,9 +1706,6 @@ namespace BeforeInspection
             if (m_intStatus == g_clsSystemSettingInfo.intStatusChk &&
                 !string.IsNullOrEmpty(lblEndDatetime.Text))
             {
-                // finalファイルを削除する
-                DeleteFinalFile();
-
                 // 枝番の取得
                 if (bolGetBranchNum(out m_intBranchNum, lblStartDatetime.Text.Substring(0, 10), m_intInspectionNum) == false)
                 {
@@ -1878,9 +1875,6 @@ namespace BeforeInspection
             {
                 return;
             }
-
-            // finalファイルを削除する
-            DeleteFinalFile();
 
             // 終了日付の表示
             lblEndDatetime.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
@@ -2115,23 +2109,6 @@ namespace BeforeInspection
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Finalファイル削除
-        /// </summary>
-        private void DeleteFinalFile()
-        {
-            DirectoryInfo diImagingDevice = GetImagingDeviceCooperationDirectoryInfo();
-
-            // *.finalファイルが存在する場合、削除する
-            if (diImagingDevice.Exists)
-            {
-                foreach (string strPath in diImagingDevice.GetFiles().Where(x => string.Compare(x.Extension, m_CON_EXTENSION_FINAL, true) == 0).Select(x => x.FullName))
-                {
-                    File.Delete(strPath);
-                }
-            }
         }
     }
 }
