@@ -588,7 +588,7 @@ namespace BeforeInspection
                 g_clsConnectionNpgsql.ExecTranSQL(strSql, lstNpgsqlCommand);
 
                 // 撮像装置部へ連携用ファイル出力
-                if (bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum, g_clsConnectionNpgsql) == false)
+                if (bolOutFile(txtFabricName.Text, intInspectionNum, intBranchNum, g_clsConnectionNpgsql) == false)
                 {
                     btnSet.Focus();
                     return false;
@@ -657,7 +657,7 @@ namespace BeforeInspection
 
                 // 撮像装置部へ連携用ファイル出力
                 if (bolFileOutputFlag &&
-                    bolOutFile(txtFabricName.Text, m_intInspectionNum, m_intBranchNum, g_clsConnectionNpgsql) == false)
+                    bolOutFile(txtFabricName.Text, intInspectionNum, intBranchNum, g_clsConnectionNpgsql) == false)
                 {
                     btnEndDatetime.Focus();
                     return false;
