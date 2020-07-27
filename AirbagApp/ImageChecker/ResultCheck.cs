@@ -1659,6 +1659,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnLogout_Click(object sender, EventArgs e)
         {
+            g_clsConnectionNpgsql.DbRollback();
             g_clsLoginInfo.Logout();
         }
 
@@ -1883,6 +1884,7 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnTargetSelection_Click(object sender, EventArgs e)
         {
+            g_clsConnectionNpgsql.DbRollback();
             intDestination = g_CON_APID_TARGET_SELECTION;
 
             this.Close();
@@ -1939,6 +1941,8 @@ namespace ImageChecker
             {
                 frmCopyReg.ShowDialog(this);
                 bolRegister = frmCopyReg.bolRegister;
+                m_dtData.Rows[m_intPageIdx]["line"] = frmCopyReg.intLine;
+                m_dtData.Rows[m_intPageIdx]["cloumns"] = frmCopyReg.strColumns;
             }
 
             this.Visible = true;

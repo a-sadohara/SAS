@@ -15,6 +15,8 @@ namespace ImageChecker
         /// 登録フラグ
         /// </summary>
         public bool bolRegister { get; set; }
+        public int intLine { get; set; }
+        public string strColumns { get; set; }
 
         // パラメータ関連
         private HeaderData m_clsHeaderData;
@@ -1076,6 +1078,8 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnClose_Click(object sender, EventArgs e)
         {
+            intLine = int.Parse(cmbBoxLine.SelectedItem.ToString());
+            strColumns = cmbBoxColumns.SelectedItem.ToString();
             this.Close();
         }
 
