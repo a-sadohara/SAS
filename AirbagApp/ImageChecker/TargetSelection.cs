@@ -1330,9 +1330,6 @@ namespace ImageChecker
 
             this.SuspendLayout();
 
-            // 連携時間を更新
-            g_datetimePrevReplicate = DateTime.Now.AddMinutes(5);
-
             ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
             frmProgress.StartPosition = FormStartPosition.CenterScreen;
             frmProgress.Size = this.Size;
@@ -1359,10 +1356,19 @@ namespace ImageChecker
             string strUnitNum = string.Empty;
             string strLogMessage = string.Empty;
             int intExecutionCount = 0;
+            bool bolDisplayFlg = false;
             DateTime dateSyncTargetDate = DateTime.Now.Date.AddDays(g_clsSystemSettingInfo.intNgImageAcquisitionPeriod);
 
             List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
             List<Task<Boolean>> lstTask = new List<Task<Boolean>>();
+
+            if (g_datetimePrevReplicate == DateTime.MinValue)
+            {
+                bolDisplayFlg = true;
+            }
+
+            // 連携時間を更新
+            g_datetimePrevReplicate = DateTime.Now.AddMinutes(5);
 
             // チェック対象の完了通知連携ディレクトリを設定する
             string[] strCompletionNoticeCooperationDirectoryArray =
@@ -1596,6 +1602,8 @@ namespace ImageChecker
                                 // 連携済みのため、次を処理
                                 continue;
                             }
+
+                            bolDisplayFlg = true;
 
                             // 検査情報ヘッダの取り込み処理
                             try
@@ -2155,8 +2163,11 @@ namespace ImageChecker
                 frmProgress.Dispose();
             }
 
-            // データグリッドビュー表示
-            bolDispDataGridView(true);
+            if (bolDisplayFlg)
+            {
+                // データグリッドビュー表示
+                bolDispDataGridView(true);
+            }
 
             this.ResumeLayout();
         }
