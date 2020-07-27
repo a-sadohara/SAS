@@ -59,6 +59,9 @@ namespace ImageChecker
         // ページIdx
         private int m_intPageIdx = -1;
 
+        // ページバックフラグ
+        private bool m_bolPageBackFlg = false;
+
         // データ保持関連
         private DataTable m_dtData;
 
@@ -1566,7 +1569,9 @@ namespace ImageChecker
         /// <param name="e"></param>
         private void btnBackPage_Click(object sender, EventArgs e)
         {
+            m_bolPageBackFlg = true;
             bolBackPage();
+            m_bolPageBackFlg = false;
         }
 
         /// <summary>
@@ -1915,6 +1920,17 @@ namespace ImageChecker
             // 修正
             if (m_clsDecisionResultCorrection.intBranchNum > 0)
             {
+                if (m_bolPageBackFlg)
+                {
+                    m_clsDecisionResultCorrection.intBranchNum = 1;
+                    m_clsDecisionResultCorrection.intLine = int.Parse(m_dtData.Rows[m_intPageIdx]["line"].ToString());
+                    m_clsDecisionResultCorrection.strCloumns = m_dtData.Rows[m_intPageIdx]["cloumns"].ToString();
+                    m_clsDecisionResultCorrection.strNgReason = m_dtData.Rows[m_intPageIdx]["ng_reason"].ToString();
+                    m_clsDecisionResultCorrection.strMarkingImagepath = m_dtData.Rows[m_intPageIdx]["marking_imagepath"].ToString();
+                    m_clsDecisionResultCorrection.strOrgImagepath = m_dtData.Rows[m_intPageIdx]["org_imagepath"].ToString();
+                    m_bolPageBackFlg = false;
+                }
+
                 intBranch = m_clsDecisionResultCorrection.intBranchNum;
                 intLine = m_clsDecisionResultCorrection.intLine;
                 strColumns = m_clsDecisionResultCorrection.strCloumns;
@@ -1941,8 +1957,6 @@ namespace ImageChecker
             {
                 frmCopyReg.ShowDialog(this);
                 bolRegister = frmCopyReg.bolRegister;
-                m_dtData.Rows[m_intPageIdx]["line"] = frmCopyReg.intLine;
-                m_dtData.Rows[m_intPageIdx]["cloumns"] = frmCopyReg.strColumns;
             }
 
             this.Visible = true;
