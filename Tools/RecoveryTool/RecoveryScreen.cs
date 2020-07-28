@@ -151,7 +151,7 @@ namespace RecoveryTool
                 }
             }
 
-            if(bolProcessTargetFlg)
+            if (bolProcessTargetFlg)
             {
                 ExecutionResultTextAdded(false, string.Format(
                     "{0}{1}",
@@ -284,7 +284,7 @@ namespace RecoveryTool
 
                     bolProcessTargetFlg = true;
                 }
-                else 
+                else
                 {
 
                     if (bolProcessTargetFlg)
@@ -775,9 +775,9 @@ namespace RecoveryTool
                         foreach (string strFile in m_lstFiles)
                         {
                             // リカバリ対象外のアラートファイルを削除   
-                            foreach(string strTagetFile in g_strRecoveryExemptErrorFileName)
+                            foreach (string strTagetFile in g_strRecoveryExemptErrorFileName)
                             {
-                                if ( Path.GetFileName(strFile).StartsWith(strTagetFile))
+                                if (Path.GetFileName(strFile).StartsWith(strTagetFile))
                                 {
                                     File.Delete(strFile);
                                     ExecutionResultTextAdded(
@@ -885,20 +885,11 @@ namespace RecoveryTool
             // データグリッドビューに反映
             foreach (InspectionInfo row in m_lstInspectionInfo)
             {
-                this.dgvData.Rows.Add(true, row.dtInspectionDate, row.intInspectionNum, row.strFabricName, row.dtImagingStarttime);
+                this.dgvData.Rows.Add(false, row.dtInspectionDate, row.intInspectionNum, row.strFabricName, row.dtImagingStarttime);
             }
 
             // 行選択の状態をリセットする
             dgvData.CurrentCell = null;
-
-            if (dgvData.Rows.Count > 0)
-            {
-                // 1行目を選択状態にする
-                dgvData.Rows[0].Selected = true;
-                dgvData.FirstDisplayedScrollingRowIndex = 0;
-                dgvData.Rows[0].Cells[m_CON_COL_CHK_SELECT].Value = true;
-            }
-           
         }
 
         /// <summary>
