@@ -1333,7 +1333,6 @@ namespace ImageChecker
             ImportImageZipProgressForm frmProgress = new ImportImageZipProgressForm();
             frmProgress.StartPosition = FormStartPosition.CenterScreen;
             frmProgress.Size = this.Size;
-            frmProgress.Show(this);
 
             // 連携基盤部連携ファイルの取込処理
             string[] strSplitFileName = new string[0];
@@ -1604,6 +1603,11 @@ namespace ImageChecker
                             }
 
                             bolDisplayFlg = true;
+
+                            if (!frmProgress.Visible)
+                            {
+                                frmProgress.Show(this);
+                            }
 
                             // 検査情報ヘッダの取り込み処理
                             try
