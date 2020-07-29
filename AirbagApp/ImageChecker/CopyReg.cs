@@ -453,10 +453,6 @@ namespace ImageChecker
             bool bolProcOkNg = false;
             int intCopyRegistInfo = -1;
             int intBranchNum = m_intBranchNumGet + m_intBranchNumUpCnt;
-            int intCloumnsInfo = 0;
-            int intLineInfo = 0;
-            List<string> lstCmbLineItem = new List<string>();
-            List<string> lstCmbCloumnsItem = new List<string>();
             string strSQL = string.Empty;
             string strFileNameWithExtension = string.Empty;
             string NotDetectedImageCooperationDirectory = string.Empty;
@@ -515,89 +511,7 @@ namespace ImageChecker
                     return;
                 }
 
-                m_strRetainedLine = cmbBoxLine.SelectedItem.ToString();
-                intLineInfo = int.Parse(m_strRetainedLine);
-
-                // 変数を補正する
-                if (intLineInfo != 0)
-                {
-                    intLineInfo--;
-                }
-
-                // 選択肢の情報を設定する
-                for (int i = intLineInfo; i < intLineInfo + 3; i++)
-                {
-                    lstCmbLineItem.Add(i.ToString());
-                }
-
-                // 行コンボボックスの設定
-                cmbBoxLine.Items.Clear();
-                cmbBoxLine.Items.AddRange(lstCmbLineItem.ToArray());
-                cmbBoxLine.SelectedItem = m_strRetainedLine;
-
-
-                m_strRetainedCloumns = cmbBoxColumns.SelectedItem.ToString();
-
-                switch (m_strRetainedCloumns)
-                {
-                    case g_strColumnsInfoA:
-                        intCloumnsInfo = 1;
-                        break;
-                    case g_strColumnsInfoB:
-                        intCloumnsInfo = 2;
-                        break;
-                    case g_strColumnsInfoC:
-                        intCloumnsInfo = 3;
-                        break;
-                    case g_strColumnsInfoD:
-                        intCloumnsInfo = 4;
-                        break;
-                    case g_strColumnsInfoE:
-                        intCloumnsInfo = 5;
-                        break;
-                }
-
-                // 変数を補正する
-                if (intCloumnsInfo == m_intColumnCnt)
-                {
-                    intCloumnsInfo--;
-                }
-
-                if (intCloumnsInfo != 1)
-                {
-                    intCloumnsInfo--;
-                }
-
-                // 選択肢の情報を設定する
-                for (int i = intCloumnsInfo; i < intCloumnsInfo + 3; i++)
-                {
-                    if (i == 1)
-                    {
-                        lstCmbCloumnsItem.Add(g_strColumnsInfoA);
-                    }
-                    else if (i == 2)
-                    {
-                        lstCmbCloumnsItem.Add(g_strColumnsInfoB);
-                    }
-                    else if (i == 3)
-                    {
-                        lstCmbCloumnsItem.Add(g_strColumnsInfoC);
-                    }
-                    else if (i == 4)
-                    {
-                        lstCmbCloumnsItem.Add(g_strColumnsInfoD);
-                    }
-                    else if (i == 5)
-                    {
-                        lstCmbCloumnsItem.Add(g_strColumnsInfoE);
-                    }
-                }
-
-                // 列コンボボックスの設定
-                cmbBoxColumns.Items.Clear();
-                cmbBoxColumns.Items.AddRange(lstCmbCloumnsItem.ToArray());
-                cmbBoxColumns.SelectedItem = m_strRetainedCloumns;
-
+                this.CreateComboBox();
                 this.btnReCalculation.Visible = false;
                 bolProcOkNg = true;
             }
@@ -628,6 +542,101 @@ namespace ImageChecker
                     g_clsConnectionNpgsql.DbClose();
                 }
             }
+        }
+
+        /// <summary>
+        /// コンボボックス生成
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateComboBox()
+        {
+            int intCloumnsInfo = 0;
+            int intLineInfo = 0;
+            List<string> lstCmbLineItem = new List<string>();
+            List<string> lstCmbCloumnsItem = new List<string>();
+
+            m_strRetainedLine = cmbBoxLine.SelectedItem.ToString();
+            intLineInfo = int.Parse(m_strRetainedLine);
+
+            // 変数を補正する
+            if (intLineInfo != 0)
+            {
+                intLineInfo--;
+            }
+
+            // 選択肢の情報を設定する
+            for (int i = intLineInfo; i < intLineInfo + 3; i++)
+            {
+                lstCmbLineItem.Add(i.ToString());
+            }
+
+            // 行コンボボックスの設定
+            cmbBoxLine.Items.Clear();
+            cmbBoxLine.Items.AddRange(lstCmbLineItem.ToArray());
+            cmbBoxLine.SelectedItem = m_strRetainedLine;
+
+            m_strRetainedCloumns = cmbBoxColumns.SelectedItem.ToString();
+
+            switch (m_strRetainedCloumns)
+            {
+                case g_strColumnsInfoA:
+                    intCloumnsInfo = 1;
+                    break;
+                case g_strColumnsInfoB:
+                    intCloumnsInfo = 2;
+                    break;
+                case g_strColumnsInfoC:
+                    intCloumnsInfo = 3;
+                    break;
+                case g_strColumnsInfoD:
+                    intCloumnsInfo = 4;
+                    break;
+                case g_strColumnsInfoE:
+                    intCloumnsInfo = 5;
+                    break;
+            }
+
+            // 変数を補正する
+            if (intCloumnsInfo == m_intColumnCnt)
+            {
+                intCloumnsInfo--;
+            }
+
+            if (intCloumnsInfo != 1)
+            {
+                intCloumnsInfo--;
+            }
+
+            // 選択肢の情報を設定する
+            for (int i = intCloumnsInfo; i < intCloumnsInfo + 3; i++)
+            {
+                if (i == 1)
+                {
+                    lstCmbCloumnsItem.Add(g_strColumnsInfoA);
+                }
+                else if (i == 2)
+                {
+                    lstCmbCloumnsItem.Add(g_strColumnsInfoB);
+                }
+                else if (i == 3)
+                {
+                    lstCmbCloumnsItem.Add(g_strColumnsInfoC);
+                }
+                else if (i == 4)
+                {
+                    lstCmbCloumnsItem.Add(g_strColumnsInfoD);
+                }
+                else if (i == 5)
+                {
+                    lstCmbCloumnsItem.Add(g_strColumnsInfoE);
+                }
+            }
+
+            // 列コンボボックスの設定
+            cmbBoxColumns.Items.Clear();
+            cmbBoxColumns.Items.AddRange(lstCmbCloumnsItem.ToArray());
+            cmbBoxColumns.SelectedItem = m_strRetainedCloumns;
         }
         #endregion
 
@@ -1098,6 +1107,8 @@ namespace ImageChecker
                     {
                         lblNgReason.Text = string.Format(m_CON_FORMAT_NG_REASON_SELECT, dtData.Rows[0]["ng_reason"].ToString());
                     }
+
+                    this.CreateComboBox();
                 }
 
                 return true;
