@@ -262,17 +262,20 @@ def exec_check_image_num_multi_thread(product_name, fabric_name, inspection_num,
                                         % (app_id, app_name, fabric_name, inspection_num, inspection_date))
                 raise Exception
         else:
-            check_target_front_line_image_num = int(re.split('[._]', after_tmp_file_info[line_info_index-1][0])[6])
-            face = int(re.split('[._]', after_tmp_file_info[line_info_index-1][0])[4])
-            check_target_line_image_num = max([int(re.split('[._]', x.split('\\')[-1])[6]) for x in file_list if int(re.split('[._]', x.split('\\')[-1])[4]) == face])
-            check_image_list = [x for x in file_list if check_target_front_line_image_num <= int(re.split('[._]', x.split('\\')[-1])[6]) and
-                            int(re.split('[._]', x.split('\\')[-1])[6]) <= check_target_line_image_num and int(re.split('[._]', x.split('\\')[-1])[4]) == face]
-            logger_subprocess.debug('[%s:%s] 行間内画像リスト取得。 画像リスト=[%s], ホスト名=[%s], 開始撮像番号=[%s], 終了撮像番号=[%s]' % (app_id, app_name, check_image_list, rapid_host_name, check_target_front_line_image_num, check_target_line_image_num))
-            logger_subprocess.debug('[%s:%s] 最終行枚数=[%s]' % (app_id, app_name, check_target_line_image_num - check_target_front_line_image_num + 1))
-            if len(check_image_list) < (check_target_line_image_num - check_target_front_line_image_num + 1) * int(camera_num):
-                result = 'image_shortage'
+            if len(after_tmp_file_info) == 0:
+                check_image_list = file_list
             else:
-                result = True
+                check_target_front_line_image_num = int(re.split('[._]', after_tmp_file_info[line_info_index-1][0])[6])
+                face = int(re.split('[._]', after_tmp_file_info[line_info_index-1][0])[4])
+                check_target_line_image_num = max([int(re.split('[._]', x.split('\\')[-1])[6]) for x in file_list if int(re.split('[._]', x.split('\\')[-1])[4]) == face])
+                check_image_list = [x for x in file_list if check_target_front_line_image_num <= int(re.split('[._]', x.split('\\')[-1])[6]) and
+                            int(re.split('[._]', x.split('\\')[-1])[6]) <= check_target_line_image_num and int(re.split('[._]', x.split('\\')[-1])[4]) == face]
+                logger_subprocess.debug('[%s:%s] 行間内画像リスト取得。 画像リスト=[%s], ホスト名=[%s], 開始撮像番号=[%s], 終了撮像番号=[%s]' % (app_id, app_name, check_image_list, rapid_host_name, check_target_front_line_image_num, check_target_line_image_num))
+                logger_subprocess.debug('[%s:%s] 最終行枚数=[%s]' % (app_id, app_name, check_target_line_image_num - check_target_front_line_image_num + 1))
+                if len(check_image_list) < (check_target_line_image_num - check_target_front_line_image_num + 1) * int(camera_num):
+                    result = 'image_shortage'
+                else:
+                    result = True
             
             if len(check_image_list) == 0:
                 result = True
@@ -284,6 +287,10 @@ def exec_check_image_num_multi_thread(product_name, fabric_name, inspection_num,
             if tmp_result:
                 logger_subprocess.debug('[%s:%s] 撮像画像の移動が終了しました。 ホスト名=[%s]'
                                         % (app_id, app_name, rapid_host_name))
+                if result == 'image_shortage':
+                    pass
+                else:
+                    result = True
             else:
                 logger_subprocess.error('[%s:%s] 撮像画像の移動が失敗しました。 '
                                         '[反番, 検査番号, 検査日付]=[%s, %s, %s]'
@@ -957,32 +964,30 @@ def main():
                 read_tmp_file = [x for x in after_tmp_file if regimark_face in re.split('_', x.split('\\')[-1])[6]]
                 result, after_tmp_file_info, error, func_name = read_file(read_tmp_file[0])
 
-                if len(regimark_info) == len(after_tmp_file_info):
-                    check_result.append('OK')
+                check_result.append('OK')
 
-                    tmp_file_move_dir = tmp_file_dir + '\\CHECKED'
-                    # tmpファイルを出力するフォルダの存在を確認する
-                    logger.debug('[%s:%s] tmpファイル移動先フォルダ存在チェックを開始します。', app_id, app_name)
-                    result, error, func_name = exists_dir(tmp_file_move_dir)
+                tmp_file_move_dir = tmp_file_dir + '\\CHECKED'
+                # tmpファイルを出力するフォルダの存在を確認する
+                logger.debug('[%s:%s] tmpファイル移動先フォルダ存在チェックを開始します。', app_id, app_name)
+                result, error, func_name = exists_dir(tmp_file_move_dir)
 
-                    if result:
-                        logger.debug('[%s:%s] tmpファイル移動先フォルダ存在チェックが終了しました。', app_id, app_name)
-                        pass
-                    else:
-                        logger.error('[%s:%s] tmpファイル移動先フォルダ存在チェックに失敗しました。:格納先フォルダ名[%s]',
-                                     app_id, app_name, tmp_file_move_dir)
-                        raise Exception
-
-                    result, error, func_name = move_file(read_tmp_file, tmp_file_move_dir)
-                    if result:
-                        logger.debug('[%s:%s] tmpファイルの移動が終了しました。' % (app_id, app_name))
-                    else:
-                        logger.error('[%s:%s] tmpファイルの移動が失敗しました。 '
-                                     '[反番, 検査番号, 検査日付, 検反部]=[%s, %s, %s, %s]'
-                                     % (app_id, app_name, fabric_name, inspection_num, inspection_date, regimark_face))
-                        raise Exception
-                else:
+                if result:
+                    logger.debug('[%s:%s] tmpファイル移動先フォルダ存在チェックが終了しました。', app_id, app_name)
                     pass
+                else:
+                    logger.error('[%s:%s] tmpファイル移動先フォルダ存在チェックに失敗しました。:格納先フォルダ名[%s]',
+                                 app_id, app_name, tmp_file_move_dir)
+                    raise Exception
+
+                result, error, func_name = move_file(read_tmp_file, tmp_file_move_dir)
+                if result:
+                    logger.debug('[%s:%s] tmpファイルの移動が終了しました。' % (app_id, app_name))
+                else:
+                    logger.error('[%s:%s] tmpファイルの移動が失敗しました。 '
+                                 '[反番, 検査番号, 検査日付, 検反部]=[%s, %s, %s, %s]'
+                                 % (app_id, app_name, fabric_name, inspection_num, inspection_date, regimark_face))
+                    raise Exception
+
 
 
                 result_list = []

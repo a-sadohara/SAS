@@ -280,6 +280,8 @@ def specific_line_num(regimark_info, ng_file, inspection_direction, logger):
     except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(error, logger, app_id, app_name)
+        result = False
+        return result, line_info, last_flag, error, func_name
 
     return result, line_info, last_flag, error, func_name
 
@@ -381,6 +383,8 @@ def calc_length_ratio(regimark_info, line_info, nonoverlap_image_height_pix,
     except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(error, logger, app_id, app_name)
+        result = False
+        return result, regimark_length_ratio, conf_regimark_between_length_pix, error, func_name
 
     return result, regimark_length_ratio, conf_regimark_between_length_pix, error, func_name
 
@@ -506,7 +510,10 @@ def specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix, nono
                 logger.debug('[%s:%s] 検反部1 カメラ番号等しい' % (app_id, app_name))
                 ng_y_pix = abs(start_regimark_x - ng_x)
                 ng_y_mm = ng_y_pix * actual_image_width / resize_image_width
-                plus_direction = 1
+                if start_regimark_x > ng_x:
+                    plus_direction = 1
+                else:
+                    plus_direction = -1
             elif start_camera_num > ng_camera_num:
                 logger.debug('[%s:%s] 検反部1 レジマークカメラ番号＞NGカメラ番号' % (app_id, app_name))
                 # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[開始レジマークx座標]-[オーバーラップ分幅])＋[NG画像x座標]
@@ -529,7 +536,10 @@ def specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix, nono
                 logger.debug('[%s:%s] 検反部2 カメラ番号等しい' % (app_id, app_name))
                 ng_y_pix = abs(start_regimark_x - ng_x)
                 ng_y_mm = ng_y_pix * actual_image_width / resize_image_width
-                plus_direction = 1
+                if start_regimark_x < ng_x:
+                    plus_direction = -1
+                else:
+                    plus_direction = 1
             elif start_camera_num > ng_camera_num:
                 logger.debug('[%s:%s] 検反部2 レジマークカメラ番号＞NGカメラ番号' % (app_id, app_name))
                 # 撮像枚数×1撮像画像の幅(オーバーラップ除外分)＋(リサイズ画像幅-[開始レジマークx座標]-[オーバーラップ分幅])＋[NG画像x座標]
@@ -588,6 +598,7 @@ def specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix, nono
     except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(error, logger, app_id, app_name)
+        result = False
         return result, length_on_master, width_on_master, ng_face, error, func_name
 
     return result, length_on_master, width_on_master, ng_face, error, func_name
@@ -698,6 +709,8 @@ def specific_ng_line_colum(line_info, length_on_master, width_on_master, mst_dat
     except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(error, logger, app_id, app_name)
+        result = False
+        return result, judge_result, length_on_master, width_on_master, error, func_name
 
     return result, judge_result, length_on_master, width_on_master, error, func_name
 
@@ -825,6 +838,8 @@ def specific_ng_line_colum_border(line_info, length_on_master, width_on_master, 
     except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(error, logger, app_id, app_name)
+        result = False
+        return result, judge_result, length_on_master, width_on_master, error, func_name
 
     return result, judge_result, length_on_master, width_on_master, error, func_name
 
@@ -908,5 +923,7 @@ def calc_distance_from_basepoint(length_on_master, width_on_master, judge_result
     except Exception as error:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(error, logger, app_id, app_name)
+        result = False
+        return result, ng_dist, error, func_name
 
     return result, ng_dist, error, func_name

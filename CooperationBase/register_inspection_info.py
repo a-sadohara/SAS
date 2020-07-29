@@ -119,7 +119,7 @@ def select_inspection_data(conn, cur, unit_num):
 def select_before_inspection_data(conn, cur, starttime, unit_num):
     ### クエリを作成する
     sql = 'select fi.product_name, fi.fabric_name, fi.inspection_num, fi.imaging_endtime, fi.imaging_starttime, '\
-          'ii.inspection_direction from fabric_info as fi, inspection_info_header as ii '\
+          'ii.inspection_direction,ii.inspection_start_line from fabric_info as fi, inspection_info_header as ii '\
           'where fi.unit_num = \'%s\' and fi.imaging_starttime < \'%s\' and '\
           'fi.fabric_name = ii.fabric_name and fi.inspection_num = ii.inspection_num and '\
           'fi.imaging_starttime = ii.start_datetime order by fi.imaging_starttime desc' % (unit_num, starttime)
@@ -190,7 +190,7 @@ def exists_dir(target_path):
 # 戻り値             ：処理結果（True:成功、False:失敗）
 #
 # ------------------------------------------------------------------------------------
-def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date, before_inspection_direction):
+def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date, before_inspection_direction,before_inspection_start_line ):
     result = False
     output_file_path = common_inifile.get('FILE_PATH', 'input_path')
     file_extension = inifile.get('PATH', 'file_extension')
@@ -228,12 +228,29 @@ def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date
                             get_serial_number_list(csv_file, number_list_face_no_1, logger)
                         else:
                             get_serial_number_list(csv_file, number_list_face_no_2, logger)
+
+                        # 完了行数を算出する
+                        if len(number_list_face_no_1) > len(number_list_face_no_2):
+                            completed_lines = len(number_list_face_no_2)
+                        else:
+                            completed_lines = len(number_list_face_no_1)
+
+                        completed_lines = before_inspection_start_line + completed_lines - 1
+
                     elif i == 1 and (before_inspection_direction == 'R' or before_inspection_direction == 'Y'):
                         # 検査方向R, Yの場合、終了レジマークを読み込む
                         if j == 0:
                             get_serial_number_list(csv_file, number_list_face_no_1, logger)
                         else:
                             get_serial_number_list(csv_file, number_list_face_no_2, logger)
+
+                        # 完了行数を算出する
+                        if len(number_list_face_no_1) > len(number_list_face_no_2):
+                            completed_lines = len(number_list_face_no_2)
+                        else:
+                            completed_lines = len(number_list_face_no_1)
+
+                        completed_lines = before_inspection_start_line - completed_lines + 1
 
                     continue
                 else:
@@ -246,10 +263,10 @@ def output_dummy_file(product_name, fabric_name, inspection_num, inspection_date
 
         # ADD 20200714 KQRM 下吉 START
         # 「少ない方の読取行数 -2」の値を設定する
-        if len(number_list_face_no_1) > len(number_list_face_no_2):
-            completed_lines = len(number_list_face_no_2) - 2
-        else:
-            completed_lines = len(number_list_face_no_1) - 2
+        #if len(number_list_face_no_1) > len(number_list_face_no_2):
+        #    completed_lines = len(number_list_face_no_2)
+        #else:
+        #    completed_lines = len(number_list_face_no_1)
 
         # マイナス値の場合、0で補正する
         if completed_lines < 0:
@@ -473,19 +490,21 @@ def main():
                                     before_inspection_num = before_inspection_info[2]
                                     before_starttime = before_inspection_info[4]
                                     before_inspection_direction = before_inspection_info[5]
+                                    before_inspection_start_line = before_inspection_info[6]
                                     before_inspection_date = str(before_starttime.strftime('%Y%m%d'))
                                     logger.info('[%s:%s] 前検査が完了していません。前検査情報 [品番, 反番, 検査番号, 検査日付]=[%s, %s, %s, %s]' % (
                                     app_id, app_name, before_product_name, before_fabric_name, before_inspection_num, before_inspection_date))
 
 
                                     error_file_path = common_inifile.get('ERROR_FILE', 'path')
+                                    error_file_name = inifile.get('ERROR_FILE', 'dummy_error_file_name')
                                     Path(error_file_path + '\\' + error_file_name).touch()
 
                                     logger.info('[%s:%s] リカバリ（ダミーファイル出力）を開始します。 [品番, 反番, 検査番号, 検査日付]=[%s, %s, %s, %s]'
                                                 % (app_id, app_name, before_product_name, before_fabric_name,
                                                    before_inspection_num, before_inspection_date))
                                     tmp_result = output_dummy_file(before_product_name, before_fabric_name,
-                                                               before_inspection_num, before_inspection_date, before_inspection_direction)
+                                                               before_inspection_num, before_inspection_date, before_inspection_direction,before_inspection_start_line )
                                     if tmp_result:
                                         logger.info('[%s:%s] リカバリ（ダミーファイル出力）が終了しました。 [品番, 反番, 検査番号, 検査日付]=[%s, %s, %s, %s]'
                                                     % (app_id, app_name, before_product_name, before_fabric_name,

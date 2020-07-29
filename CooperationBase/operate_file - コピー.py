@@ -41,117 +41,115 @@ def confirm_file(file_list, zip_name, flag, limit_day, limit_month, server):
         now_date = datetime.datetime.now()
 
         for i in range(len(file_list)):
-            try:
-                if os.path.isfile(file_list[i]):
-                    ext = os.path.splitext(file_list[i])[1]
-                    file_name = os.path.basename(file_list[i])
-                    base_name = str(file_name.split('.')[0])
-                    file_dir = os.path.dirname(file_list[i])
-                    update_time = datetime.datetime.fromtimestamp(int(os.path.getctime(file_list[i])))
-                    logger.debug('file_list=%s, flag=%s, ext=%s', file_list[i], flag, ext)
-                    logger.info('[%s:%s] ファイル確認処理を開始します。 [ファイル名=%s]' % (app_id, app_name, file_name))
-                    logger.info('[%s:%s] ファイル名：%s, 更新日時：%s, 基準日：%s' % (app_id, app_name, file_name, update_time, limit_day))
-                    if not ext.endswith('.zip'):
-                        logger.info('[%s:%s] 更新日時：%s, 基準日：%s' % (app_id, app_name, update_time, limit_day))
-                        if flag == 3:
-                            if update_time <= limit_day:
-                                logger.info('[%s:%s] 保存期限を過ぎています。対象ファイルを削除します。 [ファイル名=%s]' % (app_id, app_name, file_name))
-                                os.remove(file_list[i])
-                            else:
-                                logger.info('[%s:%s] 対象ではありません。 [ファイル名=%s]' % (app_id, app_name, file_name))
-                        elif flag == 2:
-                            if update_time <= limit_month:
-                                logger.info('[%s:%s] 保存期限を過ぎています。対象ファイルを削除します。 [ファイル名=%s]' % (app_id, app_name, file_name))
-                                os.remove(file_list[i])
-                            else:
-                                logger.info('[%s:%s] 対象ではありません。 [ファイル名=%s]' % (app_id, app_name, file_name))
-                        elif flag != 2 and update_time <= limit_day:
 
-                            if flag == 0:
-                                logger.info(
-                                    '[%s:%s] ファイル保存期限を過ぎています。対象ファイルをZIPし、ファイル削除を開始します。 [ファイル名=%s]' % (
-                                        app_id, app_name, file_name))
+            if os.path.isfile(file_list[i]):
+                ext = os.path.splitext(file_list[i])[1]
+                file_name = os.path.basename(file_list[i])
+                base_name = str(file_name.split('.')[0])
+                file_dir = os.path.dirname(file_list[i])
+                update_time = datetime.datetime.fromtimestamp(int(os.path.getctime(file_list[i])))
+                logger.debug('file_list=%s, flag=%s, ext=%s', file_list[i], flag, ext)
+                logger.info('[%s:%s] ファイル確認処理を開始します。 [ファイル名=%s]' % (app_id, app_name, file_name))
+                logger.info('[%s:%s] ファイル名：%s, 更新日時：%s, 基準日：%s' % (app_id, app_name, file_name, update_time, limit_day))
+                if not ext.endswith('.zip'):
+                    logger.info('[%s:%s] 更新日時：%s, 基準日：%s' % (app_id, app_name, update_time, limit_day))
+                    if flag == 3:
+                        if update_time <= limit_day:
+                            logger.info('[%s:%s] 保存期限を過ぎています。対象ファイルを削除します。 [ファイル名=%s]' % (app_id, app_name, file_name))
+                            os.remove(file_list[i])
+                        else:
+                            logger.info('[%s:%s] 対象ではありません。 [ファイル名=%s]' % (app_id, app_name, file_name))
+                    elif flag == 2:
+                        if update_time <= limit_month:
+                            logger.info('[%s:%s] 保存期限を過ぎています。対象ファイルを削除します。 [ファイル名=%s]' % (app_id, app_name, file_name))
+                            os.remove(file_list[i])
+                        else:
+                            logger.info('[%s:%s] 対象ではありません。 [ファイル名=%s]' % (app_id, app_name, file_name))
+                    elif flag != 2 and update_time <= limit_day:
+
+                        if flag == 0:
+                            logger.info(
+                                '[%s:%s] ファイル保存期限を過ぎています。対象ファイルをZIPし、ファイル削除を開始します。 [ファイル名=%s]' % (
+                                    app_id, app_name, file_name))
+                            with suppress(PermissionError):
+                                with zipfile.ZipFile(file_dir + "\\" + base_name + "_" +
+                                                     datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
+                                                     'w', compression=zipfile.ZIP_DEFLATED) as zip_log:
+                                    zip_log.write(file_list[i], arcname=file_name)
+                                os.remove(file_list[i])
+
+                        else:
+                            logger.info(
+                                '[%s:%s] ファイル保存期限を過ぎています。対象ファイルをZIPし、ファイル削除を開始します。 [ファイル名=%s]' % (
+                                    app_id, app_name, file_name))
+                            if i == 0:
                                 with suppress(PermissionError):
-                                    with zipfile.ZipFile(file_dir + "\\" + base_name + "_" +
+                                    with zipfile.ZipFile(file_dir + "\\" + zip_name + "_" +
                                                          datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
                                                          'w', compression=zipfile.ZIP_DEFLATED) as zip_log:
                                         zip_log.write(file_list[i], arcname=file_name)
-                                    os.remove(file_list[i])
-
                             else:
-                                logger.info(
-                                    '[%s:%s] ファイル保存期限を過ぎています。対象ファイルをZIPし、ファイル削除を開始します。 [ファイル名=%s]' % (
-                                        app_id, app_name, file_name))
-                                if i == 0:
-                                    with suppress(PermissionError):
-                                        with zipfile.ZipFile(file_dir + "\\" + zip_name + "_" +
-                                                             datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
-                                                             'w', compression=zipfile.ZIP_DEFLATED) as zip_log:
-                                            zip_log.write(file_list[i], arcname=file_name)
-                                else:
-                                    logger.debug('else')
-                                    with suppress(PermissionError):
-                                        with zipfile.ZipFile(file_dir + "\\" + zip_name + "_" +
-                                                             datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
-                                                             'a', compression=zipfile.ZIP_DEFLATED) as zip_log:
-                                            zip_log.write(file_list[i], arcname=file_name)
-                                        os.remove(file_list[i])
-                        else:
-                            logger.info('[%s:%s] 対象ではありません。 [ファイル名=%s]' % (app_id, app_name, file_name))
-
-                    elif update_time <= limit_month and ext.endswith('.zip'):
-                        logger.info('[%s:%s] ZIP保存期限を過ぎています。ZIPファイル削除を開始します。 [ファイル名=%s]' % (app_id, app_name, file_name))
-                        os.remove(file_list[i])
+                                logger.debug('else')
+                                with suppress(PermissionError):
+                                    with zipfile.ZipFile(file_dir + "\\" + zip_name + "_" +
+                                                         datetime.date.strftime(now_date, '%Y%m%d') + ".zip",
+                                                         'a', compression=zipfile.ZIP_DEFLATED) as zip_log:
+                                        zip_log.write(file_list[i], arcname=file_name)
+                                    os.remove(file_list[i])
                     else:
                         logger.info('[%s:%s] 対象ではありません。 [ファイル名=%s]' % (app_id, app_name, file_name))
-                        result = True
 
-                    logger.info('[%s:%s] ファイル確認処理が終了しました。 [ファイル名=%s]' % (app_id, app_name, file_name))
-                    result = True
+                elif update_time <= limit_month and ext.endswith('.zip'):
+                    logger.info('[%s:%s] ZIP保存期限を過ぎています。ZIPファイル削除を開始します。 [ファイル名=%s]' % (app_id, app_name, file_name))
+                    os.remove(file_list[i])
                 else:
+                    logger.info('[%s:%s] 対象ではありません。 [ファイル名=%s]' % (app_id, app_name, file_name))
+                    result = True
 
-                    base, ext = os.path.splitext(file_list[i])
-                    name = file_list[i].split('\\')
-                    update_time = datetime.datetime.fromtimestamp(int(os.path.getctime(file_list[i])))
-                    logger.info('[%s:%s] フォルダ確認処理を開始します。 [フォルダ名=%s]' % (app_id, app_name, base))
-                    if flag == 3:
-                        if update_time <= limit_day:
-                            logger.info('[%s:%s] 保存期限を過ぎています。対象フォルダを削除します。 [フォルダ名=%s]' % (app_id, app_name, base))
-                            shutil.rmtree(file_list[i] + "\\")
-                        else:
-                            logger.info('[%s:%s] 対象ではありません。 [フォルダ名=%s]' % (app_id, app_name, base))
-                            pass
-                    elif flag == 1:
+                logger.info('[%s:%s] ファイル確認処理が終了しました。 [ファイル名=%s]' % (app_id, app_name, file_name))
+                result = True
+            else:
 
-                        if update_time <= limit_day:
-                            logger.info('[%s:%s] 保存期限を過ぎています。対象ファイルをZIPします。 [フォルダ名=%s]' % (app_id, app_name, base))
-                            shutil.make_archive(file_list[i], format='zip', root_dir=file_list[i] + "\\")
-                            shutil.rmtree(file_list[i] + "\\")
-                        else:
-                            logger.info('[%s:%s] 対象ではありません。 [フォルダ名=%s]' % (app_id, app_name, base))
-                            pass
-
-                    elif (flag == 2 and server == 'rapid'):
-                        if update_time <= limit_month:
-                            logger.info('[%s:%s] 保存期限を過ぎています。対象フォルダを削除します。 [フォルダ名=%s]' % (app_id, app_name, base))
-                            shutil.rmtree(file_list[i] + "\\")
-                        else:
-                            logger.info('[%s:%s] 対象ではありません。 [フォルダ名=%s]' % (app_id, app_name, base))
-                            pass
-                    elif flag == 2 and server == 'rk':
-                        if update_time <= limit_day:
-                            logger.info('[%s:%s] 保存期限を過ぎています。対象フォルダを削除します。 [フォルダ名=%s]' % (app_id, app_name, base))
-                            shutil.rmtree(file_list[i] + "\\")
-                        else:
-                            logger.info('[%s:%s] 対象ではありません。 [フォルダ名=%s]' % (app_id, app_name, base))
-                            pass
+                base, ext = os.path.splitext(file_list[i])
+                name = file_list[i].split('\\')
+                update_time = datetime.datetime.fromtimestamp(int(os.path.getctime(file_list[i])))
+                logger.info('[%s:%s] フォルダ確認処理を開始します。 [フォルダ名=%s]' % (app_id, app_name, base))
+                if flag == 3:
+                    if update_time <= limit_day:
+                        logger.info('[%s:%s] 保存期限を過ぎています。対象フォルダを削除します。 [フォルダ名=%s]' % (app_id, app_name, base))
+                        shutil.rmtree(file_list[i] + "\\")
                     else:
                         logger.info('[%s:%s] 対象ではありません。 [フォルダ名=%s]' % (app_id, app_name, base))
                         pass
-                    logger.info('[%s:%s] フォルダ確認処理が終了しました。 [フォルダ名=%s]' % (app_id, app_name, base))
-                    result = True
-            except Exception as e:
-                continue
+                elif flag == 1:
+
+                    if update_time <= limit_day:
+                        logger.info('[%s:%s] 保存期限を過ぎています。対象ファイルをZIPします。 [フォルダ名=%s]' % (app_id, app_name, base))
+                        shutil.make_archive(file_list[i], format='zip', root_dir=file_list[i] + "\\")
+                        shutil.rmtree(file_list[i] + "\\")
+                    else:
+                        logger.info('[%s:%s] 対象ではありません。 [フォルダ名=%s]' % (app_id, app_name, base))
+                        pass
+
+                elif (flag == 2 and server == 'rapid'):
+                    if update_time <= limit_month:
+                        logger.info('[%s:%s] 保存期限を過ぎています。対象フォルダを削除します。 [フォルダ名=%s]' % (app_id, app_name, base))
+                        shutil.rmtree(file_list[i] + "\\")
+                    else:
+                        logger.info('[%s:%s] 対象ではありません。 [フォルダ名=%s]' % (app_id, app_name, base))
+                        pass
+                elif flag == 2 and server == 'rk':
+                    if update_time <= limit_day:
+                        logger.info('[%s:%s] 保存期限を過ぎています。対象フォルダを削除します。 [フォルダ名=%s]' % (app_id, app_name, base))
+                        shutil.rmtree(file_list[i] + "\\")
+                    else:
+                        logger.info('[%s:%s] 対象ではありません。 [フォルダ名=%s]' % (app_id, app_name, base))
+                        pass
+                else:
+                    logger.info('[%s:%s] 対象ではありません。 [フォルダ名=%s]' % (app_id, app_name, base))
+                    pass
+                logger.info('[%s:%s] フォルダ確認処理が終了しました。 [フォルダ名=%s]' % (app_id, app_name, base))
+                result = True
 
     except Exception as e:
 

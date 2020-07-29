@@ -3,7 +3,6 @@
 # ¡ ‹@”\302  B‘œ–‡”“o˜^
 # ----------------------------------------
 
-import check_image_num
 import configparser
 from datetime import datetime
 import logging.config
@@ -19,7 +18,7 @@ import db_util
 import file_util
 import register_ng_info
 import register_regimark_info
-
+import check_image_num
 
 # ƒƒOİ’è
 logging.config.fileConfig("D:/CI/programs/config/logging_register_imagenum.conf", disable_existing_loggers=False)

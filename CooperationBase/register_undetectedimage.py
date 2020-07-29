@@ -13,6 +13,8 @@ import time
 import traceback
 import datetime
 import shutil
+import codecs
+from pathlib import Path
 
 import error_detail
 import error_util
@@ -85,6 +87,8 @@ def get_file(file_path, file_name):
     except Exception as e:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(e, logger, app_id, app_name)
+        result = False
+        return result, sorted_files
 
     return result, sorted_files
 
@@ -177,6 +181,8 @@ def read_file(file):
     camera_num_2 = None
     ng_image_file_name = None
     file_datetime = None
+    line = None
+    columns = None
 
     try:
         # 画像ファイルの拡張子
@@ -207,14 +213,21 @@ def read_file(file):
         # ファイル名は、「[品名]_[反番]_[日付]_[検査番号]_ [検反部No]_[カメラ番号]_[連番].jpg」を想定する。
         ng_image_file_name = product_name + '_' + fabric_name + '_' + file_datetime + '_' + inspection_num + '_' + face_num + '_' + camera_num + '_' + file_name[6] + extension
 
+        # 未検知画像登録通知ファイルから、項目を取得する
+        with codecs.open(file, "r", "SJIS") as f:
+            notification = [re.sub('\r', '', s[:-1]).split(',') for s in f.readlines()][0:]
+
         result = True
 
     except Exception as e:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(e, logger, app_id, app_name)
+        result = False
+        return result, product_name, fabric_name, inspection_num, face_num, camera_num_1, camera_num_2, \
+               ng_image_file_name, file_datetime, notification
 
     return result, product_name, fabric_name, inspection_num, face_num, camera_num_1, camera_num_2, \
-           ng_image_file_name, file_datetime
+           ng_image_file_name, file_datetime, notification
 
 
 # ------------------------------------------------------------------------------------
@@ -334,6 +347,8 @@ def get_center_ng_point(resize_width, resize_height):
     except Exception as e:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(e, logger, app_id, app_name)
+        result = False
+        return result, center_ng_point
 
     return result, center_ng_point
 
@@ -388,6 +403,8 @@ def get_ng_image_file(imaging_starttime, product_name, fabric_name, inspection_n
     except Exception as e:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(e, logger, app_id, app_name)
+        result = False
+        return result, ng_image_file
     return result, ng_image_file
 
 
@@ -447,6 +464,8 @@ def copy_ng_image_file(ng_image_file_path, output_path,
     except Exception as e:
         # 失敗時は共通例外関数でエラー詳細をログ出力する
         error_detail.exception(e, logger, app_id, app_name)
+        result = False
+        return result
 
     return result
 
@@ -470,23 +489,53 @@ def copy_ng_image_file(ng_image_file_path, output_path,
 #                    カーソルオブジェクト
 # ------------------------------------------------------------------------------------
 def update_rapid_analysis(conn, cur, fabric_name, inspection_num, inspection_date,
-                          ng_image_file_name, unit_num):
+                          ng_image_file_name, unit_num, status):
 
-    # DB登録値
-    status = common_inifile.get('ANALYSIS_STATUS', 'none')
 
     inspection_num = str(int(inspection_num))
 
     ### クエリを作成する
     sql = 'update "rapid_%s_%s_%s" set rapid_result = %s, edge_result = %s, masking_result = %s ' \
-          'where ng_image = \'%s\' and unit_num = \'%s\'' % \
-          (fabric_name, inspection_num, inspection_date, status, status, status, ng_image_file_name, unit_num)
+          'where ng_image = \'%s\' and unit_num = \'%s\' and num = (select num from \"rapid_%s_%s_%s\" where ng_image = \'%s\' and unit_num = \'%s\' ' \
+          'and masking_result = 3  order by num desc limit 1)' % \
+          (fabric_name, inspection_num, inspection_date, status, status, status, ng_image_file_name, unit_num,
+           fabric_name, inspection_num, inspection_date, ng_image_file_name, unit_num)
 
     logger.debug('[%s:%s] RAPID解析情報テーブル更新SQL=[%s]' % (app_id, app_name, sql))
     ### 反物情報テーブルを更新
     result, error, conn, cur = db_util.operate_data(conn, cur, sql, logger, app_id, app_name)
 
     return result, conn, cur
+
+# ------------------------------------------------------------------------------------
+# 処理名             ：エラー時通知ファイル出力
+#
+# 処理概要           ：1.処理でエラーが発生した場合、通知ファイルを出力する。
+#
+# 引数               ：通知ファイル名
+#
+# 戻り値             ：処理結果（True:成功、False:失敗）
+# ------------------------------------------------------------------------------------
+def output_error_notice(notice_file_name):
+
+    try:
+        # RAPIDサーバホスト名
+        rapid_hostname = common_inifile.get('RAPID_SERVER', 'host_name')
+        rapid_hostname_list = rapid_hostname.split(',')
+        notice_rapid_hostname = rapid_hostname_list[0]
+        # 完了通知が格納されるフォルダパス
+        notice_dir = inifile.get('PATH', 'notice_dir')
+
+        notice_path = '\\\\' + notice_rapid_hostname + '\\' + notice_dir
+        notice_file = notice_file_name
+        if os.path.exists(notice_path + '\\' + notice_file):
+            pass
+        else:
+            Path(notice_path + '\\' + notice_file).touch()
+    except:
+        return True
+
+    return True
 
 
 # ------------------------------------------------------------------------------------
@@ -504,8 +553,9 @@ def main():
     conn = None
     cur = None
     target_ng_image_files = None
+    error_point = 0
+    basename = None
     try:
-
         ### 設定ファイルからの値取得
         # 共通設定：各種通知ファイルが格納されるルートパス
         input_root_path = inifile.get('PATH', 'input_path')
@@ -544,6 +594,11 @@ def main():
         resize_width = int(common_inifile.get('IMAGE_SIZE', 'resize_image_width'))
         resize_height = int(common_inifile.get('IMAGE_SIZE', 'resize_image_height'))
 
+        # ステータス(RAPID解析情報テーブル)　「4：対象行なし」
+        anarysis_none_status = int(common_inifile.get('ANALYSIS_STATUS', 'none'))
+        # ステータス(RAPID解析情報テーブル)　「9：エラー」
+        anarysis_error_status = int(common_inifile.get('ANALYSIS_STATUS', 'error'))
+
         logger.info('[%s:%s] %s機能を起動します。', app_id, app_name, app_name)
 
         ### 未検知画像通知監視
@@ -556,7 +611,9 @@ def main():
                 pass
             else:
                 logger.error('[%s:%s] 未検知画像通知ファイルの確認に失敗しました。', app_id, app_name)
-                sys.exit()
+                ## ADD 20200716 NES 小野 START
+                continue
+                ## ADD 20200716 NES 小野 END
 
             # 未検知画像通知ファイルがない場合は一定期間sleepして再取得
             if len(sorted_files) == 0:
@@ -577,7 +634,10 @@ def main():
                 logger.debug('[%s:%s] DB接続が終了しました。', app_id, app_name)
             else:
                 logger.error('[%s:%s] DB接続時にエラーが発生しました。', app_id, app_name)
-                sys.exit()
+                ## ADD 20200716 NES 小野 START
+                continue
+                ## ADD 20200716 NES 小野 END
+
 
             for i in range(len(sorted_files)):
 
@@ -591,7 +651,7 @@ def main():
                 logger.debug('[%s:%s] 未検知画像通知ファイルの読込を開始します。', app_id, app_name)
 
                 result, product_name, fabric_name, inspection_num, \
-                face_num, camera_num_1, camera_num_2, ng_image_file_name, file_datetime = \
+                face_num, camera_num_1, camera_num_2, ng_image_file_name, file_datetime, notification = \
                     read_file(sorted_files[i])
 
                 if result:
@@ -600,7 +660,12 @@ def main():
                 else:
                     logger.error('[%s:%s] 未検知画像通知ファイルの読込に失敗しました。未検知画像通知ファイル名=[%s]',
                                  app_id, app_name, sorted_files[i])
-                    sys.exit()
+                    ## ADD 20200716 NES 小野 START
+                    os.remove(sorted_files[i])
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
+
 
                 # 未検知画像通知ファイルを退避するフォルダを作成する。
                 logger.debug('[%s:%s] 未検知画像通知ファイルを退避するフォルダ作成を開始します。', app_id, app_name)
@@ -611,7 +676,12 @@ def main():
                 else:
                     logger.error('[%s:%s] 未検知画像通知ファイルを退避するフォルダ作成に失敗しました。退避先フォルダ名=[%s]',
                                  app_id, app_name, backup_path)
-                    sys.exit()
+                    ## ADD 20200716 NES 小野 START
+                    os.remove(sorted_files[i])
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
+
 
                 # 退避する未検知画像通知ファイルと同名のファイルが存在するか確認する。
                 logger.debug('[%s:%s] 撮像完了通知ファイル移動を開始します。撮像完了通知ファイル名=[%s]',
@@ -624,7 +694,15 @@ def main():
                 else:
                     logger.error('[%s:%s] 撮像完了通知ファイルの退避に失敗しました。撮像完了通知ファイル名=[%s]',
                                  app_id, app_name, sorted_files[i])
-                    sys.exit()
+                    ## ADD 20200716 NES 小野 START
+                    if os.path.exists(sorted_files[i]):
+                        os.remove(sorted_files[i])
+                    else:
+                        pass
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
+
 
                 ### 対象画像の格納されているフォルダを全RAPIDサーバーを参照して特定する。
                 logger.debug('[%s:%s] 対象画像の特定を開始します。', app_id, app_name)
@@ -639,7 +717,11 @@ def main():
                         logger.debug('[%s:%s] 対象画像の特定が終了しました。[%s]', app_id, app_name, target_path)
                     else:
                         logger.error('[%s:%s] 対象画像の特定に失敗しました。[%s]', app_id, app_name, target_path)
-                        sys.exit()
+                        ## ADD 20200716 NES 小野 START
+                        output_error_notice(basename)
+                        break
+                        ## ADD 20200716 NES 小野 END
+
                     # RAPIDサーバ上でファイルを発見した場合は、その時点で特定を終了
                     if target_ng_image_files is not None:
                         break
@@ -648,7 +730,11 @@ def main():
                     logger.debug('[%s:%s] 対象画像の特定が終了しました。', app_id, app_name)
                 else:
                     logger.error('[%s:%s] 対象画像の特定に失敗しました。', app_id, app_name)
-                    sys.exit()
+                    ## ADD 20200716 NES 小野 START
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
+
 
                 # 未検知画像圧縮フォルダを作成し、作成したフォルダに特定した画像をコピーする。
                 target_ng_image_path = rk_root_path + '\\' + undetected_image_file_path + '\\' + os.path.splitext(os.path.basename(sorted_files[i]))[0]
@@ -660,7 +746,11 @@ def main():
                     logger.debug('[%s:%s] 対象画像のコピーが終了しました。', app_id, app_name)
                 else:
                     logger.error('[%s:%s] 対象画像のコピーに失敗しました。', app_id, app_name)
-                    sys.exit()
+                    ## ADD 20200716 NES 小野 START
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
+
 
                 ### RAPID解析情報登録
                 # NG座標の中心座標を取得
@@ -671,7 +761,11 @@ def main():
                     logger.debug('[%s:%s] NG座標の中心座標取得が終了しました。', app_id, app_name)
                 else:
                     logger.error('[%s:%s] NG座標の中心座標取得に失敗しました。', app_id, app_name)
-                    sys.exit()
+                    ## ADD 20200716 NES 小野 START
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
+
 
                 # DB共通処理を呼び出して、RAPID解析情報テーブルに以下の項目を登録する。
                 logger.debug('[%s:%s] RAPID解析情報テーブルの登録を開始します。', app_id, app_name)
@@ -682,7 +776,13 @@ def main():
                     logger.debug('[%s:%s] 作業者情報取得が完了しました。', app_id, app_name)
                 else:
                     logger.error('[%s:%s] 作業者情報取得に失敗しました。', app_id, app_name)
-                    return tmp_result, conn, cur
+                    ## DEL 20200716 NES 小野 START
+                    #return tmp_result, conn, cur
+                    ## DEL 20200716 NES 小野 END
+                    ## ADD 20200716 NES 小野 START
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
 
                 worker_1 = records[0]
                 worker_2 = records[1]
@@ -699,34 +799,59 @@ def main():
                 else:
                     logger.error('[%s:%s] RAPID解析情報テーブルの登録に失敗しました。', app_id, app_name)
                     conn.rollback()
-                    sys.exit()
+                    ## ADD 20200716 NES 小野 START
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
 
                 # コミットする
                 conn.commit()
 
                 ### NG行・列判定機能呼出
-                logger.debug('[%s:%s] NG行・列判定機能呼出を開始します。', app_id, app_name)
+                logger.debug('[%s:%s] NG行・列判定機能呼出を開始します。(新規未検知登録)', app_id, app_name)
 
                 result = register_ng_info_undetect.main(
                     product_name, fabric_name, inspection_num, 0, ng_image_file_name, center_ng_point,
-                    undetected_image_flag_is_undetected, imaging_starttime, unit_num)
+                    undetected_image_flag_is_undetected, imaging_starttime, unit_num, notification)
 
-                if result:
-                    logger.debug('[%s:%s] NG行・列判定機能呼出が完了しました。', app_id, app_name)
-                else:
-                    logger.error('[%s:%s] NG行・列判定機能呼出に失敗しました。', app_id, app_name)
-                    logger.info('[%s:%s] NG判定エラーのため、RAPID解析情報テーブルを更新します。 [反番,検査番号]=[%s, %s]', app_id, app_name, fabric_name, inspection_num)
-
-                    result, conn, cur = update_rapid_analysis(conn, cur, fabric_name, inspection_num, inspection_date, ng_image_file_name, unit_num)
-
+                if result == 'OutOfRange':
+                    logger.info('[%s:%s] 範囲対象外(開始行レジマーク前の画像)のため、RAPID解析情報テーブルを更新します。 [反番,検査番号]=[%s, %s]', app_id,
+                                app_name,
+                                fabric_name, inspection_num)
+                    ## UPD 20200716 NES 小野 START
+                    #result, conn, cur = update_rapid_analysis(conn, cur, fabric_name, inspection_num, inspection_date,
+                    #                                          ng_image_file_name, unit_num)
+                    result, conn, cur = update_rapid_analysis(conn, cur, fabric_name, inspection_num, inspection_date,
+                                                              ng_image_file_name, unit_num, anarysis_none_status)
+                    ## UPD 20200716 NES 小野 END
                     if result:
                         logger.info('[%s:%s] RAPID解析情報テーブル更新が完了しました。', app_id, app_name)
                         # コミットする
                         conn.commit()
                     else:
                         logger.error('[%s:%s] RAPID解析情報テーブル更新に失敗しました。', app_id, app_name)
-                        sys.exit()
+                        ## ADD 20200716 NES 小野 START
+                        output_error_notice(basename)
+                        break
+                        ## ADD 20200716 NES 小野 END
 
+                if result == True:
+                    logger.debug('[%s:%s] NG行・列判定機能呼出が完了しました。', app_id, app_name)
+
+                else:
+                    logger.error('[%s:%s] NG行・列判定機能呼出に失敗しました。', app_id, app_name)
+                    ## ADD 20200716 NES 小野 START
+                    result, conn, cur = update_rapid_analysis(conn, cur, fabric_name, inspection_num, inspection_date,
+                                                              ng_image_file_name, unit_num, anarysis_error_status)
+                    if result:
+                        logger.info('[%s:%s] RAPID解析情報テーブル更新が完了しました。', app_id, app_name)
+                        # コミットする
+                        conn.commit()
+                    else:
+                        logger.error('[%s:%s] RAPID解析情報テーブル更新に失敗しました。', app_id, app_name)
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
 
                 ### NG画像圧縮・転送機能呼出
                 logger.debug('[%s:%s] NG画像圧縮・転送機能呼出を開始します。', app_id, app_name)
@@ -739,7 +864,19 @@ def main():
                     logger.debug('[%s:%s] NG画像圧縮・転送機能呼出が完了しました。', app_id, app_name)
                 else:
                     logger.error('[%s:%s] NG画像圧縮・転送機能呼出に失敗しました。', app_id, app_name)
-                    sys.exit()
+                    ## ADD 20200716 NES 小野 START
+                    result, conn, cur = update_rapid_analysis(conn, cur, fabric_name, inspection_num, inspection_date,
+                                                              ng_image_file_name, unit_num, anarysis_error_status)
+                    ## UPD 20200716 NES 小野 END
+                    if result:
+                        logger.info('[%s:%s] RAPID解析情報テーブル更新が完了しました。', app_id, app_name)
+                        # コミットする
+                        conn.commit()
+                    else:
+                        logger.error('[%s:%s] RAPID解析情報テーブル更新に失敗しました。', app_id, app_name)
+                    output_error_notice(basename)
+                    break
+                    ## ADD 20200716 NES 小野 END
 
                 logger.info("[%s:%s] %s処理は正常に終了しました。[反番,検査番号]=[%s, %s]", app_id, app_name, app_name, fabric_name, inspection_num)
 
@@ -752,24 +889,25 @@ def main():
             time.sleep(sleep_time)
 
     except SystemExit:
-        # sys.exit()実行時の例外処理
-        logger.debug('[%s:%s] sys.exit()によりプログラムを終了します。', app_id, app_name)
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-        if result:
-            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
-        else:
-            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
-            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+        # 実行時の例外処理
+        logger.debug('[%s:%s] によりプログラムを終了します。', app_id, app_name)
+        #logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
+        #result = error_util.common_execute(error_file_name, logger, app_id, app_name)
+        # if result:
+        #     logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
+        # else:
+        #     logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
+        #     logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
     except:
         logger.error('[%s:%s] 予期しないエラーが発生しました。[%s]' % (app_id, app_name, traceback.format_exc()))
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-        if result:
-            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
-        else:
-            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
-            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+        #logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
+        #result = error_util.common_execute(error_file_name, logger, app_id, app_name)
+        #if result:
+        #     logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
+        # else:
+        #     logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
+        #     logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+
     finally:
         if conn is not None:
             # DB接続済の際はクローズする

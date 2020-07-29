@@ -160,11 +160,17 @@ def update_fabric_info(conn, cur, fabric_name, inspection_num, status, column, t
 #                      コネクションオブジェクト
 #                      カーソルオブジェクト
 # ------------------------------------------------------------------------------------
-def select_aimodel_flag(conn, cur, product_name):
+## UPD 20200716 NES 小野 START
+#def select_aimodel_flag(conn, cur, product_name):
+def select_aimodel_flag(conn, cur, product_name, fabric_name, inspection_num, inspection_starttime, unit_num):
+
     func_name = sys._getframe().f_code.co_name
     # クエリを作成する
-    sql = 'select ai_model_non_inspection_flg from mst_product_info where product_name = \'%s\'' % product_name
-
+    #sql = 'select ai_model_non_inspection_flg from mst_product_info where product_name = \'%s\'' % product_name
+    sql = 'select ai_model_non_inspection_flg from inspection_info_header where product_name = \'%s\' and ' \
+          'fabric_name = \'%s\' and inspection_num = %s and start_datetime = \'%s\' and unit_num = \'%s\'' \
+          % (product_name, fabric_name, inspection_num, inspection_starttime, unit_num)
+## UPD 20200716 NES 小野 END
     logger.debug('[%s:%s] AIモデル未検査フラグ取得SQL %s' % (app_id, app_name, sql))
     # 品番登録情報テーブルからAIモデル未検査フラグを取得する。
     result, product_info, error, conn, cur = db_util.select_fetchone(conn, cur, sql, logger, app_id, app_name)
@@ -814,16 +820,16 @@ def confirm_processed(conn, cur, fabric_name, inspection_num, image_num, process
         message = '撮像枚数と処理済枚数が不一致です。[撮像枚数, 処理済枚数]=[%s, %s]' % (image_num, processed_num)
         error_util.write_eventlog_warning(app_name, message)
 
-        # パトライト点灯
-        logger.debug('[%s:%s] パトライト点灯処理を開始します。', app_id, app_name)
+        # # パトライト点灯
+        # logger.debug('[%s:%s] パトライト点灯処理を開始します。', app_id, app_name)
 
-        light_pattern = '010000'
-        result = light_patlite.light_patlite(light_pattern, logger, app_id, app_name)
+        # light_pattern = '010000'
+        # result = light_patlite.light_patlite(light_pattern, logger, app_id, app_name)
 
-        if result:
-            logger.debug('[%s:%s] パトライト点灯処理が終了しました。', app_id, app_name)
-        else:
-            logger.warning('[%s:%s] パトライト点灯処理に失敗しました。', app_id, app_name)
+        # if result:
+        #     logger.debug('[%s:%s] パトライト点灯処理が終了しました。', app_id, app_name)
+        # else:
+        #     logger.warning('[%s:%s] パトライト点灯処理に失敗しました。', app_id, app_name)
 
         return result, confirm_errorflg, conn, cur, error, func_name
 
@@ -974,10 +980,16 @@ def main():
                 # 品番情報登録テーブルからAIモデル未検査フラグ取得する
                 # 品番情報登録テーブル名と、AIモデル未検査フラグのカラム名に関しては後で最新化 TODO
                 logger.debug('[%s:%s] AIモデル未検査フラグ取得を開始します。' % (app_id, app_name))
-                result, ai_flag, error, conn, cur, func_name = select_aimodel_flag(conn, cur, product_name)
+                ## UPD 20200716 NES 小野 START
+                #result, ai_flag, error, conn, cur, func_name = select_aimodel_flag(conn, cur, product_name)
+                inspection_starttime = starttime
+                result, ai_flag, error, conn, cur, func_name = select_aimodel_flag(conn, cur, product_name, fabric_name,
+                                                                                   inspection_num, inspection_starttime,
+                                                                                   unit_num)
+                ## UPD 20200716 NES 小野 START
 
                 if result:
-                    logger.debug('[%s:%s] AIモデル未検査フラグ取得が終了しました。' % (app_id, app_name))
+                    logger.debug('[%s:%s] AIモデル未検査フラグ取得が終了しました。 AIモデル未検査フラグ=[%s]' % (app_id, app_name, ai_flag))
                     conn.commit()
                 else:
                     logger.error('[%s:%s] AIモデル未検査フラグ取得が失敗しました。 '
@@ -1119,26 +1131,26 @@ def main():
                     all_processed_num = 0
 
                     if ai_flag == 1:
-                        logger.debug('[%s:%s] 空フォルダを削除します。' % (app_id, app_name))
-                        for separate_path in separate_image_path_list:
-                            result, error, func_name = delete_dir(separate_path)
-                            if result:
-                                logger.debug('[%s:%s] 空フォルダの削除が終了しました。 [フォルダパス=%s]' %
-                                             (app_id, app_name, separate_path))
-                            else:
-                                logger.error('[%s:%s] 空フォルダの削除が失敗しました。  '
-                                             '[反番, 検査番号, 検査日付, フォルダパス]=[%s, %s, %s, %s]'
-                                             % (app_id, app_name, fabric_name, inspection_num, inspection_date,
-                                                separate_path))
-                                sys.exit()
-                            # パトライト点灯させる
-                            logger.debug('[%s:%s] パトライト点灯処理を開始します。', app_id, app_name)
-                            light_pattern = '001000'
-                            result = light_patlite.light_patlite(light_pattern, logger, app_id, app_name)
-                            if result:
-                                logger.debug('[%s:%s] パトライト点灯処理が終了しました。', app_id, app_name)
-                            else:
-                                logger.warning('[%s:%s] パトライト点灯処理に失敗しました。', app_id, app_name)
+                        # logger.debug('[%s:%s] 空フォルダを削除します。' % (app_id, app_name))
+                        # for separate_path in separate_image_path_list:
+                        #     result, error, func_name = delete_dir(separate_path)
+                        #     if result:
+                        #         logger.debug('[%s:%s] 空フォルダの削除が終了しました。 [フォルダパス=%s]' %
+                        #                      (app_id, app_name, separate_path))
+                        #     else:
+                        #         logger.error('[%s:%s] 空フォルダの削除が失敗しました。  '
+                        #                      '[反番, 検査番号, 検査日付, フォルダパス]=[%s, %s, %s, %s]'
+                        #                      % (app_id, app_name, fabric_name, inspection_num, inspection_date,
+                        #                         separate_path))
+                        #         sys.exit()
+                        # パトライト点灯させる
+                        logger.debug('[%s:%s] パトライト点灯処理を開始します。', app_id, app_name)
+                        light_pattern = '001000'
+                        result = light_patlite.light_patlite(light_pattern, logger, app_id, app_name)
+                        if result:
+                            logger.debug('[%s:%s] パトライト点灯処理が終了しました。', app_id, app_name)
+                        else:
+                            logger.warning('[%s:%s] パトライト点灯処理に失敗しました。', app_id, app_name)
 
                     else:
                         pass
@@ -1196,6 +1208,14 @@ def main():
         # sys.exit()実行時の例外処理
         logger.debug('[%s:%s] sys.exit()によりプログラムを終了します。', app_id, app_name)
 
+        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
+        result = error_util.common_execute(error_file_name, logger, app_id, app_name)
+        if result:
+            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
+        else:
+            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
+            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+
         logger.debug('[%s:%s] エラー詳細を取得します。' % (app_id, app_name))
 
         if error_list > 0:
@@ -1204,22 +1224,13 @@ def main():
                 logger.error('[%s:%s] %s [ホスト名, エラーコード]=[%s, %s]' % (app_id, app_name, error_message, list[0], error_id))
 
                 event_log_message = '[機能名, ホスト名, エラーコード]=[%s, %s, %s] %s' % (app_name, list[0], error_id, error_message)
-                error_util.write_eventlog_error(app_name, event_log_message)
+                error_util.write_eventlog_error(app_name, event_log_message, logger, app_id, app_name)
         else:
             error_message, error_id = error_detail.get_error_message(error, app_id, func_name)
             logger.error('[%s:%s] %s [エラーコード:%s]' % (app_id, app_name, error_message, error_id))
 
             event_log_message = '[機能名, エラーコード]=[%s, %s] %s' % (app_name, error_id, error_message)
-            error_util.write_eventlog_error(app_name, event_log_message)
-
-
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-        if result:
-            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
-        else:
-            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
-            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+            error_util.write_eventlog_error(app_name, event_log_message, logger, app_id, app_name)
 
     except:
         logger.error('[%s:%s] 予期しないエラーが発生しました。[%s]' % (app_id, app_name, traceback.format_exc()))

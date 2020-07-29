@@ -329,6 +329,13 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
         # 検査対象ライン番号
         unit_num = common_inifile.get('UNIT_INFO', 'unit_num')
 
+        ## ADD 20200716 NES 小野 START
+        # NG算出エラーファイル名
+        ng_error_file_name = inifile.get('ERROR_FILE', 'ng_error_filename')
+        # ステータス(RAPID解析情報テーブル)　「9：エラー」
+        anarysis_error_status = int(common_inifile.get('ANALYSIS_STATUS', 'error'))
+        ## ADD 20200716 NES 小野 END
+
         logger.info('[%s:%s] %s機能を起動します' % (app_id, app_name, app_name))
 
         logger.debug('[%s:%s] DB接続を開始します。' % (app_id, app_name))
@@ -343,6 +350,9 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
             sys.exit()
 
         count = 0
+        ## ADD 20200716 NES 小野 START
+        error_file_flag = 0
+        ## ADD 20200716 NES 小野 END
 
         while True:
             logger.debug('[%s:%s] 処理対象反物情報取得を開始します。' % (app_id, app_name))
@@ -567,7 +577,26 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                                     logger.debug('[%s:%s] 行番号情報 [%s]' % (app_id, app_name, line_info))
                                 else:
                                     logger.debug('[%s:%s] 行番号特定が失敗しました。' % (app_id, app_name))
-                                    sys.exit()
+                                    ## UPD 20200716 NES 小野 START
+                                    #sys.exit()
+                                    logger.error('[%s:%s] 行番号特定が失敗しました。レジマーク情報が不正な可能性があります。 NG画像名=[%s]' % (app_id, app_name, ng_image_info[j][1]))
+                                    result, error, conn, cur, func_name = \
+                                        update_rapid_analysis(conn, cur, fabric_name, inspection_num, ng_image_info[j],
+                                                              anarysis_error_status, inspection_date, unit_num)
+                                    if result:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)を更新しました。' % (app_id, app_name))
+                                        conn.commit()
+                                        if error_file_flag == 0:
+                                            error_util.common_execute(ng_error_file_name, logger, app_id, app_name)
+                                            error_file_flag = 1
+                                        else:
+                                            pass
+                                        continue
+                                    else:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)の更新が失敗しました。' % (app_id, app_name))
+                                        conn.rollback()
+                                        sys.exit()
+                                    ## UPD 20200716 NES 小野 END
 
                                 if last_flag == 0:
                                     line_num = line_info[0][0]
@@ -592,7 +621,27 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                                         app_id, app_name, regimark_length_ratio))
                                 else:
                                     logger.debug('[%s:%s] レジマーク間長さ比率算出が失敗しました。' % (app_id, app_name))
-                                    sys.exit()
+                                    ## UPD 20200716 NES 小野 START
+                                    #sys.exit()
+                                    logger.error('[%s:%s] レジマーク間長さ比率算出が失敗しました。レジマーク情報が不正な可能性があります。 NG画像名=[%s]' % (
+                                    app_id, app_name, ng_image_info[j][1]))
+                                    result, error, conn, cur, func_name = \
+                                        update_rapid_analysis(conn, cur, fabric_name, inspection_num, ng_image_info[j],
+                                                              anarysis_error_status, inspection_date, unit_num)
+                                    if result:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)を更新しました。' % (app_id, app_name))
+                                        conn.commit()
+                                        if error_file_flag == 0:
+                                            error_util.common_execute(ng_error_file_name, logger, app_id, app_name)
+                                            error_file_flag = 1
+                                        else:
+                                            pass
+                                        continue
+                                    else:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)の更新が失敗しました。' % (app_id, app_name))
+                                        conn.rollback()
+                                        sys.exit()
+                                    ## UPD 20200716 NES 小野 END
 
                                 logger.debug('[%s:%s] NG位置特定を開始します。' % (app_id, app_name))
                                 result, length_on_master, width_on_master, ng_face, error, func_name = \
@@ -607,7 +656,27 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                                         app_id, app_name, length_on_master, width_on_master))
                                 else:
                                     logger.debug('[%s:%s] NG位置特定が失敗しました。' % (app_id, app_name))
-                                    sys.exit()
+                                    ## UPD 20200716 NES 小野 START
+                                    # sys.exit()
+                                    logger.error('[%s:%s] NG位置特定が失敗しました。レジマーク情報が不正な可能性があります。 NG画像名=[%s]' % (
+                                    app_id, app_name, ng_image_info[j][1]))
+                                    result, error, conn, cur, func_name = \
+                                        update_rapid_analysis(conn, cur, fabric_name, inspection_num, ng_image_info[j],
+                                                              anarysis_error_status, inspection_date, unit_num)
+                                    if result:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)を更新しました。' % (app_id, app_name))
+                                        conn.commit()
+                                        if error_file_flag == 0:
+                                            error_util.common_execute(ng_error_file_name, logger, app_id, app_name)
+                                            error_file_flag = 1
+                                        else:
+                                            pass
+                                        continue
+                                    else:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)の更新が失敗しました。' % (app_id, app_name))
+                                        conn.rollback()
+                                        sys.exit()
+                                    ## UPD 20200716 NES 小野 END
 
                                 logger.debug('[%s:%s] NG行・列特定を開始します。' % (app_id, app_name))
                                 result, judge_result, length_on_master, width_on_master, error, func_name = \
@@ -627,14 +696,56 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                                             '[%s:%s] NG行・列境界値判定が終了しました。[行,列] = %s' % (app_id, app_name, judge_result))
                                     else:
                                         logger.debug('[%s:%s] NG行・列境界値判定が失敗しました。' % (app_id, app_name))
-                                        sys.exit()
+                                        ## UPD 20200716 NES 小野 START
+                                        # sys.exit()
+                                        logger.error('[%s:%s] NG行・列境界値判定が失敗しました。マスタ情報が不正な可能性があります。 NG画像名=[%s]' % (
+                                        app_id, app_name, ng_image_info[j][1]))
+                                        result, error, conn, cur, func_name = \
+                                            update_rapid_analysis(conn, cur, fabric_name, inspection_num,
+                                                                  ng_image_info[j],
+                                                                  anarysis_error_status, inspection_date, unit_num)
+                                        if result:
+                                            logger.debug('[%s:%s] RAPID解析情報ステータス(error)を更新しました。' % (app_id, app_name))
+                                            conn.commit()
+                                            if error_file_flag == 0:
+                                                error_util.common_execute(ng_error_file_name, logger, app_id, app_name)
+                                                error_file_flag = 1
+                                            else:
+                                                pass
+                                            continue
+                                        else:
+                                            logger.debug(
+                                                '[%s:%s] RAPID解析情報ステータス(error)の更新が失敗しました。' % (app_id, app_name))
+                                            conn.rollback()
+                                            sys.exit()
+                                        ## UPD 20200716 NES 小野 END
 
                                 elif result == True and judge_result != None:
                                     logger.debug('[%s:%s] NG行・列特定が終了しました。[行,列] = %s' % (app_id, app_name, judge_result))
 
                                 else:
                                     logger.debug('[%s:%s] NG行・列特定が失敗しました。' % (app_id, app_name))
-                                    sys.exit()
+                                    ## UPD 20200716 NES 小野 START
+                                    # sys.exit()
+                                    logger.error('[%s:%s] NG行・列特定が失敗しました。マスタ情報が不正な可能性があります。 NG画像名=[%s]' % (
+                                        app_id, app_name, ng_image_info[j][1]))
+                                    result, error, conn, cur, func_name = \
+                                        update_rapid_analysis(conn, cur, fabric_name, inspection_num, ng_image_info[j],
+                                                              anarysis_error_status, inspection_date, unit_num)
+                                    if result:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)を更新しました。' % (app_id, app_name))
+                                        conn.commit()
+                                        if error_file_flag == 0:
+                                            error_util.common_execute(ng_error_file_name, logger, app_id, app_name)
+                                            error_file_flag = 1
+                                        else:
+                                            pass
+                                        continue
+                                    else:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)の更新が失敗しました。' % (app_id, app_name))
+                                        conn.rollback()
+                                        sys.exit()
+                                    ## UPD 20200716 NES 小野 END
 
                                 if length_on_master < 0 or length_on_master > 680:
                                     logger.debug('[%s:%s] N+2行もしくはN-2行です。' % (app_id, app_name))
@@ -662,7 +773,27 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                                         app_id, app_name, ng_dist[0], ng_dist[1]))
                                 else:
                                     logger.debug('[%s:%s] 基準点からのNG距離算出が失敗しました。' % (app_id, app_name))
-                                    sys.exit()
+                                    ## UPD 20200716 NES 小野 START
+                                    # sys.exit()
+                                    logger.error('[%s:%s] 基準点からのNG距離算出が失敗しました。マスタ情報が不正な可能性があります。 NG画像名=[%s]' % (
+                                        app_id, app_name, ng_image_info[j][1]))
+                                    result, error, conn, cur, func_name = \
+                                        update_rapid_analysis(conn, cur, fabric_name, inspection_num, ng_image_info[j],
+                                                              anarysis_error_status, inspection_date, unit_num)
+                                    if result:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)を更新しました。' % (app_id, app_name))
+                                        conn.commit()
+                                        if error_file_flag == 0:
+                                            error_util.common_execute(ng_error_file_name, logger, app_id, app_name)
+                                            error_file_flag = 1
+                                        else:
+                                            pass
+                                        continue
+                                    else:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)の更新が失敗しました。' % (app_id, app_name))
+                                        conn.rollback()
+                                        sys.exit()
+                                    ## UPD 20200716 NES 小野 END
 
                                 logger.debug('[%s:%s] NG情報登録を開始します。' % (app_id, app_name))
                                 ng_line = judge_result[0]
@@ -681,7 +812,28 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                                     conn.commit()
                                 else:
                                     logger.debug('[%s:%s] NG情報登録が失敗しました。' % (app_id, app_name))
-                                    sys.exit()
+                                    ## UPD 20200716 NES 小野 START
+                                    #sys.exit()
+                                    conn.rollback()
+                                    logger.error('[%s:%s] NG情報登録が失敗しました。マスタ情報、又は、レジマーク情報が不正な可能性があります。 NG画像名=[%s]' % (
+                                    app_id, app_name, ng_image_info[j][1]))
+                                    result, error, conn, cur, func_name = \
+                                        update_rapid_analysis(conn, cur, fabric_name, inspection_num, ng_image_info[j],
+                                                              anarysis_error_status, inspection_date, unit_num)
+                                    if result:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)を更新しました。' % (app_id, app_name))
+                                        conn.commit()
+                                        if error_file_flag == 0:
+                                            error_util.common_execute(ng_error_file_name, logger, app_id, app_name)
+                                            error_file_flag = 1
+                                        else:
+                                            pass
+                                        continue
+                                    else:
+                                        logger.debug('[%s:%s] RAPID解析情報ステータス(error)の更新が失敗しました。' % (app_id, app_name))
+                                        conn.rollback()
+                                        sys.exit()
+                                    ## UPD 20200716 NES 小野 END
 
                             del ng_image_info
 
@@ -797,18 +949,18 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
         # sys.exit()実行時の例外処理
         result = False
         logger.debug('[%s:%s] sys.exit()によりプログラムを終了します。', app_id, app_name)
+        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
+        error_util.common_execute(error_file_name, logger, app_id, app_name)
+        logger.debug('[%s:%s] エラー時共通処理実行が終了しました。', app_id, app_name)
 
         logger.debug('[%s:%s] エラー詳細を取得します。' % (app_id, app_name))
         error_message, error_id = error_detail.get_error_message(error, app_id, func_name)
 
         logger.error('[%s:%s] %s [エラーコード:%s]' % (app_id, app_name, error_message, error_id))
-
         event_log_message = '[機能名, エラーコード]=[%s, %s] %s' % (app_name, error_id, error_message)
         error_util.write_eventlog_error(app_name, event_log_message, logger, app_id, app_name)
 
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        error_util.common_execute(error_file_name, logger, app_id, app_name)
-        logger.debug('[%s:%s] エラー時共通処理実行が終了しました。', app_id, app_name)
+
 
     except:
         result = False

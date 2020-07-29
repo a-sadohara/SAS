@@ -106,7 +106,12 @@ def select_master_data(conn, cur, product_name):
 def select_inspection_info(conn, cur, product_name, fabric_name, inspection_num, start_datetime, unit_num):
     func_name = sys._getframe().f_code.co_name
     ### クエリを作成する
-    sql = 'select inspection_start_line, inspection_end_line, inspection_direction ' \
+    ## UPD 20200716 NES 小野 START
+    # sql = 'select inspection_start_line, inspection_end_line, inspection_direction ' \
+    #       'from inspection_info_header where product_name = \'%s\' and fabric_name = \'%s\' ' \
+    #       'and inspection_num = \'%s\' and start_datetime = \'%s\' and unit_num = \'%s\'' \
+    #       % (product_name, fabric_name, inspection_num, start_datetime, unit_num)
+    sql = 'select inspection_start_line, inspection_end_line, inspection_direction, ai_model_non_inspection_flg ' \
           'from inspection_info_header where product_name = \'%s\' and fabric_name = \'%s\' ' \
           'and inspection_num = \'%s\' and start_datetime = \'%s\' and unit_num = \'%s\'' \
           % (product_name, fabric_name, inspection_num, start_datetime, unit_num)
@@ -886,7 +891,7 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                                    imaging_starttime, unit_num)
 
         if result:
-            logger.debug('[%s:%s] 検査情報取得が終了しました。' % (app_id, app_name))
+            logger.debug('[%s:%s] 検査情報取得が終了しました。 検査情報=[%s]' % (app_id, app_name, inspection_info))
             logger.debug('[%s:%s] [反番, 検査番号]=[%s, %s] [検査開始行数, 最終行番, 検査方向] =[%s, %s, %s]。' % (
                 app_id, app_name, fabric_name, inspection_num, inspection_info[0], inspection_info[1],
                 inspection_info[2]))
@@ -1123,6 +1128,34 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                     empty_file = True
                     error_util.write_eventlog_warning(app_name, message)
 
+                    ## DEL 20200716 NES 小野 START
+                    # # 設定レジマーク間長さ、領域伸び率X/Yを取得する。
+                    # logger.debug('[%s:%s] レジマークマスター情報取得を開始します。', app_id, app_name)
+                    # result, regimark_master, error, conn, cur, func_name = \
+                    #     select_master_data(conn, cur, product_name)
+                    #
+                    # if result:
+                    #     logger.debug('[%s:%s] レジマークマスター情報取得が終了しました。' % (app_id, app_name))
+                    #     logger.debug('[%s:%s] レジマークマスター情報 %s' % (app_id, app_name, regimark_master))
+                    #     pass
+                    # else:
+                    #     logger.error('[%s:%s] レジマークマスター情報取得に失敗しました。' % (app_id, app_name))
+                    #     conn.rollback()
+                    #     sys.exit()
+                    #
+                    # # 設定レジマーク間長さを取得する。
+                    # conf_regimark_between_length = int(regimark_master[0][0])
+                    # # 長さ/幅伸縮率(量産値)を取得する。
+                    # stretch_rate_x = float(regimark_master[0][1])
+                    # stretch_rate_y = float(regimark_master[0][2])
+                    ## DEL 20200716 NES 小野 END
+
+                    ## UPD 20200716 NES 小野 START
+                    # AIモデル未検査フラグ
+                    #ai_model_flag = regimark_master[0][3]
+                    ai_model_flag = inspection_info[3]
+                    ## UPD 20200716 NES 小野 END
+
                 else:
                     regimark_list.append(regimark_info)
                     # 検査開始行数を取得する。
@@ -1132,7 +1165,7 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                                                imaging_starttime, unit_num)
 
                     if result:
-                        logger.debug('[%s:%s] 検査情報取得が終了しました。' % (app_id, app_name))
+                        logger.debug('[%s:%s] 検査情報取得が終了しました。 検査情報=[%s]' % (app_id, app_name, inspection_info))
                         logger.debug('[%s:%s] [反番, 検査番号]=[%s, %s] [検査開始行数, 最終行番, 検査方向] =[%s, %s, %s]。' % (
                             app_id, app_name, fabric_name, inspection_num, inspection_info[0], inspection_info[1],
                             inspection_info[2]))
@@ -1179,7 +1212,10 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                     stretch_rate_x = float(regimark_master[0][1])
                     stretch_rate_y = float(regimark_master[0][2])
                     # AIモデル未検査フラグ
-                    ai_model_flag = regimark_master[0][3]
+                    ## UPD 20200716 NES 小野 START
+                    #ai_model_flag = regimark_master[0][3]
+                    ai_model_flag = inspection_info[3]
+                    ## UPD 20200716 NES 小野 END
 
                     ### 実測レジマーク間長さの算出を行う。
                     logger.debug('[%s:%s] 実測レジマーク間長さの算出を開始します。', app_id, app_name)
@@ -1340,15 +1376,6 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
     except SystemExit:
         # sys.exit()実行時の例外処理
         logger.debug('[%s:%s] sys.exit()によりプログラムを終了します。', app_id, app_name)
-
-        logger.debug('[%s:%s] エラー詳細を取得します。' % (app_id, app_name))
-        error_message, error_id = error_detail.get_error_message(error, app_id, func_name)
-
-        logger.error('[%s:%s] %s [エラーコード:%s]' % (app_id, app_name, error_message, error_id))
-
-        event_log_message = '[機能名, エラーコード]=[%s, %s] %s' % (app_name, error_id, error_message)
-        error_util.write_eventlog_error(app_name, event_log_message)
-
         logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
         result = error_util.common_execute(error_file_name, logger, app_id, app_name)
         if result:
@@ -1357,6 +1384,14 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
             logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
             logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
         result = False
+
+        logger.debug('[%s:%s] エラー詳細を取得します。' % (app_id, app_name))
+        error_message, error_id = error_detail.get_error_message(error, app_id, func_name)
+
+        logger.error('[%s:%s] %s [エラーコード:%s]' % (app_id, app_name, error_message, error_id))
+
+        event_log_message = '[機能名, エラーコード]=[%s, %s] %s' % (app_name, error_id, error_message)
+        error_util.write_eventlog_error(app_name, event_log_message, logger, app_id, app_name)
 
     except:
         logger.error('[%s:%s] %s機能で予期しないエラーが発生しました。[%s]', app_id, app_name, app_name, traceback.format_exc())

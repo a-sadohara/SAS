@@ -102,24 +102,24 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime, image_pat
         # sys.exit()実行時の例外処理
         result = False
         logger.debug('[%s:%s] sys.exit()によりプログラムを終了します。', app_id, app_name)
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        temp_result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-        if temp_result:
-            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
-        else:
-            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
-            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+        # logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
+        # temp_result = error_util.common_execute(error_file_name, logger, app_id, app_name)
+        # if temp_result:
+        #     logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
+        # else:
+        #     logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
+        #     logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
 
     except:
         result = False
         logger.error('[%s:%s] 予期しないエラーが発生しました。[%s]' % (app_id, app_name, traceback.format_exc()))
-        logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
-        temp_result = error_util.common_execute(error_file_name, logger, app_id, app_name)
-        if temp_result:
-            logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
-        else:
-            logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
-            logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
+        # logger.debug('[%s:%s] エラー時共通処理実行を開始します。', app_id, app_name)
+        # temp_result = error_util.common_execute(error_file_name, logger, app_id, app_name)
+        # if temp_result:
+        #     logger.debug('[%s:%s] エラー時共通処理実行を終了しました。' % (app_id, app_name))
+        # else:
+        #     logger.error('[%s:%s] エラー時共通処理実行が失敗しました。' % (app_id, app_name))
+        #     logger.error('[%s:%s] イベントログを確認してください。' % (app_id, app_name))
 
     return result
 
