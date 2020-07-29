@@ -1946,6 +1946,7 @@ namespace ImageChecker
                     m_clsHeaderData,
                     cmbBoxLine,
                     cmbBoxColumns,
+                    m_intColumnCnt,
                     intLine,
                     strColumns,
                     strNgReason,

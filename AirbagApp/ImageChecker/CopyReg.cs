@@ -42,6 +42,7 @@ namespace ImageChecker
         private string m_strMasterPoint = string.Empty;         // マスタ座標
         private int m_intNgDistanceX = 0;                       // 位置(±Xcm)
         private int m_intNgDistanceY = 0;                       // 位置(±Ycm)
+        private int m_intColumnCnt = 0;                         // 列数
 
         // 行列情報
         private string m_strRetainedLine = string.Empty;
@@ -66,6 +67,7 @@ namespace ImageChecker
         /// <param name="clsHeaderData">ヘッダ情報</param>
         /// <param name="cmbBoxLine">行コンボボックス</param>
         /// <param name="cmbBoxColumns">列コンボボックス</param>
+        /// <param name="intColumnCnt">列数</param>
         /// <param name="intLine">行</param>
         /// <param name="strColumns">列</param>
         /// <param name="strNgReason">NG理由</param>
@@ -77,6 +79,7 @@ namespace ImageChecker
         public CopyReg(HeaderData clsHeaderData,
                        ComboBox cmbBoxLine,
                        ComboBox cmbBoxColumns,
+                       int intColumnCnt,
                        int intLine,
                        string strColumns,
                        string strNgReason,
@@ -93,6 +96,7 @@ namespace ImageChecker
             m_intInspectionNum = clsHeaderData.intInspectionNum;
             m_strUnitNum = clsHeaderData.strUnitNum;
 
+            m_intColumnCnt = intColumnCnt;
             m_intLine = intLine;
             m_strColumns = strColumns;
             m_strNgReason = strNgReason;
@@ -133,19 +137,9 @@ namespace ImageChecker
                 {
                     // 行
                     cmbBoxLine.SelectedItem = m_intLine.ToString();
-                    m_strRetainedLine = m_intLine.ToString();
 
                     // 列
                     cmbBoxColumns.SelectedItem = m_strColumns;
-                    m_strRetainedCloumns = m_strColumns;
-                }
-                else
-                {
-                    // 行
-                    cmbBoxLine.SelectedItem = m_strRetainedLine;
-
-                    // 列
-                    cmbBoxColumns.SelectedItem = m_strRetainedCloumns;
                 }
 
                 // NG選択理由
@@ -159,6 +153,8 @@ namespace ImageChecker
                     return;
                 }
 
+                m_strRetainedLine = cmbBoxLine.SelectedItem.ToString();
+                m_strRetainedCloumns = cmbBoxColumns.SelectedItem.ToString();
                 this.btnReCalculation.Visible = false;
 
                 // 次の欠点を登録するの制御
@@ -457,6 +453,10 @@ namespace ImageChecker
             bool bolProcOkNg = false;
             int intCopyRegistInfo = -1;
             int intBranchNum = m_intBranchNumGet + m_intBranchNumUpCnt;
+            int intCloumnsInfo = 0;
+            int intLineInfo = 0;
+            List<string> lstCmbLineItem = new List<string>();
+            List<string> lstCmbCloumnsItem = new List<string>();
             string strSQL = string.Empty;
             string strFileNameWithExtension = string.Empty;
             string NotDetectedImageCooperationDirectory = string.Empty;
@@ -514,6 +514,89 @@ namespace ImageChecker
                 {
                     return;
                 }
+
+                m_strRetainedLine = cmbBoxLine.SelectedItem.ToString();
+                intLineInfo = int.Parse(m_strRetainedLine);
+
+                // 変数を補正する
+                if (intLineInfo != 0)
+                {
+                    intLineInfo--;
+                }
+
+                // 選択肢の情報を設定する
+                for (int i = intLineInfo; i < intLineInfo + 3; i++)
+                {
+                    lstCmbLineItem.Add(i.ToString());
+                }
+
+                // 行コンボボックスの設定
+                cmbBoxLine.Items.Clear();
+                cmbBoxLine.Items.AddRange(lstCmbLineItem.ToArray());
+                cmbBoxLine.SelectedItem = m_strRetainedLine;
+
+
+                m_strRetainedCloumns = cmbBoxColumns.SelectedItem.ToString();
+
+                switch (m_strRetainedCloumns)
+                {
+                    case g_strColumnsInfoA:
+                        intCloumnsInfo = 1;
+                        break;
+                    case g_strColumnsInfoB:
+                        intCloumnsInfo = 2;
+                        break;
+                    case g_strColumnsInfoC:
+                        intCloumnsInfo = 3;
+                        break;
+                    case g_strColumnsInfoD:
+                        intCloumnsInfo = 4;
+                        break;
+                    case g_strColumnsInfoE:
+                        intCloumnsInfo = 5;
+                        break;
+                }
+
+                // 変数を補正する
+                if (intCloumnsInfo == m_intColumnCnt)
+                {
+                    intCloumnsInfo--;
+                }
+
+                if (intCloumnsInfo != 1)
+                {
+                    intCloumnsInfo--;
+                }
+
+                // 選択肢の情報を設定する
+                for (int i = intCloumnsInfo; i < intCloumnsInfo + 3; i++)
+                {
+                    if (i == 1)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoA);
+                    }
+                    else if (i == 2)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoB);
+                    }
+                    else if (i == 3)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoC);
+                    }
+                    else if (i == 4)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoD);
+                    }
+                    else if (i == 5)
+                    {
+                        lstCmbCloumnsItem.Add(g_strColumnsInfoE);
+                    }
+                }
+
+                // 列コンボボックスの設定
+                cmbBoxColumns.Items.Clear();
+                cmbBoxColumns.Items.AddRange(lstCmbCloumnsItem.ToArray());
+                cmbBoxColumns.SelectedItem = m_strRetainedCloumns;
 
                 this.btnReCalculation.Visible = false;
                 bolProcOkNg = true;
@@ -947,9 +1030,6 @@ namespace ImageChecker
 
             // 枝番のカウントアップ
             m_intBranchNumUpCnt++;
-
-            m_strRetainedLine = cmbBoxLine.SelectedItem.ToString();
-            m_strRetainedCloumns = cmbBoxColumns.SelectedItem.ToString();
 
             dispInitialize(false);
         }
