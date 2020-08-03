@@ -263,7 +263,7 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
             result, length_on_master, width_on_master, ng_face, error, func_name = register_ng_info_util.specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix,
                 nonoverlap_image_height_pix, overlap_width_pix, overlap_height_pix,
                 resize_image_height, resize_image_width, regimark_length_ratio,
-                mst_data, inspection_direction, master_image_width, master_image_height, actual_image_width, actual_image_overlap, last_flag, logger)
+                mst_data, inspection_direction, master_image_width, master_image_height, actual_image_width, actual_image_overlap, logger)
             if result:
                 logger.debug('[%s:%s] NG位置特定が終了しました。' % (app_id, app_name))
             else:
@@ -278,7 +278,7 @@ def main(product_name, fabric_name, inspection_num, num, ng_image_file_name, ng_
                 logger.debug('[%s:%s] NG行・列特定が終了しました。' % (app_id, app_name))
                 logger.debug('[%s:%s] NG行・列境界値判定を開始します。' % (app_id, app_name))
                 result, judge_result, length_on_master, width_on_master, error, func_name = register_ng_info_util.specific_ng_line_colum_border(
-                    line_info, length_on_master, width_on_master, mst_data, conf_regimark_between_length_pix,
+                    regimark_info, length_on_master, width_on_master, mst_data, conf_regimark_between_length_pix,
                     inspection_direction, last_flag, logger)
                 if result:
                     logger.debug('[%s:%s] NG行・列境界値判定が終了しました。[行,列] = %s' % (app_id, app_name, judge_result))

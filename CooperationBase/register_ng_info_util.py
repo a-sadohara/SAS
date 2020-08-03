@@ -414,7 +414,7 @@ def calc_length_ratio(regimark_info, line_info, nonoverlap_image_height_pix,
 def specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix, nonoverlap_image_height_pix,
                       overlap_width_pix, overlap_height_pix, resize_image_height, resize_image_width,
                       regimark_length_ratio, mst_data, inspection_direction, master_image_width,
-                      master_image_height, actual_image_width, actual_image_overlap, logger):
+                      master_image_height, actual_image_width, actual_image_overlap, last_flag, logger):
     result = False
     length_on_master = None
     width_on_master = None
@@ -430,9 +430,17 @@ def specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix, nono
         regimark_1_point_y = int(mst_data[master_data_dict['regimark_1_point_y']])
         regimark_2_point_y = int(mst_data[master_data_dict['regimark_2_point_y']])
         master_width = int(mst_data[master_data_dict['width']])
+        
+        if last_flag == 0:
+            line_info_num = 0
+        else:
+            if len(line_info) == 1:
+                line_info_num = 0
+            else:
+                line_info_num = 1
 
-        stretch_rate_x = float(line_info[0][5])
-        stretch_rate_y = float(line_info[0][6])
+        stretch_rate_x = float(line_info[line_info_num][5])
+        stretch_rate_y = float(line_info[line_info_num][6])
          # 開始レジマークの撮像番号、座標を抽出する。
         sp_ng_file = re.split('[_.]', ng_image_info[1]) + [ng_image_info[2]]
         ng_face = int(sp_ng_file[4])
@@ -442,10 +450,10 @@ def specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix, nono
             sp_regimark_list = [[x[0]] + re.split('[._]', x[:][1]) + [x[2]] + [x[3]] + [x[4]]
                                 for x in line_info]
 
-            start_image_num = int(sp_regimark_list[0][7])
-            start_regimark_x = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][9])))[0])
-            start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][9])))[1])
-            start_camera_num = int(sp_regimark_list[0][6])
+            start_image_num = int(sp_regimark_list[line_info_num][7])
+            start_regimark_x = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[line_info_num][9])))[0])
+            start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[line_info_num][9])))[1])
+            start_camera_num = int(sp_regimark_list[line_info_num][6])
 
             regimark_x = regimark_1_point_x
 
@@ -463,10 +471,10 @@ def specific_ng_point(line_info, ng_image_info, nonoverlap_image_width_pix, nono
             sp_regimark_list = [[x[0]] + [x[1]] + [x[2]] + re.split('[._]', x[:][3]) + [x[4]]
                                 for x in line_info]
 
-            start_image_num = int(sp_regimark_list[0][9])
-            start_regimark_x = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][11])))[0])
-            start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[0][11])))[1])
-            start_camera_num = int(sp_regimark_list[0][8])
+            start_image_num = int(sp_regimark_list[line_info_num][9])
+            start_regimark_x = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[line_info_num][11])))[0])
+            start_regimark_y = int(re.split(',', (re.sub('[()]', '', sp_regimark_list[line_info_num][11])))[1])
+            start_camera_num = int(sp_regimark_list[line_info_num][8])
 
             regimark_x = master_image_width - regimark_2_point_x
 

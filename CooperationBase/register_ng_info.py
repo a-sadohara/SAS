@@ -649,7 +649,7 @@ def main(product_name, fabric_name, inspection_num, imaging_starttime):
                                     nonoverlap_image_height_pix, overlap_width_pix, overlap_height_pix,
                                     resize_image_height, resize_image_width, regimark_length_ratio,
                                     mst_data, inspection_direction, master_image_width, master_image_height, actual_image_width,
-                                    actual_image_overlap, logger)
+                                    actual_image_overlap, last_flag, logger)
                                 if result:
                                     logger.debug('[%s:%s] NG位置特定が終了しました。' % (app_id, app_name))
                                     logger.debug('[%s:%s] NG位置特定 X座標 = %s, Y座標 = %s' % (
