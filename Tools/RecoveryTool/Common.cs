@@ -1,6 +1,7 @@
 ﻿using log4net;
 using System;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -23,6 +24,17 @@ namespace RecoveryTool
         public static string g_strConnectionUser = string.Empty;
         public static string g_strConnectionPassword = string.Empty;
         public static string g_strErrorFileOutputPath = string.Empty;
+        public static string g_strInputPath = string.Empty;
+        public static string g_strInputScanInfomationPath = string.Empty;
+        public static string g_strInputRegistrationMarkPath = string.Empty;
+        public static string g_strTempPath = string.Empty;
+        public static string g_strTempScanInfomationPath = string.Empty;
+        public static string g_strTempRegistrationMarkPath = string.Empty;
+        public static string g_strImagecheckPath = string.Empty;
+        public static string g_strCheckedImagecheckPath = string.Empty;
+        public static string g_strFolderNameScanInfo = "ScanInfomation";
+        public static string g_strFolderNameRegiMark = "RegistrationMarkFiles";
+        public static string g_strFolderNameCheck = "CHECKED";
         public static string[] g_strTaskName;
         public static string[] g_strExecutionFileName;
         public static string[] g_strRecoveryExemptErrorFileName;
@@ -108,6 +120,12 @@ namespace RecoveryTool
                 GetAppConfigValue("ConnectionPassword", ref strConnectionPassword);
                 GetAppConfigValue("TaskName", ref strTaskName);
                 GetAppConfigValue("ErrorFileOutputPath", ref g_strErrorFileOutputPath);
+                GetAppConfigValue("InputPath", ref g_strInputPath);
+                GetAppConfigValue("TempPath", ref g_strTempPath);
+                GetAppConfigValue("ImagecheckPath", ref g_strImagecheckPath);
+                GetAppConfigValue("ScanInfoFolderName", ref g_strFolderNameScanInfo);
+                GetAppConfigValue("RegiMarkFolderName", ref g_strFolderNameRegiMark);
+                GetAppConfigValue("CheckFolderName", ref g_strFolderNameCheck);
                 GetAppConfigValue("RecoveryExemptErrorFileName", ref strRecoveryExemptErrorFileName);
                 GetAppConfigValue("ExecutionFileName", ref strExecutionFileName);
                 GetAppConfigValue("FabricInfoUpdateStatus", ref g_intFabricInfoUpdateStatus);
@@ -152,6 +170,26 @@ namespace RecoveryTool
                 if (!string.IsNullOrWhiteSpace(strConnectionPassword))
                 {
                     g_strConnectionPassword = string.Format("/P {0}", strConnectionPassword);
+                }
+
+                // 入力ファイル格納パスを生成する。
+                if (!string.IsNullOrWhiteSpace(g_strInputPath))
+                {
+                    g_strInputScanInfomationPath = Path.Combine(g_strInputPath, g_strFolderNameScanInfo);
+                    g_strInputRegistrationMarkPath = Path.Combine(g_strInputPath, g_strFolderNameRegiMark);
+                }
+
+                // 一時ファイル格納パスを生成する。
+                if (!string.IsNullOrWhiteSpace(g_strTempPath))
+                {
+                    g_strTempScanInfomationPath = Path.Combine(g_strTempPath, g_strFolderNameScanInfo);
+                    g_strTempRegistrationMarkPath = Path.Combine(g_strTempPath, g_strFolderNameRegiMark);
+                }
+
+                // 行間枚数チェック用ファイル格納パスを生成する。
+                if (!string.IsNullOrWhiteSpace(g_strImagecheckPath))
+                {
+                    g_strCheckedImagecheckPath = Path.Combine(g_strImagecheckPath, g_strFolderNameCheck);
                 }
 
                 g_strTaskName = strTaskName.Split(',').OrderBy(x => x).ToArray();

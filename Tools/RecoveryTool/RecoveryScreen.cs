@@ -169,15 +169,137 @@ namespace RecoveryTool
             ExecutionResultTextAdded(false, string.Format("{0}{1}{2}{3}",
                 "-----------------------------------------------------",
                 Environment.NewLine,
-                "■アラートファイルを確認します。",
+                "■復旧対象のディレクトリを確認します。",
                 Environment.NewLine));
 
-            // エラーファイル格納ディレクトリの有無確認
+            // アラートファイル格納ディレクトリの有無確認
             if (!Directory.Exists(g_strErrorFileOutputPath))
             {
                 // メッセージ出力
                 MessageBox.Show(
-                    "アラートファイル格納ディレクトリが参照できません。",
+                    string.Format(
+                        "アラートファイル格納ディレクトリが参照できません。{0}{1}",
+                        Environment.NewLine,
+                        g_strErrorFileOutputPath),
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                this.Close();
+                return;
+            }
+
+            // 撮像完了通知格納ディレクトリの有無確認
+            if (!Directory.Exists(g_strInputScanInfomationPath))
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    string.Format(
+                        "撮像完了通知格納ディレクトリが参照できません。{0}{1}",
+                        Environment.NewLine,
+                        g_strInputScanInfomationPath),
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                this.Close();
+                return;
+            }
+
+            // 撮像完了通知格納ディレクトリの有無確認
+            if (!Directory.Exists(g_strTempScanInfomationPath))
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    string.Format(
+                        "撮像完了通知格納ディレクトリが参照できません。{0}{1}",
+                        Environment.NewLine,
+                        g_strTempScanInfomationPath),
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                this.Close();
+                return;
+            }
+
+            // レジマーク読取結果格納ディレクトリの有無確認
+            if (!Directory.Exists(g_strInputRegistrationMarkPath))
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    string.Format(
+                        "レジマーク読取結果格納ディレクトリが参照できません。{0}{1}",
+                        Environment.NewLine,
+                        g_strInputRegistrationMarkPath),
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                this.Close();
+                return;
+            }
+
+            // レジマーク読取結果格納ディレクトリの有無確認
+            if (!Directory.Exists(g_strTempRegistrationMarkPath))
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    string.Format(
+                        "レジマーク読取結果格納ディレクトリが参照できません。{0}{1}",
+                        Environment.NewLine,
+                        g_strTempRegistrationMarkPath),
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                this.Close();
+                return;
+            }
+
+            // 行間枚数チェック用ファイル格納ディレクトリの有無確認
+            if (!Directory.Exists(g_strImagecheckPath))
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    string.Format(
+                        "行間枚数チェック用ファイル格納ディレクトリが参照できません。{0}{1}",
+                        Environment.NewLine,
+                        g_strImagecheckPath),
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                this.Close();
+                return;
+            }
+
+            // 行間枚数チェック用ファイル格納ディレクトリの有無確認
+            if (!Directory.Exists(g_strImagecheckPath))
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    string.Format(
+                        "行間枚数チェック用ファイル格納ディレクトリが参照できません。{0}{1}",
+                        Environment.NewLine,
+                        g_strImagecheckPath),
+                    g_CON_MESSAGE_TITLE_WARN,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                this.Close();
+                return;
+            }
+
+            // 行間枚数チェック用ファイル格納ディレクトリの有無確認
+            if (!Directory.Exists(g_strCheckedImagecheckPath))
+            {
+                // メッセージ出力
+                MessageBox.Show(
+                    string.Format(
+                        "行間枚数チェック用ファイル格納ディレクトリが参照できません。{0}{1}",
+                        Environment.NewLine,
+                        g_strCheckedImagecheckPath),
                     g_CON_MESSAGE_TITLE_WARN,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
@@ -548,6 +670,67 @@ namespace RecoveryTool
                                 "{0}{1}{1}",
                                 "⇒更新が完了しました。",
                                 Environment.NewLine));
+
+                        #region ファイル移動
+                        ExecutionResultTextAdded(
+                            false,
+                            string.Format(
+                                "{0}{1}",
+                                "■作業用ファイルの移動を開始します。",
+                                Environment.NewLine));
+
+                        // 撮像完了通知の移動を行う。
+                        Task<bool> taskMoveFile =
+                            Task<bool>.Run(() => bolMoveFile(
+                                g_strInputScanInfomationPath,
+                                g_strTempScanInfomationPath,
+                                "撮像完了通知",
+                                true));
+
+                        await taskMoveFile;
+
+                        if (!taskMoveFile.Result)
+                        {
+                            return;
+                        }
+
+                        // レジマーク読取結果の移動を行う。
+                        taskMoveFile =
+                            Task<bool>.Run(() => bolMoveFile(
+                                g_strInputRegistrationMarkPath,
+                                g_strTempRegistrationMarkPath,
+                                "レジマーク読取結果",
+                                true));
+
+                        await taskMoveFile;
+
+                        if (!taskMoveFile.Result)
+                        {
+                            return;
+                        }
+
+                        // 行間枚数チェックファイルの移動を行う。
+                        taskMoveFile =
+                            Task<bool>.Run(() => bolMoveFile(
+                                g_strImagecheckPath,
+                                g_strCheckedImagecheckPath,
+                                "行間枚数チェックファイル",
+                                false));
+
+                        await taskMoveFile;
+
+                        if (!taskMoveFile.Result)
+                        {
+                            return;
+                        }
+
+                        ExecutionResultTextAdded(
+                            false,
+                            string.Format(
+                                "{0}{1}{1}",
+                                "⇒作業用ファイルの移動が完了しました。",
+                                Environment.NewLine));
+                        #endregion
                     }
                     else
                     {
@@ -912,6 +1095,10 @@ namespace RecoveryTool
             txtExecutionResult.ScrollToCaret();
             txtExecutionResult.Refresh();
         }
+
+        delegate void delegate1(
+            bool intInitializationFlg,
+            string strText);
 
         /// <summary>
         /// コマンドプロンプト実行
@@ -1400,6 +1587,191 @@ namespace RecoveryTool
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// ファイル移動
+        /// 「全ファイル」or「CSVファイルのみ」の移動を行う
+        /// </summary>
+        /// <param name="strSourcePath">移動元パス</param>
+        /// <param name="strDestinationPath">移動先パス</param>
+        /// <param name="targetDirectoryName">対象ディレクトリ名称</param>
+        /// <param name="bolAllFilesMoveFlag">全ファイル移動フラグ</param>
+        /// <returns>存在フラグ</returns>
+        private async Task<bool> bolMoveFile(
+            string strSourcePath,
+            string strDestinationPath,
+            string targetDirectoryName,
+            bool bolAllFilesMoveFlag)
+        {
+            int intTrialCount = 0;
+            int intFileCount = 0;
+            int intRemainingCount = 0;
+            string strDestinationName = string.Empty;
+            FileInfo[] fiTargetInfo = null;
+
+            try
+            {
+                Invoke(
+                    new delegate1(ExecutionResultTextAdded),
+                    false,
+                    string.Format(
+                        "{0}ファイルの移動を開始します。{1}",
+                        targetDirectoryName,
+                        Environment.NewLine));
+
+                // 移動元のファイル情報を取得する。
+                fiTargetInfo =
+                    GetFileInfo(
+                        strSourcePath,
+                        bolAllFilesMoveFlag);
+
+                intFileCount = fiTargetInfo.Length;
+
+                do
+                {
+                    if (intTrialCount > g_intRetryTimes)
+                    {
+                        string strErrorMessage =
+                            string.Format(
+                                "{0}ファイルの移動に失敗しました。{1}{1}移動元パス：{2}{1}{1}移動先パス：{3}{1}{1}総ファイル数：{4}, 残ファイル数：{5}{1}{1}{6}",
+                                targetDirectoryName,
+                                Environment.NewLine,
+                                strSourcePath,
+                                strDestinationPath,
+                                intFileCount,
+                                intRemainingCount,
+                                m_CON_RETRY_ERROR);
+
+                        // ログ出力
+                        WriteEventLog(
+                            g_CON_LEVEL_ERROR,
+                            strErrorMessage);
+
+                        Invoke(
+                            new delegate1(ExecutionResultTextAdded),
+                            false,
+                            strErrorMessage);
+
+                        // メッセージ出力
+                        MessageBox.Show(
+                            strErrorMessage,
+                            g_CON_MESSAGE_TITLE_ERROR,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+
+                        return false;
+                    }
+
+                    if (intRemainingCount != 0)
+                    {
+                        Invoke(
+                            new delegate1(ExecutionResultTextAdded),
+                            false,
+                            string.Format(
+                                "⇒全ファイルの移動が確認できないため、{0}秒後に再確認します。{1}総ファイル数：{2}, 残ファイル数：{3}{1}{1}",
+                                g_intRetryWaitSeconds,
+                                Environment.NewLine,
+                                intFileCount,
+                                intRemainingCount));
+
+                        await Task.Delay(g_intRetryWaitMilliSeconds);
+                    }
+
+                    // ファイル移動(上書きコピー+元ファイル削除)を行う。
+                    foreach (FileInfo fiSourceInfo in fiTargetInfo)
+                    {
+                        strDestinationName = Path.Combine(strDestinationPath, fiSourceInfo.Name);
+                        try
+                        {
+                            File.Copy(fiSourceInfo.FullName, strDestinationName, true);
+                            File.Delete(fiSourceInfo.FullName);
+                        }
+                        catch (Exception ex)
+                        {
+                            // リトライ処理実行のため、例外をスキップする。
+                        }
+                    }
+
+                    // 移動元のファイル情報を取得する。
+                    fiTargetInfo =
+                        GetFileInfo(
+                            strSourcePath,
+                            bolAllFilesMoveFlag);
+
+                    intRemainingCount = fiTargetInfo.Length;
+                    intTrialCount++;
+                }
+                while (intRemainingCount != 0);
+
+                Invoke(
+                    new delegate1(ExecutionResultTextAdded),
+                    false,
+                    string.Format(
+                        "{0}ファイルの移動が完了しました。{1}総ファイル数：{2}{1}{1}",
+                        targetDirectoryName,
+                        Environment.NewLine,
+                        intFileCount));
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                string strErrorMessage =
+                    string.Format(
+                        "ファイル移動中にエラーが発生しました。{0}移動元パス：{1}{0}移動先パス：{2}{0}{3}",
+                        Environment.NewLine,
+                        strSourcePath,
+                        strDestinationPath,
+                        m_CON_RETRY_ERROR);
+
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        ex.Message));
+
+                Invoke(
+                    new delegate1(ExecutionResultTextAdded),
+                    false,
+                    string.Format(
+                        "⇒{0}{1}{2}",
+                        strErrorMessage,
+                        Environment.NewLine,
+                        ex.Message));
+
+                // メッセージ出力
+                MessageBox.Show(
+                    strErrorMessage,
+                    g_CON_MESSAGE_TITLE_ERROR,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// ファイル情報取得
+        /// </summary>
+        /// <param name="strTargetPath">対象ディレクトリ名称</param>
+        /// <param name="bolAllFilesMoveFlag">全ファイル移動フラグ</param>
+        /// <returns>ファイル情報</returns>
+        private FileInfo[] GetFileInfo(
+            string strTargetPath,
+            bool bolAllFilesMoveFlag)
+        {
+            if (bolAllFilesMoveFlag)
+            {
+                return new DirectoryInfo(strTargetPath).GetFiles().ToArray();
+            }
+            else
+            {
+                return new DirectoryInfo(strTargetPath).GetFiles().Where(x => string.Compare(x.Extension, ".csv", true) == 0).ToArray();
+            }
         }
         #endregion
     }
