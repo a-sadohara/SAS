@@ -266,6 +266,7 @@ namespace WokerMstManagement
             }
 
             string strSelEmployeeNum = "0000";
+            bool bolDelFlg = int.Parse(dgvWorker.Rows[e.RowIndex].Cells[3].Value.ToString()) == 1 ? true : false;
 
             // 選択行の社員番号取得
             foreach (DataGridViewRow dgvRow in this.dgvWorker.SelectedRows)
@@ -278,7 +279,8 @@ namespace WokerMstManagement
             WokerMstEdit frmUserReg = new WokerMstEdit(g_CON_EDITMODE_UPD,
                                                        dgvWorker.Rows[e.RowIndex].Cells[0].Value.ToString(),
                                                        dgvWorker.Rows[e.RowIndex].Cells[1].Value.ToString(),
-                                                       dgvWorker.Rows[e.RowIndex].Cells[2].Value.ToString());
+                                                       dgvWorker.Rows[e.RowIndex].Cells[2].Value.ToString(),
+                                                       bolDelFlg);
             frmUserReg.ShowDialog();
             if (frmUserReg.g_intUpdateFlg == 1)
             {
@@ -390,9 +392,10 @@ namespace WokerMstManagement
                                 employee_num
                               , worker_name_sei || '" + g_CON_NAME_SEPARATE + @"' || worker_name_mei as worker_name
                               , worker_name_sei_kana || '" + g_CON_NAME_SEPARATE + @"' || worker_name_mei_kana as worker_name_kana
+                              , del_flg
                             FROM 
                                     mst_Worker ";
-                strSQL += "WHERE del_flg = 0 ";
+                strSQL += "WHERE 1 = 1 ";
                 if (m_strKanaSta == "！" && m_strKanaEnd == "！")
                 {
                     strSQL += @"AND NOT(

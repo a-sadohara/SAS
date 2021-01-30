@@ -15,6 +15,8 @@ namespace WokerMstManagement
         private int m_intEditMode;
         public int g_intUpdateFlg = 0;
         public string g_strRegWorkerNo = string.Empty;
+        public string g_strShow = "表示";
+        public string g_strHide = "非表示";
         #endregion
 
         #region イベント
@@ -28,6 +30,7 @@ namespace WokerMstManagement
             if (m_intEditMode == g_CON_EDITMODE_REG)
             {
                 if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0002
+                                                , chkDelFlg.Checked ? g_strHide : g_strShow
                                                 , txtEmployeeNum.Text
                                                 , txtWorkerNameSei.Text
                                                 , txtWorkerNameMei.Text
@@ -58,11 +61,10 @@ namespace WokerMstManagement
                 }
             }
 
-
-
             if (m_intEditMode == g_CON_EDITMODE_UPD)
             {
                 if (MessageBox.Show(string.Format(g_clsMessageInfo.strMsgQ0003
+                                                , chkDelFlg.Checked ? g_strHide : g_strShow
                                                 , txtEmployeeNum.Text
                                                 , txtWorkerNameSei.Text
                                                 , txtWorkerNameMei.Text
@@ -136,10 +138,12 @@ namespace WokerMstManagement
         /// <param name="parUserNo">初期表示ユーザ番号</param>
         /// <param name="parUserNm">初期表示ユーザ名</param>
         /// <param name="parUserYomiGana">初期表示ユーザ名カナ</param>
+        /// <param name="parUserYomiGana">初期表示削除フラグ</param>
         public WokerMstEdit(int parEditMode,
                             string parUserNo = "",
                             string parUserNm = "",
-                            string parUserYomiGana = "")
+                            string parUserYomiGana = "",
+                            bool parDelFlg = false)
         {
             InitializeComponent();
 
@@ -189,6 +193,9 @@ namespace WokerMstManagement
                 }
                 txtWorkerNameSeiKana.Text = parUserYomiGana;
             }
+
+            // 非表示フラグ
+            chkDelFlg.Checked = parDelFlg;
         }
 
         /// <summary>
@@ -251,7 +258,7 @@ namespace WokerMstManagement
                                                       ,:UserName
                                                       ,:UserSurnameKana
                                                       ,:UserNameKana
-                                                      , 0)";
+                                                      ,:DelFlg)";
 
                 // SQLコマンドに各パラメータを設定する
                 List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
@@ -260,6 +267,7 @@ namespace WokerMstManagement
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserName", DbType = DbType.String, Value = txtWorkerNameMei.Text });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserSurnameKana", DbType = DbType.String, Value = txtWorkerNameSeiKana.Text });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserNameKana", DbType = DbType.String, Value = txtWorkerNameMeiKana.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "DelFlg", DbType = DbType.Int32, Value = chkDelFlg.Checked ? 1 : 0 });
 
                 // sqlを実行する
                 g_clsConnectionNpgsql.ExecTranSQL(strCreateSql, lstNpgsqlCommand);
@@ -327,6 +335,7 @@ namespace WokerMstManagement
                                              , worker_name_mei = :UserName
                                              , worker_name_sei_kana = :UserSurnameKana
                                              , worker_name_mei_kana = :UserNameKana
+                                             , del_flg = :DelFlg
                                          WHERE employee_num = :UserNo";
 
                 // SQLコマンドに各パラメータを設定する
@@ -335,6 +344,7 @@ namespace WokerMstManagement
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserName", DbType = DbType.String, Value = txtWorkerNameMei.Text });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserSurnameKana", DbType = DbType.String, Value = txtWorkerNameSeiKana.Text });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserNameKana", DbType = DbType.String, Value = txtWorkerNameMeiKana.Text });
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "DelFlg", DbType = DbType.Int32, Value = chkDelFlg.Checked ? 1 : 0 });
                 lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "UserNo", DbType = DbType.String, Value = txtEmployeeNum.Text });
 
                 // sqlを実行する

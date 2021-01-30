@@ -30,9 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WokerMstManagement));
             this.dgvWorker = new System.Windows.Forms.DataGridView();
-            this.EmployeeNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.WorkerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.WorkerNameKana = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnRegistration = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnImportCsv = new System.Windows.Forms.Button();
@@ -55,6 +52,10 @@
             this.lblTitleUserNo = new System.Windows.Forms.Label();
             this.lblTitleUserYomiGana = new System.Windows.Forms.Label();
             this.btnSearch = new System.Windows.Forms.Button();
+            this.EmployeeNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WorkerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WorkerNameKana = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DelFlg = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvWorker)).BeginInit();
             this.gbxJoken.SuspendLayout();
             this.SuspendLayout();
@@ -70,7 +71,8 @@
             this.dgvWorker.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.EmployeeNum,
             this.WorkerName,
-            this.WorkerNameKana});
+            this.WorkerNameKana,
+            this.DelFlg});
             this.dgvWorker.Location = new System.Drawing.Point(12, 173);
             this.dgvWorker.MultiSelect = false;
             this.dgvWorker.Name = "dgvWorker";
@@ -84,35 +86,10 @@
             this.dgvWorker.TabIndex = 2;
             this.dgvWorker.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvWorker_CellDoubleClick);
             // 
-            // EmployeeNum
-            // 
-            this.EmployeeNum.HeaderText = "社員番号";
-            this.EmployeeNum.Name = "EmployeeNum";
-            this.EmployeeNum.ReadOnly = true;
-            this.EmployeeNum.Width = 78;
-            // 
-            // WorkerName
-            // 
-            this.WorkerName.FillWeight = 120F;
-            this.WorkerName.HeaderText = "作業者名";
-            this.WorkerName.MinimumWidth = 120;
-            this.WorkerName.Name = "WorkerName";
-            this.WorkerName.ReadOnly = true;
-            this.WorkerName.Width = 120;
-            // 
-            // WorkerNameKana
-            // 
-            this.WorkerNameKana.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.WorkerNameKana.FillWeight = 180F;
-            this.WorkerNameKana.HeaderText = "読みカナ";
-            this.WorkerNameKana.MinimumWidth = 180;
-            this.WorkerNameKana.Name = "WorkerNameKana";
-            this.WorkerNameKana.ReadOnly = true;
-            // 
             // btnRegistration
             // 
             this.btnRegistration.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRegistration.Location = new System.Drawing.Point(308, 453);
+            this.btnRegistration.Location = new System.Drawing.Point(389, 453);
             this.btnRegistration.Name = "btnRegistration";
             this.btnRegistration.Size = new System.Drawing.Size(75, 23);
             this.btnRegistration.TabIndex = 4;
@@ -129,6 +106,7 @@
             this.btnDelete.TabIndex = 5;
             this.btnDelete.Text = "削除";
             this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Visible = false;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnImportCsv
@@ -364,16 +342,54 @@
             this.btnSearch.UseVisualStyleBackColor = true;
             this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
+            // EmployeeNum
+            // 
+            this.EmployeeNum.FillWeight = 150F;
+            this.EmployeeNum.HeaderText = "社員番号";
+            this.EmployeeNum.MinimumWidth = 78;
+            this.EmployeeNum.Name = "EmployeeNum";
+            this.EmployeeNum.ReadOnly = true;
+            this.EmployeeNum.Width = 78;
+            // 
+            // WorkerName
+            // 
+            this.WorkerName.FillWeight = 120F;
+            this.WorkerName.HeaderText = "作業者名";
+            this.WorkerName.MinimumWidth = 120;
+            this.WorkerName.Name = "WorkerName";
+            this.WorkerName.ReadOnly = true;
+            this.WorkerName.Width = 120;
+            // 
+            // WorkerNameKana
+            // 
+            this.WorkerNameKana.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.WorkerNameKana.FillWeight = 140F;
+            this.WorkerNameKana.HeaderText = "読みカナ";
+            this.WorkerNameKana.MinimumWidth = 140;
+            this.WorkerNameKana.Name = "WorkerNameKana";
+            this.WorkerNameKana.ReadOnly = true;
+            // 
+            // DelFlg
+            // 
+            this.DelFlg.FillWeight = 95F;
+            this.DelFlg.HeaderText = "非表示フラグ";
+            this.DelFlg.MinimumWidth = 95;
+            this.DelFlg.Name = "DelFlg";
+            this.DelFlg.ReadOnly = true;
+            this.DelFlg.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.DelFlg.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.DelFlg.Width = 95;
+            // 
             // WokerMstManagement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(476, 485);
+            this.Controls.Add(this.btnRegistration);
             this.Controls.Add(this.gbxJoken);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.btnImportCsv);
-            this.Controls.Add(this.btnRegistration);
             this.Controls.Add(this.dgvWorker);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "WokerMstManagement";
@@ -414,6 +430,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn EmployeeNum;
         private System.Windows.Forms.DataGridViewTextBoxColumn WorkerName;
         private System.Windows.Forms.DataGridViewTextBoxColumn WorkerNameKana;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn DelFlg;
     }
 }
 

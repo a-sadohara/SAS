@@ -42,6 +42,8 @@
             this.txtWorkerNameMeiKana = new System.Windows.Forms.TextBox();
             this.lblTitleWorkerNameSeiKana = new System.Windows.Forms.Label();
             this.lblTitleWorkerNameMeiKana = new System.Windows.Forms.Label();
+            this.chkDelFlg = new System.Windows.Forms.CheckBox();
+            this.lblDelFlg = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtEmployeeNum
@@ -63,7 +65,7 @@
             this.txtWorkerNameSei.MaxLength = 10;
             this.txtWorkerNameSei.Name = "txtWorkerNameSei";
             this.txtWorkerNameSei.Size = new System.Drawing.Size(68, 19);
-            this.txtWorkerNameSei.TabIndex = 3;
+            this.txtWorkerNameSei.TabIndex = 4;
             this.txtWorkerNameSei.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWorkerName_KeyPress);
             // 
             // txtWorkerNameSeiKana
@@ -73,7 +75,7 @@
             this.txtWorkerNameSeiKana.MaxLength = 30;
             this.txtWorkerNameSeiKana.Name = "txtWorkerNameSeiKana";
             this.txtWorkerNameSeiKana.Size = new System.Drawing.Size(92, 19);
-            this.txtWorkerNameSeiKana.TabIndex = 8;
+            this.txtWorkerNameSeiKana.TabIndex = 9;
             this.txtWorkerNameSeiKana.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWorkerNameKana_KeyPress);
             // 
             // lblTitleEmployeeNum
@@ -91,7 +93,7 @@
             this.lblTitleWorkerName.Location = new System.Drawing.Point(35, 71);
             this.lblTitleWorkerName.Name = "lblTitleWorkerName";
             this.lblTitleWorkerName.Size = new System.Drawing.Size(53, 12);
-            this.lblTitleWorkerName.TabIndex = 1;
+            this.lblTitleWorkerName.TabIndex = 2;
             this.lblTitleWorkerName.Text = "作業者名";
             // 
             // lblTitleWorkerNameKana
@@ -100,7 +102,7 @@
             this.lblTitleWorkerNameKana.Location = new System.Drawing.Point(35, 137);
             this.lblTitleWorkerNameKana.Name = "lblTitleWorkerNameKana";
             this.lblTitleWorkerNameKana.Size = new System.Drawing.Size(47, 12);
-            this.lblTitleWorkerNameKana.TabIndex = 6;
+            this.lblTitleWorkerNameKana.TabIndex = 7;
             this.lblTitleWorkerNameKana.Text = "読みカナ";
             // 
             // lblTitleWorkerNameSei
@@ -109,7 +111,7 @@
             this.lblTitleWorkerNameSei.Location = new System.Drawing.Point(120, 71);
             this.lblTitleWorkerNameSei.Name = "lblTitleWorkerNameSei";
             this.lblTitleWorkerNameSei.Size = new System.Drawing.Size(17, 12);
-            this.lblTitleWorkerNameSei.TabIndex = 2;
+            this.lblTitleWorkerNameSei.TabIndex = 3;
             this.lblTitleWorkerNameSei.Text = "姓";
             // 
             // lblTitleWorkerNameMei
@@ -118,7 +120,7 @@
             this.lblTitleWorkerNameMei.Location = new System.Drawing.Point(120, 103);
             this.lblTitleWorkerNameMei.Name = "lblTitleWorkerNameMei";
             this.lblTitleWorkerNameMei.Size = new System.Drawing.Size(17, 12);
-            this.lblTitleWorkerNameMei.TabIndex = 4;
+            this.lblTitleWorkerNameMei.TabIndex = 5;
             this.lblTitleWorkerNameMei.Text = "名";
             // 
             // txtWorkerNameMei
@@ -128,15 +130,15 @@
             this.txtWorkerNameMei.MaxLength = 10;
             this.txtWorkerNameMei.Name = "txtWorkerNameMei";
             this.txtWorkerNameMei.Size = new System.Drawing.Size(68, 19);
-            this.txtWorkerNameMei.TabIndex = 5;
+            this.txtWorkerNameMei.TabIndex = 6;
             this.txtWorkerNameMei.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWorkerName_KeyPress);
             // 
             // btnDecision
             // 
-            this.btnDecision.Location = new System.Drawing.Point(160, 215);
+            this.btnDecision.Location = new System.Drawing.Point(160, 240);
             this.btnDecision.Name = "btnDecision";
             this.btnDecision.Size = new System.Drawing.Size(75, 23);
-            this.btnDecision.TabIndex = 11;
+            this.btnDecision.TabIndex = 14;
             this.btnDecision.Text = "確定";
             this.btnDecision.UseVisualStyleBackColor = true;
             this.btnDecision.Click += new System.EventHandler(this.btnDecision_Click);
@@ -148,7 +150,7 @@
             this.txtWorkerNameMeiKana.MaxLength = 30;
             this.txtWorkerNameMeiKana.Name = "txtWorkerNameMeiKana";
             this.txtWorkerNameMeiKana.Size = new System.Drawing.Size(92, 19);
-            this.txtWorkerNameMeiKana.TabIndex = 10;
+            this.txtWorkerNameMeiKana.TabIndex = 11;
             this.txtWorkerNameMeiKana.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtWorkerNameKana_KeyPress);
             // 
             // lblTitleWorkerNameSeiKana
@@ -157,7 +159,7 @@
             this.lblTitleWorkerNameSeiKana.Location = new System.Drawing.Point(113, 137);
             this.lblTitleWorkerNameSeiKana.Name = "lblTitleWorkerNameSeiKana";
             this.lblTitleWorkerNameSeiKana.Size = new System.Drawing.Size(24, 12);
-            this.lblTitleWorkerNameSeiKana.TabIndex = 7;
+            this.lblTitleWorkerNameSeiKana.TabIndex = 8;
             this.lblTitleWorkerNameSeiKana.Text = "セイ";
             // 
             // lblTitleWorkerNameMeiKana
@@ -166,14 +168,34 @@
             this.lblTitleWorkerNameMeiKana.Location = new System.Drawing.Point(115, 171);
             this.lblTitleWorkerNameMeiKana.Name = "lblTitleWorkerNameMeiKana";
             this.lblTitleWorkerNameMeiKana.Size = new System.Drawing.Size(22, 12);
-            this.lblTitleWorkerNameMeiKana.TabIndex = 9;
+            this.lblTitleWorkerNameMeiKana.TabIndex = 10;
             this.lblTitleWorkerNameMeiKana.Text = "メイ";
+            // 
+            // chkDelFlg
+            // 
+            this.chkDelFlg.AutoSize = true;
+            this.chkDelFlg.Location = new System.Drawing.Point(143, 210);
+            this.chkDelFlg.Name = "chkDelFlg";
+            this.chkDelFlg.Size = new System.Drawing.Size(15, 14);
+            this.chkDelFlg.TabIndex = 13;
+            this.chkDelFlg.UseVisualStyleBackColor = true;
+            // 
+            // lblDelFlg
+            // 
+            this.lblDelFlg.AutoSize = true;
+            this.lblDelFlg.Location = new System.Drawing.Point(35, 212);
+            this.lblDelFlg.Name = "lblDelFlg";
+            this.lblDelFlg.Size = new System.Drawing.Size(66, 12);
+            this.lblDelFlg.TabIndex = 12;
+            this.lblDelFlg.Text = "非表示フラグ";
             // 
             // WokerMstEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(270, 261);
+            this.ClientSize = new System.Drawing.Size(270, 281);
+            this.Controls.Add(this.lblDelFlg);
+            this.Controls.Add(this.chkDelFlg);
             this.Controls.Add(this.btnDecision);
             this.Controls.Add(this.lblTitleWorkerNameKana);
             this.Controls.Add(this.lblTitleWorkerNameMei);
@@ -210,5 +232,7 @@
         private System.Windows.Forms.TextBox txtWorkerNameMeiKana;
         private System.Windows.Forms.Label lblTitleWorkerNameSeiKana;
         private System.Windows.Forms.Label lblTitleWorkerNameMeiKana;
+        private System.Windows.Forms.CheckBox chkDelFlg;
+        private System.Windows.Forms.Label lblDelFlg;
     }
 }
