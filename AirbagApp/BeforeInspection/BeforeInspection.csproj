@@ -143,6 +143,12 @@
     <Compile Include="ErrorMessageBox.Designer.cs">
       <DependentUpon>ErrorMessageBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgressForm.Designer.cs">
+      <DependentUpon>ProgressForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="TenKeyInput.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -172,6 +178,9 @@
     <Compile Include="WorkerSelection.Designer.cs">
       <DependentUpon>WorkerSelection.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ProgressForm.resx">
+      <DependentUpon>ProgressForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TenKeyInput.resx">
       <DependentUpon>TenKeyInput.cs</DependentUpon>
     </EmbeddedResource>

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static BeforeInspection.Common;
@@ -44,6 +46,10 @@ namespace BeforeInspection
         private const int m_CON_MAXLENGTH_ORDERIMG = 7;
         private const int m_CON_MAXLENGTH_FABRICNAME = 10;
         private const string m_CON_INSPECTION_DIRECTION = " ↓↓↓ {0} ↓↓↓ ";
+        private const string m_FILENAME_COMMANDPROMPT = "cmd.exe";
+        private const string m_CON_COMMAND_TASKKILL = @"/c taskkill {0} {1} {2} /F /FI ""IMAGENAME eq function_*""";
+        private const string m_CON_COMMAND_TASKLIST = @"/c tasklist {0} {1} {2} /FI ""IMAGENAME eq function_*""";
+        private const string m_CON_COMMAND_SCHTASKS = @"/c schtasks /RUN {0} {1} {2} /I /TN ""{3}""";
 
         // 検査方向背景色関連
         private Color m_clrInspectionDirectionActFore = System.Drawing.SystemColors.ActiveCaption;
@@ -1147,6 +1153,166 @@ namespace BeforeInspection
                 return false;
             }
         }
+
+        /// <summary>
+        /// 旧検査情報チェック
+        /// </summary>
+        /// <returns>連携基盤プロセス再起動フラグ</returns>
+        private bool? bolCheckPastInfo()
+        {
+            DataTable dtData = new DataTable();
+            StringBuilder sbSQL = new StringBuilder();
+            DateTime dtDayBeforeYesterday = DateTime.Now.Date.AddDays(-2);
+
+            try
+            {
+                // SQL文を作成する
+                sbSQL.AppendLine(" SELECT  ");
+                sbSQL.AppendLine("     ii.inspection_date  ");
+                sbSQL.AppendLine(" FROM inspection_info_header AS ii  ");
+                sbSQL.AppendLine(" ORDER BY ii.inspection_date DESC LIMIT 1 OFFSET 0 ");
+
+                // SQLを実行する
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, sbSQL.ToString());
+
+                if (dtData.Rows.Count == 1 &&
+                    DateTime.Parse(dtData.Rows[0][0].ToString()) <= dtDayBeforeYesterday)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}",
+                        g_clsMessageInfo.strMsgE0031,
+                        Environment.NewLine,
+                        ex.Message));
+
+                // メッセージ出力
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0031)).ShowDialog(this);
+
+                return null;
+            }
+            finally
+            {
+                dtData.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// リセット対象情報チェック
+        /// </summary>
+        /// <returns>処理実行可否フラグ</returns>
+        private bool bolCheckResetTargetInfo()
+        {
+            DataTable dtData = new DataTable();
+            StringBuilder sbSQL = new StringBuilder();
+
+            try
+            {
+                // SQL文を作成する
+                sbSQL.AppendLine(" SELECT ");
+                sbSQL.AppendLine("     fi.fabric_name, ");
+                sbSQL.AppendLine("     fi.inspection_num, ");
+                sbSQL.AppendLine("     fi.imaging_starttime, ");
+                sbSQL.AppendLine("     ii.inspection_date ");
+                sbSQL.AppendLine(" FROM fabric_info AS fi ");
+                sbSQL.AppendLine(" INNER JOIN inspection_info_header AS ii on  ");
+                sbSQL.AppendLine(" fi.fabric_name = ii.fabric_name ");
+                sbSQL.AppendLine(" AND fi.inspection_num = ii.inspection_num ");
+                sbSQL.AppendLine(" AND fi.imaging_starttime = ii.start_datetime ");
+                sbSQL.AppendLine(" AND fi.unit_num = ii.unit_num ");
+                sbSQL.AppendLine(" AND fi.unit_num = :unit_num ");
+
+                // 反物情報.ステータスの抽出条件を付与する
+                for (int index = 0; index < g_intFabricInfoExceptExtractionStatus.Count(); index++)
+                {
+                    sbSQL.AppendLine(string.Format(" AND fi.status <> {0}", g_intFabricInfoExceptExtractionStatus[index]));
+                }
+
+                // SQLコマンドに各パラメータを設定する
+                List<ConnectionNpgsql.structParameter> lstNpgsqlCommand = new List<ConnectionNpgsql.structParameter>();
+                lstNpgsqlCommand.Add(new ConnectionNpgsql.structParameter { ParameterName = "unit_num", DbType = DbType.String, Value = m_strUnitNum });
+
+                // SQLを実行する
+                g_clsConnectionNpgsql.SelectSQL(ref dtData, sbSQL.ToString(), lstNpgsqlCommand);
+
+                foreach (DataRow row in dtData.Rows)
+                {
+                    // ログ出力
+                    WriteEventLog(
+                        g_CON_LEVEL_WARN,
+                        string.Format(
+                            g_clsMessageInfo.strMsgW0013,
+                            string.Format(
+                                "検査日付:{0}, 検査番号:{1}, 反番:{2}",
+                                row[3].ToString(),
+                                row[1].ToString(),
+                                row[0].ToString())));
+                }
+            }
+            catch (Exception ex)
+            {
+                // ログ出力
+                WriteEventLog(
+                    g_CON_LEVEL_ERROR,
+                    string.Format(
+                        "{0}{1}{2}",
+                        g_clsMessageInfo.strMsgE0074,
+                        Environment.NewLine,
+                        ex.Message));
+
+                // メッセージ出力
+                new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0074)).ShowDialog(this);
+
+                return false;
+            }
+            finally
+            {
+                dtData.Dispose();
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// コマンドプロンプト実行
+        /// </summary>
+        /// <param name="strCommand">コマンド</param>
+        /// <param name="strProcessName">プロセスネーム</param>
+        private async Task<string> strExecuteCommandPrompt(
+            string strCommand,
+            string strProcessName)
+        {
+            string strResult = string.Empty;
+
+            // プロセスの状態を確認する
+            using (Process prCmd = new Process())
+            {
+                prCmd.StartInfo.FileName = m_FILENAME_COMMANDPROMPT;
+                prCmd.StartInfo.Arguments =
+                    string.Format(
+                        strCommand,
+                        g_strConnectionPoint,
+                        g_strConnectionUser,
+                        g_strConnectionPassword,
+                        strProcessName);
+                prCmd.StartInfo.CreateNoWindow = true;
+                prCmd.StartInfo.UseShellExecute = false;
+                prCmd.StartInfo.RedirectStandardOutput = true;
+                prCmd.Start();
+                strResult = prCmd.StandardOutput.ReadToEnd();
+                prCmd.WaitForExit();
+            }
+
+            return strResult;
+        }
         #endregion
 
         #region イベント
@@ -1626,7 +1792,7 @@ namespace BeforeInspection
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnSet_MouseClick(object sender, MouseEventArgs e)
+        private async void btnSet_MouseClick(object sender, MouseEventArgs e)
         {
             int intInspectionNum = 0;
             string strEndDatetime = lblEndDatetime.Text;
@@ -1740,6 +1906,163 @@ namespace BeforeInspection
                 m_intStatus == g_clsSystemSettingInfo.intStatusEnd)
             {
                 // ステータス：検査開始前 or 終了から
+
+                // 検査番号が1の場合、連携基盤プロセスの再起動を行うかチェックする。
+                if (intInspectionNum == 1)
+                {
+                    bool? bolRebootFlg = bolCheckPastInfo();
+
+                    if (bolRebootFlg == null)
+                    {
+                        return;
+                    }
+                    else if (bolRebootFlg == true)
+                    {
+                        // 検査情報のステータスをチェックする。
+                        if (!bolCheckResetTargetInfo())
+                        {
+                            return;
+                        }
+
+                        ProgressForm frmProgressForm = null;
+                        List<Task<string>> lstTask = new List<Task<string>>();
+                        int intTrialCount = 0;
+                        string strResult = string.Empty;
+                        bool bolProcessCheckResult = true;
+
+                        try
+                        {
+                            // プログレスフォームを表示する。
+                            frmProgressForm = new ProgressForm();
+                            frmProgressForm.StartPosition = FormStartPosition.CenterScreen;
+                            frmProgressForm.Size = this.Size;
+                            frmProgressForm.Show(this);
+
+                            // 連携基盤のプロセスを停止する
+                            Task<string> taskExecuteTaskKill =
+                                Task.Run(() => strExecuteCommandPrompt(
+                                    m_CON_COMMAND_TASKKILL,
+                                    string.Empty));
+
+                            await taskExecuteTaskKill;
+                            await Task.Delay(2000);
+
+                            do
+                            {
+                                if (intTrialCount > g_intRetryTimes)
+                                {
+                                    // ログ出力
+                                    WriteEventLog(
+                                        g_CON_LEVEL_ERROR,
+                                        g_clsMessageInfo.strMsgE0075);
+
+                                    // メッセージ出力
+                                    new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0075, true)).Show(this);
+
+                                    return;
+                                }
+
+                                // 連携基盤のプロセス状態を確認する
+                                Task<string> taskExecuteTaskList =
+                                    Task.Run(() => strExecuteCommandPrompt(
+                                        m_CON_COMMAND_TASKLIST,
+                                        string.Empty));
+
+                                await taskExecuteTaskList;
+
+                                strResult = taskExecuteTaskList.Result;
+
+                                bolProcessCheckResult = true;
+
+                                foreach (string strFileName in g_strExecutionFileName)
+                                {
+                                    if (strResult.Contains(strFileName))
+                                    {
+                                        bolProcessCheckResult = false;
+                                        break;
+                                    }
+                                }
+
+                                intTrialCount++;
+                            }
+                            while (!bolProcessCheckResult);
+
+                            foreach (string strTaskName in g_strTaskName)
+                            {
+                                // 連携基盤のプロセスを開始する
+                                lstTask.Add(Task.Run(() => strExecuteCommandPrompt(
+                                        m_CON_COMMAND_SCHTASKS,
+                                        strTaskName)));
+                            }
+
+                            await Task.WhenAll(lstTask.ToArray());
+                            await Task.Delay(2000);
+
+                            strResult = string.Empty;
+                            intTrialCount = 0;
+
+                            do
+                            {
+                                if (intTrialCount > g_intRetryTimes)
+                                {
+                                    // ログ出力
+                                    WriteEventLog(
+                                        g_CON_LEVEL_ERROR,
+                                        g_clsMessageInfo.strMsgE0075);
+
+                                    // メッセージ出力
+                                    new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0075, true)).Show(this);
+
+                                    return;
+                                }
+
+                                // 連携基盤のプロセス状態を確認する
+                                Task<string> taskExecuteTaskList =
+                                    Task.Run(() => strExecuteCommandPrompt(
+                                        m_CON_COMMAND_TASKLIST,
+                                        string.Empty));
+
+                                await taskExecuteTaskList;
+
+                                strResult = taskExecuteTaskList.Result;
+
+                                bolProcessCheckResult = true;
+
+                                foreach (string strFileName in g_strExecutionFileName)
+                                {
+                                    if (!strResult.Contains(strFileName))
+                                    {
+                                        bolProcessCheckResult = false;
+                                    }
+                                }
+
+                                intTrialCount++;
+                            }
+                            while (!bolProcessCheckResult);
+                        }
+                        catch (Exception ex)
+                        {
+                            // ログ出力
+                            WriteEventLog(
+                                g_CON_LEVEL_ERROR,
+                                string.Format(
+                                    "{0}{1}{2}",
+                                    g_clsMessageInfo.strMsgE0075,
+                                    Environment.NewLine,
+                                    ex.Message));
+
+                            // メッセージ出力
+                            new OpacityForm(new ErrorMessageBox(g_clsMessageInfo.strMsgE0075, true)).Show(this);
+
+                            return;
+                        }
+                        finally
+                        {
+                            frmProgressForm.Close();
+                            frmProgressForm.Dispose();
+                        }
+                    }
+                }
 
                 // 終了時刻
                 lblEndDatetime.Text = string.Empty;

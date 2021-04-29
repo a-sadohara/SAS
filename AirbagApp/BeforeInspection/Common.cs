@@ -3,6 +3,7 @@ using log4net;
 using System;
 using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -42,6 +43,15 @@ namespace BeforeInspection
         public const int g_CON_LEVEL_INFO = 4;
         public const int g_CON_LEVEL_DEBUG = 5;
 
+        // コンフィグ情報
+        public static string g_strConnectionPoint = string.Empty;
+        public static string g_strConnectionUser = string.Empty;
+        public static string g_strConnectionPassword = string.Empty;
+        public static string[] g_strTaskName;
+        public static string[] g_strExecutionFileName;
+        public static int[] g_intFabricInfoExceptExtractionStatus;
+        public static int g_intRetryTimes = 0;
+
         /// <summary>
         /// アプリケーションのメイン エントリ ポイントです。
         /// </summary>
@@ -55,6 +65,12 @@ namespace BeforeInspection
             System.Threading.Mutex mutex = new System.Threading.Mutex(false, mutexName);
 
             bool hasHandle = false;
+            string strConnectionPoint = string.Empty;
+            string strConnectionUser = string.Empty;
+            string strConnectionPassword = string.Empty;
+            string strFabricInfoExceptExtractionStatus = string.Empty;
+            string strTaskName = string.Empty;
+            string strExecutionFileName = string.Empty;
 
             try
             {
@@ -126,6 +142,39 @@ namespace BeforeInspection
                     }
                 }
 
+                GetAppConfigValue("ConnectionPoint", ref strConnectionPoint);
+                GetAppConfigValue("ConnectionUser", ref strConnectionUser);
+                GetAppConfigValue("ConnectionPassword", ref strConnectionPassword);
+                GetAppConfigValue("FabricInfoExceptExtractionStatus", ref strFabricInfoExceptExtractionStatus);
+                GetAppConfigValue("TaskName", ref strTaskName);
+                GetAppConfigValue("ExecutionFileName", ref strExecutionFileName);
+                GetAppConfigValue("RetryTimes", ref g_intRetryTimes);
+
+                // 連携基盤部接続接続用の情報を取得する。
+                if (!string.IsNullOrWhiteSpace(strConnectionPoint))
+                {
+                    g_strConnectionPoint = string.Format("/S {0}", strConnectionPoint);
+                }
+
+                if (!string.IsNullOrWhiteSpace(strConnectionUser))
+                {
+                    g_strConnectionUser = string.Format("/U {0}", strConnectionUser);
+                }
+
+                if (!string.IsNullOrWhiteSpace(strConnectionPassword))
+                {
+                    g_strConnectionPassword = string.Format("/P {0}", strConnectionPassword);
+                }
+
+                // コンフィグ情報より「反物情報.ステータス_抽出除外条件」を取得する。
+                g_intFabricInfoExceptExtractionStatus = strFabricInfoExceptExtractionStatus.Split(',').Select(x => int.Parse(x)).OrderBy(x => x).ToArray();
+
+                // コンフィグ情報より「起動対象タスク名」を取得する。
+                g_strTaskName = strTaskName.Split(',').OrderBy(x => x).ToArray();
+
+                // コンフィグ情報より「起動対象タスク名」を取得する。
+                g_strExecutionFileName = strExecutionFileName.Split(',').OrderBy(x => x).ToArray();
+
             }
             catch (Exception ex)
             {
@@ -192,6 +241,27 @@ namespace BeforeInspection
             if (strValue == null)
             {
                 m_sbErrMessage.AppendLine(string.Format("Key[{0}] AppConfigに存在しません。", strKey));
+            }
+        }
+
+        /// <summary>
+        /// App.configファイルから設定値を取得
+        /// </summary>
+        /// <param name="strKey">キー</param>
+        /// <param name="intValue">設定値</param>
+        /// <returns>true:正常終了 false:異常終了</returns>
+        private static void GetAppConfigValue(string strKey, ref int intValue)
+        {
+            string strValue = string.Empty;
+
+            try
+            {
+                GetAppConfigValue(strKey, ref strValue);
+                intValue = int.Parse(strValue);
+            }
+            catch (Exception ex)
+            {
+                m_sbErrMessage.AppendLine(string.Format("Key[{0}] {1}", strKey, ex.Message));
             }
         }
     }

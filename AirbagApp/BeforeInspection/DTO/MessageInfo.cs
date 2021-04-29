@@ -37,7 +37,10 @@ namespace BeforeInspection.DTO
         public readonly string strMsgE0069;
         public readonly string strMsgE0071;
         public readonly string strMsgE0073;
+        public readonly string strMsgE0074;
+        public readonly string strMsgE0075;
         public readonly string strMsgQ0008;
+        public readonly string strMsgW0013;
 
         /// <summary>
         /// コンストラクタ
@@ -66,7 +69,10 @@ namespace BeforeInspection.DTO
                 GetMessageContent("E0069", ref strMsgE0069);
                 GetMessageContent("E0071", ref strMsgE0071);
                 GetMessageContent("E0073", ref strMsgE0073);
+                GetMessageContent("E0074", ref strMsgE0074);
+                GetMessageContent("E0075", ref strMsgE0075);
                 GetMessageContent("Q0008", ref strMsgQ0008);
+                GetMessageContent("W0013", ref strMsgW0013);
 
                 if (m_sbErrMessage.Length > 0)
                 {
